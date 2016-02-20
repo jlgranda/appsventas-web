@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/fede_template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
+
+            function skinPie() {
+                this.cfg.seriesColors = ['#dae8ef', '#27aae1', '#33ccff', '#9fadb5'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#eaeaea',
+                    gridLineColor: '#e5ebf0',
+                    shadow: false,
+                    borderWidth: 0
+                };
+                this.cfg.seriesDefaults.shadow = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="subheader">
+        #{i18n['Invoices']}#{'/'}#{i18n['app.fede.inventory']}#{'/'}#{i18n['Dashboard']}
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- Left Column -->
+        <div class="Container100 Responsive100">
+
+            <!-- Section 1 -->
+            <div class="Container100">
+                <div class="ContainerIndent">
+                    <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
+                        <p:tabView style="margin:-20px; border:none 0px;">
+                            <p:tab title="#{i18n['app.fede.inventory.products']}">
+                                <div class="Container100">
+                                    <div class="Container100 Responsive100">
+                                        <div class="ContainerIndent">
+                                            <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.inventory.lastproduct']}</div>
+                                            <div class="EmptyBox20"></div>
+                                            <div class="Container60 Fs50 FontRobotoLight Orange">
+                                                <span class="DispBlock">#{inventoryHome.lastProduct.name}</span>
+                                                <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{inventoryHome.lastProduct.createdOn}</span>
+                                            </div>
+                                            <div class="Container40">
+                                                <p:commandButton value="#{i18n['New']}" actionListener="#{inventoryHome.mostrarFormularioProducto()}" ajax="true"
+                                                                 styleClass="RedButton Fright" style="width:75%">
+                                                    <p:ajax event="dialogReturn" update="@form"
+                                                            listener="#{inventoryHome.handleReturn}">
+                                                    </p:ajax>
+                                                </p:commandButton>
+                                                <!--                                                    <div class="EmptyBox5"></div>
+                                                                                                    <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" style="width:75%"/>-->
+                                            </div>
+                                            <div class="EmptyBox10"></div>
+                                            <div class="Separator"></div>
+                                            <div class="EmptyBox10"></div>
+                                            <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.inventory.recentlyproducts']}</div>
+                                            <div class="EmptyBox10"></div>
+                                            <ui:repeat value="#{inventoryHome.lastProducts}" var="entity">
+                                                <div class="Container100">
+                                                    <h:outputText value="#{entity.name}" styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>&nbsp;
+                                                    <h:outputText value="#{entity.createdOn}" styleClass="Fs16 BoldGray FontRobotoLight"></h:outputText>
+                                                </div>
+                                            </ui:repeat>
+                                            <div class="EmptyBox10"></div>
+                                            <div class="Separator"></div>
+                                            <div class="EmptyBox10"></div>
+                                            <div class="TexAlCenter DispBlock">
+                                                <p:button value="#{i18n['ShowAll']}" styleClass="OrangeButton White Fs14" icon="fa fa-table"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:tab>
+
+                        </p:tabView>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

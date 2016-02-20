@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/templates/fede_template.xhtml">
+    <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="invoiceId" value="#{invoiceHome.invoiceId}" />
+        </f:metadata>
+    </ui:define>
+    <ui:define name="subheader">
+        #{invoiceHome.invoiceId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)]}
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="Container100 ui-fluid">
+            <div class="ContainerIndent">
+                <div class="Card ShadowEffect">
+                    <h2 class="BigTopic">#{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType).concat('.lead')]} </h2>
+                    <div class="EmptyBox20"></div>
+                    <div class="EmptyBox20"></div>
+                    <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
+                        <div class="Container55">
+                            <div class="Container50 Responsive100">
+                                <div class="ContainerIndent">
+                                    <div class="Card SoftGrayBack TexAlCenter">
+                                        <i class="#{detail.product.icon} Fs40 BoldGray DispBlock"></i>
+                                        <div class="EmptyBox5"></div>
+                                        <span class="FontRobotoLight Fs18">#{detail.product.name}</span>
+                                        <div class="EmptyBox5"></div>
+                                        <span class="FontRobotoLight Fs18"><h:outputText value="#{detail.product.price}">
+                                                <f:convertNumber type="currency"/>
+                                            </h:outputText></span>
+                                        <div class="EmptyBox10"></div>
+                                        <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass=""/>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                    </ui:repeat>
+                    <div class="EmptyBox20"></div>
+                    <div class="Wid33 Fleft Responsive50">
+                        <p:commandButton value="#{i18n['app.fede.collect']}" ajax="true" 
+                                         actionListener="#{invoiceHome.collect()}" 
+                                         action="preinvoices" disabled="false" rendered="#{invoiceHome.invoice.isPersistent()}"
+                                         styleClass="CyanButton Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                    </div>
+                    <div class="EmptyBox5 ShowOnMobile"></div>
+                    <div class="Wid33 Fleft Responsive50">
+                        <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                                         actionListener="#{invoiceHome.save()}" 
+                                         action="preinvoices" disabled="false" rendered="true" 
+                                         styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                    </div>
+                    <div class="EmptyBox5 ShowOnMobile"></div>
+                    <div class="Wid33 Fleft Responsive50">
+                        <p:commandButton value="#{i18n['Cancel']}" 
+                                         actionListener="#{invoiceHome.closeDialog(null)}"
+                                         ajax="true" immediate="true" action="home" disabled="false" 
+                                         styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select(); });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>
