@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:param name="sitename" value="#{i18n['Sitename']}" />
+        <ui:param name="title" value="#{i18n['Profile']}" />
+        <ui:define name="params">
+            <f:metadata>
+            </f:metadata>
+        </ui:define>
+        <ui:define name="subheader">
+
+        </ui:define>
+        <ui:define name="content">
+            <h:form>
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="Card ShadowEffect ui-fluid">
+                            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                            <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
+                                            value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" />
+                                <!--<jlgranda:input id="type" name="type" type="select" 
+                                                value="#{tareaHome.estado}" values="#{ui.organizationTypesAsSelectItem}" 
+                                        converter="omnifaces.GenericEnumConverter"
+                                        required="true" inlinehelp="{messages['common.type.inlinehelp']}" execute="@this save" render="type"/>-->
+                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
+                                            execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"  />
+                            <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
+                                            value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"  />
+                            <jlgranda:input id="departamento" name="departamento" type="textarea" label="#{i18n['app.fede.tarea.departamento']}" 
+                                            value="#{tareaHome.tarea.departamento}" render="departamento" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.departamento.inlinehelp']}" />
+
+                            <div class="Wid50 Fleft Responsive50">
+                                <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                                                 actionListener="#{tareaHome.save()}" disabled="false" 
+                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                            </div>
+                            <div class="EmptyBox5 ShowOnMobile"></div>
+                            <div class="Wid50 Fleft Responsive50">
+                                <p:commandButton value="#{i18n['Cancel']}" ajax="true" action="home" disabled="false" 
+                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+            <!--/.panel-body -->
+
+        </ui:define>
+        <ui:define name="script">
+
+        </ui:define>
+    </ui:composition>
+</html>
