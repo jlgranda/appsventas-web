@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -51,6 +50,7 @@ import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.omnifaces.cdi.ViewScoped;
 import org.primefaces.event.UnselectEvent;
 
 /**
@@ -58,7 +58,7 @@ import org.primefaces.event.UnselectEvent;
  * @author jlgranda
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class InvoiceHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(InvoiceHome.class);
@@ -109,6 +109,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public Invoice getInvoice() {
+            
         if (invoiceId != null && !this.invoice.isPersistent()){
             this.invoice = invoiceService.find(invoiceId);
             loadCandidateDetails(this.invoice.getDetails());
@@ -208,12 +209,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public String save() {
-
         try {
-            
             getInvoice().setAuthor(subject);
             getInvoice().setOrganization(null);
-
             for (Detail d : getCandidateDetails()) {
                 if (d.isPersistent()){ //Actualizar la cantidad
                     getInvoice().replaceDetail(d);
@@ -322,12 +320,6 @@ public class InvoiceHome extends FedeController implements Serializable {
             }
         } else {
             for (Detail d : this.invoice.getDetails()){
-//                detail = detailService.createInstance();
-//                detail.setId(d.getId());
-//                detail.setInvoice(d.getInvoice());
-//                detail.setProduct(d.getProduct());
-//                detail.setProductId(d.getProductId());
-//                detail.setAmount(d.getAmount());
                 this.candidateDetails.add(d);
             }
         }
