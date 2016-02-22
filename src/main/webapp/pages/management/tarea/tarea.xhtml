@@ -13,7 +13,7 @@ and open the template in the editor.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['Profile']}" />
+        <ui:param name="title" value="#{i18n['app.documents.task']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tareaId" value="#{tareaHome.tareaId}" />
@@ -28,18 +28,23 @@ and open the template in the editor.
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
-                                            value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" />
-                            <!--<jlgranda:input id="type" name="type" type="select" 
-                                            value="#{tareaHome.estado}" values="#{ui.organizationTypesAsSelectItem}" 
-                                    converter="omnifaces.GenericEnumConverter"
-                                    required="true" inlinehelp="{messages['common.type.inlinehelp']}" execute="@this save" render="type"/>-->
-                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
-                                            execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"  />
-                            <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
-                                            value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"  />
-                            <jlgranda:input id="departamento" name="departamento" type="textarea" label="#{i18n['app.fede.tarea.departamento']}" 
-                                            value="#{tareaHome.tarea.departamento}" render="departamento" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.departamento.inlinehelp']}" />
+                            <p:accordionPanel multiple="true">
+                                <p:tab title="#{i18n['common.basic.data']}" >
+                                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
+                                                    execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"  />
+                                    <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
+                                                    value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"  />
+
+                                </p:tab>
+                                <p:tab title="#{i18n['app.documents.task.request.data']}">
+                                    <jlgranda:input id="departamento" name="departamento" type="textarea" label="#{i18n['app.fede.tarea.departamento']}" 
+                                                    value="#{tareaHome.tarea.departamento}" render="departamento" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.departamento.inlinehelp']}" />
+                                    <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
+                                                    value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" />
+
+                                </p:tab>
+                                
+                            </p:accordionPanel>
 
                             <div class="Wid50 Fleft Responsive50">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
@@ -49,7 +54,7 @@ and open the template in the editor.
                             </div>
                             <div class="EmptyBox5 ShowOnMobile"></div>
                             <div class="Wid50 Fleft Responsive50">
-                                <p:commandButton value="#{i18n['Cancel']}" ajax="true" action="tareas" disabled="false" 
+                                <p:commandButton value="#{i18n['Cancel']}" ajax="false" action="tareas" disabled="false" immediate="true"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
                         </div>

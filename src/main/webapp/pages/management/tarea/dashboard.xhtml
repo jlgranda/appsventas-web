@@ -67,29 +67,88 @@
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <h:form>
                             <p:tabView style="margin:-20px; border:none 0px;">
-                                <p:tab title="#{i18n['app.fede.tarea.tareasEnviadas']}">
+                                <p:tab title="#{i18n['app.fede.tarea.misTareas']}">
                                     <div class="Container100">
                                         <div class="Container100 Responsive100">
                                             <div class="ContainerIndent">
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttask']}</div>
+                                                <div class="EmptyBox20"></div>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange">
+                                                    <span class="DispBlock">
+                                                        #{tareaHome.ultimaTareaRecibida.name}
+                                                    </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{tareaHome.ultimaTareaRecibida.author.firstname}, #{tareaHome.ultimaTareaRecibida.author.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{tareaHome.ultimaTareaRecibida.createdOn}</span>
+                                                </div>
+                                                <div class="Container40">
+                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
+                                                    <p:button value="#{i18n['app.documents.task.complete']}" styleClass="OrangeButton Fright" 
+                                                              outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaRecibida.id}" style="width:75%"
+                                                              rendered="#{tareaHome.ultimaTareaRecibida.persistent}"/>
+                                                </div>
                                                 <div class="EmptyBox10"></div>
-                                                <ui:repeat value="#{tareaHome.ultimasTareas}" var="tarea">
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttasks']}</div>
+                                                <div class="EmptyBox10"></div>
+                                                <ui:repeat value="#{tareaHome.misUltimasTareasRecibidas}" var="tarea">
                                                     <div class="Container60">
                                                         <h:outputText value="#{tarea.name}" styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
                                                     </div>
-                                                    <div class="Container40">
-                                                        <p:button value="#{i18n['common.edit']}" 
-                                                                  outcome="tarea.jsf?tareaId=#{tarea.id}"
-                                                                  styleClass="CyanButton Fright" style="width:75%"/>
-                                                    </div>
                                                 </ui:repeat>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="TexAlCenter DispBlock">
+                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/management/tarea/tareas.jsf"/>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </p:tab>
-                                <p:tab title="#{i18n['app.fede.tarea.misTareas']}">
-
+                                <p:tab title="#{i18n['app.fede.tarea.tareasEnviadas']}">
+                                    <div class="Container100">
+                                        <div class="Container100 Responsive100">
+                                            <div class="ContainerIndent">
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttask']}</div>
+                                                <div class="EmptyBox20"></div>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange">
+                                                    <span class="DispBlock">
+                                                        #{tareaHome.ultimaTareaEnviada.name}
+                                                    </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{tareaHome.ultimaTareaEnviada.author.firstname}, #{tareaHome.ultimaTareaEnviada.author.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{tareaHome.ultimaTareaEnviada.createdOn}</span>
+                                                </div>
+                                                <div class="Container40">
+                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
+                                                    <p:button value="#{i18n['app.documents.task.complete']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaEnviada.id}" style="width:75%"
+                                                              rendered="#{tareaHome.ultimaTareaEnviada.persistent}"/>
+                                                </div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttasks']}</div>
+                                                <div class="EmptyBox10"></div>
+                                                <ui:repeat value="#{tareaHome.misUltimasTareasEnviadas}" var="tarea">
+                                                    <div class="Container60">
+                                                        <h:outputText value="#{tarea.name}" styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
+                                                    </div>
+                                                </ui:repeat>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="TexAlCenter DispBlock">
+                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/management/tarea/tareas.jsf"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </p:tab>
-                               
+
                             </p:tabView>
                         </h:form>
                     </div>
@@ -107,10 +166,15 @@
             <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile">
+
                         <div class="Container50 Responsive50">
                             <div class="ContainerIndent">
                                 <div class="Card SoftGrayBack TexAlCenter">
-                                    <p:commandButton action="#{tareaHome.crear()}" value="#{i18n['common.create']}" styleClass="RedButton" />
+                                    <i class="icon-create Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['app.documents.task']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/tarea/tarea.jsf"/>
                                 </div>
                             </div> 
                         </div>                       

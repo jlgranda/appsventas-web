@@ -26,6 +26,7 @@ import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
@@ -52,7 +53,11 @@ public class TareaHome extends FedeController implements Serializable {
     @EJB
     private SubjectService subjectService;
     private List<Tarea> ultimasTareas = new ArrayList<>();
+    private List<Tarea> misUltimasTareasEnviadas = new ArrayList<>();
+    private List<Tarea> misUltimasTareasRecibidas = new ArrayList<>();
     private Tarea tarea;
+    private Tarea ultimaTareaRecibida;
+    private Tarea ultimaTareaEnviada;
     private String estado;
     private Long tareaId;
     private LazyTareaDataModel lazyDataModel;
@@ -62,12 +67,61 @@ public class TareaHome extends FedeController implements Serializable {
         setTarea(tareaService.createInstance());
     }
 
+    public Tarea getUltimaTareaRecibida() {
+        if (ultimaTareaRecibida == null){
+            List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject);
+            ultimaTareaRecibida = obs.isEmpty() ? new Tarea() : (Tarea) obs.get(0);
+        }
+        return ultimaTareaRecibida;
+    }
+
+    public void setUltimaTareaRecibida(Tarea ultimaTareaRecibida) {
+        this.ultimaTareaRecibida = ultimaTareaRecibida;
+    }
+
+    public Tarea getUltimaTareaEnviada() {
+        if (ultimaTareaEnviada == null){
+            List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByAuthor", subject);
+            ultimaTareaEnviada = obs.isEmpty() ? new Tarea() : (Tarea) obs.get(0);
+        }
+        return ultimaTareaEnviada;
+    }
+
+    public void setUltimaTareaEnviada(Tarea ultimaTareaEnviada) {
+        this.ultimaTareaEnviada = ultimaTareaEnviada;
+    }
+
     public List<Tarea> getUltimasTareas() {
         int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
         if (ultimasTareas.isEmpty()) {
-            ultimasTareas = tareaService.findByNamedQuery("Tarea.findLasts", subject, limit);
+//            ultimasTareas = tareaService.findByNamedQuery("Tarea.findLasts", limit, subject);
+            ultimasTareas = tareaService.findByNamedQuery("Tarea.findLasts", subject);
         }
         return ultimasTareas;
+    }
+
+    public List<Tarea> getMisUltimasTareasEnviadas() {
+        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
+        if (misUltimasTareasEnviadas.isEmpty()) {
+            misUltimasTareasEnviadas = tareaService.findByNamedQuery("Tarea.findLastsByAuthor", subject);
+        }
+        return misUltimasTareasEnviadas;
+    }
+
+    public void setMisUltimasTareasEnviadas(List<Tarea> misUltimasTareasEnviadas) {
+        this.misUltimasTareasEnviadas = misUltimasTareasEnviadas;
+    }
+
+    public List<Tarea> getMisUltimasTareasRecibidas() {
+        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
+        if (misUltimasTareasRecibidas.isEmpty()) {
+            misUltimasTareasRecibidas = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject);
+        }
+        return misUltimasTareasRecibidas;
+    }
+
+    public void setMisUltimasTareasRecibidas(List<Tarea> misUltimasTareasRecibidas) {
+        this.misUltimasTareasRecibidas = misUltimasTareasRecibidas;
     }
 
     public void save() {
