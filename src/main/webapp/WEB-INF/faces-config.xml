@@ -29,6 +29,11 @@
             <to-view-id>/pages/fede/sales/preinvoices.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>tareas</from-outcome>
+            <to-view-id>/pages/management/tarea/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
     <converter>
         <converter-id>omnifaces.GenericEnumConverter</converter-id>

@@ -16,6 +16,7 @@ and open the template in the editor.
         <ui:param name="title" value="#{i18n['Profile']}" />
         <ui:define name="params">
             <f:metadata>
+                <f:viewParam name="tareaId" value="#{tareaHome.tareaId}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
@@ -29,10 +30,10 @@ and open the template in the editor.
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                             <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
                                             value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" />
-                                <!--<jlgranda:input id="type" name="type" type="select" 
-                                                value="#{tareaHome.estado}" values="#{ui.organizationTypesAsSelectItem}" 
-                                        converter="omnifaces.GenericEnumConverter"
-                                        required="true" inlinehelp="{messages['common.type.inlinehelp']}" execute="@this save" render="type"/>-->
+                            <!--<jlgranda:input id="type" name="type" type="select" 
+                                            value="#{tareaHome.estado}" values="#{ui.organizationTypesAsSelectItem}" 
+                                    converter="omnifaces.GenericEnumConverter"
+                                    required="true" inlinehelp="{messages['common.type.inlinehelp']}" execute="@this save" render="type"/>-->
                             <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
                                             execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"  />
                             <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
@@ -43,11 +44,12 @@ and open the template in the editor.
                             <div class="Wid50 Fleft Responsive50">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
                                                  actionListener="#{tareaHome.save()}" disabled="false" 
+                                                 action="tareas"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
                             <div class="EmptyBox5 ShowOnMobile"></div>
                             <div class="Wid50 Fleft Responsive50">
-                                <p:commandButton value="#{i18n['Cancel']}" ajax="true" action="home" disabled="false" 
+                                <p:commandButton value="#{i18n['Cancel']}" ajax="true" action="tareas" disabled="false" 
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
                         </div>

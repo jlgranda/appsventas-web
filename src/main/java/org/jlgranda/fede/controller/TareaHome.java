@@ -6,22 +6,29 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.SubjectService;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import net.tecnopro.document.ejb.TareaService;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.ui.model.LazyTareaDataModel;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,21 +51,23 @@ public class TareaHome extends FedeController implements Serializable {
     private TareaService tareaService;
     @EJB
     private SubjectService subjectService;
-    private List<Tarea> tareas = new ArrayList<>();
+    private List<Tarea> ultimasTareas = new ArrayList<>();
     private Tarea tarea;
     private String estado;
+    private Long tareaId;
+    private LazyTareaDataModel lazyDataModel;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         setTarea(tareaService.createInstance());
     }
 
-    public List<Tarea> getTareas() {
+    public List<Tarea> getUltimasTareas() {
         int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
-        if (tareas.isEmpty()) {
-            tareas = tareaService.findByNamedQuery("Tarea.findLasts", limit);
+        if (ultimasTareas.isEmpty()) {
+            ultimasTareas = tareaService.findByNamedQuery("Tarea.findLasts", subject, limit);
         }
-        return tareas;
+        return ultimasTareas;
     }
 
     public void save() {
@@ -88,23 +97,69 @@ public class TareaHome extends FedeController implements Serializable {
         return total;
     }
 
-    public void editar(Tarea tarea) {
-        setTarea(tarea);
+    public void setUltimasTareas(List<Tarea> ultimasTareas) {
+        this.ultimasTareas = ultimasTareas;
     }
-
-    public void setTareas(List<Tarea> tareas) {
-        this.tareas = tareas;
-    }
-
-
-  
 
     @Override
     public void handleReturn(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public LazyTareaDataModel getLazyDataModel() {
+        filter();
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyTareaDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+
+    public void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyTareaDataModel(tareaService);
+        }
+
+        //lazyDataModel.setOwner(subject);
+        lazyDataModel.setAuthor(subject);
+        lazyDataModel.setStart(getStart());
+        lazyDataModel.setEnd(getEnd());
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+        FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
+
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+//        this.selectedBussinesEntities.remove((FacturaElectronica) event.getObject());
+        logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
 
     public Tarea getTarea() {
+        if (tareaId != null && !this.tarea.isPersistent()) {
+            this.tarea = tareaService.find(tareaId);
+        }
         return tarea;
     }
 
@@ -118,6 +173,14 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public Long getTareaId() {
+        return tareaId;
+    }
+
+    public void setTareaId(Long tareaId) {
+        this.tareaId = tareaId;
     }
 
     @Override

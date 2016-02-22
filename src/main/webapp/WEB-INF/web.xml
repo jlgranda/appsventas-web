@@ -71,6 +71,20 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
+     <context-param>
+        <param-name>com.ocpsoft.pretty.PRODUCTION</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.ocpsoft.pretty.BASE_PACKAGES</param-name>
+        <param-value>
+            org.jlgranda.fede.controller
+        </param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.ocpsoft.pretty.SCAN_LIB_DIRECTORY</param-name>
+        <param-value>true</param-value>
+    </context-param>
     <!--Database-->
     <persistence-unit-ref>
         <persistence-unit-ref-name>fede/pu</persistence-unit-ref-name>
