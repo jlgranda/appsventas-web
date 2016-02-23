@@ -46,7 +46,13 @@ and open the template in the editor.
 
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.recipient.data']}">
-                                    <p>TODO agregar controles para seleccionar el destinatario</p>
+                                    <p:autoComplete value="#{tareaHome.destinatario}" completeMethod="#{tareaHome.completeSubjects}"
+                                                    var="subject" itemLabel="#{subject.username}" itemValue="#{subject}" converter="subjectConverter" forceSelection="true">
+
+                                        <p:column>
+                                            <h:outputText value="#{subject.username}" />
+                                        </p:column>
+                                    </p:autoComplete>
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.documents']}">
                                     <p>TODO: mostrar control de aduntar archivos</p>

@@ -5,7 +5,6 @@
  */
 package org.jlgranda.fede.controller;
 
-import com.google.common.base.Strings;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -26,7 +25,6 @@ import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.Proceso;
 import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
-import org.apache.commons.beanutils.BeanUtils;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -52,6 +50,7 @@ public class TareaHome extends FedeController implements Serializable {
     @LoggedIn
     private Subject subject;
     private Subject owner;
+    private Subject destinatario;
     @Inject
     private SettingHome settingHome;
     @EJB
@@ -73,7 +72,7 @@ public class TareaHome extends FedeController implements Serializable {
     /**
      * Controla el comportamiento del controlador y pantalla
      */
-    private String comando; 
+    private String comando;
     private LazyTareaDataModel lazyDataModel;
 
     @PostConstruct
@@ -83,7 +82,7 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public Tarea getUltimaTareaRecibida() {
-        if (ultimaTareaRecibida == null){
+        if (ultimaTareaRecibida == null) {
             List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject);
             ultimaTareaRecibida = obs.isEmpty() ? new Tarea() : (Tarea) obs.get(0);
         }
@@ -95,7 +94,7 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public Tarea getUltimaTareaEnviada() {
-        if (ultimaTareaEnviada == null){
+        if (ultimaTareaEnviada == null) {
             List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByAuthor", subject);
             ultimaTareaEnviada = obs.isEmpty() ? new Tarea() : (Tarea) obs.get(0);
         }
@@ -140,7 +139,7 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public Subject getOwner() {
-        if (owner == null){
+        if (owner == null) {
             owner = subjectService.find(140L);
         }
         return owner;
@@ -168,7 +167,7 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void save() {
         try {
-            if (!tarea.isPersistent()){//Comando nulo, es tarea nueva
+            if (!tarea.isPersistent()) {//Comando nulo, es tarea nueva
                 //Crear proceso y asignar a tarea
                 Proceso proceso = procesoService.createInstance();
                 proceso.setCode(java.util.UUID.randomUUID().toString()); //Crear un generador de Process ID
@@ -176,29 +175,28 @@ public class TareaHome extends FedeController implements Serializable {
                 proceso.setDescription(getTarea().getDescription());
                 proceso.setAuthor(subject);
                 proceso.setProcesoTipo(ProcesoTipo.NEGOCIO);
-                
+
                 proceso.setOwner(getOwner()); //El solicitante del proceso o tramite
-                
+
                 procesoService.save(proceso.getId(), proceso);
-                
-                
+
                 //Completar la primera tarea
                 //getTarea().setName(settingHome.getValue("fede.documents.task.firts.name", "Tarea inicial de proceso ") + proceso.getCode());
                 //getTarea().setDescription(settingHome.getValue("fede.documents.task.firts.description", "Tarea inicial de creación de proceso ") + proceso.getCode());
                 getTarea().setProceso(proceso);
                 getTarea().setAuthor(subject);
-                getTarea().setOwner(subject);
+                getTarea().setOwner(destinatario);
                 getTarea().setEstadoTipo(EstadoTipo.RESUELTO);//La tarea se completa al iniciar el proceso
                 tareaService.save(getTarea().getId(), getTarea());
             } else {
                 tareaService.save(getTarea().getId(), getTarea());
-            } 
+            }
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
     }
-    
+
     public void complete() {
         try {
 
@@ -207,7 +205,7 @@ public class TareaHome extends FedeController implements Serializable {
             getSiguienteTarea().setOwner(getOwner());
             getSiguienteTarea().setEstadoTipo(EstadoTipo.ESPERA);
             tareaService.save(getSiguienteTarea().getId(), getSiguienteTarea());
-            
+
             getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
             tareaService.save(getTarea().getId(), getTarea());
             this.addDefaultSuccessMessage();
@@ -216,9 +214,9 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
-    public List<Subject> getSubjects() {
-        return subjectService.all(subject);
-    }
+//    public List<Subject> getSubjects() {
+//        return subjectService.all(subject);
+//    }
 
     public BigDecimal countRowsByTag(String tag) {
         BigDecimal total = new BigDecimal(0);
@@ -291,6 +289,18 @@ public class TareaHome extends FedeController implements Serializable {
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
 
+    public List<Subject> completeSubjects(final String query) {
+        List<Subject> result = new ArrayList<>();
+        if (!"".equals(query.trim())) {
+            Subject subjectBuscar=new Subject();
+            subjectBuscar.setUsername(query);
+            subjectBuscar.setFirstname(query);
+            subjectBuscar.setSurname(query);
+            result = subjectService.buscarPorCriterio(subjectBuscar);
+        }
+        return result;
+    }
+
     public Tarea getTarea() {
         if (tareaId != null && !this.tarea.isPersistent()) {
             this.tarea = tareaService.find(tareaId);
@@ -326,9 +336,17 @@ public class TareaHome extends FedeController implements Serializable {
         this.tareaId = tareaId;
     }
 
+    public Subject getDestinatario() {
+        return destinatario;
+    }
+
+    public void setDestinatario(Subject destinatario) {
+        this.destinatario = destinatario;
+    }
+
     @Override
     public Group getDefaultGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
 }
