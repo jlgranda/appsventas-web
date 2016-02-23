@@ -82,8 +82,8 @@
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
-                                                    <p:button value="#{i18n['app.documents.task.complete']}" styleClass="OrangeButton Fright" 
-                                                              outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaRecibida.id}" style="width:75%"
+                                                    <p:button value="#{i18n['app.documents.task.complete']}" styleClass="CyanButton Fright" 
+                                                              outcome="/pages/management/tarea/tarea_completar.jsf?tareaId=#{tareaHome.ultimaTareaRecibida.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaRecibida.persistent}"/>
                                                 </div>
                                                 <div class="EmptyBox10"></div>
@@ -123,7 +123,8 @@
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
-                                                    <p:button value="#{i18n['app.documents.task.complete']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaEnviada.id}" style="width:75%"
+                                                    <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" 
+                                                              outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaEnviada.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaEnviada.persistent}"/>
                                                 </div>
                                                 <div class="EmptyBox10"></div>

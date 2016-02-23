@@ -5,6 +5,7 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.google.common.base.Strings;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -19,14 +20,18 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import net.tecnopro.document.ejb.ProcesoService;
 import net.tecnopro.document.ejb.TareaService;
+import net.tecnopro.document.model.EstadoTipo;
+import net.tecnopro.document.model.Proceso;
+import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
+import org.apache.commons.beanutils.BeanUtils;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
@@ -46,8 +51,11 @@ public class TareaHome extends FedeController implements Serializable {
     @Inject
     @LoggedIn
     private Subject subject;
+    private Subject owner;
     @Inject
     private SettingHome settingHome;
+    @EJB
+    private ProcesoService procesoService;
     @EJB
     private TareaService tareaService;
     @EJB
@@ -56,15 +64,22 @@ public class TareaHome extends FedeController implements Serializable {
     private List<Tarea> misUltimasTareasEnviadas = new ArrayList<>();
     private List<Tarea> misUltimasTareasRecibidas = new ArrayList<>();
     private Tarea tarea;
+    private Tarea siguienteTarea;
     private Tarea ultimaTareaRecibida;
     private Tarea ultimaTareaEnviada;
     private String estado;
     private Long tareaId;
+    private Long procesoId;
+    /**
+     * Controla el comportamiento del controlador y pantalla
+     */
+    private String comando; 
     private LazyTareaDataModel lazyDataModel;
 
     @PostConstruct
     public void init() {
         setTarea(tareaService.createInstance());
+        setSiguienteTarea(tareaService.createInstance());
     }
 
     public Tarea getUltimaTareaRecibida() {
@@ -124,10 +139,76 @@ public class TareaHome extends FedeController implements Serializable {
         this.misUltimasTareasRecibidas = misUltimasTareasRecibidas;
     }
 
-    public void save() {
+    public Subject getOwner() {
+        if (owner == null){
+            owner = subjectService.find(140L);
+        }
+        return owner;
+    }
 
+    public void setOwner(Subject owner) {
+        this.owner = owner;
+    }
+
+    public Long getProcesoId() {
+        return procesoId;
+    }
+
+    public void setProcesoId(Long procesoId) {
+        this.procesoId = procesoId;
+    }
+
+    public String getComando() {
+        return comando;
+    }
+
+    public void setComando(String comando) {
+        this.comando = comando;
+    }
+
+    public void save() {
         try {
-            getTarea().setAuthor(subject);
+            if (!tarea.isPersistent()){//Comando nulo, es tarea nueva
+                //Crear proceso y asignar a tarea
+                Proceso proceso = procesoService.createInstance();
+                proceso.setCode(java.util.UUID.randomUUID().toString()); //Crear un generador de Process ID
+                proceso.setName(getTarea().getName());
+                proceso.setDescription(getTarea().getDescription());
+                proceso.setAuthor(subject);
+                proceso.setProcesoTipo(ProcesoTipo.NEGOCIO);
+                
+                proceso.setOwner(getOwner()); //El solicitante del proceso o tramite
+                
+                procesoService.save(proceso.getId(), proceso);
+                
+                
+                //Completar la primera tarea
+                //getTarea().setName(settingHome.getValue("fede.documents.task.firts.name", "Tarea inicial de proceso ") + proceso.getCode());
+                //getTarea().setDescription(settingHome.getValue("fede.documents.task.firts.description", "Tarea inicial de creación de proceso ") + proceso.getCode());
+                getTarea().setProceso(proceso);
+                getTarea().setAuthor(subject);
+                getTarea().setOwner(subject);
+                getTarea().setEstadoTipo(EstadoTipo.RESUELTO);//La tarea se completa al iniciar el proceso
+                tareaService.save(getTarea().getId(), getTarea());
+            } else {
+                tareaService.save(getTarea().getId(), getTarea());
+            } 
+            this.addDefaultSuccessMessage();
+        } catch (Exception e) {
+            addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
+        }
+    }
+    
+    public void complete() {
+        try {
+
+            getSiguienteTarea().setProceso(getTarea().getProceso());
+            getSiguienteTarea().setAuthor(subject);
+            getSiguienteTarea().setOwner(getOwner());
+            getSiguienteTarea().setEstadoTipo(EstadoTipo.ESPERA);
+            tareaService.save(getSiguienteTarea().getId(), getSiguienteTarea());
+            
+            getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
             tareaService.save(getTarea().getId(), getTarea());
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
@@ -219,6 +300,14 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void setTarea(Tarea tarea) {
         this.tarea = tarea;
+    }
+
+    public Tarea getSiguienteTarea() {
+        return siguienteTarea;
+    }
+
+    public void setSiguienteTarea(Tarea siguienteTarea) {
+        this.siguienteTarea = siguienteTarea;
     }
 
     public String getEstado() {

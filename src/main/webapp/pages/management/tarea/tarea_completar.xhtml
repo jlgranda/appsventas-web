@@ -17,32 +17,34 @@ and open the template in the editor.
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tareaId" value="#{tareaHome.tareaId}" />
-                <f:viewParam name="comando" value="#{tareaHome.comando}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            #{tareaHome.tareaId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
-            <p>#{tareaHome.tarea.description}</p>
+            #{tareaHome.tareaId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['app.documents.task.complete'].concat(': ')} #{tareaHome.tarea.proceso.name}
         </ui:define>
         <ui:define name="content">
             <h:form>
+
                 <div class="Container100">
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                            <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{tareaHome.tarea.name}</div>
+                            <div class="Container100 Fs14 BoldGray FontRobotoRegular">#{tareaHome.tarea.description}</div>
+                            <div class="EmptyBox20"></div>
                             <p:accordionPanel multiple="true" >
-                                <p:tab title="#{i18n['common.basic.data']}" rendered="#{not tareaHome.tarea.persistent}">
+                                <p:tab title="#{i18n['common.basic.data']}" rendered="#{not tareaHome.siguienteTarea.persistent}">
                                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
-                                                    execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"  />
+                                                    execute="@this save" render="nme" value="#{tareaHome.siguienteTarea.name}" required="true"  />
                                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
-                                                    value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"  />
+                                                    value="#{tareaHome.siguienteTarea.description}" execute="@this save" render="descrpn" required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"  />
 
                                 </p:tab>
-                                <p:tab title="#{i18n['app.documents.task.request.data']}" rendered="#{not tareaHome.tarea.persistent}">
+                                <p:tab title="#{i18n['app.documents.task.request.data']}" rendered="#{not tareaHome.siguienteTarea.persistent}">
                                     <jlgranda:input id="departamento" name="departamento" type="textarea" label="#{i18n['app.fede.tarea.departamento']}" 
-                                                    value="#{tareaHome.tarea.departamento}" render="departamento" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.departamento.inlinehelp']}" />
+                                                    value="#{tareaHome.siguienteTarea.departamento}" render="departamento" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.departamento.inlinehelp']}" />
                                     <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
-                                                    value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" />
+                                                    value="#{tareaHome.siguienteTarea.fechaEnvio}" render="fechaEnvio" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" />
 
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.recipient.data']}">
@@ -56,7 +58,7 @@ and open the template in the editor.
 
                             <div class="Wid50 Fleft Responsive50">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                                 actionListener="#{tareaHome.save()}" disabled="false" 
+                                                 actionListener="#{tareaHome.complete()}" disabled="false" 
                                                  action="tareas"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
