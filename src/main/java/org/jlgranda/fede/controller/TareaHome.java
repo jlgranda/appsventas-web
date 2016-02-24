@@ -27,6 +27,7 @@ import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
+import org.jlgranda.fede.ui.util.SubjectConverter;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -69,6 +70,7 @@ public class TareaHome extends FedeController implements Serializable {
     private String estado;
     private Long tareaId;
     private Long procesoId;
+    private Tarea selectedTarea;
     /**
      * Controla el comportamiento del controlador y pantalla
      */
@@ -197,6 +199,27 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                redirectTo("/pages/management/tarea.jsf?tareaId=" + ((BussinesEntity) event.getObject()).getId());
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void editar() {
+        try {
+            if (selectedTarea != null && selectedTarea.getId() != null) {
+                redirectTo("/pages/management/tarea.jsf?tareaId=" + selectedTarea.getId());
+            }
+        } catch (Exception e) {
+        }
+
+    }
+
     public void complete() {
         try {
 
@@ -217,7 +240,6 @@ public class TareaHome extends FedeController implements Serializable {
 //    public List<Subject> getSubjects() {
 //        return subjectService.all(subject);
 //    }
-
     public BigDecimal countRowsByTag(String tag) {
         BigDecimal total = new BigDecimal(0);
         if ("all".equalsIgnoreCase(tag)) {
@@ -270,17 +292,6 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
-    public void onRowSelect(SelectEvent event) {
-        try {
-            //Redireccionar a RIDE de objeto seleccionado
-            if (event != null && event.getObject() != null) {
-                redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
-            }
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     public void onRowUnselect(UnselectEvent event) {
         FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
 
@@ -292,12 +303,13 @@ public class TareaHome extends FedeController implements Serializable {
     public List<Subject> completeSubjects(final String query) {
         List<Subject> result = new ArrayList<>();
         if (!"".equals(query.trim())) {
-            Subject subjectBuscar=new Subject();
+            Subject subjectBuscar = new Subject();
             subjectBuscar.setUsername(query);
-            subjectBuscar.setFirstname(query);
-            subjectBuscar.setSurname(query);
+//            subjectBuscar.setFirstname(query);
+//            subjectBuscar.setSurname(query);
             result = subjectService.buscarPorCriterio(subjectBuscar);
         }
+        SubjectConverter.setSubjects(result);
         return result;
     }
 
@@ -342,6 +354,14 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void setDestinatario(Subject destinatario) {
         this.destinatario = destinatario;
+    }
+
+    public Tarea getSelectedTarea() {
+        return selectedTarea;
+    }
+
+    public void setSelectedTarea(Tarea selectedTarea) {
+        this.selectedTarea = selectedTarea;
     }
 
     @Override

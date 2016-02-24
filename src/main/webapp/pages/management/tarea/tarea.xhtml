@@ -46,12 +46,9 @@ and open the template in the editor.
 
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.recipient.data']}">
-                                    <p:autoComplete value="#{tareaHome.destinatario}" completeMethod="#{tareaHome.completeSubjects}"
-                                                    var="subject" itemLabel="#{subject.username}" itemValue="#{subject}" converter="subjectConverter" forceSelection="true">
-
-                                        <p:column>
-                                            <h:outputText value="#{subject.username}" />
-                                        </p:column>
+                                    <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
+                                                    var="entidad" itemLabel="#{entidad.username}" multiple="false" maxResults="5" itemValue="#{entidad}" 
+                                                    converter="subjectConverter" forceSelection="true">
                                     </p:autoComplete>
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.documents']}">

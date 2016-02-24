@@ -17,6 +17,7 @@
 package org.jlgranda.fede.ui.util;
 
 import com.jlgranda.fede.ejb.SubjectService;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -31,21 +32,41 @@ import org.jpapi.model.profile.Subject;
 @FacesConverter("subjectConverter")
 public class SubjectConverter implements Converter {
 
-    @EJB
-    private SubjectService subjectService;
+    private static List<Subject> subjects;
 
     @Override
-    public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return subjectService.find(Long.parseLong(string));
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+        if (value.trim().equals("")) {
+            return null;
+        } else {
+            if (SubjectConverter.subjects != null) {
+                for (Subject subject : SubjectConverter.subjects) {
+                    if (subject.getId() == Long.parseLong(value)) {
+                        return subject;
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     @Override
-    public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        Subject subject = ((Subject) o);
-        if (subject == null) {
-            return null;
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+        if (value == null) {
+            return "";
         }
-        return subject.getId() + "";
+        if (((Subject) value) != null) {
+            return ((Subject) value).getId().toString();
+        }
+        return "";
+    }
+
+    public static List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public static void setSubjects(List<Subject> subjects) {
+        SubjectConverter.subjects = subjects;
     }
 
 }
