@@ -49,11 +49,20 @@ and open the template in the editor.
                                     <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
                                                     var="entidad" itemLabel="#{entidad.username}" multiple="false" maxResults="5" itemValue="#{entidad}" 
                                                     converter="subjectConverter" forceSelection="true">
+                                        <p:column>
+                                            <h:outputText value="#{entidad.username}"/>
+                                        </p:column>
                                     </p:autoComplete>
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.documents']}">
-                                    <p>TODO: mostrar control de aduntar archivos</p>
-                                    <p>TODO: mostrar lista de archivos adjuntos</p>
+                                    <ui:repeat value="#{documentoHome.documentos}" var="documento">
+                                                    <div class="Container60">
+                                                        <h:outputText value="#{documento.name}" styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
+                                                    </div>
+                                                </ui:repeat>
+                                    <p:commandButton value="#{i18n['common.create']}" 
+                                                     action="#{documentoHome.mostrarFormularioCargaDocumento()}" disabled="false" 
+                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                                 </p:tab>
                             </p:accordionPanel>
 

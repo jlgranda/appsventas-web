@@ -199,6 +199,7 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
+
     public void onRowSelect(SelectEvent event) {
         try {
             //Redireccionar a RIDE de objeto seleccionado
@@ -209,17 +210,7 @@ public class TareaHome extends FedeController implements Serializable {
             java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public void editar() {
-        try {
-            if (selectedTarea != null && selectedTarea.getId() != null) {
-                redirectTo("/pages/management/tarea.jsf?tareaId=" + selectedTarea.getId());
-            }
-        } catch (Exception e) {
-        }
-
-    }
-
+   
     public void complete() {
         try {
 
@@ -296,7 +287,6 @@ public class TareaHome extends FedeController implements Serializable {
         FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
 
         FacesContext.getCurrentInstance().addMessage(null, msg);
-//        this.selectedBussinesEntities.remove((FacturaElectronica) event.getObject());
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
 
@@ -305,8 +295,6 @@ public class TareaHome extends FedeController implements Serializable {
         if (!"".equals(query.trim())) {
             Subject subjectBuscar = new Subject();
             subjectBuscar.setUsername(query);
-//            subjectBuscar.setFirstname(query);
-//            subjectBuscar.setSurname(query);
             result = subjectService.buscarPorCriterio(subjectBuscar);
         }
         SubjectConverter.setSubjects(result);
