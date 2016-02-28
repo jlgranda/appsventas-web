@@ -11,7 +11,6 @@
         <param-name>primefaces.FONT_AWESOME</param-name>
         <param-value>true</param-value>
     </context-param>
-   
     <context-param>
         <param-name>facelets.DEVELOPMENT</param-name>
         <param-value>true</param-value>
@@ -53,6 +52,10 @@
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>FedeServlet</servlet-name>
+        <servlet-class>org.jlgranda.fede.servlet.FedeServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.jsf</url-pattern>
@@ -71,7 +74,7 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
-     <context-param>
+    <context-param>
         <param-name>com.ocpsoft.pretty.PRODUCTION</param-name>
         <param-value>true</param-value>
     </context-param>
@@ -159,6 +162,10 @@
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <servlet-name>Faces Servlet</servlet-name>
     </filter-mapping>
+    <servlet-mapping>
+        <servlet-name>FedeServlet</servlet-name>
+        <url-pattern>/FedeServlet</url-pattern>
+    </servlet-mapping>
     <mime-mapping>
         <extension>ttf</extension>
         <mime-type>application/font-sfnt</mime-type>

@@ -5,35 +5,53 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import net.tecnopro.document.ejb.DocumentoService;
 import net.tecnopro.document.ejb.ProcesoService;
 import net.tecnopro.document.ejb.TareaService;
+import net.tecnopro.document.model.Documento;
 import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.Proceso;
 import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jlgranda.fede.ui.util.SubjectConverter;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +59,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jorge
  */
-@Named(value = "tareaHome")
-@RequestScoped
+@ManagedBean(name = "tareaHome")
+@ViewScoped
 public class TareaHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(TareaHome.class);
@@ -54,6 +72,8 @@ public class TareaHome extends FedeController implements Serializable {
     private Subject destinatario;
     @Inject
     private SettingHome settingHome;
+    @Inject
+    private SettingService settingService;
     @EJB
     private ProcesoService procesoService;
     @EJB
@@ -71,6 +91,10 @@ public class TareaHome extends FedeController implements Serializable {
     private Long tareaId;
     private Long procesoId;
     private Tarea selectedTarea;
+    private Documento documento;
+    private Long documentoId;
+    @EJB
+    private DocumentoService documentoService;
     /**
      * Controla el comportamiento del controlador y pantalla
      */
@@ -190,15 +214,16 @@ public class TareaHome extends FedeController implements Serializable {
                 getTarea().setOwner(destinatario);
                 getTarea().setEstadoTipo(EstadoTipo.RESUELTO);//La tarea se completa al iniciar el proceso
                 tareaService.save(getTarea().getId(), getTarea());
+                procesarDocumentos();
             } else {
                 tareaService.save(getTarea().getId(), getTarea());
+                procesarDocumentos();
             }
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
     }
-
 
     public void onRowSelect(SelectEvent event) {
         try {
@@ -210,7 +235,7 @@ public class TareaHome extends FedeController implements Serializable {
             java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-   
+
     public void complete() {
         try {
 
@@ -285,7 +310,6 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void onRowUnselect(UnselectEvent event) {
         FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
-
         FacesContext.getCurrentInstance().addMessage(null, msg);
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
@@ -332,12 +356,84 @@ public class TareaHome extends FedeController implements Serializable {
         return tareaId;
     }
 
+    public boolean mostrarFormularioCargaDocumento(Documento doc) {
+        setDocumentoId(doc.getId());
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
+        super.openDialog(SettingNames.POPUP_EDITAR_DOCUMENTO, width, height, true);
+        return true;
+    }
+
     public void setTareaId(Long tareaId) {
         this.tareaId = tareaId;
     }
 
     public Subject getDestinatario() {
+        if (tarea.isPersistent()) {
+            this.destinatario = tarea.getOwner();
+        }
         return destinatario;
+    }
+
+    public void handleFileUpload(FileUploadEvent event) {
+        procesarUploadFile(event.getFile());
+    }
+
+    public void procesarUploadFile(UploadedFile file) {
+        if (file == null) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            return;
+        }
+
+        if (subject == null) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            return;
+        }
+        try {
+            if (file.getFileName().endsWith(".pdf")) {
+                Documento doc = documentoService.createInstance();
+                doc.setTarea(getTarea());
+                doc.setDocumentType(DocumentType.OFICIO);
+                doc.setContents(file.getContents());
+                doc.setRuta(settingService.findByName("app.management.tarea.ruta").getValue() + "//" + file.getFileName() + ".pdf");
+                doc.setOwner(owner);
+                doc.setAuthor(owner);
+                doc.setName(file.getFileName());
+                doc.setNumeroRegistro("Ninguno");
+                tarea.getDocumentos().add(doc);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), e.getMessage());
+        }
+    }
+
+    /**
+     * GRABAR DOCUMENTOS
+     */
+    public void procesarDocumentos() {
+        for (Documento doc : tarea.getDocumentos()) {
+            if (!doc.isPersistent()) {
+                documentoService.save(doc);
+            } else {
+                documentoService.save(doc.getId(), doc);
+            }
+            generaDocumento(new File(doc.getRuta()), doc.getContents());
+        }
+    }
+
+    public void generaDocumento(File file, byte[] bytes) {
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            try (BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                bos.write(bytes);
+                bos.flush();
+            }
+
+        } catch (IOException ex) {
+
+        }
     }
 
     public void setDestinatario(Subject destinatario) {
@@ -355,6 +451,28 @@ public class TareaHome extends FedeController implements Serializable {
     @Override
     public Group getDefaultGroup() {
         return null;
+    }
+
+    public Documento getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(Documento documento) {
+        this.documento = documento;
+    }
+
+    public void editarDocumento(Documento doc) {
+        setDocumento(doc);
+        RequestContext context = RequestContext.getCurrentInstance();
+        context.execute("PF('dlgDocumento').show();");
+    }
+
+    public Long getDocumentoId() {
+        return documentoId;
+    }
+
+    public void setDocumentoId(Long documentoId) {
+        this.documentoId = documentoId;
     }
 
 }

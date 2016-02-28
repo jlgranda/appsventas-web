@@ -25,7 +25,7 @@ and open the template in the editor.
             <p>#{tareaHome.tarea.description}</p>
         </ui:define>
         <ui:define name="content">
-            <h:form>
+            <h:form enctype="multipart/form-data" >
                 <div class="Container100">
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
@@ -55,14 +55,28 @@ and open the template in the editor.
                                     </p:autoComplete>
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.documents']}">
-                                    <ui:repeat value="#{documentoHome.documentos}" var="documento">
-                                                    <div class="Container60">
-                                                        <h:outputText value="#{documento.name}" styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
-                                                    </div>
-                                                </ui:repeat>
-                                    <p:commandButton value="#{i18n['common.create']}" 
-                                                     action="#{documentoHome.mostrarFormularioCargaDocumento()}" disabled="false" 
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                                    <div class="Container100 Responsive100">
+                                        <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
+                                                      mode="advanced" dragDropSupport="true" auto="true" process="@form"
+                                                      label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" cancelLabel="#{i18n['Cancel']}"
+                                                      multiple="true" update="uploadedFiles" sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(pdf)$/" />
+                                        <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.tarea.documentos}"> 
+                                            <p:column headerText="#{i18n['common.name']}">
+                                                <h:outputText value="#{file.name}"/> 
+
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.crationDate']}">
+                                                <h:outputText value="#{file.createdOn}"/>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.edit']}">
+                                                <p:commandButton value="#{i18n['common.edit']}" 
+                                                                 ajax="@form"
+                                                                 action="#{tareaHome.editarDocumento(file)}"
+                                                                 styleClass="CyanButton Fright"
+                                                                 />
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
                                 </p:tab>
                             </p:accordionPanel>
 
@@ -72,7 +86,6 @@ and open the template in the editor.
                                                  action="tareas"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
-                            <div class="EmptyBox5 ShowOnMobile"></div>
                             <div class="Wid50 Fleft Responsive50">
                                 <p:commandButton value="#{i18n['Cancel']}" ajax="false" action="tareas" disabled="false" immediate="true"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
@@ -80,6 +93,7 @@ and open the template in the editor.
                         </div>
                     </div>
                 </div>
+                <ui:include src="editar_documento.xhtml"/>
             </h:form>
             <!--/.panel-body -->
 

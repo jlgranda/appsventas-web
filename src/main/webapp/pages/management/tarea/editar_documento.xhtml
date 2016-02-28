@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 Jorge
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>#{i18n['Load']} #{i18n['Documents']}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style type="text/css">
+            .ui-widget {
+                font-size: 90%;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <p:dialog id="dlgDocumento" widgetVar="dlgDocumento"  header="#{i18n['common.edit']}" 
+                  modal="true"  draggable="true" position="center" closable="false" >
+            <p:accordionPanel multiple="true" >
+                <p:tab title="#{i18n['common.edit']}" rendered="#{tareaHome.documento.persistent}">
+                    <p:media styleClass="img-thumbnail" id="documentoMedia"
+                             value="/fedeServlet?entity=documento&amp;id=#{tareaHome.documento.id}"
+                             player="pdf" width="100%" height="250"/>
+                </p:tab>
+                <p:tab title="#{i18n['common.basic.data']}">
+                  <!--  <jlgranda:input id="registro" name="registro" type="text" label="#{i18n['app.fede.tarea.documento.numeroRegistro']}" 
+                                    value="#{tareaHome.documento.numeroRegistro}" render="registro" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.documento.numeroRegistro.inlinehelp']}" />-->
+                </p:tab>
+            </p:accordionPanel>
+            <p:commandButton value="#{i18n['Close']}" onclick="PF('dlgDocumento').hide()"  disabled="false" />
+        </p:dialog>
+    </h:body>
+</html>
