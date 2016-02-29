@@ -30,20 +30,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </style>
     </h:head>
     <h:body>
-        <p:dialog id="dlgDocumento" widgetVar="dlgDocumento"  header="#{i18n['common.edit']}" 
-                  modal="true"  draggable="true" position="center" closable="false" >
-            <p:accordionPanel multiple="true" >
-                <p:tab title="#{i18n['common.edit']}" rendered="#{tareaHome.documento.persistent}">
-                    <p:media styleClass="img-thumbnail" id="documentoMedia"
-                             value="/fedeServlet?entity=documento&amp;id=#{tareaHome.documento.id}"
-                             player="pdf" width="100%" height="250"/>
-                </p:tab>
-                <p:tab title="#{i18n['common.basic.data']}">
-                  <!--  <jlgranda:input id="registro" name="registro" type="text" label="#{i18n['app.fede.tarea.documento.numeroRegistro']}" 
-                                    value="#{tareaHome.documento.numeroRegistro}" render="registro" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.documento.numeroRegistro.inlinehelp']}" />-->
-                </p:tab>
-            </p:accordionPanel>
-            <p:commandButton value="#{i18n['Close']}" onclick="PF('dlgDocumento').hide()"  disabled="false" />
+        <p:dialog id="dlgDocumento"  widgetVar="dlgDocumento"  header="#{i18n['common.edit']}" 
+                  width="500" height="480" modal="true" rendered="#{tareaHome.documento != null}" draggable="true" position="center" closable="false" >
+            <div class="Container100">
+                <div class="ContainerIndent">
+                    <div class="Card ShadowEffect ui-fluid">
+                        <p:accordionPanel multiple="true" >
+                            <p:tab title="#{i18n['common.edit']}" >
+                                <p:media id="documentoMedia" rendered="#{tareaHome.documento.id}"
+                                         value="/fedeServlet?entity=documento&amp;id=#{tareaHome.documento.id}"
+                                         player="pdf" width="100%" height="250"/>
+
+                            </p:tab>
+                            <p:tab title="#{i18n['common.basic.data']}" >
+                                <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.documents.document.numeroRegistro']}" 
+                                                value="#{tareaHome.documento.numeroRegistro}" render="numReg" 
+                                                execute="@this save" required="false" inlinehelp="#{i18n['app.documents.document.numeroRegistro.inlinehelp']}" />
+
+                            </p:tab>
+                        </p:accordionPanel>
+                        <p:commandButton value="#{i18n['Close']}" onclick="PF('dlgDocumento').hide()" disabled="false" />
+                    </div></div>
+            </div>
         </p:dialog>
     </h:body>
 </html>

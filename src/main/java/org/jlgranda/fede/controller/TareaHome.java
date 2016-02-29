@@ -253,9 +253,6 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
-//    public List<Subject> getSubjects() {
-//        return subjectService.all(subject);
-//    }
     public BigDecimal countRowsByTag(String tag) {
         BigDecimal total = new BigDecimal(0);
         if ("all".equalsIgnoreCase(tag)) {
@@ -356,8 +353,7 @@ public class TareaHome extends FedeController implements Serializable {
         return tareaId;
     }
 
-    public boolean mostrarFormularioCargaDocumento(Documento doc) {
-        setDocumentoId(doc.getId());
+    public boolean mostrarFormularioCargaDocumento() {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
         super.openDialog(SettingNames.POPUP_EDITAR_DOCUMENTO, width, height, true);
@@ -454,6 +450,9 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public Documento getDocumento() {
+//        if (documentoId != null && !documento.isPersistent()) {
+//            this.documento = documentoService.find(documentoId);
+//        }
         return documento;
     }
 
@@ -461,8 +460,15 @@ public class TareaHome extends FedeController implements Serializable {
         this.documento = documento;
     }
 
+    public void removerDocumento(Documento doc) {
+        if (doc.isPersistent()) {
+            documentoService.remove(doc.getId(), doc);
+        }
+        this.tarea.getDocumentos().remove(doc);
+    }
+
     public void editarDocumento(Documento doc) {
-        setDocumento(doc);
+        this.documento=doc;
         RequestContext context = RequestContext.getCurrentInstance();
         context.execute("PF('dlgDocumento').show();");
     }

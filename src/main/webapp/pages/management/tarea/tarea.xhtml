@@ -55,7 +55,7 @@ and open the template in the editor.
                                     </p:autoComplete>
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.documents']}">
-                                    <div class="Container100 Responsive100">
+                                    
                                         <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
                                                       mode="advanced" dragDropSupport="true" auto="true" process="@form"
                                                       label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" cancelLabel="#{i18n['Cancel']}"
@@ -68,25 +68,35 @@ and open the template in the editor.
                                             <p:column headerText="#{i18n['common.crationDate']}">
                                                 <h:outputText value="#{file.createdOn}"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.edit']}">
+                                            <p:column headerText="#{i18n['common.accion']}">
                                                 <p:commandButton value="#{i18n['common.edit']}" 
-                                                                 ajax="@form"
+                                                                 ajax="@this"
                                                                  action="#{tareaHome.editarDocumento(file)}"
                                                                  styleClass="CyanButton Fright"
                                                                  />
+                                                <p:commandButton value="#{i18n['common.delete']}" styleClass="RedButton"
+                                                                 ajax="uploadedFiles" 
+                                                                 onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                                             return false;"
+                                                                 action="#{tareaHome.removerDocumento(file)}"/>
                                             </p:column>
                                         </p:dataTable>
-                                    </div>
+                                  
                                 </p:tab>
                             </p:accordionPanel>
 
-                            <div class="Wid50 Fleft Responsive50">
+                            <div class="Wid33 Fleft Responsive">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
                                                  actionListener="#{tareaHome.save()}" disabled="false" 
                                                  action="tareas"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
-                            <div class="Wid50 Fleft Responsive50">
+                            <div class="Wid33 Fleft Responsive">
+                                <p:commandButton value="#{i18n['SaveEdit']}" ajax="true" 
+                                                 actionListener="#{tareaHome.save()}" disabled="false" 
+                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                            </div>
+                            <div class="Wid33 Fleft Responsive">
                                 <p:commandButton value="#{i18n['Cancel']}" ajax="false" action="tareas" disabled="false" immediate="true"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
