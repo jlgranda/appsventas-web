@@ -34,9 +34,14 @@
             <to-view-id>/pages/management/tarea/dashboard.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>organizations</from-outcome>
+            <to-view-id>/pages/management/organization/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
-    <converter>
+<!--    <converter>
         <converter-id>omnifaces.GenericEnumConverter</converter-id>
         <converter-class>org.omnifaces.converter.GenericEnumConverter</converter-class>
-    </converter>
+    </converter>-->
 </faces-config>

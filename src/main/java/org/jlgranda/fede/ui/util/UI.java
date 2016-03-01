@@ -23,13 +23,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityManager;
-import org.jlgranda.fede.cdi.Web;
 import org.jlgranda.fede.model.management.Organization;
 import org.jpapi.util.I18nUtil;
 
@@ -53,7 +48,7 @@ public class UI {
     }
     
     public List<SelectItem> getOrganizationTypesAsSelectItem() {
-        List<SelectItem> items = new ArrayList<SelectItem>();
+        List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         for (Organization.Type t : getOrganizationTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
@@ -78,7 +73,7 @@ public class UI {
     
 
     public List<SelectItem> getValuesAsSelectItem(List<Object> values) {
-        List<SelectItem> items = new ArrayList<SelectItem>();
+        List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         items.add(item);

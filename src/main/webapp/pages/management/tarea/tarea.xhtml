@@ -30,19 +30,33 @@ and open the template in the editor.
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <p:accordionPanel multiple="true" >
+                            <p:tabView>
                                 <p:tab title="#{i18n['common.basic.data']}" rendered="#{not tareaHome.tarea.persistent}">
                                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
-                                                    execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"  />
+                                                    execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
+                                                    container="none"/>
                                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
-                                                    value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"  />
+                                                    value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
+                                                    required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                                    container="none"/>
 
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.request.data']}" rendered="#{not tareaHome.tarea.persistent}">
-                                    <jlgranda:input id="departamento" name="departamento" type="textarea" label="#{i18n['app.fede.tarea.departamento']}" 
-                                                    value="#{tareaHome.tarea.departamento}" render="departamento" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.departamento.inlinehelp']}" />
+                                    <p:tree id="organizationTree" value="#{tareaHome.organizationHome.organizationNode}" var="node" orientation="vertical" 
+                                            selectionMode="single" selection="#{tareaHome.organizationHome.selectedNode}"  dynamic="true">  
+
+                                        <!--<p:ajax event="select" update="messages" listener="#{tareaHome.organizationHome.onNodeSelect}" />--> 
+                                        <p:treeNode expandedIcon="ui-icon-folder-open"  
+                                                    collapsedIcon="ui-icon-folder-collapsed">  
+                                        </p:treeNode>  
+                                        <p:treeNode type="group" icon="icon-hand-right">  
+                                            <h:outputText value="#{node.name}" />  
+                                        </p:treeNode>
+                                    </p:tree>
                                     <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
-                                                    value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" />
+                                                    value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" 
+                                                    execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" 
+                                                    container="none"/>
 
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.recipient.data']}">
@@ -55,35 +69,35 @@ and open the template in the editor.
                                     </p:autoComplete>
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.documents']}">
-                                    
-                                        <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
-                                                      mode="advanced" dragDropSupport="true" auto="true" process="@form"
-                                                      label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" cancelLabel="#{i18n['Cancel']}"
-                                                      multiple="true" update="uploadedFiles" sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(pdf)$/" />
-                                        <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.tarea.documentos}"> 
-                                            <p:column headerText="#{i18n['common.name']}">
-                                                <h:outputText value="#{file.name}"/> 
 
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.crationDate']}">
-                                                <h:outputText value="#{file.createdOn}"/>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.accion']}">
-                                                <p:commandButton value="#{i18n['common.edit']}" 
-                                                                 ajax="@this"
-                                                                 action="#{tareaHome.editarDocumento(file)}"
-                                                                 styleClass="CyanButton Fright"
-                                                                 />
-                                                <p:commandButton value="#{i18n['common.delete']}" styleClass="RedButton"
-                                                                 ajax="uploadedFiles" 
-                                                                 onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                    <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
+                                                  mode="advanced" dragDropSupport="true" auto="true" process="@form"
+                                                  label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" cancelLabel="#{i18n['Cancel']}"
+                                                  multiple="true" update="uploadedFiles" sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(pdf)$/" />
+                                    <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.tarea.documentos}"> 
+                                        <p:column headerText="#{i18n['common.name']}">
+                                            <h:outputText value="#{file.name}"/> 
+
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.crationDate']}">
+                                            <h:outputText value="#{file.createdOn}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.accion']}">
+                                            <p:commandButton value="#{i18n['common.edit']}" 
+                                                             ajax="@this"
+                                                             action="#{tareaHome.editarDocumento(file)}"
+                                                             styleClass="CyanButton Fright"
+                                                             />
+                                            <p:commandButton value="#{i18n['common.delete']}" styleClass="RedButton"
+                                                             ajax="uploadedFiles" 
+                                                             onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
                                                                              return false;"
-                                                                 action="#{tareaHome.removerDocumento(file)}"/>
-                                            </p:column>
-                                        </p:dataTable>
-                                  
+                                                             action="#{tareaHome.removerDocumento(file)}"/>
+                                        </p:column>
+                                    </p:dataTable>
+
                                 </p:tab>
-                            </p:accordionPanel>
+                            </p:tabView>
 
                             <div class="Wid33 Fleft Responsive">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 

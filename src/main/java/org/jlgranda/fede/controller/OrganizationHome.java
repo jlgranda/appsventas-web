@@ -29,10 +29,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
+import org.jpapi.model.Membership;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +62,11 @@ public class OrganizationHome extends FedeController implements Serializable {
     @Inject
     @LoggedIn
     private Subject subject;
+    
+    private TreeNode organizationNode;
+    private TreeNode selectedNode;
+    private TreeNode rootNode;
+    private boolean toHaveChildren;
 
     @PostConstruct
     private void init() {
@@ -113,5 +123,74 @@ public class OrganizationHome extends FedeController implements Serializable {
     @Override
     public Group getDefaultGroup() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public boolean getToHaveChildren(TreeNode node) {
+        if (node.getChildCount() == 0) {
+            toHaveChildren = false;
+        } else {
+            toHaveChildren = true;
+        }
+        return toHaveChildren;
+    }
+
+    public void setToHaveChildren(boolean toHaveChildren) {
+        this.toHaveChildren = toHaveChildren;
+    }
+    
+    public TreeNode getOrganizationNode() {
+        if (organizationNode == null) {
+            buildTree();
+        }
+        return organizationNode;
+    }
+
+    public void setOrganizationNode(TreeNode organizationNode) {
+        this.organizationNode = organizationNode;
+    }
+
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
+    }
+
+    public TreeNode getRootNode() {
+        if (rootNode == null || organizationNode.getChildCount() == 0) {
+            buildTree();
+        }
+        return rootNode;
+
+    }
+
+    public void setRootNode(TreeNode rootNode) {
+        this.rootNode = rootNode;
+    }
+    
+    public TreeNode buildTree() {
+        rootNode = new DefaultTreeNode("rootNode", "", null);
+        organizationNode = new DefaultTreeNode("organization", getOrganization(), rootNode);
+
+        rootNode.setExpanded(true);
+        organizationNode.setExpanded(true);
+
+        TreeNode macroprocessNode = null;
+        TreeNode processNode = null;
+        TreeNode themeNode = null;
+        TreeNode ownerNode = null;
+
+        for (Membership m : getOrganization().getMemberships()) {
+            ownerNode = new DefaultTreeNode("group", m, organizationNode);
+            ownerNode.setExpanded(true);
+            
+        }
+        return rootNode;
+    }
+    
+    public void onNodeSelect(NodeSelectEvent event) {
+        BussinesEntity entity = (BussinesEntity) event.getTreeNode().getData();
+        
     }
 }

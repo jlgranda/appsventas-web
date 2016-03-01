@@ -6,6 +6,7 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
@@ -73,7 +74,7 @@ public class TareaHome extends FedeController implements Serializable {
     @Inject
     private SettingHome settingHome;
     @Inject
-    private SettingService settingService;
+    private OrganizationService organizationService;
     @EJB
     private ProcesoService procesoService;
     @EJB
@@ -100,11 +101,17 @@ public class TareaHome extends FedeController implements Serializable {
      */
     private String comando;
     private LazyTareaDataModel lazyDataModel;
+    
+    @Inject
+    private OrganizationHome organizationHome;
 
     @PostConstruct
     public void init() {
         setTarea(tareaService.createInstance());
         setSiguienteTarea(tareaService.createInstance());
+        
+        //TODO Establecer temporalmente la organización por defecto
+        //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
 
     public Tarea getUltimaTareaRecibida() {
@@ -306,7 +313,7 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public void onRowUnselect(UnselectEvent event) {
-        FacesMessage msg = new FacesMes394sage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
+        FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
         FacesContext.getCurrentInstance().addMessage(null, msg);
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
@@ -481,6 +488,14 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void setDocumentoId(Long documentoId) {
         this.documentoId = documentoId;
+    }
+
+    public OrganizationHome getOrganizationHome() {
+        return organizationHome;
+    }
+
+    public void setOrganizationHome(OrganizationHome organizationHome) {
+        this.organizationHome = organizationHome;
     }
 
 }

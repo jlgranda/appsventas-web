@@ -38,11 +38,9 @@ limitations under the License.
     <c:set var="class" value="#{not empty class ? class : 'form-control'}" />   
     <c:set var="inlinehelp" value="#{not empty inlinehelp ? inlinehelp : ''}" /> 
     <c:set var="container" value="#{not empty container ? container : '100'}" /> 
-    <!-- TODO habilitar o deshabilitar ajax validation -->
-    <div class="Container#{container} Responsive50">
+    <div class="#{container == 'none' ? '' : 'Container'.concat(container).concat(' Responsive50')}">
         <h:panelGroup id="panel-group-#{id}" layout="block" class="ContainerIndent">
             <c:if test="#{placeholder == 'false'}">
-                <!--<label for="#{name}">#{label}</label>-->
                 <h2 class="BigTopic">#{label}</h2>
             </c:if>
             <c:choose>
@@ -56,8 +54,8 @@ limitations under the License.
                 </c:when>
                 <c:when test="#{type == 'password'}">
                     <p:password id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                 required="#{required}" disabled="#{disabled}" autocomplete="off"
-                                 class="#{class}" redisplay="true">
+                                required="#{required}" disabled="#{disabled}" autocomplete="off"
+                                class="#{class}" redisplay="true">
                         <f:validator validatorId="#{validator}"/>
                         <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
                     </p:password>
@@ -105,5 +103,7 @@ limitations under the License.
             </c:choose>
             <p class="help-block">#{inlinehelp}</p>
         </h:panelGroup>  
+
     </div>
+
 </ui:composition>
