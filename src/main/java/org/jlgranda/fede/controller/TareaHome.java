@@ -306,7 +306,7 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public void onRowUnselect(UnselectEvent event) {
-        FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
+        FacesMessage msg = new FacesMes394sage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
         FacesContext.getCurrentInstance().addMessage(null, msg);
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
@@ -386,12 +386,14 @@ public class TareaHome extends FedeController implements Serializable {
             return;
         }
         try {
+            //TODO remover bloqueo exclusivo para PDF, el bloqueo se hará a nivel de vista
             if (file.getFileName().endsWith(".pdf")) {
                 Documento doc = documentoService.createInstance();
                 doc.setTarea(getTarea());
-                doc.setDocumentType(DocumentType.OFICIO);
-                doc.setContents(file.getContents());
-                doc.setRuta(settingService.findByName("app.management.tarea.ruta").getValue() + "//" + file.getFileName() + ".pdf");
+                doc.setDocumentType(DocumentType.OFICIO);//TODO permitir seleccionar el tipo en la vista.
+                doc.setContents(file.getContents()); //?? para que es esto
+//                doc.setRuta(settingService.findByName("app.management.tarea.ruta").getValue() + "//" + file.getFileName() + ".pdf");
+                doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName() + ".pdf");
                 doc.setOwner(owner);
                 doc.setAuthor(owner);
                 doc.setName(file.getFileName());
