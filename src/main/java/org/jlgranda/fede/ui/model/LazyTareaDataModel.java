@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 import net.tecnopro.document.ejb.TareaService;
 import net.tecnopro.document.model.Tarea;
 import net.tecnopro.document.model.Tarea_;
-import org.jlgranda.fede.model.sales.Invoice;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;

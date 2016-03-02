@@ -25,10 +25,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.management.Organization;
+import org.jlgranda.fede.ui.model.LazyOrganizationDataModel;
+import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.Membership;
@@ -36,6 +40,7 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
@@ -49,7 +54,7 @@ import org.slf4j.LoggerFactory;
 @RequestScoped
 public class OrganizationHome extends FedeController implements Serializable {
 
-    Logger logger = LoggerFactory.getLogger(BalancedScoreCardHome.class);
+    Logger logger = LoggerFactory.getLogger(OrganizationHome.class);
     
     Organization organization;
     
@@ -67,6 +72,8 @@ public class OrganizationHome extends FedeController implements Serializable {
     private TreeNode selectedNode;
     private TreeNode rootNode;
     private boolean toHaveChildren;
+    
+    private LazyOrganizationDataModel lazyDataModel;
 
     @PostConstruct
     private void init() {
@@ -84,6 +91,15 @@ public class OrganizationHome extends FedeController implements Serializable {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+    public LazyOrganizationDataModel getLazyDataModel() {
+        filter();
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyOrganizationDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
     }
 
     public boolean mostrarFormularioOrganizacion() {
@@ -122,7 +138,7 @@ public class OrganizationHome extends FedeController implements Serializable {
 
     @Override
     public Group getDefaultGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
     
     public boolean getToHaveChildren(TreeNode node) {
@@ -189,8 +205,31 @@ public class OrganizationHome extends FedeController implements Serializable {
         return rootNode;
     }
     
-    public void onNodeSelect(NodeSelectEvent event) {
-        BussinesEntity entity = (BussinesEntity) event.getTreeNode().getData();
-        
+    public void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyOrganizationDataModel(organizationService);
+        }
+
+        //lazyDataModel.setOwner(subject);
+        lazyDataModel.setAuthor(subject);
+        lazyDataModel.setStart(getStart());
+        lazyDataModel.setEnd(getEnd());
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+        FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
 }
