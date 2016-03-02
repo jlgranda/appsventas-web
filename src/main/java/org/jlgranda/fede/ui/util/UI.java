@@ -25,6 +25,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.management.Organization;
 import org.jpapi.util.I18nUtil;
 
@@ -45,6 +46,21 @@ public class UI {
     
     public Organization.Type[] getOrganizationTypes() {
         return Organization.Type.values();
+    }
+    
+    public DocumentType[] getDocumentTypes() {
+        return DocumentType.values();
+    }
+
+    
+    public List<SelectItem> getDocumentTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (DocumentType t : getDocumentTypes()) {
+            item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+            items.add(item);
+        }
+        return items;
     }
     
     public List<SelectItem> getOrganizationTypesAsSelectItem() {
