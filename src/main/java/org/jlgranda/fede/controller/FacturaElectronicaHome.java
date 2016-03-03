@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 import java.util.logging.Level;
 import javax.faces.bean.ManagedBean;
 import javax.mail.MessagingException;

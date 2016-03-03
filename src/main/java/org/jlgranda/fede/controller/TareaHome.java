@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -40,6 +42,7 @@ import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.Proceso;
 import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
+import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
@@ -84,6 +87,7 @@ public class TareaHome extends FedeController implements Serializable {
     private List<Tarea> ultimasTareas = new ArrayList<>();
     private List<Tarea> misUltimasTareasEnviadas = new ArrayList<>();
     private List<Tarea> misUltimasTareasRecibidas = new ArrayList<>();
+    private List<Documento> documentosRemovidos = new ArrayList<Documento>();
     private Tarea tarea;
     private Tarea siguienteTarea;
     private Tarea ultimaTareaRecibida;
@@ -94,6 +98,7 @@ public class TareaHome extends FedeController implements Serializable {
     private Tarea selectedTarea;
     private Documento documento;
     private Long documentoId;
+    private String tipoDocumento;
     @EJB
     private DocumentoService documentoService;
     /**
@@ -101,7 +106,7 @@ public class TareaHome extends FedeController implements Serializable {
      */
     private String comando;
     private LazyTareaDataModel lazyDataModel;
-    
+
     @Inject
     private OrganizationHome organizationHome;
 
@@ -109,7 +114,7 @@ public class TareaHome extends FedeController implements Serializable {
     public void init() {
         setTarea(tareaService.createInstance());
         setSiguienteTarea(tareaService.createInstance());
-        
+
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
@@ -198,6 +203,15 @@ public class TareaHome extends FedeController implements Serializable {
         this.comando = comando;
     }
 
+    public void saveDocumento() {
+        if (!documento.isPersistent()) {
+            documentoService.save(documento);
+        } else {
+            documentoService.save(documento.getId(), documento);
+        }
+        this.addDefaultSuccessMessage();
+    }
+
     public void save() {
         try {
             if (!tarea.isPersistent()) {//Comando nulo, es tarea nueva
@@ -225,6 +239,7 @@ public class TareaHome extends FedeController implements Serializable {
             } else {
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos();
+                eliminarDocumentos();
             }
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
@@ -393,21 +408,22 @@ public class TareaHome extends FedeController implements Serializable {
             return;
         }
         try {
-            //TODO remover bloqueo exclusivo para PDF, el bloqueo se hará a nivel de vista
-            if (file.getFileName().endsWith(".pdf")) {
-                Documento doc = documentoService.createInstance();
-                doc.setTarea(getTarea());
-                doc.setDocumentType(DocumentType.OFICIO);//TODO permitir seleccionar el tipo en la vista.
-                doc.setContents(file.getContents()); //?? para que es esto
-//                doc.setRuta(settingService.findByName("app.management.tarea.ruta").getValue() + "//" + file.getFileName() + ".pdf");
-                doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName() + ".pdf");
-                doc.setOwner(owner);
-                doc.setAuthor(owner);
-                doc.setName(file.getFileName());
-                doc.setNumeroRegistro("Ninguno");
-                tarea.getDocumentos().add(doc);
-            }
-
+            Documento doc = documentoService.createInstance();
+            doc.setTarea(getTarea());
+            doc.setOwner(owner);
+            doc.setAuthor(owner);
+            doc.setName(file.getFileName());
+            doc.setFileName(file.getFileName());
+            doc.setNumeroRegistro("Ninguno");
+            doc.setDocumentType(DocumentType.OFICIO);
+            doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName());
+            /**
+             * Permite que el documento tenga asignado los bytes para
+             * posteriormete con dichos bytes generar el documento digital y
+             * guardarlo en la ruta definida
+             */
+            doc.setContents(file.getContents());
+            tarea.getDocumentos().add(doc);
         } catch (Exception e) {
             e.printStackTrace();
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), e.getMessage());
@@ -421,10 +437,19 @@ public class TareaHome extends FedeController implements Serializable {
         for (Documento doc : tarea.getDocumentos()) {
             if (!doc.isPersistent()) {
                 documentoService.save(doc);
-            } else {
-                documentoService.save(doc.getId(), doc);
+                generaDocumento(new File(doc.getRuta()), doc.getContents());
+                continue;
             }
+            documentoService.save(doc.getId(), doc);
             generaDocumento(new File(doc.getRuta()), doc.getContents());
+        }
+    }
+
+    public void eliminarDocumentos() {
+        for (Documento doc : documentosRemovidos) {
+            if (doc.isPersistent()) {
+                documentoService.remove(doc.getId(), doc);
+            }
         }
     }
 
@@ -470,14 +495,12 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public void removerDocumento(Documento doc) {
-        if (doc.isPersistent()) {
-            documentoService.remove(doc.getId(), doc);
-        }
+        this.documentosRemovidos.add(doc);
         this.tarea.getDocumentos().remove(doc);
     }
 
     public void editarDocumento(Documento doc) {
-        this.documento=doc;
+        this.documento = doc;
         RequestContext context = RequestContext.getCurrentInstance();
         context.execute("PF('dlgDocumento').show();");
     }
@@ -496,6 +519,26 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void setOrganizationHome(OrganizationHome organizationHome) {
         this.organizationHome = organizationHome;
+    }
+
+    public String getTipoDocumento() {
+        if (documento.isPersistent()) {
+            String[] nameFile = documento.getFileName().split("[.]");
+            this.tipoDocumento = nameFile[nameFile.length - 1];
+        }
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+    }
+
+    public List<Documento> getDocumentosRemovidos() {
+        return documentosRemovidos;
+    }
+
+    public void setDocumentosRemovidos(List<Documento> documentosRemovidos) {
+        this.documentosRemovidos = documentosRemovidos;
     }
 
 }

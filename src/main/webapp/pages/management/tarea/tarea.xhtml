@@ -30,7 +30,7 @@ and open the template in the editor.
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <p:tabView>
+                            <p:tabView id="tabViewTarea">
                                 <p:tab title="#{i18n['common.basic.data']}" rendered="#{not tareaHome.tarea.persistent}">
                                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
                                                     execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
@@ -42,17 +42,21 @@ and open the template in the editor.
 
                                 </p:tab>
                                 <p:tab title="#{i18n['app.documents.task.request.data']}" rendered="#{not tareaHome.tarea.persistent}">
-                                    <p:tree id="organizationTree" value="#{tareaHome.organizationHome.organizationNode}" var="node" orientation="vertical" 
+                                    <!--<p:tree id="organizationTree" value="#{tareaHome.organizationHome.organizationNode}" var="node" orientation="vertical" 
                                             selectionMode="single" selection="#{tareaHome.organizationHome.selectedNode}"  dynamic="true">  
 
-                                        <!--<p:ajax event="select" update="messages" listener="#{tareaHome.organizationHome.onNodeSelect}" />--> 
+                                        <p:ajax event="select" update="messages" listener="#{tareaHome.organizationHome.onNodeSelect}" />
                                         <p:treeNode expandedIcon="ui-icon-folder-open"  
                                                     collapsedIcon="ui-icon-folder-collapsed">  
                                         </p:treeNode>  
                                         <p:treeNode type="group" icon="icon-hand-right">  
                                             <h:outputText value="#{node.name}" />  
                                         </p:treeNode>
-                                    </p:tree>
+                                    </p:tree>-->
+                                    <jlgranda:input id="dep" name="dep" type="text" label="#{i18n['app.fede.tarea.departamento']}" 
+                                                    value="#{tareaHome.tarea.departamento}" render="dep" 
+                                                    execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.departamento.inlinehelp']}" 
+                                                    container="none"/>
                                     <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
                                                     value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" 
                                                     execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" 
@@ -68,34 +72,24 @@ and open the template in the editor.
                                         </p:column>
                                     </p:autoComplete>
                                 </p:tab>
-                                <p:tab title="#{i18n['app.documents.task.documents']}">
-
-                                    <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
-                                                  mode="advanced" dragDropSupport="true" auto="true" process="@form"
-                                                  label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" cancelLabel="#{i18n['Cancel']}"
-                                                  multiple="true" update="uploadedFiles" sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(pdf)$/" />
-                                    <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.tarea.documentos}"> 
-                                        <p:column headerText="#{i18n['common.name']}">
-                                            <h:outputText value="#{file.name}"/> 
-
-                                        </p:column>
-                                        <p:column headerText="#{i18n['common.crationDate']}">
-                                            <h:outputText value="#{file.createdOn}"/>
-                                        </p:column>
-                                        <p:column headerText="#{i18n['common.accion']}">
-                                            <p:commandButton value="#{i18n['common.edit']}" 
-                                                             ajax="@this"
-                                                             action="#{tareaHome.editarDocumento(file)}"
-                                                             styleClass="CyanButton Fright"
-                                                             />
-                                            <p:commandButton value="#{i18n['common.delete']}" styleClass="RedButton"
-                                                             ajax="uploadedFiles" 
-                                                             onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
-                                                                             return false;"
-                                                             action="#{tareaHome.removerDocumento(file)}"/>
-                                        </p:column>
-                                    </p:dataTable>
-
+                                <p:tab id="uploadedFiles" title="#{i18n['app.documents.task.documents']}">
+                                    <div class="Container100">
+                                        <div class="Container60">
+                                                <ui:repeat value="#{tareaHome.tarea.documentos}" var="file">
+                                                    <span class="DispBlock">
+                                                        #{file.name}
+                                                    </span>
+                                                    <h:outputText value="#{file.documentType}" styleClass="Fs11 BoldGray FontRobotoLight"></h:outputText>
+                                                    <h:outputText value="#{file.createdOn}" styleClass="Fs11 BoldGray FontRobotoLight"></h:outputText>
+                                        </div>   
+                                            <div class="Container40">
+                                                <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
+                                                              mode="advanced" dragDropSupport="true" auto="true" process="@form"
+                                                              label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" cancelLabel="#{i18n['Cancel']}"
+                                                              multiple="true" update="uploadedFiles" sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(pdf|xml|zip)$/" />
+                                            </div>
+                                        
+                                        </div>
                                 </p:tab>
                             </p:tabView>
 
