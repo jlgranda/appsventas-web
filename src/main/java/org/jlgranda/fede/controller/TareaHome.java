@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.tecnopro.controller;
+package org.jlgranda.fede.controller;
 
 import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
@@ -42,10 +42,6 @@ import net.tecnopro.document.model.Proceso;
 import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
-import org.jlgranda.fede.controller.FacturaElectronicaHome;
-import org.jlgranda.fede.controller.FedeController;
-import org.jlgranda.fede.controller.OrganizationHome;
-import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jlgranda.fede.ui.util.SubjectConverter;

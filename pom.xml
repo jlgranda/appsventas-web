@@ -18,7 +18,7 @@
         <primefaces.theme.version>1.0.10</primefaces.theme.version>
         <hibernate.version>5.0.7.Final</hibernate.version>
         <!-- WildFly dependency versions -->
-        <version.wildfly.maven.plugin>1.0.1.Final</version.wildfly.maven.plugin>
+        <version.wildfly.maven.plugin>1.1.0.Alpha7</version.wildfly.maven.plugin>
 
         <!-- PicketLink dependency versions -->
         <version.picketlink.javaee.bom>2.8.0.Beta1-SNAPSHOT</version.picketlink.javaee.bom>
@@ -345,6 +345,20 @@
                     </archive>
                 </configuration>
                 
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>${version.wildfly.maven.plugin}</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <modules-path>
+                        <paths>
+                            <jboss-home>/home/opt/wildfly-10.0.0.Final</jboss-home>
+                            <modules-path>/home/opt/wildfly-10.0.0.Final/modules</modules-path>
+                        </paths>
+                    </modules-path>
+                </configuration>
             </plugin>
         </plugins>
     </build>
