@@ -36,7 +36,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <p:fileUpload fileUploadListener="#{facturaElectronicaHome.handleFileUpload}"
                           mode="advanced" dragDropSupport="true" auto="true" process="@form"
                 label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" cancelLabel="#{i18n['Cancel']}"
-                multiple="true" update="messages uploadedFiles " sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(xml|zip)$/" />
+                multiple="true" update="messages uploadedFiles " sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
+                fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
+                allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}" />
             
             <p:dataTable rendered="false" id="uploadedFiles" var="file" value="#{facturaElectronicaHome.uploadedFiles}">
                 <p:column headerText="#{i18n['FileName']}">

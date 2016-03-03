@@ -8,6 +8,11 @@ and open the template in the editor.
     Author     : jlgranda
 */
 
+.ui-selectonemenu label.ui-selectonemenu-label {
+    padding-right: 28px;
+    text-align: left;
+}
+
 .ui-spinner .ui-spinner-input {
     padding: 6px 9px !important;
 }

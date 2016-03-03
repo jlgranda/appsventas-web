@@ -67,11 +67,42 @@
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <h:form>
                             <p:tabView style="margin:-20px; border:none 0px;">
-                                <p:tab title="#{i18n['app.management.organization.graph.activity']}">
+                                <p:tab title="#{i18n['app.management.organizations']}">
                                     <div class="Container100">
                                         <div class="Container100 Responsive100">
                                             <div class="ContainerIndent">
-                                                
+                                                <p:dataTable var="entity" 
+                                                             value="#{organizationHome.lazyDataModel}" 
+                                                             paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                                             sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                                             reflow="true" selection="#{organizationHome.selectedBussinesEntities}" 
+                                                             rowKey="#{entity.id}" 
+                                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                                             id="dataTable" widgetVar="dataTable_wv" lazy="true">
+
+<!--                                                    <p:ajax event="rowSelectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
+                                                    <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
+                                                    <p:ajax event="rowSelect" listener="#{organizationHome.onRowSelect}"/>
+                                                    <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                                                    <p:column headerText="#{i18n['RUC']}" sortBy="#{entity.ruc}">
+                                                        <h:outputText value="#{entity.ruc}" />
+                                                    </p:column>
+                                                    <p:column headerText="#{i18n['common.type']}" sortBy="#{entity.type}">
+                                                        <h:outputText value="#{entity.organizationType}" />
+                                                    </p:column>
+                                                    <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{entity.name}">
+                                                        <h:outputText value="#{entity.name}" />
+                                                    </p:column>
+                                                    <p:column headerText="#{i18n['initials']}" sortBy="#{entity.initials}">
+                                                        <h:outputText value="#{entity.initials}" />
+                                                    </p:column>
+                                                    <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{entity.createdOn}"
+                                                               styleClass="text-right">
+                                                        <h:outputText value="#{entity.createdOn}">
+                                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                                        </h:outputText>
+                                                    </p:column>
+                                                </p:dataTable> 
                                             </div>
                                         </div>
                                     </div>

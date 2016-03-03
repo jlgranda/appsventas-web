@@ -35,17 +35,27 @@ and open the template in the editor.
                             <p:tabView>
                                 <p:tab title="#{i18n['common.basic.data']}" rendered="#{not tareaHome.tarea.persistent}">
                                     <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['RUC']}" 
-                                        value="#{organizationHome.organization.ruc}" required="true" inlinehelp="#{messages['RUC.inlinehelp']}" execute="@this save" render="ruc"/>
-                                    <jlgranda:input id="nm" name="name" type="text" label="#{i18n['name']}" 
-                                        value="#{organizationHome.organization.name}" required="true" inlinehelp="#{messages['name.inlinehelp']}" execute="@this save" render="nm"/>
+                                        value="#{organizationHome.organization.ruc}" required="true" 
+                                        inlinehelp="#{messages['RUC.inlinehelp']}" execute="@this save" render="ruc"
+                                        container="none"/>
+                                    <jlgranda:input id="nm" name="name" type="text" label="#{i18n['name']}"
+                                        value="#{organizationHome.organization.name}" required="true" 
+                                        inlinehelp="#{messages['name.inlinehelp']}" execute="@this save" render="nm"
+                                        container="none"/>
                                     <jlgranda:input id="type" name="type" type="select" label="#{i18n['common.type']}" 
                                         value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
                                         converter="omnifaces.SelectItemsConverter"
-                                        required="true" inlinehelp="#{messages['common.type.inlinehelp']}" execute="@this save" render="type"/>
+                                        required="true" inlinehelp="#{messages['common.type.inlinehelp']}" 
+                                        execute="@this save" render="type"
+                                        container="none"/>
                                     <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['initials']}" 
-                                        value="#{organizationHome.organization.initials}" required="true" inlinehelp="#{messages['initials.inlinehelp']}" execute="@this save" render="intls"/>
+                                        value="#{organizationHome.organization.initials}" required="true" 
+                                        inlinehelp="#{messages['initials.inlinehelp']}" execute="@this save" render="intls"
+                                        container="none"/>
                                     <jlgranda:input id="dsc" name="description" type="textarea" label="#{i18n['common.description']}" 
-                                        value="#{organizationHome.organization.description}" required="false" inlinehelp="#{messages['common.description.inlinehelp']}" execute="@this save" render="dsc"/>
+                                        value="#{organizationHome.organization.description}" required="false" 
+                                        inlinehelp="#{messages['common.description.inlinehelp']}" execute="@this save" render="dsc"
+                                        container="none"/>
                                     
                                 </p:tab>
                                 
@@ -54,7 +64,7 @@ and open the template in the editor.
                             <div class="Wid50 Fleft Responsive">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
                                                  actionListener="#{organizationHome.save()}" disabled="false" 
-                                                 action="tareas"
+                                                 action="organizations"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
                             

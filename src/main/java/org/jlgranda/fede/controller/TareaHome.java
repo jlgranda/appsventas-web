@@ -5,6 +5,7 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SettingService;
@@ -110,11 +111,13 @@ public class TareaHome extends FedeController implements Serializable {
     @Inject
     private OrganizationHome organizationHome;
 
+    private Documento documentoEnEdicion;
+
     @PostConstruct
     public void init() {
         setTarea(tareaService.createInstance());
         setSiguienteTarea(tareaService.createInstance());
-
+        setDocumento(documentoService.createInstance());
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
@@ -177,9 +180,6 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public Subject getOwner() {
-        if (owner == null) {
-            owner = subjectService.find(140L);
-        }
         return owner;
     }
 
@@ -375,13 +375,6 @@ public class TareaHome extends FedeController implements Serializable {
         return tareaId;
     }
 
-    public boolean mostrarFormularioCargaDocumento() {
-        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
-        super.openDialog(SettingNames.POPUP_EDITAR_DOCUMENTO, width, height, true);
-        return true;
-    }
-
     public void setTareaId(Long tareaId) {
         this.tareaId = tareaId;
     }
@@ -424,8 +417,26 @@ public class TareaHome extends FedeController implements Serializable {
              */
             doc.setContents(file.getContents());
             tarea.getDocumentos().add(doc);
+            doc.setTarea(getTarea());
+            doc.setContents(file.getContents()); //?? para que es esto
+//                doc.setRuta(settingService.findByName("app.management.tarea.ruta").getValue() + "//" + file.getFileName() + ".pdf");
+            doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName() + ".pdf");
+            doc.setOwner(owner);
+            doc.setAuthor(owner);
+            if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
+                doc.setName(file.getFileName());
+            } else {
+                doc.setName(getDocumento().getName());
+            }
+
+            doc.setDocumentType(getDocumento().getDocumentType());
+            doc.setFileName(file.getFileName());
+            doc.setNumeroRegistro("Ninguno"); //TODO generar número de registro
+            tarea.getDocumentos().add(doc);
+
+            //Encerar el obeto para edición de nuevo documento
+            setDocumento(documentoService.createInstance());
         } catch (Exception e) {
-            e.printStackTrace();
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), e.getMessage());
         }
     }
@@ -462,7 +473,8 @@ public class TareaHome extends FedeController implements Serializable {
             }
 
         } catch (IOException ex) {
-
+            ex.printStackTrace();
+            addErrorMessage(ex, I18nUtil.getMessages("common.error.uploadfail"));
         }
     }
 
