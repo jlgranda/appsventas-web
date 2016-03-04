@@ -27,6 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             .ui-widget {
                 font-size: 90%;
             }
+            .ui-dialog {
+                width: auto !important;
+            }
         </style>
     </h:head>
     <h:body>
@@ -39,13 +42,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  value="/fedeServlet?entity=documento&amp;id=#{tareaHome.documento.id}"
                                  player="pdf" width="100%" height="250"/>
 
+                        <h:panelGrid columns="3" cellpadding="10">
+                            <jlgranda:input id="documentType" name="documentType" type="select" 
+                                            placeholder="true" label="#{i18n['common.type']}" 
+                                            value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
+                                            converter="omnifaces.SelectItemsConverter"
+                                            required="false" 
+                                            execute="@this save" render="@this"
+                                            container="default"/>
+                            <p:outputLabel id="fileName" value="#{tareaHome.documento.fileName}"/>
+                            <p:fileUpload fileUploadListener="#{tareaHome.handleFileUploadEdit}"
+                                          mode="advanced" dragDropSupport="true" auto="true" 
+                                          process="@form" update="@form:tabs:tabFiles:uploadedFiles fileName documentName" 
+                                          immediate="true" multiple="true"
+                                          label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
+                                          cancelLabel="#{i18n['Cancel']}"
+                                          sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
+                                          fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
+                                          allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
+                        </h:panelGrid>
                         <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.documents.document.numeroRegistro']}" 
                                         value="#{tareaHome.documento.numeroRegistro}" render="numReg" 
                                         execute="@this save" required="false" />
-                        <p:commandButton value="#{i18n['common.save']}"
-                                         update="@form:tabs:tabFiles:uploadedFiles "
-                                         actionListener="#{tareaHome.saveDocumento()}" oncomplete="PF('dlgDocumento').hide()"/>                      
-                        <p:commandButton value="#{i18n['Close']}" onclick="PF('dlgDocumento').hide()" disabled="false" />
+                        <jlgranda:input id="documentName" name="documentName" type="text" 
+                                        placeholder="true" label="#{i18n['name']}" 
+                                        value="#{tareaHome.documento.name}" required="false" 
+                                        execute="@this save" render="@this"
+                                        container="default"/>
+                        <div class="Wid50 Fleft Responsive">
+                            <p:commandButton value="#{i18n['common.save']}"
+                                             rendered="#{tareaHome.documento.persistent}"
+                                             update="@form:tabs:tabFiles:uploadedFiles "
+                                             actionListener="#{tareaHome.saveDocumento()}" oncomplete="PF('dlgDocumento').hide()"/>   
+                        </div>
+                        <div class="Wid50 Fleft Responsive">
+                            <p:commandButton value="#{i18n['Close']}" onclick="PF('dlgDocumento').hide()" disabled="false" />
+                        </div>
                     </div>
                 </div>
             </div>
