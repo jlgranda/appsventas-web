@@ -6,33 +6,24 @@
 package org.jlgranda.fede.controller;
 
 import com.google.common.base.Strings;
-import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.OrganizationService;
-import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
 import net.tecnopro.document.ejb.DocumentoService;
 import net.tecnopro.document.ejb.ProcesoService;
 import net.tecnopro.document.ejb.TareaService;
@@ -42,7 +33,6 @@ import net.tecnopro.document.model.Proceso;
 import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
-import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jlgranda.fede.ui.util.SubjectConverter;
 import org.jpapi.model.BussinesEntity;
@@ -74,10 +64,13 @@ public class TareaHome extends FedeController implements Serializable {
     private Subject destinatario;
     @Inject
     private SettingHome settingHome;
-    @Inject
+    
+    @EJB
     private OrganizationService organizationService;
+    
     @EJB
     private ProcesoService procesoService;
+    
     @EJB
     private TareaService tareaService;
     @EJB
