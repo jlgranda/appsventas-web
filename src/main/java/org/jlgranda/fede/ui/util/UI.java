@@ -21,6 +21,7 @@ import com.jlgranda.fede.ejb.BussinesEntityService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
@@ -38,7 +39,7 @@ import org.jpapi.util.I18nUtil;
 @RequestScoped
 public class UI {
     
-    @Inject
+    @EJB
     protected BussinesEntityService bussinesEntityService;
 
     @PostConstruct
