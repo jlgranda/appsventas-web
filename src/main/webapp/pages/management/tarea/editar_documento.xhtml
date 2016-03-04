@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect ui-fluid">
-                        <p:media id="documentoMedia" rendered="#{tareaHome.documento.id!=null and tareaHome.tipoDocumento eq i18n['pdf']}"
+                        <p:media id="documentoMedia" rendered="#{tareaHome.documento.id!=null and tareaHome.documento.isMimeType(i18n['pdf'])}"
                                  value="/fedeServlet?entity=documento&amp;id=#{tareaHome.documento.id}"
                                  player="pdf" width="100%" height="250"/>
 
@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         value="#{tareaHome.documento.numeroRegistro}" render="numReg" 
                                         execute="@this save" required="false" />
                         <p:commandButton value="#{i18n['common.save']}"
-                                         update="tabViewTarea:uploadedFiles"
+                                         update="@form:tabs:tabFiles:uploadedFiles "
                                          actionListener="#{tareaHome.saveDocumento()}" oncomplete="PF('dlgDocumento').hide()"/>                      
                         <p:commandButton value="#{i18n['Close']}" onclick="PF('dlgDocumento').hide()" disabled="false" />
                     </div>
