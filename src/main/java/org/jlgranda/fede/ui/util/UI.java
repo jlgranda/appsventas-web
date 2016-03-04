@@ -38,9 +38,6 @@ import org.jpapi.util.I18nUtil;
 @ManagedBean(name = "ui")
 @RequestScoped
 public class UI {
-    
-    @EJB
-    protected BussinesEntityService bussinesEntityService;
 
     @PostConstruct
     public void init() {
@@ -53,7 +50,6 @@ public class UI {
     public DocumentType[] getDocumentTypes() {
         return DocumentType.values();
     }
-
     
     public List<SelectItem> getDocumentTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
@@ -101,6 +97,16 @@ public class UI {
         }
 
         return items;
+    }
+    
+    /**
+     * Calcula el tamaño de contenedor para el tamaño de elementos 
+     * identificado por size
+     * @param size
+     * @return el contenedor adecuado para size
+     */
+    public int calculeContainer(long size){
+        return (int) (100 / size);
     }
 
     private Object cleanValue(Object value) {

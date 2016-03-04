@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlgranda.fede.controller;
+package net.tecnopro.controller;
 
 import com.google.common.base.Strings;
 import com.jlgranda.fede.ejb.OrganizationService;
@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -37,6 +38,10 @@ import net.tecnopro.document.model.Proceso;
 import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.controller.FacturaElectronicaHome;
+import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.OrganizationHome;
+import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jlgranda.fede.ui.util.SubjectConverter;
@@ -451,11 +456,20 @@ public class TareaHome extends FedeController implements Serializable {
             doc.setTarea(getTarea());
             doc.setOwner(owner);
             doc.setAuthor(owner);
-            doc.setName(file.getFileName());
+            if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
+                doc.setName(file.getFileName());
+                doc.setDocumentType(DocumentType.UNDEFINED);
+            } else {
+                doc.setName(getDocumento().getName());
+                doc.setDocumentType(getDocumento().getDocumentType());
+            }
             doc.setFileName(file.getFileName());
-            doc.setNumeroRegistro("Ninguno");
-            doc.setDocumentType(DocumentType.OFICIO);
+            doc.setNumeroRegistro(UUID.randomUUID().toString());
+            
             doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName());
+            
+            doc.setMimeType(file.getContentType());
+            
             /**
              * Permite que el documento tenga asignado los bytes para
              * posteriormete con dichos bytes generar el documento digital y

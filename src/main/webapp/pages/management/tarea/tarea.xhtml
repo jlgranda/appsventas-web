@@ -22,7 +22,6 @@ and open the template in the editor.
         </ui:define>
         <ui:define name="subheader">
             #{tareaHome.tareaId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
-            <p>#{tareaHome.tarea.description}</p>
         </ui:define>
         <ui:define name="content">
             <h:form id="form" enctype="multipart/form-data" >
@@ -30,7 +29,7 @@ and open the template in the editor.
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <p:panel header="#{i18n['app.documents.task']}" >
+                            <p:panel header="#{i18n['app.documents.task']}#{tareaHome.tareaId != null ? ': ' : ' '}#{tareaHome.tarea.name}" >
                                 <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
                                                 execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
                                                 container="none"/>
