@@ -30,6 +30,7 @@ import org.jlgranda.fede.model.management.Organization;
 import org.jpapi.util.I18nUtil;
 
 /**
+ * Utilidades para la construcción de vistas
  *
  * @author jlgranda
  */
