@@ -6,6 +6,7 @@
 package net.tecnopro.controller;
 
 import com.google.common.base.Strings;
+import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
@@ -15,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,14 +49,16 @@ import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
-import org.primefaces.component.fileupload.FileUpload;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import java.io.InputStream;
 import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -205,10 +207,13 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void saveDocumento() {
         try {
-            if (documento.isPersistent()) {
+            if (!documento.isPersistent()) {
+                documentoService.save(documento);
+            } else {
                 documentoService.save(documento.getId(), documento);
-                generaDocumento(new File(documento.getRuta()), documento.getContents());
             }
+            generaDocumento(new File(documento.getRuta()), documento.getContents());
+            setDocumento(documentoService.createInstance());
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
             System.out.println(e);
@@ -279,8 +284,7 @@ public class TareaHome extends FedeController implements Serializable {
             getSiguienteTarea().setAuthor(subject);
             getSiguienteTarea().setOwner(getOwner());
             getSiguienteTarea().setEstadoTipo(EstadoTipo.ESPERA);
-            tareaService.save(getSiguienteTarea().getId(), getSiguienteTarea());
-
+            tareaService.save(getSiguienteTarea());
             getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
             tareaService.save(getTarea().getId(), getTarea());
             this.addDefaultSuccessMessage();
@@ -361,13 +365,13 @@ public class TareaHome extends FedeController implements Serializable {
     public Tarea getTarea() {
         if (tareaId != null && !this.tarea.isPersistent()) {
             this.tarea = tareaService.find(tareaId);
-            getDocumentos();
+            getDocumentos(this.tarea);
         }
         return tarea;
     }
 
-    public void getDocumentos() {
-        for (Documento doc : tarea.getDocumentos()) {
+    public void getDocumentos(Tarea t) {
+        for (Documento doc : t.getDocumentos()) {
             doc.setContents(obtenerBytes(new File(doc.getRuta())));
         }
     }
@@ -456,6 +460,7 @@ public class TareaHome extends FedeController implements Serializable {
             doc.setTarea(getTarea());
             doc.setOwner(owner);
             doc.setAuthor(owner);
+
             if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
                 doc.setName(file.getFileName());
                 doc.setDocumentType(DocumentType.UNDEFINED);
@@ -465,11 +470,11 @@ public class TareaHome extends FedeController implements Serializable {
             }
             doc.setFileName(file.getFileName());
             doc.setNumeroRegistro(UUID.randomUUID().toString());
-            
+
             doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName());
-            
+
             doc.setMimeType(file.getContentType());
-            
+
             /**
              * Permite que el documento tenga asignado los bytes para
              * posteriormete con dichos bytes generar el documento digital y
@@ -580,6 +585,28 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void setDocumentosRemovidos(List<Documento> documentosRemovidos) {
         this.documentosRemovidos = documentosRemovidos;
+    }
+
+//    public String getIconMymeType(Documento doc) {
+//            if (doc.getMimeType().equals(SettingNames.MYMETYPE_PDF)) {
+//                return settingHome.getValue("app.management.tarea.documentos.mymeType.pdf", "fa fa-file");
+//            }
+//            if (doc.getMimeType().equals(SettingNames.MYMETYPE_ZIP)) {
+//                return settingHome.getValue("app.management.tarea.documentos.mymeType.zip", "fa fa-file");
+//            }
+//        return "fa fa-file";
+//    }
+    public StreamedContent downloadDocument(Documento doc) {
+        StreamedContent fileDownload = null;
+        try {
+            if (doc != null) {
+                InputStream stream = new FileInputStream(new File(doc.getRuta()));
+
+                fileDownload = new DefaultStreamedContent(stream, doc.getMimeType(), doc.getFileName());
+            }
+        } catch (FileNotFoundException e) {
+        }
+        return fileDownload;
     }
 
 }

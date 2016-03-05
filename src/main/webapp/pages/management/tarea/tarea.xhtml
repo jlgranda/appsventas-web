@@ -32,7 +32,7 @@ and open the template in the editor.
                             <p:panel header="#{i18n['app.documents.task']}#{tareaHome.tareaId != null ? ': ' : ' '}#{tareaHome.tarea.name}" >
                                 <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
                                                 execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
-                                                container="none"/>
+                                                />
                                 <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
                                                 value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
                                                 required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
@@ -109,11 +109,15 @@ and open the template in the editor.
                                         <p:column headerText="#{i18n['FileName']}">
                                             <h:outputText value="#{file.fileName}"/> 
                                         </p:column>
+                                         <p:column headerText="#{i18n['app.documents.document.mymeType']}">
+                                             <i class="#{settingHome.getValue(file.mimeType, 'icon-file')} Fs24 Red"></i>
+                                        </p:column>
                                         <p:column headerText="#{i18n['common.crationDate']}">
                                             <h:outputText value="#{file.createdOn}">
                                                 <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                             </h:outputText>
                                         </p:column>
+                                        
                                         <p:column headerText="#{i18n['common.accion']}">
 
                                             <p:commandButton icon="fa fa-eraser Fs14 White"
@@ -139,16 +143,16 @@ and open the template in the editor.
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
                                                  actionListener="#{tareaHome.save()}" disabled="false" 
                                                  action="tareas"
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                                                 styleClass=" Fs12 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
                             <div class="Wid33 Fleft Responsive">
                                 <p:commandButton value="#{i18n['SaveEdit']}" ajax="true" 
                                                  actionListener="#{tareaHome.save()}" disabled="false" 
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                                                 styleClass=" Fs12 White OrangeButton Fright FloatNoneOnMobile"/>
                             </div>
                             <div class="Wid33 Fleft Responsive">
                                 <p:commandButton value="#{i18n['Cancel']}" ajax="false" action="tareas" disabled="false" immediate="true"
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
+                                                 styleClass=" Fs12 White RedButton Fright FloatNoneOnMobile"/>
                             </div>
                         </div>
                     </div>

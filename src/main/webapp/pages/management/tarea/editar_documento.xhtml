@@ -29,27 +29,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             .ui-dialog {
                 width: auto !important;
+                height: auto!important
             }
         </style>
     </h:head>
     <h:body>
-        <p:dialog id="dlgDocumento"  widgetVar="dlgDocumento"  header="#{i18n['common.edit']}" 
-                  width="600" height="500" modal="true" rendered="#{tareaHome.documento != null}" draggable="true" position="center" closable="false" >
+        <p:dialog id="dlgDocumento"  widgetVar="dlgDocumento"  header="#{i18n['common.edit']} #{tareaHome.documento.name}" 
+                  modal="true" rendered="#{tareaHome.documento != null}" draggable="true" position="center" closable="false" >
             <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect ui-fluid">
-                        <p:media id="documentoMedia" rendered="#{tareaHome.documento.id!=null and tareaHome.documento.isMimeType(i18n['pdf'])}"
+                       <!-- <p:media id="documentoMedia" rendered="#{tareaHome.documento.id!=null and tareaHome.documento.isMimeType(i18n['pdf'])}"
                                  value="/fedeServlet?entity=documento&amp;id=#{tareaHome.documento.id}"
-                                 player="pdf" width="100%" height="250"/>
+                                 player="pdf" width="100%" height="250"/>-->
 
-                        <h:panelGrid columns="3" cellpadding="10">
-                            <jlgranda:input id="documentType" name="documentType" type="select" 
-                                            placeholder="true" label="#{i18n['common.type']}" 
-                                            value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
-                                            converter="omnifaces.SelectItemsConverter"
-                                            required="false" 
-                                            execute="@this save" render="@this"
-                                            container="default"/>
+                        <h:panelGrid columns="2" cellpadding="10">
                             <p:outputLabel id="fileName" value="#{tareaHome.documento.fileName}"/>
                             <p:fileUpload fileUploadListener="#{tareaHome.handleFileUploadEdit}"
                                           mode="advanced" dragDropSupport="true" auto="true" 
@@ -61,22 +55,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                           fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
                                           allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
                         </h:panelGrid>
-                        <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.documents.document.numeroRegistro']}" 
-                                        value="#{tareaHome.documento.numeroRegistro}" render="numReg" 
-                                        execute="@this save" required="false" />
-                        <jlgranda:input id="documentName" name="documentName" type="text" 
-                                        placeholder="true" label="#{i18n['name']}" 
-                                        value="#{tareaHome.documento.name}" required="false" 
+                        <jlgranda:input id="documentType" name="documentType" type="select" 
+                                        label="#{i18n['common.type']}" 
+                                        value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
+                                        converter="omnifaces.SelectItemsConverter"
                                         execute="@this save" render="@this"
                                         container="default"/>
-                        <div class="Wid50 Fleft Responsive">
+                        <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.documents.document.numeroRegistro']}" 
+                                        value="#{tareaHome.documento.numeroRegistro}" render="numReg" 
+                                        execute="@this save" required="false"  />
+                        <jlgranda:input id="documentName" name="documentName" type="text" 
+                                        label="#{i18n['name']}" 
+                                        value="#{tareaHome.documento.name}" required="false" 
+                                        execute="@this save" render="documentName"
+                                        />
+                        <div class="Wid25 Fleft Responsive">
                             <p:commandButton value="#{i18n['common.save']}"
-                                             rendered="#{tareaHome.documento.persistent}"
+                                             icon="fa fa-save Fs14 White"
+                                             styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
+                                             rendered="#{tareaHome.tarea.persistent}"
                                              update="@form:tabs:tabFiles:uploadedFiles "
                                              actionListener="#{tareaHome.saveDocumento()}" oncomplete="PF('dlgDocumento').hide()"/>   
                         </div>
-                        <div class="Wid50 Fleft Responsive">
-                            <p:commandButton value="#{i18n['Close']}" onclick="PF('dlgDocumento').hide()" disabled="false" />
+                        <div class="Wid25 Fleft Responsive">
+                            <p:commandButton value="#{i18n['SaveEdit']}"
+                                             icon="fa fa-save Fs14 White"
+                                             styleClass="Fs12 OrangeButton Fright FloatNoneOnMobile"
+                                             rendered="#{tareaHome.tarea.persistent}"
+                                             update="@form:tabs:tabFiles:uploadedFiles "
+                                             actionListener="#{tareaHome.saveDocumento()}"/>   
+                        </div>
+                        <div class="Wid25 Fleft Responsive">
+                            <p:commandButton rendered="#{tareaHome.documento.persistent}" value="#{i18n['Download']}" ajax="false" 
+                                             icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')}" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
+                                <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
+                            </p:commandButton>
+                        </div>
+                        <div class="Wid25 Fleft Responsive">
+                            <p:commandButton value="#{i18n['Close']}"
+                                             icon="fa fa-close Fs14 White"
+                                             styleClass="Fs12 RedButton Fright FloatNoneOnMobile"
+                                             onclick="PF('dlgDocumento').hide()" disabled="false" />
                         </div>
                     </div>
                 </div>
