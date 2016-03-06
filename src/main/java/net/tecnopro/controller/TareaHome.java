@@ -6,7 +6,6 @@
 package net.tecnopro.controller;
 
 import com.google.common.base.Strings;
-import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
@@ -246,10 +245,10 @@ public class TareaHome extends FedeController implements Serializable {
                 getTarea().setOwner(destinatario);
                 getTarea().setEstadoTipo(EstadoTipo.RESUELTO);//La tarea se completa al iniciar el proceso
                 tareaService.save(getTarea().getId(), getTarea());
-                procesarDocumentos();
+                procesarDocumentos(getTarea());
             } else {
                 tareaService.save(getTarea().getId(), getTarea());
-                procesarDocumentos();
+                procesarDocumentos(getTarea());
                 eliminarDocumentos();
             }
             this.addDefaultSuccessMessage();
@@ -279,12 +278,14 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void complete() {
         try {
-
             getSiguienteTarea().setProceso(getTarea().getProceso());
             getSiguienteTarea().setAuthor(subject);
             getSiguienteTarea().setOwner(getOwner());
+            getSiguienteTarea().setDepartamento("Temporal");
             getSiguienteTarea().setEstadoTipo(EstadoTipo.ESPERA);
             tareaService.save(getSiguienteTarea());
+            procesarDocumentos(getSiguienteTarea());
+            eliminarDocumentos();
             getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
             tareaService.save(getTarea().getId(), getTarea());
             this.addDefaultSuccessMessage();
@@ -356,6 +357,9 @@ public class TareaHome extends FedeController implements Serializable {
         if (!"".equals(query.trim())) {
             Subject subjectBuscar = new Subject();
             subjectBuscar.setUsername(query);
+            subjectBuscar.setFirstname(query);
+            subjectBuscar.setSurname(query);
+            subjectBuscar.setId(subject.getId());
             result = subjectService.buscarPorCriterio(subjectBuscar);
         }
         SubjectConverter.setSubjects(result);
@@ -445,6 +449,31 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
+    public void procesarUploadFileSiguienteTarea(FileUploadEvent event) {
+        if (event.getFile() == null) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            return;
+        }
+
+        if (subject == null) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            return;
+        }
+        try {
+            Documento doc = crearDocumento(event.getFile(), siguienteTarea);
+
+            if (siguienteTarea != null) {
+                siguienteTarea.getDocumentos().add(doc);
+            }
+
+            //Encerar el obeto para edición de nuevo documento
+            setDocumento(documentoService.createInstance());
+
+        } catch (Exception e) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), e.getMessage());
+        }
+    }
+
     public void procesarUploadFile(UploadedFile file) {
         if (file == null) {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
@@ -456,37 +485,9 @@ public class TareaHome extends FedeController implements Serializable {
             return;
         }
         try {
-            Documento doc = documentoService.createInstance();
-            doc.setTarea(getTarea());
-            doc.setOwner(owner);
-            doc.setAuthor(owner);
-
-            if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
-                doc.setName(file.getFileName());
-                doc.setDocumentType(DocumentType.UNDEFINED);
-            } else {
-                doc.setName(getDocumento().getName());
-                doc.setDocumentType(getDocumento().getDocumentType());
-            }
-            doc.setFileName(file.getFileName());
-            doc.setNumeroRegistro(UUID.randomUUID().toString());
-
-            doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName());
-
-            doc.setMimeType(file.getContentType());
-
-            /**
-             * Permite que el documento tenga asignado los bytes para
-             * posteriormete con dichos bytes generar el documento digital y
-             * guardarlo en la ruta definida
-             */
-            doc.setContents(file.getContents());
+            Documento doc = crearDocumento(file, tarea);
             if (tarea != null) {
                 tarea.getDocumentos().add(doc);
-            } else {
-                if (siguienteTarea != null) {
-                    siguienteTarea.getDocumentos().add(doc);
-                }
             }
             //Encerar el obeto para edición de nuevo documento
             setDocumento(documentoService.createInstance());
@@ -498,9 +499,11 @@ public class TareaHome extends FedeController implements Serializable {
 
     /**
      * GRABAR DOCUMENTOS
+     *
+     * @param t
      */
-    public void procesarDocumentos() {
-        for (Documento doc : tarea.getDocumentos()) {
+    public void procesarDocumentos(Tarea t) {
+        for (Documento doc : t.getDocumentos()) {
             if (!doc.isPersistent()) {
                 documentoService.save(doc);
             } else {
@@ -508,6 +511,35 @@ public class TareaHome extends FedeController implements Serializable {
             }
             generaDocumento(new File(doc.getRuta()), doc.getContents());
         }
+    }
+
+    private Documento crearDocumento(UploadedFile file, Tarea t) {
+        Documento doc = documentoService.createInstance();
+        doc.setTarea(t);
+        doc.setOwner(owner);
+        doc.setAuthor(owner);
+
+        if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
+            doc.setName(file.getFileName());
+            doc.setDocumentType(DocumentType.UNDEFINED);
+        } else {
+            doc.setName(getDocumento().getName());
+            doc.setDocumentType(getDocumento().getDocumentType());
+        }
+        doc.setFileName(file.getFileName());
+        doc.setNumeroRegistro(UUID.randomUUID().toString());
+
+        doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName());
+
+        doc.setMimeType(file.getContentType());
+
+        /**
+         * Permite que el documento tenga asignado los bytes para posteriormete
+         * con dichos bytes generar el documento digital y guardarlo en la ruta
+         * definida
+         */
+        doc.setContents(file.getContents());
+        return doc;
     }
 
     public void generaDocumento(File file, byte[] bytes) {
@@ -552,9 +584,9 @@ public class TareaHome extends FedeController implements Serializable {
         this.documento = documento;
     }
 
-    public void removerDocumento(Documento doc) {
+    public void removerDocumento(Documento doc, Tarea t) {
         this.documentosRemovidos.add(doc);
-        this.tarea.getDocumentos().remove(doc);
+        t.getDocumentos().remove(doc);
     }
 
     public void editarDocumento(Documento doc) {
@@ -587,15 +619,6 @@ public class TareaHome extends FedeController implements Serializable {
         this.documentosRemovidos = documentosRemovidos;
     }
 
-//    public String getIconMymeType(Documento doc) {
-//            if (doc.getMimeType().equals(SettingNames.MYMETYPE_PDF)) {
-//                return settingHome.getValue("app.management.tarea.documentos.mymeType.pdf", "fa fa-file");
-//            }
-//            if (doc.getMimeType().equals(SettingNames.MYMETYPE_ZIP)) {
-//                return settingHome.getValue("app.management.tarea.documentos.mymeType.zip", "fa fa-file");
-//            }
-//        return "fa fa-file";
-//    }
     public StreamedContent downloadDocument(Documento doc) {
         StreamedContent fileDownload = null;
         try {

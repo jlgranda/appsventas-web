@@ -39,12 +39,12 @@ and open the template in the editor.
                                 <div class="Separator"></div>
                                 <div class="Container100 Fs14 BoldGray FontRobotoRegular">#{tareaHome.tarea.documentos.size()} #{i18n['Documents']}</div>
                                 <div class="EmptyBox20"></div>
-                                <ui:repeat value="#{tareaHome.siguienteTarea.documentos}" var="documento">
+                                <ui:repeat value="#{tareaHome.tarea.documentos}" var="documento">
                                     <div class="Container5 Responsive50">
                                         <div class="Card SoftGrayBack TexAlCenter">
                                             <!--<i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 BoldGray DispBlock"></i>-->
                                             <p:commandButton   ajax="false" 
-                                                              icon="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs10" styleClass="Fs10 CyanButton Fright"> 
+                                                               icon="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs10" styleClass="Fs10 CyanButton Fright"> 
                                                 <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
                                             </p:commandButton>
                                             <div class="EmptyBox5"></div>
@@ -57,13 +57,15 @@ and open the template in the editor.
                         <div class="EmptyBox10"></div>
                         <div class="Card ShadowEffect ui-fluid">
                             <p:panel header="#{i18n['app.documents.task']}#{tareaHome.siguienteTarea.id != null ? ': ' : ' '}#{tareaHome.siguienteTarea.name}">
-
+                                <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
+                                                execute="@this save" render="nme" value="#{tareaHome.siguienteTarea.name}" required="true"
+                                                />
                                 <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
                                                 value="#{tareaHome.siguienteTarea.description}" execute="@this save" render="descrpn" 
                                                 required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
                                                 container="none"/>
 
-                                <p:tabView id="tabsSiguienteTarea">
+                                <p:tabView id="tabs">
                                     <p:tab title="#{i18n['app.documents.task.request.data']}" rendered="#{not tareaHome.siguienteTarea.persistent}">
                                         <p:autoComplete value="#{tareaHome.owner}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
                                                         var="entidad" itemLabel="#{entidad.surname}, #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
@@ -82,7 +84,7 @@ and open the template in the editor.
                                         <p:tree id="organizationTree" value="#{tareaHome.organizationHome.organizationNode}" var="node" orientation="vertical" 
                                                 selectionMode="single" selection="#{tareaHome.organizationHome.selectedNode}"  dynamic="true">  
 
-                                        <!--<p:ajax event="select" update="messages" listener="#{tareaHome.organizationHome.onNodeSelect}" />--> 
+                                            <!--<p:ajax event="select" update="messages" listener="{tareaHome.organizationHome.onNodeSelect}" />--> 
                                             <p:treeNode expandedIcon="ui-icon-folder-open"  
                                                         collapsedIcon="ui-icon-folder-collapsed">  
                                             </p:treeNode>  
@@ -91,6 +93,73 @@ and open the template in the editor.
                                             </p:treeNode>
                                         </p:tree>
                                     </p:tab>
+                                    <p:tab id="tabFiles" title="#{i18n['app.documents.task.documents']}">
+                                        <p:accordionPanel>
+                                            <p:tab title="#{i18n['Add']}">
+                                                <h:panelGrid columns="3" cellpadding="10">
+                                                    <jlgranda:input id="documentName" name="documentName" type="text" 
+                                                                    placeholder="true" label="#{i18n['name']}" 
+                                                                    value="#{tareaHome.documento.name}" required="false" 
+                                                                    execute="@this save" render="@this"
+                                                                    container="default"/>
+                                                    <jlgranda:input id="documentType" name="documentType" type="select" 
+                                                                    placeholder="true" label="#{i18n['common.type']}" 
+                                                                    value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
+                                                                    converter="omnifaces.SelectItemsConverter"
+                                                                    required="false" 
+                                                                    execute="@this save" render="@this"
+                                                                    container="default"/>
+                                                    <p:fileUpload fileUploadListener="#{tareaHome.procesarUploadFileSiguienteTarea}"
+                                                                  mode="advanced" dragDropSupport="true" auto="true" 
+                                                                  process="@form" update="@form:tabs:tabFiles:uploadedFiles documentName" 
+                                                                  immediate="true" multiple="true"
+                                                                  label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
+                                                                  cancelLabel="#{i18n['Cancel']}"
+                                                                  sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
+                                                                  fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
+                                                                  allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
+                                                </h:panelGrid>
+
+                                            </p:tab>
+                                        </p:accordionPanel>
+                                        <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.siguienteTarea.documentos}"> 
+                                            <p:column headerText="#{i18n['common.type']}">
+                                                <h:outputText value="#{file.documentType}"/> 
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.name']}">
+                                                <h:outputText value="#{file.name}"/> 
+                                            </p:column>
+                                            <p:column headerText="#{i18n['FileName']}">
+                                                <h:outputText value="#{file.fileName}"/> 
+                                            </p:column>
+                                            <p:column headerText="#{i18n['app.documents.document.mymeType']}">
+                                                <i class="#{settingHome.getValue(file.mimeType, 'icon-file')} Fs24 Red"></i>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.crationDate']}">
+                                                <h:outputText value="#{file.createdOn}">
+                                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                                </h:outputText>
+                                            </p:column>
+
+                                            <p:column headerText="#{i18n['common.accion']}">
+
+                                                <p:commandButton icon="fa fa-eraser Fs14 White"
+                                                                 styleClass="RedButton Fright"
+                                                                 ajax="uploadedFiles"
+                                                                 immediate="true"
+                                                                 onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                                                     return false;"
+                                                                 action="#{tareaHome.removerDocumento(file)}"/>
+                                                <p:commandButton icon="fa fa-pencil Fs16 White"
+                                                                 ajax="@this"
+                                                                 action="#{tareaHome.editarDocumento(file)}"
+                                                                 styleClass="CyanButton Fright"
+                                                                 />
+
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:tab>
+
                                 </p:tabView>
                             </p:panel>
 
@@ -108,6 +177,7 @@ and open the template in the editor.
                         </div>
                     </div>
                 </div>
+                  <ui:include src="editar_documento.xhtml"/>
             </h:form>
             <!--/.panel-body -->
 

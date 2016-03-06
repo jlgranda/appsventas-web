@@ -71,29 +71,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         />
                         <div class="Wid25 Fleft Responsive">
                             <p:commandButton value="#{i18n['common.save']}"
-                                             icon="fa fa-save Fs14 White"
+                                             icon="fa fa-save Fs16 White"
                                              styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
-                                             rendered="#{tareaHome.tarea.persistent}"
+                                             rendered="#{tareaHome.documento.tarea.persistent}"
                                              update="@form:tabs:tabFiles:uploadedFiles "
                                              actionListener="#{tareaHome.saveDocumento()}" oncomplete="PF('dlgDocumento').hide()"/>   
                         </div>
                         <div class="Wid25 Fleft Responsive">
                             <p:commandButton value="#{i18n['SaveEdit']}"
-                                             icon="fa fa-save Fs14 White"
+                                             icon="fa fa-save Fs16 White"
                                              styleClass="Fs12 OrangeButton Fright FloatNoneOnMobile"
-                                             rendered="#{tareaHome.tarea.persistent}"
+                                             rendered="#{tareaHome.documento.tarea.persistent}"
                                              update="@form:tabs:tabFiles:uploadedFiles "
                                              actionListener="#{tareaHome.saveDocumento()}"/>   
                         </div>
                         <div class="Wid25 Fleft Responsive">
                             <p:commandButton rendered="#{tareaHome.documento.persistent}" value="#{i18n['Download']}" ajax="false" 
-                                             icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')}" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
+                                             icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')} Fs16 White" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
                                 <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
                             </p:commandButton>
                         </div>
                         <div class="Wid25 Fleft Responsive">
                             <p:commandButton value="#{i18n['Close']}"
-                                             icon="fa fa-close Fs14 White"
+                                             icon="fa fa-close Fs16 White"
                                              styleClass="Fs12 RedButton Fright FloatNoneOnMobile"
                                              onclick="PF('dlgDocumento').hide()" disabled="false" />
                         </div>
