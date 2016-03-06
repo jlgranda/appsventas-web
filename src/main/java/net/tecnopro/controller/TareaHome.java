@@ -262,6 +262,7 @@ public class TareaHome extends FedeController implements Serializable {
             if (doc.isPersistent()) {
                 documentoService.remove(doc.getId(), doc);
             }
+            documentosRemovidos.remove(doc);
         }
     }
 

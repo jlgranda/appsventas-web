@@ -149,7 +149,7 @@ and open the template in the editor.
                                                                  immediate="true"
                                                                  onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
                                                                                      return false;"
-                                                                 action="#{tareaHome.removerDocumento(file)}"/>
+                                                                                     action="#{tareaHome.removerDocumento(file,tareaHome.siguienteTarea)}"/>
                                                 <p:commandButton icon="fa fa-pencil Fs16 White"
                                                                  ajax="@this"
                                                                  action="#{tareaHome.editarDocumento(file)}"
