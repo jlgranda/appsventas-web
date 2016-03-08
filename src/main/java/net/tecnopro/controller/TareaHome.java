@@ -6,6 +6,7 @@
 package net.tecnopro.controller;
 
 import com.google.common.base.Strings;
+import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
@@ -53,6 +54,7 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import java.io.InputStream;
+import org.jpapi.util.Dates;
 import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +121,17 @@ public class TareaHome extends FedeController implements Serializable {
         setTarea(tareaService.createInstance());
         setSiguienteTarea(tareaService.createInstance());
         setDocumento(documentoService.createInstance());
+        
+        int amount = 0;
+        try {
+            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
+        } catch (java.lang.NumberFormatException nfe){
+            amount = 30;
+        }
+        
+        setEnd(Dates.now());
+        setStart(Dates.addDays(getEnd(), -1 * amount));
+        
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
