@@ -42,13 +42,13 @@ and open the template in the editor.
                                 <ui:repeat value="#{tareaHome.tarea.documentos}" var="documento">
                                     <div class="Container5 Responsive50">
                                         <div class="Card SoftGrayBack TexAlCenter">
-                                            <!--<i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 BoldGray DispBlock"></i>-->
-                                            <p:commandButton   ajax="false" 
-                                                               icon="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs10" styleClass="Fs10 CyanButton Fright"> 
-                                                <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
-                                            </p:commandButton>
+                                            <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
                                             <div class="EmptyBox5"></div>
-                                            <span class="FontRobotoLight Fs10">#{documento.name}</span>    
+                                            <span class="FontRobotoLight Fs10">
+                                                <p:commandLink value="#{documento.name}">
+                                                    <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
+                                                </p:commandLink>
+                                            </span>    
                                         </div>
                                     </div>
                                 </ui:repeat>

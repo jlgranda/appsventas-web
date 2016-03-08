@@ -42,7 +42,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                        <!-- <p:media id="documentoMedia" rendered="#{tareaHome.documento.id!=null and tareaHome.documento.isMimeType(i18n['pdf'])}"
                                  value="/fedeServlet?entity=documento&amp;id=#{tareaHome.documento.id}"
                                  player="pdf" width="100%" height="250"/>-->
-
+                        <jlgranda:input id="documentName" name="documentName" type="text" 
+                                        label="#{i18n['name']}" 
+                                        value="#{tareaHome.documento.name}" required="false" 
+                                        execute="@this save" render="documentName"
+                                        />
                         <h:panelGrid columns="2" cellpadding="10">
                             <p:outputLabel id="fileName" value="#{tareaHome.documento.fileName}"/>
                             <p:fileUpload fileUploadListener="#{tareaHome.handleFileUploadEdit}"
@@ -64,11 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.documents.document.numeroRegistro']}" 
                                         value="#{tareaHome.documento.numeroRegistro}" render="numReg" 
                                         execute="@this save" required="false"  />
-                        <jlgranda:input id="documentName" name="documentName" type="text" 
-                                        label="#{i18n['name']}" 
-                                        value="#{tareaHome.documento.name}" required="false" 
-                                        execute="@this save" render="documentName"
-                                        />
+                        
                         <div class="Wid25 Fleft Responsive">
                             <p:commandButton value="#{i18n['common.save']}"
                                              icon="fa fa-save Fs16 White"
