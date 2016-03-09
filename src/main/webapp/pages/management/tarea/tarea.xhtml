@@ -4,7 +4,8 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -17,7 +18,6 @@ and open the template in the editor.
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tareaId" value="#{tareaHome.tareaId}" />
-                <f:viewParam name="comando" value="#{tareaHome.comando}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
@@ -68,8 +68,6 @@ and open the template in the editor.
 
                                 </p:tab>
                                 <p:tab id="tabFiles" title="#{i18n['app.documents.task.documents']}">
-                                    <div class="Container100">
-                                          <div class="Container100 Responsive100">
                                     <p:accordionPanel>
                                         <p:tab title="#{i18n['Add']}">
                                             <h:panelGrid columns="3" cellpadding="10">
@@ -87,7 +85,7 @@ and open the template in the editor.
                                                                 container="default"/>
                                                 <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
                                                               mode="advanced" dragDropSupport="true" auto="true" 
-                                                              process="@form" update="@form:tabs:tabFiles documentName" 
+                                                              process="@form" update="@form:tabs:tabFiles @form:tabs:tabFiles:documentList" 
                                                               immediate="true" multiple="true"
                                                               label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
                                                               cancelLabel="#{i18n['Cancel']}"
@@ -97,63 +95,27 @@ and open the template in the editor.
                                             </h:panelGrid>
                                         </p:tab>
                                     </p:accordionPanel>
-                                    <p:commandButton id="movieDocumentos" icon="fa fa-external-link Fs16 White"
-                                                     styleClass="Fs12 RedButton Fright FloatNoneOnMobile" value="#{i18n['VerDetalles']}" type="button" />                                        
-                                    <p:overlayPanel id="moviePanel" for="movieDocumentos" hideEffect="fade" dynamic="true" style="width:600px">
-                                        <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.tarea.documentos}"> 
-                                            <p:column headerText="#{i18n['common.type']}">
-                                                <h:outputText value="#{file.documentType}"/> 
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.name']}">
-                                                <h:outputText value="#{file.name}"/> 
-                                            </p:column>
-                                            <p:column headerText="#{i18n['FileName']}">
-                                                <h:outputText value="#{file.fileName}"/> 
-                                            </p:column>
-                                            <p:column headerText="#{i18n['app.documents.document.mymeType']}">
-                                                <i class="#{settingHome.getValue(file.mimeType, 'icon-file')} Fs24 Red"></i>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.crationDate']}">
-                                                <h:outputText value="#{file.createdOn}">
-                                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                                </h:outputText>
-                                            </p:column>
-
-                                            <p:column headerText="#{i18n['common.accion']}">
-
-                                                <p:commandButton icon="fa fa-eraser Fs14 White"
-                                                                 styleClass="RedButton Fright"
-                                                                 ajax="uploadedFiles"
-                                                                 immediate="true"
-                                                                 onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
-                                                                                         return false;"
-                                                                 action="#{tareaHome.removerDocumento(file, tareaHome.tarea)}"/>
-                                                <p:commandButton icon="fa fa-pencil Fs16 White"
-                                                                 ajax="@this"
-                                                                 action="#{tareaHome.editarDocumento(file)}"
-                                                                 styleClass="CyanButton Fright"/>
-
-                                            </p:column>
-                                        </p:dataTable>
-                                    </p:overlayPanel> 
-                                    <div class="Container100 Fs14 FontRobotoLight">
-                                        <ui:repeat value="#{tareaHome.tarea.documentos}" var="documento">
-                                            <div class="Container100">
-                                                <div class="Card SoftGrayBack TexAlCenter">
-                                                    <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
-                                                    <div class="EmptyBox5"></div>
-                                                    <span class="FontRobotoLight Fs12">
-                                                        <h:outputLabel value="#{documento.name}"/>
-                                                    </span>    
-                                                </div>
-                                            </div>
-                                        </ui:repeat>
-                                    </div>
-                                    </div>
-                                    </div>
+                                    <p:dataList id="documentList" value="#{tareaHome.tarea.documentos}" var="documento" type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated">
+                                
+                                        <p:commandLink update=":form:dlgDocumento" oncomplete="PF('dlgDocumento').show()" 
+                                                       title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
+                                                       actionListener="#{tareaHome.editarDocumento(documento)}">
+                                            <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
+                                            &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
+                                        </p:commandLink>
+                                        <p:commandLink update="@this" ajax="@this" 
+                                                       actionListener="#{tareaHome.removerDocumento(documento, tareaHome.tarea)}"
+                                                       title="#{i18n['Close']}" styleClass="" style="margin-right:10px;display:inline-block"
+                                                       onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                                                         return false;">
+                                            <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
+                                        </p:commandLink>
+                                        
+                                    </p:dataList>
+                                    
                                 </p:tab>
                             </p:tabView>
-
+                            <div class="EmptyBox10"></div>
                             <div class="Wid33 Fleft Responsive">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
                                                  actionListener="#{tareaHome.save()}" disabled="false" 
