@@ -68,8 +68,9 @@ and open the template in the editor.
 
                                 </p:tab>
                                 <p:tab id="tabFiles" title="#{i18n['app.documents.task.documents']}">
+                                    <div class="Container100">
+                                          <div class="Container100 Responsive100">
                                     <p:accordionPanel>
-
                                         <p:tab title="#{i18n['Add']}">
                                             <h:panelGrid columns="3" cellpadding="10">
                                                 <jlgranda:input id="documentName" name="documentName" type="text" 
@@ -86,7 +87,7 @@ and open the template in the editor.
                                                                 container="default"/>
                                                 <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
                                                               mode="advanced" dragDropSupport="true" auto="true" 
-                                                              process="@form" update="@form:tabs:tabFiles:uploadedFiles documentName" 
+                                                              process="@form" update="@form:tabs:tabFiles documentName" 
                                                               immediate="true" multiple="true"
                                                               label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
                                                               cancelLabel="#{i18n['Cancel']}"
@@ -94,48 +95,62 @@ and open the template in the editor.
                                                               fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
                                                               allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
                                             </h:panelGrid>
-
                                         </p:tab>
-
                                     </p:accordionPanel>
+                                    <p:commandButton id="movieDocumentos" icon="fa fa-external-link Fs16 White"
+                                                     styleClass="Fs12 RedButton Fright FloatNoneOnMobile" value="#{i18n['VerDetalles']}" type="button" />                                        
+                                    <p:overlayPanel id="moviePanel" for="movieDocumentos" hideEffect="fade" dynamic="true" style="width:600px">
+                                        <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.tarea.documentos}"> 
+                                            <p:column headerText="#{i18n['common.type']}">
+                                                <h:outputText value="#{file.documentType}"/> 
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.name']}">
+                                                <h:outputText value="#{file.name}"/> 
+                                            </p:column>
+                                            <p:column headerText="#{i18n['FileName']}">
+                                                <h:outputText value="#{file.fileName}"/> 
+                                            </p:column>
+                                            <p:column headerText="#{i18n['app.documents.document.mymeType']}">
+                                                <i class="#{settingHome.getValue(file.mimeType, 'icon-file')} Fs24 Red"></i>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.crationDate']}">
+                                                <h:outputText value="#{file.createdOn}">
+                                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                                </h:outputText>
+                                            </p:column>
 
-                                    <p:dataTable id="uploadedFiles" var="file" value="#{tareaHome.tarea.documentos}"> 
-                                        <p:column headerText="#{i18n['common.type']}">
-                                            <h:outputText value="#{file.documentType}"/> 
-                                        </p:column>
-                                        <p:column headerText="#{i18n['common.name']}">
-                                            <h:outputText value="#{file.name}"/> 
-                                        </p:column>
-                                        <p:column headerText="#{i18n['FileName']}">
-                                            <h:outputText value="#{file.fileName}"/> 
-                                        </p:column>
-                                         <p:column headerText="#{i18n['app.documents.document.mymeType']}">
-                                             <i class="#{settingHome.getValue(file.mimeType, 'icon-file')} Fs24 Red"></i>
-                                        </p:column>
-                                        <p:column headerText="#{i18n['common.crationDate']}">
-                                            <h:outputText value="#{file.createdOn}">
-                                                <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                            </h:outputText>
-                                        </p:column>
-                                        
-                                        <p:column headerText="#{i18n['common.accion']}">
+                                            <p:column headerText="#{i18n['common.accion']}">
 
-                                            <p:commandButton icon="fa fa-eraser Fs14 White"
-                                                             styleClass="RedButton Fright"
-                                                             ajax="uploadedFiles"
-                                                             immediate="true"
-                                                             onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
-                                                                         return false;"
-                                                                         action="#{tareaHome.removerDocumento(file, tareaHome.tarea)}"/>
-                                            <p:commandButton icon="fa fa-pencil Fs16 White"
-                                                             ajax="@this"
-                                                             action="#{tareaHome.editarDocumento(file)}"
-                                                             styleClass="CyanButton Fright"
-                                                             />
+                                                <p:commandButton icon="fa fa-eraser Fs14 White"
+                                                                 styleClass="RedButton Fright"
+                                                                 ajax="uploadedFiles"
+                                                                 immediate="true"
+                                                                 onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                                                         return false;"
+                                                                 action="#{tareaHome.removerDocumento(file, tareaHome.tarea)}"/>
+                                                <p:commandButton icon="fa fa-pencil Fs16 White"
+                                                                 ajax="@this"
+                                                                 action="#{tareaHome.editarDocumento(file)}"
+                                                                 styleClass="CyanButton Fright"/>
 
-                                        </p:column>
-                                    </p:dataTable>
-
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:overlayPanel> 
+                                    <div class="Container100 Fs14 FontRobotoLight">
+                                        <ui:repeat value="#{tareaHome.tarea.documentos}" var="documento">
+                                            <div class="Container100">
+                                                <div class="Card SoftGrayBack TexAlCenter">
+                                                    <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
+                                                    <div class="EmptyBox5"></div>
+                                                    <span class="FontRobotoLight Fs12">
+                                                        <h:outputLabel value="#{documento.name}"/>
+                                                    </span>    
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                    </div>
+                                    </div>
                                 </p:tab>
                             </p:tabView>
 

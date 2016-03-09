@@ -53,6 +53,8 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import org.apache.commons.beanutils.BeanUtils;
 import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +102,7 @@ public class TareaHome extends FedeController implements Serializable {
     private Long procesoId;
     private Tarea selectedTarea;
     private Documento documento;
+    private Documento documentoAceptar;
     private Long documentoId;
     @EJB
     private DocumentoService documentoService;
@@ -202,6 +205,13 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void setComando(String comando) {
         this.comando = comando;
+    }
+
+    public void aceptarDocumento() {
+        try {
+            BeanUtils.copyProperties(documento,getDocumentoAceptar());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+        }
     }
 
     public void saveDocumento() {
@@ -442,11 +452,11 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public void handleFileUploadEdit(FileUploadEvent event) {
-        if (documento != null) {
-            documento.setContents(event.getFile().getContents());
-            documento.setFileName(event.getFile().getFileName());
-            documento.setName(event.getFile().getFileName());
-            documento.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + event.getFile().getFileName() + ".pdf");
+        if (documentoAceptar != null) {
+            documentoAceptar.setContents(event.getFile().getContents());
+            documentoAceptar.setMimeType(event.getFile().getContentType());
+            documentoAceptar.setFileName(event.getFile().getFileName());
+            documentoAceptar.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + event.getFile().getFileName());
         }
     }
 
@@ -591,7 +601,16 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public void editarDocumento(Documento doc) {
-        this.documento = doc;
+        documentoAceptar = new Documento();
+        setDocumento(doc);
+        try {
+            BeanUtils.copyProperties(documentoAceptar, doc);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            System.out.println(e);
+        }
+
+//        this.documentoAceptar=new Documento();
+//       this.documentoAceptar=doc;
         RequestContext context = RequestContext.getCurrentInstance();
         context.execute("PF('dlgDocumento').show();");
     }
@@ -631,6 +650,14 @@ public class TareaHome extends FedeController implements Serializable {
         } catch (FileNotFoundException e) {
         }
         return fileDownload;
+    }
+
+    public Documento getDocumentoAceptar() {
+        return documentoAceptar;
+    }
+
+    public void setDocumentoAceptar(Documento documentoAceptar) {
+        this.documentoAceptar = documentoAceptar;
     }
 
 }
