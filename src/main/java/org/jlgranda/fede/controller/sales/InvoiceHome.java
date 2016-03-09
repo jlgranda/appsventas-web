@@ -49,6 +49,7 @@ import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.omnifaces.cdi.ViewScoped;
 import org.primefaces.event.UnselectEvent;
@@ -98,6 +99,17 @@ public class InvoiceHome extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
         setInvoice(invoiceService.createInstance());
+        int amount = 0;
+        try {
+            //amount = Integer.valueOf(settingService.findByName(SettingNames.DASHBOARD_RANGE).getValue());
+            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
+        } catch (java.lang.NumberFormatException nfe){
+            nfe.printStackTrace();
+            amount = 30;
+        }
+        
+        setEnd(Dates.now());
+        setStart(Dates.addDays(getEnd(), -1 * amount));
     }
 
     public Long getInvoiceId() {
