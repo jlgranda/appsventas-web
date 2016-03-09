@@ -76,8 +76,11 @@ public class TareaHome extends FedeController implements Serializable {
     @Inject
     @LoggedIn
     private Subject subject;
-    private Subject owner;
+    
+    private Subject solicitante;
+    
     private Subject destinatario;
+    
     @Inject
     private SettingHome settingHome;
 
@@ -111,13 +114,10 @@ public class TareaHome extends FedeController implements Serializable {
     /**
      * Controla el comportamiento del controlador y pantalla
      */
-    private String comando;
     private LazyTareaDataModel lazyDataModel;
 
     @Inject
     private OrganizationHome organizationHome;
-
-    private Documento documentoEnEdicion;
 
     @PostConstruct
     public void init() {
@@ -134,6 +134,8 @@ public class TareaHome extends FedeController implements Serializable {
         
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
+        
+        setOutcome("tareas");
         
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
@@ -196,14 +198,6 @@ public class TareaHome extends FedeController implements Serializable {
         this.misUltimasTareasRecibidas = misUltimasTareasRecibidas;
     }
 
-    public Subject getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Subject owner) {
-        this.owner = owner;
-    }
-
     public Long getProcesoId() {
         return procesoId;
     }
@@ -212,13 +206,14 @@ public class TareaHome extends FedeController implements Serializable {
         this.procesoId = procesoId;
     }
 
-    public String getComando() {
-        return comando;
+    public Subject getSolicitante() {
+        return solicitante;
     }
 
-    public void setComando(String comando) {
-        this.comando = comando;
+    public void setSolicitante(Subject solicitante) {
+        this.solicitante = solicitante;
     }
+
 
     public void aceptarDocumento() {
         try {
@@ -254,7 +249,7 @@ public class TareaHome extends FedeController implements Serializable {
                 proceso.setAuthor(subject);
                 proceso.setProcesoTipo(ProcesoTipo.NEGOCIO);
 
-                proceso.setOwner(getOwner()); //El solicitante del proceso o tramite
+                proceso.setOwner(getSolicitante()); //El solicitante del proceso o tramite
 
                 procesoService.save(proceso.getId(), proceso);
 
@@ -264,8 +259,8 @@ public class TareaHome extends FedeController implements Serializable {
                 getTarea().setProceso(proceso);
                 //Es temporral hasta que se pueda seleccionar una organización
                 getTarea().setDepartamento("temporal");
-                getTarea().setAuthor(subject);
-                getTarea().setOwner(destinatario);
+                getTarea().setAuthor(subject); //usuario logeado
+                getTarea().setOwner(getDestinatario()); //destinatario
                 getTarea().setEstadoTipo(EstadoTipo.RESUELTO);//La tarea se completa al iniciar el proceso
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
@@ -274,6 +269,24 @@ public class TareaHome extends FedeController implements Serializable {
                 procesarDocumentos(getTarea());
                 eliminarDocumentos();
             }
+            this.addDefaultSuccessMessage();
+        } catch (Exception e) {
+            addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
+        }
+    }
+    
+    public void complete() {
+        try {
+            getSiguienteTarea().setProceso(getTarea().getProceso());
+            getSiguienteTarea().setAuthor(subject);
+            getSiguienteTarea().setOwner(getDestinatario());
+            getSiguienteTarea().setDepartamento("Temporal");
+            getSiguienteTarea().setEstadoTipo(EstadoTipo.ESPERA);
+            tareaService.save(getSiguienteTarea());
+            procesarDocumentos(getSiguienteTarea());
+            eliminarDocumentos();
+            getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
+            tareaService.save(getTarea().getId(), getTarea());
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
@@ -297,24 +310,6 @@ public class TareaHome extends FedeController implements Serializable {
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void complete() {
-        try {
-            getSiguienteTarea().setProceso(getTarea().getProceso());
-            getSiguienteTarea().setAuthor(subject);
-            getSiguienteTarea().setOwner(getOwner());
-            getSiguienteTarea().setDepartamento("Temporal");
-            getSiguienteTarea().setEstadoTipo(EstadoTipo.ESPERA);
-            tareaService.save(getSiguienteTarea());
-            procesarDocumentos(getSiguienteTarea());
-            eliminarDocumentos();
-            getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
-            tareaService.save(getTarea().getId(), getTarea());
-            this.addDefaultSuccessMessage();
-        } catch (Exception e) {
-            addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
     }
 
@@ -394,6 +389,7 @@ public class TareaHome extends FedeController implements Serializable {
         if (tareaId != null && !this.tarea.isPersistent()) {
             this.tarea = tareaService.find(tareaId);
             getDocumentos(this.tarea);
+            setDestinatario(tarea.getOwner());
         }
         return tarea;
     }
@@ -454,9 +450,6 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public Subject getDestinatario() {
-        if (tarea.isPersistent()) {
-            this.destinatario = tarea.getOwner();
-        }
         return destinatario;
     }
 
@@ -540,8 +533,8 @@ public class TareaHome extends FedeController implements Serializable {
     private Documento crearDocumento(UploadedFile file, Tarea t) {
         Documento doc = documentoService.createInstance();
         doc.setTarea(t);
-        doc.setOwner(owner);
-        doc.setAuthor(owner);
+        doc.setOwner(t.getOwner());
+        doc.setAuthor(t.getOwner());
 
         if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
             doc.setName(file.getFileName());

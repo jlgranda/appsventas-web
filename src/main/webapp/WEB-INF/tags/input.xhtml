@@ -35,7 +35,7 @@ limitations under the License.
     <c:set var="render" value="#{not empty render ? 'panel-group-'.concat(render) : (not empty id ? 'panel-group-'.concat(id) : 'panel-group-'.concat(mame))}" />
 
     <c:if test="#{container == 'default'}">
-        
+
         <c:set var="render" value="#{defaultrender}" />
         <c:choose>
             <c:when test="#{type == 'java.lang.String' or type == 'text'}">
@@ -74,12 +74,15 @@ limitations under the License.
             </c:when>
             <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
                 <p:selectOneMenu value="#{value}" effect="fade"
-                                 required="#{required}" requiredMessage="#{requiredMessage}" class="#{class}"> 
+                                 required="#{required}" requiredMessage="#{requiredMessage}" class="#{class}"
+                                 onchange="#{onchange == null ? '' : onchange}"> 
                     <f:converter converterId="#{converter}"  />
                     <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                     <f:selectItems value="#{values}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>  
-                    <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
-                </p:selectOneMenu>  
+                    <c:if test="#{listener != 'none'}">
+                        <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                    </c:if>
+                </p:selectOneMenu>   
             </c:when>
             <c:when test="#{type == 'number'}">
                 <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
@@ -95,10 +98,10 @@ limitations under the License.
                 </h:inputText>
             </c:otherwise>
         </c:choose>
-        
+
     </c:if>
     <c:if test="#{container != 'default'}">
-        
+
         <div class="#{container == 'none' ? '' : 'Container'.concat(container).concat(' Responsive50')}">
             <h:panelGroup id="panel-group-#{id}" layout="block" class="ContainerIndent">
                 <c:if test="#{placeholder == 'false'}">
@@ -141,11 +144,14 @@ limitations under the License.
                     </c:when>
                     <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
                         <p:selectOneMenu value="#{value}" effect="fade"
-                                         required="#{required}" requiredMessage="#{requiredMessage}" class="#{class}"> 
+                                         required="#{required}" requiredMessage="#{requiredMessage}" class="#{class}"
+                                         onchange="#{onchange == null ? '' : onchange}"> 
                             <f:converter converterId="#{converter}"  />
                             <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                             <f:selectItems value="#{values}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>  
-                            <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                            <c:if test="#{listener != 'none'}">
+                                <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                            </c:if>
                         </p:selectOneMenu>  
                     </c:when>
                     <c:when test="#{type == 'number'}">
@@ -167,6 +173,6 @@ limitations under the License.
                 </c:if>
             </h:panelGroup>  
         </div>
-        
+
     </c:if>
 </ui:composition>

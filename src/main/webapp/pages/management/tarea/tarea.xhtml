@@ -29,112 +29,148 @@ and open the template in the editor.
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <p:panel header="#{i18n['app.documents.task']}#{tareaHome.tareaId != null ? ': ' : ' '}#{tareaHome.tarea.name}" >
-                                <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.titulo']}" 
-                                                execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
-                                                />
-                                <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
-                                                value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
-                                                required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
-                                                container="none"/>
-                            </p:panel>
-                            <p:tabView id="tabs">
-                                <p:tab title="#{i18n['app.documents.task.request.data']}" rendered="#{not tareaHome.tarea.persistent}">
-                                    <p:autoComplete value="#{tareaHome.owner}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
+                            <!-- Solicitante -->
+                            <div class="Container100  Responsive50">
+                                <h:panelGroup layout="block" class="ContainerIndent">
+                                    <h2 class="BigTopic">#{i18n['app.documents.task.applicant']}</h2>
+                                    <p:autoComplete value="#{tareaHome.solicitante}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
                                                     var="entidad" itemLabel="#{entidad.surname}, #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
                                                     converter="subjectConverter" forceSelection="true">
                                         <p:column>
                                             <h:outputText value="#{entidad.surname}, #{entidad.firstname}"/>
                                         </p:column>
                                     </p:autoComplete>
-                                    <jlgranda:input id="fechaEnvio" name="fechaEnvio" type="calendar" label="#{i18n['app.fede.tarea.fechaEnvio']}" 
-                                                    value="#{tareaHome.tarea.fechaEnvio}" render="fechaEnvio" 
-                                                    execute="@this save" required="false" inlinehelp="#{messages['app.fede.tarea.fechaEnvio.inlinehelp']}" 
-                                                    container="none"/>
+                                </h:panelGroup>
+                            </div>
 
-                                </p:tab>
-                                <p:tab title="#{i18n['app.documents.task.recipient.data']}">
-                                    <p:tree id="organizationTree" value="#{tareaHome.organizationHome.organizationNode}" var="node" orientation="vertical" 
+                            <!-- Destinatario -->
+                            <div class="Container100  Responsive50">
+                                <h:panelGroup layout="block" class="ContainerIndent">
+                                    <h2 class="BigTopic">#{i18n['app.documents.task.consignee']}</h2>
+                                    <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
+                                                    var="entidad" itemLabel="#{entidad.surname}, #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
+                                                    converter="subjectConverter" forceSelection="true">
+                                        <p:column>
+                                            <h:outputText value="#{entidad.surname}, #{entidad.firstname}"/>
+                                        </p:column>
+                                    </p:autoComplete>
+<!--                                    <p:tree id="organizationTree" value="#{tareaHome.organizationHome.organizationNode}" var="node" orientation="vertical" 
                                             selectionMode="single" selection="#{tareaHome.organizationHome.selectedNode}"  dynamic="true">  
 
-                                        <!--<p:ajax event="select" update="messages" listener="#{tareaHome.organizationHome.onNodeSelect}" />--> 
+                                        <p:ajax event="select" update="messages" listener="#{tareaHome.organizationHome.onNodeSelect}" /> 
                                         <p:treeNode expandedIcon="ui-icon-folder-open"  
                                                     collapsedIcon="ui-icon-folder-collapsed">  
                                         </p:treeNode>  
                                         <p:treeNode type="group" icon="icon-hand-right">  
                                             <h:outputText value="#{node.name}" />  
                                         </p:treeNode>
-                                    </p:tree>
+                                    </p:tree>-->
+                                </h:panelGroup>
+                            </div>
+                            <!-- Cuerpo del mensaje -->
+                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                                            execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
+                                            container="none"/>
 
-                                </p:tab>
-                                <p:tab id="tabFiles" title="#{i18n['app.documents.task.documents']}">
-                                    <p:accordionPanel>
-                                        <p:tab title="#{i18n['Add']}">
-                                            <h:panelGrid columns="3" cellpadding="10">
-                                                <jlgranda:input id="documentName" name="documentName" type="text" 
-                                                                placeholder="true" label="#{i18n['name']}" 
-                                                                value="#{tareaHome.documento.name}" required="false" 
-                                                                execute="@this save" render="@this"
-                                                                container="default"/>
-                                                <jlgranda:input id="documentType" name="documentType" type="select" 
-                                                                placeholder="true" label="#{i18n['common.type']}" 
-                                                                value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
-                                                                converter="omnifaces.SelectItemsConverter"
-                                                                required="false" 
-                                                                execute="@this save" render="@this"
-                                                                container="default"/>
-                                                <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
-                                                              mode="advanced" dragDropSupport="true" auto="true" 
-                                                              process="@form" update="@form:tabs:tabFiles @form:tabs:tabFiles:documentList" 
-                                                              immediate="true" multiple="true"
-                                                              label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
-                                                              cancelLabel="#{i18n['Cancel']}"
-                                                              sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
-                                                              fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
-                                                              allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
-                                            </h:panelGrid>
-                                        </p:tab>
-                                    </p:accordionPanel>
-                                    <p:dataList id="documentList" value="#{tareaHome.tarea.documentos}" var="documento" type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated">
-                                
-                                        <p:commandLink update=":form:dlgDocumento" oncomplete="PF('dlgDocumento').show()" 
-                                                       title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
+                            <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
+                                            value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
+                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            container="none"/>
+
+                            <!-- Aduntos -->
+                            <div class="Container100  Responsive50">
+                                <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">
+                                    <p:dataList id="documentList" value="#{tareaHome.tarea.documentos}" var="documento" 
+                                                type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
+                                                paginatorAlwaysVisible="false" rendered="#{not empty tareaHome.tarea.documentos}">
+
+                                        <p:commandLink title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
                                                        actionListener="#{tareaHome.editarDocumento(documento)}">
                                             <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
                                             &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
                                         </p:commandLink>
-                                        <p:commandLink update="@this" ajax="@this" 
+                                        <p:commandLink update="@form:documentList" ajax="@this" 
                                                        actionListener="#{tareaHome.removerDocumento(documento, tareaHome.tarea)}"
                                                        title="#{i18n['Close']}" styleClass="" style="margin-right:10px;display:inline-block"
                                                        onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
-                                                                                         return false;">
+                                                                   return false;">
                                             <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
                                         </p:commandLink>
-                                        
+
                                     </p:dataList>
-                                    
-                                </p:tab>
-                            </p:tabView>
+                                </h:panelGroup>
+                            </div>
+
                             <div class="EmptyBox10"></div>
-                            <div class="Wid33 Fleft Responsive">
-                                <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                                 actionListener="#{tareaHome.save()}" disabled="false" 
-                                                 action="tareas"
-                                                 styleClass=" Fs12 White RaisedButton Fright FloatNoneOnMobile"/>
-                            </div>
-                            <div class="Wid33 Fleft Responsive">
-                                <p:commandButton value="#{i18n['SaveEdit']}" ajax="true" 
-                                                 actionListener="#{tareaHome.save()}" disabled="false" 
-                                                 styleClass=" Fs12 White OrangeButton Fright FloatNoneOnMobile"/>
-                            </div>
-                            <div class="Wid33 Fleft Responsive">
-                                <p:commandButton value="#{i18n['Cancel']}" ajax="false" action="tareas" disabled="false" immediate="true"
-                                                 styleClass=" Fs12 White RedButton Fright FloatNoneOnMobile"/>
-                            </div>
+
+                            <p:toolbar>
+                                <f:facet name="left">
+
+                                    <p:commandButton value="#{i18n['Send']}" ajax="false" 
+                                                     actionListener="#{tareaHome.save()}" disabled="false" 
+                                                     style="width: auto !important;"
+                                                     action="#{tareaHome.getOutcome()}" type="submit"/>
+
+                                    <p:commandButton id="addDocumentButton"
+                                                     icon="fa fa-paperclip Fs14 Black" styleClass="GrayButton" 
+                                                     rendered="#{true}" type="button"/>
+
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+
+                                </f:facet>
+
+                                <f:facet name="right">
+
+                                    <p:commandButton ajax="false" action="#{tareaHome.getOutcome()}" disabled="false" immediate="true"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+
+<!--                                    <p:menuButton value="#{i18n['common.options']}">
+                                        <p:menuitem value="Save" icon="fa fa-save" />
+                                        <p:menuitem value="Update" icon="fa fa-upload" />
+                                        <p:menuitem value="Delete" icon="fa fa-trash" />
+                                        <p:menuitem value="Homepage" icon="fa fa-home" />
+                                    </p:menuButton>-->
+                                </f:facet>
+
+                            </p:toolbar>
+
                         </div>
                     </div>
                 </div>
-                <ui:include src="editar_documento.xhtml"/>
+                <!--                <ui:include src="editar_documento.xhtml"/>-->
+                <p:overlayPanel id="addDocumentOverlayPanel" for="addDocumentButton" widgetVar="overlay" 
+                                showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
+                                my="right bottom" at="left bottom">
+                    <p:panelGrid columns="3" layout="grid">
+
+                        <jlgranda:input id="documentName" name="documentName" type="text" 
+                                        placeholder="true" label="#{i18n['name']}" 
+                                        value="#{tareaHome.documento.name}" required="false" 
+                                        container="default"/>
+
+                        <jlgranda:input id="documentType" name="documentType" type="select" 
+                                        placeholder="true" label="#{i18n['common.type']}" 
+                                        value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
+                                        converter="omnifaces.SelectItemsConverter"
+                                        required="false" 
+                                        execute="none" listener="none" render="none"
+                                        onchange="return;"
+                                        container="default"/>
+
+                        <p:fileUpload fileUploadListener="#{tareaHome.handleFileUpload}"
+                                      mode="advanced" dragDropSupport="true" auto="true" 
+                                      process="@form" update="@form:documentPanel" 
+                                      oncomplete="overlay.hide();"
+                                      immediate="true" multiple="true"
+                                      label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
+                                      cancelLabel="#{i18n['Cancel']}"
+                                      sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
+                                      fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
+                                      allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
+                    </p:panelGrid>
+                </p:overlayPanel >
             </h:form>
             <!--/.panel-body -->
 
