@@ -76,11 +76,11 @@ public class TareaHome extends FedeController implements Serializable {
     @Inject
     @LoggedIn
     private Subject subject;
-    
+
     private Subject solicitante;
-    
+
     private Subject destinatario;
-    
+
     @Inject
     private SettingHome settingHome;
 
@@ -108,10 +108,10 @@ public class TareaHome extends FedeController implements Serializable {
     private Documento documento;
     private Documento documentoAceptar;
     private Long documentoId;
-    
+
     private Long tareaId;
     private Long procesoId;
-    
+
     @EJB
     private DocumentoService documentoService;
     /**
@@ -127,19 +127,19 @@ public class TareaHome extends FedeController implements Serializable {
         setTarea(tareaService.createInstance());
         setSiguienteTarea(tareaService.createInstance());
         setDocumento(documentoService.createInstance());
-        
+
         int amount = 0;
         try {
             amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
-        } catch (java.lang.NumberFormatException nfe){
+        } catch (java.lang.NumberFormatException nfe) {
             amount = 30;
         }
-        
+
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        
+
         setOutcome("tareas");
-        
+
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
@@ -217,10 +217,9 @@ public class TareaHome extends FedeController implements Serializable {
         this.solicitante = solicitante;
     }
 
-
     public void aceptarDocumento() {
         try {
-            BeanUtils.copyProperties(documento,getDocumentoAceptar());
+            BeanUtils.copyProperties(documento, getDocumentoAceptar());
         } catch (IllegalAccessException | InvocationTargetException e) {
         }
     }
@@ -277,7 +276,7 @@ public class TareaHome extends FedeController implements Serializable {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
     }
-    
+
     public void complete() {
         try {
             getSiguienteTarea().setProceso(getTarea().getProceso());
@@ -381,7 +380,6 @@ public class TareaHome extends FedeController implements Serializable {
             subjectBuscar.setUsername(query);
             subjectBuscar.setFirstname(query);
             subjectBuscar.setSurname(query);
-            subjectBuscar.setId(subject.getId());
             result = subjectService.buscarPorCriterio(subjectBuscar);
         }
         SubjectConverter.setSubjects(result);
@@ -420,6 +418,7 @@ public class TareaHome extends FedeController implements Serializable {
             this.tarea = tareaService.find(tareaId);
             getDocumentos(this.tarea);
             setDestinatario(tarea.getOwner());
+            setSolicitante(tarea.getAuthor());
             setProceso(tarea.getProceso());
         }
         return tarea;
@@ -627,8 +626,6 @@ public class TareaHome extends FedeController implements Serializable {
             System.out.println(e);
         }
 
-//        this.documentoAceptar=new Documento();
-//       this.documentoAceptar=doc;
         RequestContext context = RequestContext.getCurrentInstance();
         context.execute("PF('dlgDocumento').show();");
     }
