@@ -86,7 +86,7 @@ and open the template in the editor.
                                             execute="@this save" render="nme" value="#{tareaHome.siguienteTarea.name}" required="true"
                                             container="none"/>
 
-                            <p:editor id="descrpn"  value="#{tareaHome.tarea.description}" />
+                            <p:editor id="descrpn" required="True"  value="#{tareaHome.tarea.description}" />
 
                             <!-- Aduntos -->
                             <div class="Container100  Responsive50">
@@ -149,7 +149,7 @@ and open the template in the editor.
                         </div>
                     </div>
                 </div>
-<!--                  <ui:include src="editar_documento.xhtml"/>-->
+                <!--                  <ui:include src="editar_documento.xhtml"/>-->
                 <p:overlayPanel id="addDocumentOverlayPanel" for="addDocumentButton" widgetVar="overlay" 
                                 showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
                                 my="right bottom" at="left bottom">
