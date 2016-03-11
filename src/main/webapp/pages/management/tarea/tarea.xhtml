@@ -86,11 +86,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
                                             container="none"/>
 
-                            <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
-                                            value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
-                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
-                                            container="none"/>
-
+                            <p:editor id="descrpn"  value="#{tareaHome.tarea.description}" />
                             <!-- Adjuntos -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">
@@ -99,7 +95,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 paginatorAlwaysVisible="false" rendered="#{not empty tareaHome.tarea.documentos}">
 
                                         <p:commandLink title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                       actionListener="#{tareaHome.editarDocumento(documento)}" update="@form">
+                                                       actionListener="#{tareaHome.editarDocumento(documento)}" immediate="true" update="@form">
                                             <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
                                             &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
                                         </p:commandLink>
@@ -229,7 +225,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      oncomplete="PF('dlgDocumento').hide()"/>   
                                 </div>
                                 <div class="Wid33 Fleft Responsive">
-                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['Download']}" ajax="false" 
+                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['Download']}" ajax="false" immediate="true"
                                                      icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')} Fs16 White" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
                                         <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
                                     </p:commandButton>

@@ -46,7 +46,7 @@ and open the template in the editor.
                                             <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
                                             <div class="EmptyBox5"></div>
                                             <span class="FontRobotoLight Fs10">
-                                                <p:commandLink value="#{documento.name}">
+                                                <p:commandLink ajax="false" immediate="true" value="#{documento.name}" >
                                                     <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
                                                 </p:commandLink>
                                             </span>    
@@ -86,20 +86,17 @@ and open the template in the editor.
                                             execute="@this save" render="nme" value="#{tareaHome.siguienteTarea.name}" required="true"
                                             container="none"/>
 
-                            <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['app.document.task.description']}" 
-                                            value="#{tareaHome.siguienteTarea.description}" execute="@this save" render="descrpn" 
-                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
-                                            container="none"/>
+                            <p:editor id="descrpn"  value="#{tareaHome.tarea.description}" />
 
                             <!-- Aduntos -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">
                                     <p:dataList id="documentList" value="#{tareaHome.siguienteTarea.documentos}" var="documento" 
                                                 type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
-                                                paginatorAlwaysVisible="false" rendered="#{not empty tareaHome.tarea.documentos}">
+                                                paginatorAlwaysVisible="false" rendered="#{not empty tareaHome.siguienteTarea.documentos}">
 
                                         <p:commandLink title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                       actionListener="#{tareaHome.editarDocumento(documento)}">
+                                                       update="@form" immediate="true" actionListener="#{tareaHome.editarDocumento(documento)}">
                                             <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
                                             &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
                                         </p:commandLink>

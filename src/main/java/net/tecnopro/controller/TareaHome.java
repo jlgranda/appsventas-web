@@ -146,7 +146,7 @@ public class TareaHome extends FedeController implements Serializable {
 
     public Tarea getUltimaTareaRecibida() {
         if (ultimaTareaRecibida == null) {
-            List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject);
+            List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject,EstadoTipo.ESPERA);
             ultimaTareaRecibida = obs.isEmpty() ? new Tarea() : (Tarea) obs.get(0);
         }
         return ultimaTareaRecibida;
@@ -192,7 +192,7 @@ public class TareaHome extends FedeController implements Serializable {
     public List<Tarea> getMisUltimasTareasRecibidas() {
         int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
         if (misUltimasTareasRecibidas.isEmpty()) {
-            misUltimasTareasRecibidas = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject);
+            misUltimasTareasRecibidas = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject, EstadoTipo.ESPERA);
         }
         return misUltimasTareasRecibidas;
     }
@@ -622,6 +622,7 @@ public class TareaHome extends FedeController implements Serializable {
         setDocumento(doc);
         try {
             BeanUtils.copyProperties(documentoAceptar, doc);
+            documentoAceptar.setId(doc.getId());
         } catch (IllegalAccessException | InvocationTargetException e) {
             System.out.println(e);
         }
