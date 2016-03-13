@@ -93,7 +93,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <div class="EmptyBox10"></div>
                                             <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.allmysales']}</div>
                                             <div class="EmptyBox10"></div>
-                                            <ui:repeat value="#{invoiceHome.myLastInvoices}" var="entity">
+                                            <ui:repeat value="#{invoiceHome.myLastlastPreInvoices}" var="entity">
                                                 <div class="Container60 Fs50 FontRobotoLight Orange">
                                                     <span class="Fs20 DispBlock">
                                                         #{entity.summary}
@@ -118,7 +118,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </ui:repeat>
                                             <div class="Container100 Fs20 BoldGray FontRobotoRegular TexAlRight">
                                                 #{i18n['ride.infoFactura.Total']}:
-                                                <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastInvoices)}">
+                                                <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastPreInvoices)}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText>
+                                            </div>
+                                            <div class="EmptyBox10"></div>
+                                            <div class="Separator"></div>
+                                            <div class="EmptyBox10"></div>
+                                            <div class="TexAlCenter DispBlock">
+                                                <p:button value="#{i18n['ShowAll']}" 
+                                                          styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                          outcome="/pages/fede/sales/invoices.jsf"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:tab>
+                            <p:tab title="#{i18n['Invoices']}">
+                                <div class="Container100">
+                                    <div class="Container100 Responsive100">
+                                        <div class="ContainerIndent">
+                                            <div class="Container100 TexAlCenter DispBlock">
+                                                <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf"/>
+                                            </div>
+                                            <div class="EmptyBox10"></div>
+                                            <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.allinvoices']}</div>
+                                            <div class="EmptyBox10"></div>
+                                            <ui:repeat value="#{invoiceHome.myLastlastInvoices}" var="entity">
+                                                <div class="Container100 Fs50 FontRobotoLight Orange">
+                                                    <span class="Fs20 DispBlock">
+                                                        #{entity.summary}
+                                                    </span>
+                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{entity.total}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>
+                                                    </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{entity.createdOn}</span>
+                                                </div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                            </ui:repeat>
+                                            <div class="Container100 Fs20 BoldGray FontRobotoRegular TexAlRight">
+                                                #{i18n['ride.infoFactura.Total']}:
+                                                <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices)}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText>
                                             </div>
