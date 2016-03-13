@@ -28,6 +28,7 @@ import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jpapi.model.Setting;
 import org.jpapi.model.TaxRateIVAType;
 import org.jpapi.model.TaxType;
+import org.jpapi.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,8 @@ public class FedeAPI implements Serializable {
     }
     
     public Factura readFactura(String xml){
+        if (Strings.isNullOrEmpty(xml))
+            return null;
         return FacturaUtil.read(xml);
     }
     
@@ -64,6 +67,31 @@ public class FedeAPI implements Serializable {
     
     public String translateTaxRateIVA(String key){
         return translate(key, TaxRateIVAType.NONE);
+    }
+    
+    public String summary(FacturaElectronica facturaElectronica){
+        Factura f = readFactura(facturaElectronica);
+        if (f == null) return "-";
+        StringBuilder buffer = new StringBuilder();
+        int index = 0;
+        String str;
+        char delimitador = '\0';
+        char separador =  ',';
+        for (Factura.Detalles.Detalle d : f.getDetalles().getDetalle()){
+            str = d.getDescripcion();
+            str = str.replaceAll("\'", "\\\'");
+            buffer.append(delimitador)
+            .append(str)
+            .append(delimitador);
+           
+            if (index < (f.getDetalles().getDetalle().size() - 1)) {
+                buffer.append(separador);
+                buffer.append(' ');
+            }
+            index++;
+        }
+        
+        return buffer.toString();
     }
     
     public static void main(String[] args) {

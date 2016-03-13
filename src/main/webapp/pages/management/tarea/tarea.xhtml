@@ -86,7 +86,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
                                             container="none"/>
 
-                            <p:editor id="descrpn" required="true" value="#{tareaHome.tarea.description}" />
+                            <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
+                                            value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
+                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            container="none"/>
+
                             <!-- Adjuntos -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">

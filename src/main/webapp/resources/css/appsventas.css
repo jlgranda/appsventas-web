@@ -11,3 +11,23 @@ and open the template in the editor.
 .ui-spinner .ui-spinner-input {
     padding: 6px 9px !important;
 }
+
+.ToolbarButton {
+    background-color: #F5F5F5;
+    color: #A9A9A9;
+    font-weight: 500;
+    border: 1px solid lightgray;
+}
+
+.ToolbarButton.ui-state-hover,
+.ToolbarButton.ui-state-focus {
+    background-color: #F5F5F5;
+}
+
+.ToolbarButton:hover {
+    background-color: #F5F5F5;
+    color: #000000;
+    font-weight: 500;
+    border: 1px solid lightgray;
+}
+

@@ -6,7 +6,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
-    <ui:composition template="/WEB-INF/templates/template.xhtml">
+    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
         <ui:param name="title" value="#{i18n['fede']}" />
         <ui:define name="params">
@@ -14,189 +14,75 @@
                 <f:viewParam name="tags" value="#{facturaElectronicaHome.tags}" />
             </f:metadata>
         </ui:define>
-        <ui:define name="navigation">
-            <!-- Navigation -->
-            <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-
-                <ui:include src="/WEB-INF/templates/navigation.xhtml" />
-                <!-- /.navbar-top-links -->
-            </nav>
-        </ui:define>
         <ui:define name="toolbar">
-            <nav class="navbar navbar-default toolbar">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-module" href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf">#{i18n['Invoices']}</a>
+            <!-- SUB TOPBAR START -->
+            <div class="Container100 UserLinks">
+                <div class="ContainerIndent TexAlLeft">
+                    <p:toolbar id="toolbar">
+                        <f:facet name="left">
+                            <p:menuButton value="#{i18n['More']}" iconPos="right"
+                                          styleClass="MarRight10"
+                                          buttonStyleClass="ToolbarButton Fs14" 
+                                          iconStyleClass="Gray"
+                                          menuStyleClass="Gray">
+                                <p:menuitem id="button-ride" value="#{i18n['Show']} #{i18n['RIDE']}" 
+                                            url="/pages/fede/ride.jsf?faces-redirect=true" 
+                                            disabled="#{empty facturaElectronicaHome.selectedBussinesEntities}"/>
+                            </p:menuButton>
+                            <p:menuButton value="#{i18n['Import']}" iconPos="right" 
+                                          styleClass="MarRight10"
+                                          buttonStyleClass="ToolbarButton Fs14" 
+                                          iconStyleClass="Gray"
+                                          menuStyleClass="Gray">
+                                <p:menuitem value="#{i18n['FromEmail']}"  icon="fa fa-inbox Fs15" 
+                                            actionListener="#{facturaElectronicaHome.importarDesdeInbox()}"/>
+                                <p:menuitem value="#{i18n['FromFile']}" icon="fa fa-upload Fs15"
+                                            onclick="triggerHiddenEventAddFromFile(); return false;"/>
+                                <p:menuitem value="#{i18n['FromURL']}" icon="fa fa-link Fs15" 
+                                            onclick="triggerHiddenEventAddFromURL(); return false;"/>
+                            </p:menuButton>
+                            <p:menuButton value="#{i18n['Labels']}" iconPos="right"
+                                          styleClass="MarRight10"
+                                          buttonStyleClass="ToolbarButton Fs14" 
+                                          iconStyleClass="Gray"
+                                          menuStyleClass="Gray">
+
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+
+                    <!--hidden buttons for trigger dialogReturn-->
+                    <!--http://stackoverflow.com/questions/20931384/primefaces-dialog-framework-dialogreturn-event-from-menuitem-->
+                    <p:commandButton id="hiddenCommandAddFromFile" styleClass="button" style="display:none"
+                                     actionListener="#{facturaElectronicaHome.mostrarFormularioCargaFacturaElectronica()}">
+                        <p:ajax event="dialogReturn" update="@form"
+                                listener="#{facturaElectronicaHome.handleReturn}">
+                        </p:ajax>
+                    </p:commandButton>
+                    <p:commandButton id="hiddenCommandAddFromURL" styleClass="button" style="display:none"
+                                     actionListener="#{facturaElectronicaHome.mostrarFormularioDescargaFacturaElectronica()}">
+                        <p:ajax event="dialogReturn" update="@form"
+                                listener="#{facturaElectronicaHome.handleReturn}">
+                        </p:ajax>
+                    </p:commandButton>
                 </div>
-                <p:panel id="toolbar-panel">
-                <div class="btn-group navbar-btn" role="group" aria-label="...">
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            #{i18n['More']}
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <h:link id="button-ride" rendered="#{true}" 
-                                        outcome="/pages/fede/ride.jsf?faces-redirect=true"
-                                        styleClass=""
-                                        disabled="#{empty facturaElectronicaHome.selectedBussinesEntities}">
-                                    <i class="fa fa-inbox"></i>&nbsp;<h:outputText value="#{i18n['Show']} #{i18n['RIDE']}" />
-                                    <f:param name="key" value="#{facturaElectronicaHome.selectedKeys}"></f:param>
-                                </h:link>
-                            </li>
-                        </ul>
-                    </div>
+                <div class="EmptyBox10"></div>
+            </div>
+
+            <div class="Container100 UserLinks">
+                <div class="ContainerIndent">
+                    <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop"><i class="icon-arrow-right"></i> <ui:insert name="subheader" /></span>
+
+                    <!--                                <a href="#" class="BoldGray Fs16 FontRobotoLight Fright HoverEffect"><i class="icon-paper"></i> Notes</a>
+                    -->
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/sales/preinvoices.jsf" class="BoldGray Fs16 FontRobotoLight Fright MarRight20 HoverEffect"><i class="icon-layers2"></i> #{i18n['app.fede.allmysales']}</a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" class="BoldGray Fs16 FontRobotoLight Fright MarRight20 HoverEffect"><i class="icon-layers"></i> #{i18n['app.fede.allsales']}</a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inventory/dashboard.jsf" class="BoldGray Fs16 FontRobotoLight Fright MarRight20 HoverEffect"><i class="icon-briefcase"></i> #{i18n['app.fede.inventory']}</a>
                 </div>
-                <div class="btn-group navbar-btn" role="group" aria-label="...">
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            #{i18n['Import']}
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <p:commandLink actionListener="#{facturaElectronicaHome.importarDesdeInbox()}" ajax="false"
-                                               styleClass="">
-                                    <i class="fa fa-inbox"></i>&nbsp;<h:outputText value="#{i18n['Import']} #{i18n['FromEmail']}" />
-                                </p:commandLink>
-                            </li>
-                            <li>
-                                <p:commandLink actionListener="#{facturaElectronicaHome.mostrarFormularioCargaFacturaElectronica()}" ajax="false"
-                                               styleClass="">
-                                    <i class="fa fa-upload">&nbsp;</i><h:outputText value="#{i18n['Add']} #{i18n['FromFile']}" />
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{facturaElectronicaHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandLink>
-                            </li>
-                            <li>
-                                <p:commandLink actionListener="#{facturaElectronicaHome.mostrarFormularioDescargaFacturaElectronica()}" ajax="false"
-                                               styleClass="">
-                                    <i class="fa fa-link"></i>&nbsp;<h:outputText value="#{i18n['Add']} #{i18n['FromURL']}" />
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{facturaElectronicaHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandLink>
-                            </li>
-                            <li role="separator" class="divider"></li>
-                            <li>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <a href="javascript:;" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-tag">&nbsp;</i>#{i18n['Labels']}
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu mega-dropdown-menu">
-                            <li>
-                                <pe:triStateManyCheckbox id="labelTriBasic"  
-                                                         value="#{facturaElectronicaHome.selectedTriStateGroups}"  
-                                                         layout="pageDirection"  
-                                                         styleClass=""
-                                                         stateOneTitle=""  
-                                                         stateTwoTitle=""  
-                                                         stateThreeTitle=""
-                                                         stateTwoIcon="ui-icon-check"  
-                                                         stateThreeIcon="ui-icon-minus" 
-                                                         rendered="#{not empty facturaElectronicaHome.selectedBussinesEntities}">  
-                                    <f:selectItems value="#{facturaElectronicaHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
-                                </pe:triStateManyCheckbox>  
-                            </li>
-                            <li role="separator" class="divider"></li>
-                            <li>
-                                <p:commandLink id="button-labels" actionListener="#{facturaElectronicaHome.mostrarFormularioNuevaEtiqueta()}" ajax="false"
-                                               styleClass=""
-                                               rendered="#{empty facturaElectronicaHome.selectedBussinesEntities}">
-                                    <i class="fa fa-pencil-square-o">&nbsp;</i><h:outputText value="#{i18n['New']} #{i18n['Label']}" />
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{facturaElectronicaHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandLink>
-                            </li>
-                            <li>
-                                <h:link rendered="#{empty facturaElectronicaHome.selectedBussinesEntities}"
-                                        outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" ajax="false" 
-                                        styleClass=""
-                                        disabled="#{empty facturaElectronicaHome.selectedBussinesEntities}">
-                                     <i class="fa fa-tags"></i>&nbsp;#{i18n['Manage']}&nbsp;#{i18n['Labels']}
-                                </h:link>
-                            </li>
-                            <li>
-                                <p:commandLink id="button-apply-labels" actionListener="#{facturaElectronicaHome.applySelectedGroups}" ajax="false"
-                                               styleClass=""
-                                               rendered="#{not empty facturaElectronicaHome.selectedBussinesEntities}">
-                                    <h:outputText value="#{i18n['Apply']}" />
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{facturaElectronicaHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandLink>
-                            </li>
-                        </ul>
-                    </div>
-                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf?tags=#{facturaElectronicaHome.tags}" 
-                       class="btn btn-default dropdown-toggle">
-                        <i class="fa fa-dashboard"></i>&nbsp;#{i18n['Dashboard']}
-                    </a>
-                    
-                </div>
-                <ul class="nav navbar-top-links navbar-right">
-                    <li>
-                        <label>#{i18n['Start']}&nbsp;</label>
-                        <p:calendar value="#{facturaElectronicaHome.start}" class="input-sm">
-                            <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                        </p:calendar>
-                        <label>#{i18n['End']}&nbsp;</label>
-                        <p:calendar value="#{facturaElectronicaHome.end}" class="input-sm">
-                            <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                        </p:calendar>
-                    </li>
-                    <li>
-                        <span id="pagination-info" class=""></span>
-                        <div class="btn-group" role="group" aria-label="...">
-                            <button id="pagination-previous" type="button" class="btn btn-default navbar-btn "><i class="fa fa-angle-left"></i></button>
-                            <button id="pagination-next" type="button" class="btn btn-default navbar-btn "><i class="fa fa-angle-right"></i></button>
-                        </div>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="fa fa-gear fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user">
-                            <li>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-                <div class="navbar-default sidebar" role="navigation">
-                    <!--MENU sidebar--> 
-                    <ul class="nav" id="side-menu">
-                        <ui:repeat var="tag" value="#{facturaElectronicaHome.groups}">
-                            <li>
-                                <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf?tags=#{tag.code}">#{tag.name}</a>
-                            </li>
-                        </ui:repeat>
-                    </ul>
-                </div>
-                <!-- /.navbar-static-side -->
-                <script>
-                    $(document).ready(function () {
-                        $("ul.dropdown-menu.mega-dropdown-menu").on('click', function(event){
-                            //The event won't be propagated to the document NODE and 
-                            // therefore events delegated to document won't be fired
-                            event.stopPropagation();
-                        });
-                    });
-                </script>
-                </p:panel>
-            </nav>
+
+                <div class="EmptyBox5"></div>
+            </div>
+            <!-- SUB TOPBAR END -->
         </ui:define>
         <!--./toolbar-->
         <ui:define name="content">
@@ -206,38 +92,38 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="dataTable_wrapper">
-                                    <p:dataTable var="facturaElectronica" 
-                                                 value="#{facturaElectronicaHome.lazyDataModel}" 
-                                                 paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                                 reflow="true" selection="#{facturaElectronicaHome.selectedBussinesEntities}" 
-                                                 rowKey="#{facturaElectronica.id}" 
-                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                                 id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                <p:dataTable var="facturaElectronica" 
+                                             value="#{facturaElectronicaHome.lazyDataModel}" 
+                                             paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                             sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                             reflow="true" selection="#{facturaElectronicaHome.selectedBussinesEntities}" 
+                                             rowKey="#{facturaElectronica.id}" 
+                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                             id="dataTable" widgetVar="dataTable_wv" lazy="true">
 
-                                        <p:ajax event="rowSelectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
-                                        <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
-                                        <p:ajax event="rowSelect" listener="#{facturaElectronicaHome.onRowSelect}"/>
-                                        <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                                        <p:column headerText="#{i18n['ride.no']}" sortBy="#{facturaElectronica.code}">
-                                            <h:outputText value="#{facturaElectronica.code}" />
-                                        </p:column>
-                                        <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author.initials}">
-                                            <h:outputText value="#{facturaElectronica.author.initials}" />
-                                        </p:column>
-                                        <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{facturaElectronica.importeTotal}"
-                                                  styleClass="text-right">
-                                            <h:outputText value="#{facturaElectronica.importeTotal}">
-                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
-                                            </h:outputText>
-                                        </p:column>
-                                        <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{facturaElectronica.fechaEmision}"
-                                                  styleClass="text-right">
-                                            <h:outputText value="#{facturaElectronica.fechaEmision}">
-                                                <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                            </h:outputText>
-                                        </p:column>
-                                    </p:dataTable>
+                                    <p:ajax event="rowSelectCheckbox" update=":form:toolbar"/>
+                                    <p:ajax event="rowUnselectCheckbox" update=":form:toolbar"/>
+                                    <p:ajax event="rowSelect" listener="#{facturaElectronicaHome.onRowSelect}"/>
+                                    <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                                    <p:column headerText="#{i18n['ride.no']}" sortBy="#{facturaElectronica.code}">
+                                        <h:outputText value="#{facturaElectronica.code}" />
+                                    </p:column>
+                                    <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author.initials}">
+                                        <h:outputText value="#{facturaElectronica.author.initials}" />
+                                    </p:column>
+                                    <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{facturaElectronica.importeTotal}"
+                                              styleClass="text-right">
+                                        <h:outputText value="#{facturaElectronica.importeTotal}">
+                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{facturaElectronica.fechaEmision}"
+                                               styleClass="text-right">
+                                        <h:outputText value="#{facturaElectronica.fechaEmision}">
+                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                        </h:outputText>
+                                    </p:column>
+                                </p:dataTable>
                             </div>
                         </div>
                         <!--/.panel-body -->
@@ -280,13 +166,20 @@
                         dataTable.getPaginator().prevLink.click();
                         //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
                     });
-                    
-                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function(event){
+
+                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function (event) {
                         //The event won't be propagated to the document NODE and 
                         // therefore events delegated to document won't be fired
                         event.stopPropagation();
                     });
                 });
+
+                function triggerHiddenEventAddFromFile() {
+                    document.getElementById("form:hiddenCommandAddFromFile").click();
+                }
+                function triggerHiddenEventAddFromURL() {
+                    document.getElementById("form:hiddenCommandAddFromURL").click();
+                }
             </script>
         </ui:define>
     </ui:composition>

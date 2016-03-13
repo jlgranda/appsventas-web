@@ -111,7 +111,12 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     
     private LazyFacturaElectronicaDataModel lazyDataModel; 
     
+    private FacturaElectronica ultimafacturaElectronica;
     
+    /**
+     * Lista de facturas electrónicas a usar el dashboard y/o widgets
+     */
+    private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<FacturaElectronica>());
     
     private List<Group> groups = new ArrayList<>();
 
@@ -167,6 +172,31 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void setUrls(List<String> urls) {
         this.urls = urls;
+    }
+
+    public List<FacturaElectronica> getSampleResultList() {
+        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
+        if (sampleResultList.isEmpty()) {
+            sampleResultList = facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findLastsByOwner", limit, subject);
+        }
+        return sampleResultList;
+    }
+
+    public void setSampleResultList(List<FacturaElectronica> sampleResultList) {
+        this.sampleResultList = sampleResultList;
+    }
+
+    public FacturaElectronica getUltimaFacturaElectronica(){
+        if (ultimafacturaElectronica == null) {
+            List<FacturaElectronica> obs = getSampleResultList();
+            ultimafacturaElectronica = obs.isEmpty() ? new FacturaElectronica() : (FacturaElectronica) obs.get(0);
+        }
+       
+        return ultimafacturaElectronica;
+    }
+
+    public void setUltimafacturaElectronica(FacturaElectronica ultimafacturaElectronica) {
+        this.ultimafacturaElectronica = ultimafacturaElectronica;
     }
 
     public void addURL(){
@@ -528,72 +558,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
     }
 
-
-    /**
-     * Encuentra la instancia Subject para los parámetros dados. Se actualiza al
-     * tipo de código desde CEDULA a RUC, si es el caso
-     *
-     * @param identificacionComprador
-     * @param codeType
-     * @return
-     */
-    @Deprecated
-    private Subject findSubject(String identificacionComprador, CodeType codeType) {
-        String cedula = identificacionComprador.substring(0, identificacionComprador.length() > 10 ? 10 : identificacionComprador.length());
-        Subject subject_ = null;
-        subject_ = subjectService.findUniqueByNamedQuery("BussinesEntity.findByCodeAndCodeType", identificacionComprador, codeType);
-        if (subject_ == null && codeType == CodeType.RUC) {
-            subject_ = subjectService.findUniqueByNamedQuery("BussinesEntity.findByCodeAndCodeType", cedula, CodeType.CEDULA);
-            if (subject_ != null) {
-                subject_.setCode(identificacionComprador);
-                subject_.setCodeType(CodeType.RUC);
-                subjectService.save(subject_.getId(), subject_); //actualizar a RUC
-            }
-        }
-        return subject_;
-    }
-
-    /**
-     * Actualiza los datos de la instancia <tt>Subject</tt>, desde la factura dada,
-     * sólo si los campos estan vacios.
-     * @param subject el sujeto propietarios de la factura
-     * @param factura la factura origen de datos
-     */
-    @Deprecated
-    private void actualizarDatosDesdeFactura(Subject subject_, Factura factura) {
-        
-        boolean changed = false;
-        if (Strings.isNullOrEmpty(subject_.getDescription())){
-            subject_.setDescription(factura.getInfoFactura().getDireccionComprador());
-            changed = true;
-        }
-        
-        if (factura.getInfoAdicional() != null) {
-            for (Factura.InfoAdicional.CampoAdicional campoAdicional : factura.getInfoAdicional().getCampoAdicional()) {
-                if ("email".equalsIgnoreCase(campoAdicional.getNombre())) {
-                    if (Strings.isNullOrEmpty(subject_.getEmail())){
-                        subject_.setEmail(campoAdicional.getValue());
-                        changed = true;
-                    }
-                } else if ("dirección".equalsIgnoreCase(campoAdicional.getNombre())) {
-                    //TODO
-                } else if ("teléfono".equalsIgnoreCase(campoAdicional.getNombre())) {
-                    if (Strings.isNullOrEmpty(subject_.getWorkPhoneNumber())){
-                        subject_.setWorkPhoneNumber(campoAdicional.getValue());
-                        changed = true;
-                    }
-                    
-                } else {
-                    //TODO activar estructure para almacenar todos los campos adicionales
-                }
-            }
-        }
-        
-        if (changed){
-            subjectService.save(subject_.getId(), subject_);
-        }
-    }
-    
     public void applySelectedGroups() {
         String status = "";
         Group group = null;
@@ -654,5 +618,5 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return new Group("null", "null");
     }
-
+    
 }
