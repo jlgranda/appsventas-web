@@ -86,8 +86,10 @@ and open the template in the editor.
                                             execute="@this save" render="nme" value="#{tareaHome.siguienteTarea.name}" required="true"
                                             container="none"/>
 
-                            <p:editor id="descrpn" required="True"  value="#{tareaHome.tarea.description}" />
-
+                            <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
+                                            value="#{tareaHome.siguienteTarea.description}" execute="@this save" render="descrpn" 
+                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            container="none"/>
                             <!-- Aduntos -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">

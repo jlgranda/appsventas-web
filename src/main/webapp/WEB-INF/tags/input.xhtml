@@ -72,6 +72,11 @@ limitations under the License.
                     <p:ajax update="#{render}" partialSubmit="true"/>
                 </p:inputTextarea>
             </c:when>
+            <c:when test="#{type == 'richtext'}">
+                <p:editor id="#{name}" value="#{value}" 
+                          required="#{required}" class="#{class}">
+                </p:editor>
+            </c:when>
             <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
                 <p:selectOneMenu value="#{value}" effect="fade"
                                  required="#{required}" requiredMessage="#{requiredMessage}" class="#{class}"
@@ -141,6 +146,11 @@ limitations under the License.
                                          required="#{required}" label="#{label}" autoResize="false" class="#{class}" rows="3">
                             <p:ajax update="#{render}" partialSubmit="true"/>
                         </p:inputTextarea>
+                    </c:when>
+                    <c:when test="#{type == 'richtext'}">
+                        <p:editor id="#{name}" value="#{value}" 
+                                  required="#{required}" class="#{class}">
+                        </p:editor>
                     </c:when>
                     <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
                         <p:selectOneMenu value="#{value}" effect="fade"

@@ -111,7 +111,7 @@ public class SettingHome extends FedeController implements Serializable {
                 getSetting().setValue(settingnew.getValue());
                 getSetting().setOwner(subject);
                 settingService.save(setting);
-                addErrorMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
                 return;
             }
             getSetting().setUuid(java.util.UUID.randomUUID().toString());
@@ -121,11 +121,11 @@ public class SettingHome extends FedeController implements Serializable {
             getSetting().setOwner(subject);
             if (!this.setting.isPersistent()) {
                 settingService.save(this.setting);
-                addErrorMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
                 return;
             }
-            settingService.save(this.setting.getId(), getSetting());
-            addErrorMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+            settingService.save(this.setting.getId(), setting);
+            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
             FacesContext facesContext = FacesContext.getCurrentInstance();
             String param = (String) facesContext.getExternalContext().getRequestParameterMap().get(I18nUtil.getMessages("common.tipoGrabado"));
             if (param != null) {

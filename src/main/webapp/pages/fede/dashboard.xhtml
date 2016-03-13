@@ -23,9 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
                 template="/WEB-INF/templates/fede_template.xhtml">
-
     <ui:define name="head">
+        <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
         <script type="text/javascript">
             function skinChart() {
                 this.cfg.shadow = false;
@@ -93,14 +94,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox20"></div>
                                                 <div class="Container60 Fs50 FontRobotoLight Orange">
                                                     <span class="DispBlock">
-                                                        #{invoiceHome.lastInvoice.summary}
+                                                        #{invoiceHome.lastPreInvoice.summary}
                                                     </span>
-                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{invoiceHome.lastInvoice.total}">
+                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{invoiceHome.lastPreInvoice.total}">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{invoiceHome.lastInvoice.author.firstname}, #{invoiceHome.lastInvoice.author.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{invoiceHome.lastInvoice.createdOn}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{invoiceHome.lastPreInvoice.author.firstname}, #{invoiceHome.lastPreInvoice.author.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{invoiceHome.lastPreInvoice.createdOn}</span>
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf" style="width:75%"/>
@@ -112,7 +113,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.recentlysales']}</div>
                                                 <div class="EmptyBox10"></div>
-                                                <ui:repeat value="#{invoiceHome.lastInvoices}" var="entity">
+                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.PRE_INVOICE)}" var="entity">
                                                     <div class="Container100">
                                                         <h:outputText value="#{entity.summary}" styleClass="Fs18 BoldGray FontRobotoLight">
                                                             <f:convertNumber type="currency"/>
@@ -138,47 +139,97 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:tab>
                                 <p:tab title="#{i18n['Invoices']}">
                                     <div class="Container100">
-                                        <div class="Container40 Responsive100">
+                                        <div class="Container100 Responsive100">
                                             <div class="ContainerIndent">
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">Your Last Unpaid Bill</div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.lastinvoice']}</div>
                                                 <div class="EmptyBox20"></div>
-                                                <div class="Container50 Fs50 FontRobotoLight Orange">
-                                                    <span class="DispBlock">$ 238</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">Payment Due Date - 12.09.2015</span>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange">
+                                                    <span class="DispBlock">
+                                                        #{invoiceHome.lastInvoice.summary}
+                                                    </span>
+                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{invoiceHome.lastInvoice.total}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>
+                                                    </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{invoiceHome.lastInvoice.author.firstname}, #{invoiceHome.lastInvoice.author.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{invoiceHome.lastInvoice.createdOn}</span>
                                                 </div>
-                                                <div class="Container50">
-                                                    <p:button value="Pay With Card" styleClass="CyanButton Fright" style="width:75%"/>
-                                                    <div class="EmptyBox5"></div>
-                                                    <p:button value="Pay With Check" styleClass="Fright" style="width:75%"/>
+                                                <div class="Container40">
+                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf" style="width:75%"/>
                                                 </div>
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Separator"></div>
                                                 <div class="EmptyBox10"></div>
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">Paid Bills</div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.recentlyinvoice']}</div>
                                                 <div class="EmptyBox10"></div>
-                                                <h:panelGrid columns="3">
-                                                    <h:outputText value="$335,22" styleClass="LeadenGreen Fs20 FontRobotoLight"></h:outputText>
-                                                    <h:outputText value=" - " styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
-                                                    <h:outputText value="18.08.2015 Paid with Credit Card" styleClass="Fs16 BoldGray FontRobotoLight"></h:outputText>
-
-                                                    <h:outputText value="$138" styleClass="Blue Fs20 FontRobotoLight"></h:outputText>
-                                                    <h:outputText value=" - " styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
-                                                    <h:outputText value="10.07.2015 Paid with PayPal" styleClass="Fs16 BoldGray FontRobotoLight"></h:outputText>
-
-                                                    <h:outputText value="$345,13" styleClass="LeadenGreen Fs20 FontRobotoLight"></h:outputText>
-                                                    <h:outputText value=" - " styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
-                                                    <h:outputText value="08.06.2015 Paid with Credit Card" styleClass="Fs16 BoldGray FontRobotoLight"></h:outputText>
-
-                                                    <h:outputText value="$98,13" styleClass="LeadenGreen Fs20 FontRobotoLight"></h:outputText>
-                                                    <h:outputText value=" - " styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
-                                                    <h:outputText value="28.05.2015 Paid with Credit Card" styleClass="Fs16 BoldGray FontRobotoLight"></h:outputText>
-                                                </h:panelGrid>
+                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.INVOICE)}" var="entity">
+                                                    <div class="Container100">
+                                                        <h:outputText value="#{entity.summary}" styleClass="Fs18 BoldGray FontRobotoLight">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>&nbsp;
+                                                        <h:outputText value="#{entity.total}" styleClass="Fs16 BoldGray FontRobotoLight">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>&nbsp;
+                                                        <h:outputText value="#{entity.createdOn}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
+                                                        <h:outputText value="#{entity.author.firstname}, #{entity.author.surname}" styleClass="Fs10 BoldGray FontRobotoLight"></h:outputText>
+                                                    </div>
+                                                </ui:repeat>
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Separator"></div>
                                                 <div class="EmptyBox10"></div>
                                                 <div class="TexAlCenter DispBlock">
-                                                    <p:button value="Get All Paid Bills" styleClass="BrownButton White Fs14" icon="fa fa-credit-card"/>
-                                                    <p:button value="Print All List" styleClass="OrangeButton White Fs14" icon="fa fa-print"/>
+                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/fede/sales/invoices.jsf"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p:tab>
+                                <p:tab title="#{i18n['common.purchases']}">
+                                    <div class="Container100">
+                                        <div class="Container100 Responsive100">
+                                            <div class="ContainerIndent">
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.purchase.lasts']}</div>
+                                                <div class="EmptyBox20"></div>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange">
+                                                    <span class="DispBlock">
+                                                        #{fedeAPI.summary(facturaElectronicaHome.ultimaFacturaElectronica)}
+                                                    </span>
+                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{facturaElectronicaHome.ultimaFacturaElectronica.importeTotal}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>
+                                                    </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{facturaElectronicaHome.ultimaFacturaElectronica.author.firstname}, #{facturaElectronicaHome.ultimaFacturaElectronica.author.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{facturaElectronicaHome.ultimaFacturaElectronica.createdOn}</span>
+                                                </div>
+                                                <div class="Container40">
+                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/factura.jsf" style="width:75%"/>
+                                                </div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.purchase.lasts']}</div>
+                                                <div class="EmptyBox10"></div>
+                                                <ui:repeat value="#{facturaElectronicaHome.sampleResultList}" var="entity">
+                                                    <div class="Container100">
+                                                        <h:outputText value="#{fedeAPI.summary(entity)}" styleClass="Fs18 BoldGray FontRobotoLight">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>&nbsp;
+                                                        <h:outputText value="#{entity.importeTotal}" styleClass="Fs16 BoldGray FontRobotoLight">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>&nbsp;
+                                                        <h:outputText value="#{entity.createdOn}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
+                                                        <h:outputText value="#{entity.author.firstname}, #{entity.author.surname}" styleClass="Fs10 BoldGray FontRobotoLight"></h:outputText>
+                                                    </div>
+                                                </ui:repeat>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="TexAlCenter DispBlock">
+                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/fede/inbox.jsf"/>
                                                 </div>
                                             </div>
                                         </div>

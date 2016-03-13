@@ -75,12 +75,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private Invoice lastInvoice;
     
-    private List<Invoice> lastInvoices = new ArrayList<>();
+    private Invoice lastPreInvoice;
     
-    private Invoice myLastInvoice;
-    
-    private List<Invoice> myLastInvoices = new ArrayList<>();
-
     private Long invoiceId;
 
     private List<Detail> candidateDetails = new ArrayList<>();
@@ -135,9 +131,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public Invoice getLastInvoice() {
         if (lastInvoice == null){
-            //int amount = Integer.valueOf(settingHome.getValue("app.fede.invoice.collect.recommendedtime", "10"));
-            //java.util.Date time  = Dates.addDays(Dates.now(), -1 * amount);
-            List<Invoice> obs = invoiceService.findByNamedQuery("Invoice.findLast", 1);
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE);
             lastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastInvoice;
@@ -146,40 +140,18 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void setLastInvoice(Invoice lastInvoice) {
         this.lastInvoice = lastInvoice;
     }
-
-    public List<Invoice> getLastInvoices() {
-        int limit = Integer.parseInt(settingHome.getValue("app.fede.sales.dashboard.lasts.list.length", "10"));
-        if (lastInvoices.isEmpty())
-            lastInvoices = invoiceService.findByNamedQuery("Invoice.findLasts", limit);
-        return lastInvoices;
-    }
-
-    public void setLastInvoices(List<Invoice> lastInvoices) {
-        this.lastInvoices = lastInvoices;
-    }
-
-    public Invoice getMyLastInvoice() {
-        if (myLastInvoice == null){
-            List<Invoice> obs = invoiceService.findByNamedQuery("Invoice.findLastsByAuthor", subject);
-            myLastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
+    
+    public Invoice getLastPreInvoice() {
+        if (lastPreInvoice == null){
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE);
+            lastPreInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
-        return myLastInvoice;
+        return lastPreInvoice;
     }
 
-    public void setMyLastInvoice(Invoice myLastInvoice) {
-        this.myLastInvoice = myLastInvoice;
+    public void setLastPreInvoice(Invoice lastPreInvoice) {
+        this.lastPreInvoice = lastPreInvoice;
     }
-
-    public List<Invoice> getMyLastInvoices() {
-        if (myLastInvoices.isEmpty())
-            myLastInvoices = invoiceService.findByNamedQuery("Invoice.findLastsByAuthor", subject);
-        return myLastInvoices;
-    }
-
-    public void setMyLastInvoices(List<Invoice> myLastInvoices) {
-        this.myLastInvoices = myLastInvoices;
-    }
-
 
     public List<Detail> getCandidateDetails() {
         if (this.candidateDetails.isEmpty()) {
@@ -252,7 +224,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public void clear(){
         this.lastInvoice = null;
-        this.lastInvoices.clear();
+        this.lastPreInvoice = null;
     }
     
     
@@ -334,6 +306,16 @@ public class InvoiceHome extends FedeController implements Serializable {
             for (Detail d : this.invoice.getDetails()){
                 this.candidateDetails.add(d);
             }
+        }
+    }
+    
+    
+    public List<Invoice> findInvoices(Subject owner, DocumentType documentType){
+        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
+        if (owner == null){ //retornar todas
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType);
+        } else {
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner);
         }
     }
 }
