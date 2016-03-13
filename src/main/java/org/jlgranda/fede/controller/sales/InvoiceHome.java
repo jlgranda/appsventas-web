@@ -89,9 +89,9 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private ProductService productService;
-
-    private LazyInvoiceDataModel lazyDataModel;
-
+    
+    private LazyInvoiceDataModel lazyDataModel; 
+    
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
@@ -134,7 +134,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public Invoice getLastInvoice() {
-        if (lastInvoice == null) {
+        if (lastInvoice == null){
             List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE);
             lastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
@@ -144,9 +144,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void setLastInvoice(Invoice lastInvoice) {
         this.lastInvoice = lastInvoice;
     }
-
+    
     public Invoice getLastPreInvoice() {
-        if (lastPreInvoice == null) {
+        if (lastPreInvoice == null){
             List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE);
             lastPreInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
@@ -169,8 +169,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public List<Invoice> getMyLastlastPreInvoices() {
-        if (myLastlastPreInvoices.isEmpty()) {
-            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE,0);
+        if (myLastlastPreInvoices.isEmpty()){
+            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0);
         }
         return myLastlastPreInvoices;
     }
@@ -180,8 +180,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public List<Invoice> getMyLastlastInvoices() {
-        if (myLastlastInvoices.isEmpty()) {
-            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE,0);
+        if (myLastlastInvoices.isEmpty()){
+            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE, 0);
         }
         return myLastlastInvoices;
     }
@@ -334,13 +334,10 @@ public class InvoiceHome extends FedeController implements Serializable {
             }
         }
     }
-
-//    public List<Invoice> findInvoices(Subject owner, DocumentType documentType) {
-//        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
-//    
-//    }
-    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit) {
-        if (owner == null) { //retornar todas
+    
+    
+    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit){
+        if (owner == null){ //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType);
         } else {
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner);
