@@ -19,41 +19,171 @@ package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.SettingService;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jpapi.model.CodeType;
+import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.I18nUtil;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
  * @author jlgranda
  */
 @ManagedBean
-@SessionScoped
-public class SettingHome implements Serializable {
-    
+@ViewScoped
+public class SettingHome extends FedeController implements Serializable {
+
     @Inject
     @LoggedIn
     private Subject subject;
-    
+
     @EJB
     private SettingService settingService;
-    
-    public String getValue(String name, String defaultValue){
+
+    private Setting setting;
+    private String criterioBusqueda;
+    private List<Setting> settings = new ArrayList<>();
+
+    public void preRenderView() {
+        this.buscar();
+    }
+
+    @PostConstruct
+    public void init() {
+        setSetting(settingService.createInstance());
+        getSetting().setName(I18nUtil.getMessages("name"));
+        getSetting().setValue(I18nUtil.getMessages("Value"));
+    }
+
+    public void crear() {
+        settingService.createInstance();
+    }
+
+    public String getValue(String name, String defaultValue) {
         Setting s = settingService.findByName(name, subject);
-        if (s == null){ //No existe configuración de usuario, tomar la configuración global, sino el valor por defecto
+        if (s == null) { //No existe configuración de usuario, tomar la configuración global, sino el valor por defecto
             return getGlobalValue(name, defaultValue);
         }
         return s.getValue();
     }
-    
-    public String getGlobalValue(String name, String defaultValue){
+
+    public void buscar() {
+        Setting settingBuscar = new Setting();
+        settings = new ArrayList<>();
+        settingBuscar.setName(criterioBusqueda);
+        List<Setting> settingsSistema = settingService.findByCriteriaOwnerNone(settingBuscar);
+        Setting settingBuscar1 = new Setting();
+        settingBuscar1.setName(criterioBusqueda);
+        settingBuscar1.setOwner(subject);
+        List<Setting> settingsSubjects = settingService.findByCriteria(settingBuscar1);
+        settings.addAll(settingsSistema);
+        settings.addAll(settingsSubjects);
+    }
+
+    public void cancelar() {
+        setSetting(new Setting());
+    }
+
+    public void save() {
+        try {
+            if (this.setting.getOwner() == null && this.setting.isPersistent()) {
+                Setting settingnew = new Setting();
+                settingnew.setName(getSetting().getName());
+                settingnew.setValue(getSetting().getValue());
+                settingnew.setDescription(getSetting().getDescription());
+                setSetting(settingService.createInstance());
+                getSetting().setUuid(java.util.UUID.randomUUID().toString());
+                getSetting().setActive(Boolean.TRUE);
+                getSetting().setCodeType(CodeType.SYSTEM);
+                getSetting().setVersion(0);
+                getSetting().setName(settingnew.getName());
+                getSetting().setDescription(settingnew.getDescription());
+                getSetting().setValue(settingnew.getValue());
+                getSetting().setOwner(subject);
+                settingService.save(setting);
+                addErrorMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+                return;
+            }
+            getSetting().setUuid(java.util.UUID.randomUUID().toString());
+            getSetting().setActive(Boolean.TRUE);
+            getSetting().setCodeType(CodeType.SYSTEM);
+            getSetting().setVersion(0);
+            getSetting().setOwner(subject);
+            if (!this.setting.isPersistent()) {
+                settingService.save(this.setting);
+                addErrorMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+                return;
+            }
+            settingService.save(this.setting.getId(), getSetting());
+            addErrorMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            String param = (String) facesContext.getExternalContext().getRequestParameterMap().get(I18nUtil.getMessages("common.tipoGrabado"));
+            if (param != null) {
+                if (param.equalsIgnoreCase(I18nUtil.getMessages("common.tipoGrabado.save"))) {
+                    settingService.createInstance();
+                }
+            }
+        } catch (Exception e) {
+            addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
+        }
+    }
+
+    public void editar(Setting setting) {
+        setSetting(setting);
+    }
+
+    public String getGlobalValue(String name, String defaultValue) {
         Setting s = settingService.findByName(name, null);
-        if (s == null)
+        if (s == null) {
             return defaultValue;
+        }
         return s.getValue();
     }
+
+    //<editor-fold defaultstate="collapsed" desc="SET Y GET">
+    public List<Setting> getSettings() {
+        return settings;
+    }
+
+    public void setSettings(List<Setting> settings) {
+        this.settings = settings;
+    }
+
+    public String getCriterioBusqueda() {
+        return criterioBusqueda;
+    }
+
+    public void setCriterioBusqueda(String criterioBusqueda) {
+        this.criterioBusqueda = criterioBusqueda;
+    }
+
+    public Setting getSetting() {
+        return setting;
+    }
+
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
+    //</editor-fold> 
+
+    @Override
+    public void handleReturn(SelectEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Group getDefaultGroup() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -146,7 +146,7 @@ public class TareaHome extends FedeController implements Serializable {
 
     public Tarea getUltimaTareaRecibida() {
         if (ultimaTareaRecibida == null) {
-            List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject,EstadoTipo.ESPERA);
+            List<Tarea> obs = tareaService.findByNamedQuery("Tarea.findLastsByOwner", subject, EstadoTipo.ESPERA);
             ultimaTareaRecibida = obs.isEmpty() ? new Tarea() : (Tarea) obs.get(0);
         }
         return ultimaTareaRecibida;
@@ -222,22 +222,6 @@ public class TareaHome extends FedeController implements Serializable {
             BeanUtils.copyProperties(documento, getDocumentoAceptar());
         } catch (IllegalAccessException | InvocationTargetException e) {
         }
-    }
-
-    public void saveDocumento() {
-        try {
-            if (!documento.isPersistent()) {
-                documentoService.save(documento);
-            } else {
-                documentoService.save(documento.getId(), documento);
-            }
-            generaDocumento(new File(documento.getRuta()), documento.getContents());
-            setDocumento(documentoService.createInstance());
-            this.addDefaultSuccessMessage();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
     }
 
     public void save() {

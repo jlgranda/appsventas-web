@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 Jorge
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/templates/fede_template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
+
+            function skinPie() {
+                this.cfg.seriesColors = ['#dae8ef', '#27aae1', '#33ccff', '#9fadb5'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#eaeaea',
+                    gridLineColor: '#e5ebf0',
+                    shadow: false,
+                    borderWidth: 0
+                };
+                this.cfg.seriesDefaults.shadow = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="subheader">
+
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form>
+            <div class="Container40 Responsive100">
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="Card ShadowEffect HeiAutoOnMobile">
+                            <div class="Card ShadowEffect ui-fluid">
+                                <h:panelGrid columns="2">
+                                    <p:inputText 
+                                        value="#{settingHome.criterioBusqueda}">
+                                        <p:ajax event="keyup" update="@form:settingList" 
+                                                listener="#{settingHome.buscar()}"/>
+                                    </p:inputText>
+                                </h:panelGrid>
+                                <p:dataList id="settingList" var="setting" type="unordered" 
+                                            itemType="none" paginator="true" rows="10" 
+                                            styleClass="paginated"
+                                            value="#{settingHome.settings}">
+                                    <p:commandLink actionListener="#{settingHome.editar(setting)}"
+                                                   value="#{setting.name}" update="@form:pnlEditar"/>
+                                </p:dataList>
+                                <f:metadata>
+                                    <f:event type="preRenderView" 
+                                             listener="#{settingHome.preRenderView()}"/>
+                                </f:metadata>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="Container60 Responsive100">
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="Card ShadowEffect ui-fluid">
+                            <p:panel id="pnlEditar" >
+                                <jlgranda:input id="nme" name="name" type="text" 
+                                                label="#{i18n['name']}" 
+                                                value="#{settingHome.setting.name}"
+                                                execute="@this save" render="nme" 
+                                                required="true" container="none"/>
+                                <jlgranda:input id="value" name="value" type="text" 
+                                                label="#{i18n['Value']}" 
+                                                value="#{settingHome.setting.value}"
+                                                execute="@this save" render="value" 
+                                                required="true" container="none"/>
+                                <p:editor id="descrpn" 
+                                          value="#{settingHome.setting.description}"/>
+                            </p:panel>
+                            <div class="Wid33 Fleft Responsive">
+                                <p:commandButton icon="fa  fa-save Fs16 White"
+                                                 styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
+                                                 value="#{i18n['Save']}"
+                                                 actionListener="#{settingHome.save()}">
+                                    <f:param name="#{i18n['common.tipoGrabado']}" 
+                                             value="#{i18n['common.tipoGrabado.save']}"/>
+                                </p:commandButton>
+                            </div>
+                            <div class="Wid33 Fleft Responsive">
+                                <p:commandButton icon="fa  fa-save Fs16 White"
+                                                 styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
+                                                 value="#{i18n['SaveEdit']}"
+                                                 actionListener="#{settingHome.save()}">
+                                    <f:param name="#{i18n['common.tipoGrabado']}" 
+                                             value="#{i18n['common.tipoGrabado.saveedit']}"/>
+                                </p:commandButton>
+                            </div>
+                            <div class="Wid33 Fleft Responsive">
+                                <p:commandButton  icon="fa fa-close Fs16 White"
+                                                  styleClass="Fs12 RedButton Fright FloatNoneOnMobile"
+                                                  actionListener="#{settingHome.cancelar()}"
+                                                  update="@form:pnlEditar"
+                                                  value="#{i18n['Cancel']}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+        </script>
+    </ui:define>
+
+</ui:composition>
+
