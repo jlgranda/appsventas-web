@@ -91,6 +91,10 @@ public class InvoiceHome extends FedeController implements Serializable {
     private ProductService productService;
     
     private LazyInvoiceDataModel lazyDataModel; 
+    
+    //Resumenes rápidos
+    private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
+    private List<Invoice> myLastlastInvoices = new ArrayList<>();
 
     @PostConstruct
     private void init() {
@@ -162,6 +166,28 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void setCandidateDetails(List<Detail> candidateDetails) {
         this.candidateDetails = candidateDetails;
+    }
+
+    public List<Invoice> getMyLastlastPreInvoices() {
+        if (myLastlastPreInvoices.isEmpty()){
+            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0);
+        }
+        return myLastlastPreInvoices;
+    }
+
+    public void setMyLastlastPreInvoices(List<Invoice> myLastlastPreInvoices) {
+        this.myLastlastPreInvoices = myLastlastPreInvoices;
+    }
+
+    public List<Invoice> getMyLastlastInvoices() {
+        if (myLastlastInvoices.isEmpty()){
+            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE, 0);
+        }
+        return myLastlastInvoices;
+    }
+
+    public void setMyLastlastInvoices(List<Invoice> myLastlastInvoices) {
+        this.myLastlastInvoices = myLastlastInvoices;
     }
 
     @Override
@@ -310,8 +336,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     
-    public List<Invoice> findInvoices(Subject owner, DocumentType documentType){
-        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
+    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit){
         if (owner == null){ //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType);
         } else {
