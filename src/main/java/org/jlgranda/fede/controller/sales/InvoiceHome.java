@@ -72,11 +72,11 @@ public class InvoiceHome extends FedeController implements Serializable {
     private SettingHome settingHome;
 
     private Invoice invoice = null;
-    
+
     private Invoice lastInvoice;
-    
+
     private Invoice lastPreInvoice;
-    
+
     private Long invoiceId;
 
     private List<Detail> candidateDetails = new ArrayList<>();
@@ -89,9 +89,9 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private ProductService productService;
-    
-    private LazyInvoiceDataModel lazyDataModel; 
-    
+
+    private LazyInvoiceDataModel lazyDataModel;
+
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
@@ -103,11 +103,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         try {
             //amount = Integer.valueOf(settingService.findByName(SettingNames.DASHBOARD_RANGE).getValue());
             amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
-        } catch (java.lang.NumberFormatException nfe){
+        } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
             amount = 30;
         }
-        
+
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
     }
@@ -121,8 +121,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public Invoice getInvoice() {
-            
-        if (invoiceId != null && !this.invoice.isPersistent()){
+
+        if (invoiceId != null && !this.invoice.isPersistent()) {
             this.invoice = invoiceService.find(invoiceId);
             loadCandidateDetails(this.invoice.getDetails());
         }
@@ -134,7 +134,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public Invoice getLastInvoice() {
-        if (lastInvoice == null){
+        if (lastInvoice == null) {
             List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE);
             lastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
@@ -144,9 +144,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void setLastInvoice(Invoice lastInvoice) {
         this.lastInvoice = lastInvoice;
     }
-    
+
     public Invoice getLastPreInvoice() {
-        if (lastPreInvoice == null){
+        if (lastPreInvoice == null) {
             List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE);
             lastPreInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
@@ -169,8 +169,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public List<Invoice> getMyLastlastPreInvoices() {
-        if (myLastlastPreInvoices.isEmpty()){
-            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE);
+        if (myLastlastPreInvoices.isEmpty()) {
+            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE,0);
         }
         return myLastlastPreInvoices;
     }
@@ -180,8 +180,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public List<Invoice> getMyLastlastInvoices() {
-        if (myLastlastInvoices.isEmpty()){
-            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE);
+        if (myLastlastInvoices.isEmpty()) {
+            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE,0);
         }
         return myLastlastInvoices;
     }
@@ -201,14 +201,15 @@ public class InvoiceHome extends FedeController implements Serializable {
         super.openDialog(settingHome.getValue("app.fede.sales.invoice.popup", "/pages/fede/sales/popup_invoice"), width, height, true);
         return true;
     }
-    
+
     /**
-     * Guarda la entidad marcandola como INVOICE y generando un secuencial valido
-     * TODO debe generar también una factura electrónica
+     * Guarda la entidad marcandola como INVOICE y generando un secuencial
+     * valido TODO debe generar también una factura electrónica
+     *
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        if (getInvoice().isPersistent()){
+        if (getInvoice().isPersistent()) {
             getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
             getInvoice().setSequencial("TODO:generar-secuencial");//Generar el secuencia legal de factura
             save();
@@ -223,7 +224,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setAuthor(subject);
             getInvoice().setOrganization(null);
             for (Detail d : getCandidateDetails()) {
-                if (d.isPersistent()){ //Actualizar la cantidad
+                if (d.isPersistent()) { //Actualizar la cantidad
                     getInvoice().replaceDetail(d);
                 } else {
                     if (d.getAmount() != 0) {
@@ -247,19 +248,18 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return "failed";
     }
-    
-    public void clear(){
+
+    public void clear() {
         this.lastInvoice = null;
         this.lastPreInvoice = null;
     }
-    
-    
-    public BigDecimal calculeTotal(List<Invoice> list){
+
+    public BigDecimal calculeTotal(List<Invoice> list) {
         BigDecimal total = new BigDecimal(0);
-        for (Invoice i : list){
+        for (Invoice i : list) {
             total = total.add(i.getTotal());
         }
-        
+
         return total;
     }
 
@@ -271,20 +271,20 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void setLazyDataModel(LazyInvoiceDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
- 
+
     public void filter() {
-        if (lazyDataModel == null ){
+        if (lazyDataModel == null) {
             lazyDataModel = new LazyInvoiceDataModel(invoiceService);
         }
-        
+
         //lazyDataModel.setOwner(subject);
         lazyDataModel.setAuthor(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
-            
-        if (getKeyword()!= null && getKeyword().startsWith("label:")){
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
-            if (parts.length > 1){
+            if (parts.length > 1) {
                 lazyDataModel.setTags(parts[1]);
             }
             lazyDataModel.setFilterValue(null);//No buscar por keyword
@@ -293,11 +293,11 @@ public class InvoiceHome extends FedeController implements Serializable {
             lazyDataModel.setFilterValue(getKeyword());
         }
     }
-    
-     public void onRowSelect(SelectEvent event) {
+
+    public void onRowSelect(SelectEvent event) {
         try {
             //Redireccionar a RIDE de objeto seleccionado
-            if (event != null && event.getObject() != null){
+            if (event != null && event.getObject() != null) {
                 redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
@@ -310,7 +310,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         FacesContext.getCurrentInstance().addMessage(null, msg);
         this.selectedBussinesEntities.remove((FacturaElectronica) event.getObject());
-         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
+        logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
 
     @Override
@@ -321,24 +321,26 @@ public class InvoiceHome extends FedeController implements Serializable {
     private void loadCandidateDetails(List<Detail> details) {
         this.candidateDetails.clear();
         Detail detail = null;
-        if (details == null){
+        if (details == null) {
             for (Object obj : productService.findByNamedQuery("Product.findByOrganization")) {
                 detail = detailService.createInstance();
-                detail.setProduct((Product)obj);
+                detail.setProduct((Product) obj);
                 detail.setAmount(0);
                 this.candidateDetails.add(detail);
             }
         } else {
-            for (Detail d : this.invoice.getDetails()){
+            for (Detail d : this.invoice.getDetails()) {
                 this.candidateDetails.add(d);
             }
         }
     }
-    
-    
-    public List<Invoice> findInvoices(Subject owner, DocumentType documentType){
-        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
-        if (owner == null){ //retornar todas
+
+//    public List<Invoice> findInvoices(Subject owner, DocumentType documentType) {
+//        int limit = Integer.parseInt(settingHome.getValue("fede.dashboard.timeline.length", "5"));
+//    
+//    }
+    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit) {
+        if (owner == null) { //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType);
         } else {
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner);
