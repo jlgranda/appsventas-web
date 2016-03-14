@@ -68,7 +68,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </style>
 
     </ui:define>
-
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="settingId" value="#{settingHome.settingId}" />
+        </f:metadata>
+        <f:metadata>
+            <f:event type="preRenderView" 
+                     listener="#{settingHome.preRenderView()}"/>
+        </f:metadata>
+    </ui:define>
     <ui:define name="subheader">
 
     </ui:define>
@@ -79,28 +87,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="Container100">
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect HeiAutoOnMobile">
-                            <div class="Card ShadowEffect ui-fluid">
-                                <h:panelGrid columns="1">
-                                    <p:inputText 
-                                        value="#{settingHome.criterioBusqueda}">
-                                        <p:ajax event="keyup" update="@form:settingList" 
-                                                listener="#{settingHome.buscar()}"/>
-                                    </p:inputText>
-                                </h:panelGrid>
-                                <p:dataList id="settingList" var="entidad" 
-                                            paginator="true" rows="10" 
-                                            styleClass="paginated"
-                                            value="#{settingHome.settings}">
-                                    <p:commandLink actionListener="#{settingHome.editar(entidad)}"
-                                                   value="#{entidad.name}" update="@form:pnlEditar"/>
-                                </p:dataList>
-                                <p:commandButton update="@form:pnlEditar" actionListener="#{settingHome.crear()}" 
-                                                 value="#{i18n['common.add']}"/>
-                                <f:metadata>
-                                    <f:event type="preRenderView" 
-                                             listener="#{settingHome.preRenderView()}"/>
-                                </f:metadata>
-                            </div>
+                            <p:dataTable id="settingList" var="setting" 
+                                         paginator="true" rows="10" 
+                                         value="#{settingHome.settings}">
+                                <p:column filterBy="#{setting.name}" sortBy="#{setting.name}" filterMatchMode="contains">
+                                    <p:outputLabel
+                                        value="#{setting.name}" />
+                                    <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" outcome="/pages/profile/setting.jsf?settingId=#{setting.id}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <p:commandButton update="@form:pnlEditar" actionListener="#{settingHome.crear()}" 
+                                             value="#{i18n['common.add']}"/>
                         </div>
                     </div>
                 </div>
@@ -128,7 +125,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:panel>
                             <div class="Wid33 Fleft Responsive">
                                 <p:commandButton icon="fa  fa-save Fs16 White"
-                                                 update="@form"
                                                  styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
                                                  value="#{i18n['Save']}"
                                                  actionListener="#{settingHome.save()}">
@@ -138,7 +134,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="Wid33 Fleft Responsive">
                                 <p:commandButton icon="fa  fa-save Fs16 White"
-                                                 update="@form"
                                                  styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
                                                  value="#{i18n['SaveEdit']}"
                                                  actionListener="#{settingHome.save()}">

@@ -51,7 +51,8 @@ public class SettingHome extends FedeController implements Serializable {
     private SettingService settingService;
 
     private Setting setting;
-    private String criterioBusqueda;
+   
+    private Long settingId;
     private List<Setting> settings = new ArrayList<>();
 
     public void preRenderView() {
@@ -60,9 +61,8 @@ public class SettingHome extends FedeController implements Serializable {
 
     @PostConstruct
     public void init() {
+        this.buscar();
         setSetting(settingService.createInstance());
-        getSetting().setName(I18nUtil.getMessages("name"));
-        getSetting().setValue(I18nUtil.getMessages("Value"));
     }
 
     public void crear() {
@@ -80,10 +80,10 @@ public class SettingHome extends FedeController implements Serializable {
     public void buscar() {
         Setting settingBuscar = new Setting();
         settings = new ArrayList<>();
-        settingBuscar.setName(criterioBusqueda);
+        //settingBuscar.setName(criterioBusqueda);
         List<Setting> settingsSistema = settingService.findByCriteriaOwnerNone(settingBuscar);
         Setting settingBuscar1 = new Setting();
-        settingBuscar1.setName(criterioBusqueda);
+        //settingBuscar1.setName(criterioBusqueda);
         settingBuscar1.setOwner(subject);
         List<Setting> settingsSubjects = settingService.findByCriteria(settingBuscar1);
         settings.addAll(settingsSistema);
@@ -91,7 +91,7 @@ public class SettingHome extends FedeController implements Serializable {
     }
 
     public void cancelar() {
-        setSetting(new Setting());
+        setSetting(settingService.createInstance());
     }
 
     public void save() {
@@ -124,7 +124,7 @@ public class SettingHome extends FedeController implements Serializable {
                 addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
                 return;
             }
-            settingService.save(this.setting.getId(), setting);
+            settingService.save(getSetting().getId(),getSetting());
             addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
             FacesContext facesContext = FacesContext.getCurrentInstance();
             String param = (String) facesContext.getExternalContext().getRequestParameterMap().get(I18nUtil.getMessages("common.tipoGrabado"));
@@ -138,9 +138,9 @@ public class SettingHome extends FedeController implements Serializable {
         }
     }
 
-    public void editar(Setting setting) {
-        setSetting(setting);
-    }
+//    public void editar(Setting setting) {
+//        setSetting(settingService.find(setting.getId()));
+//    }
 
     public String getGlobalValue(String name, String defaultValue) {
         Setting s = settingService.findByName(name, null);
@@ -159,23 +159,27 @@ public class SettingHome extends FedeController implements Serializable {
         this.settings = settings;
     }
 
-    public String getCriterioBusqueda() {
-        return criterioBusqueda;
-    }
-
-    public void setCriterioBusqueda(String criterioBusqueda) {
-        this.criterioBusqueda = criterioBusqueda;
-    }
-
     public Setting getSetting() {
+        if (this.settingId!=null && !setting.isPersistent()){
+            this.setting=settingService.find(settingId);
+        }
         return setting;
     }
 
     public void setSetting(Setting setting) {
         this.setting = setting;
     }
-    //</editor-fold> 
 
+    public Long getSettingId() {
+        return settingId;
+    }
+
+    public void setSettingId(Long settingId) {
+        this.settingId = settingId;
+    }
+
+    //</editor-fold> 
+    //<editor-fold defaultstate="collapsed" desc="METODOS DE FEDECONTROLLER">
     @Override
     public void handleReturn(SelectEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -185,5 +189,5 @@ public class SettingHome extends FedeController implements Serializable {
     public Group getDefaultGroup() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+//</editor-fold>        
 }

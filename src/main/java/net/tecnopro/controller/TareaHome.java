@@ -247,7 +247,7 @@ public class TareaHome extends FedeController implements Serializable {
                 getTarea().setDepartamento("temporal");
                 getTarea().setAuthor(subject); //usuario logeado
                 getTarea().setOwner(getDestinatario()); //destinatario
-                getTarea().setEstadoTipo(EstadoTipo.RESUELTO);//La tarea se completa al iniciar el proceso
+                getTarea().setEstadoTipo(EstadoTipo.ESPERA);//La tarea se completa al iniciar el proceso
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
             } else {
