@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2016 Jorge
+Copyright (C) 2016 jlgranda
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +13,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 -->
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
@@ -78,36 +80,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
     <ui:define name="subheader">
-
+        #{i18n['Settings']}
     </ui:define>
 
     <ui:define name="content">
         <h:form>
-            <div class="Container40 Responsive100">
+            <div class="Container20 Responsive100">
                 <div class="Container100">
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect HeiAutoOnMobile">
+                            <p:commandButton update="@form:pnlEditar" actionListener="#{settingHome.crear()}" 
+                                             value="#{i18n['common.add']}" styleClass="RedButton"/>
                             <p:dataTable id="settingList" var="setting" 
-                                         paginator="true" rows="10" 
-                                         value="#{settingHome.settings}">
-                                <p:column filterBy="#{setting.name}" sortBy="#{setting.name}" filterMatchMode="contains">
-                                    <p:outputLabel
-                                        value="#{setting.name}" />
-                                    <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" outcome="/pages/profile/setting.jsf?settingId=#{setting.id}"/>
+                                         paginator="true" rows="10"
+                                         value="#{settingHome.overwritableSettings}">
+                                <p:column filterBy="#{setting.label}" sortBy="#{setting.label}" filterMatchMode="contains">
+                                    <h:link title="#{setting.label}" outcome="/pages/profile/setting.jsf?settingId=#{setting.id}"
+                                                   styleClass="" style="margin-right:10px;display:inline-block"
+                                                   >
+                                        <h:outputText value="#{setting.label}" style="display:inline-block"/>
+                                    </h:link>
                                 </p:column>
                             </p:dataTable>
-                            <p:commandButton update="@form:pnlEditar" actionListener="#{settingHome.crear()}" 
-                                             value="#{i18n['common.add']}"/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="Container60 Responsive100">
+            <div class="Container80 Responsive100">
                 <div class="Container100">
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
-                            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                             <p:panel id="pnlEditar" >
+                                <jlgranda:input id="lbl" name="label" type="text" 
+                                                label="#{i18n['Label']}" 
+                                                value="#{settingHome.setting.label}"
+                                                execute="@this save" render="lbl" 
+                                                required="true" container="none"/>
                                 <jlgranda:input id="nme" name="name" type="text" 
                                                 label="#{i18n['name']}" 
                                                 value="#{settingHome.setting.name}"
@@ -123,31 +131,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
                                                 container="none"/>
                             </p:panel>
-                            <div class="Wid33 Fleft Responsive">
-                                <p:commandButton icon="fa  fa-save Fs16 White"
-                                                 styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
-                                                 value="#{i18n['Save']}"
-                                                 actionListener="#{settingHome.save()}">
-                                    <f:param name="#{i18n['common.tipoGrabado']}" 
-                                             value="#{i18n['common.tipoGrabado.save']}"/>
-                                </p:commandButton>
-                            </div>
-                            <div class="Wid33 Fleft Responsive">
-                                <p:commandButton icon="fa  fa-save Fs16 White"
-                                                 styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
-                                                 value="#{i18n['SaveEdit']}"
-                                                 actionListener="#{settingHome.save()}">
-                                    <f:param name="#{i18n['common.tipoGrabado']}" 
-                                             value="#{i18n['common.tipoGrabado.saveedit']}"/>
-                                </p:commandButton>
-                            </div>
-                            <div class="Wid33 Fleft Responsive">
-                                <p:commandButton  icon="fa fa-close Fs16 White"
-                                                  styleClass="Fs12 RedButton Fright FloatNoneOnMobile"
-                                                  actionListener="#{settingHome.cancelar()}"
-                                                  update="@form:pnlEditar"
-                                                  value="#{i18n['Cancel']}"/>
-                            </div>
+                            
+                            <div class="EmptyBox10"></div>
+
+                            <p:toolbar>
+                                <f:facet name="left">
+
+                                    <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                                                     actionListener="#{tareaHome.save()}" disabled="false" 
+                                                     style="width: auto !important;"
+                                                     action="#{settingHome.getOutcome()}" type="submit"/>
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+
+                                </f:facet>
+
+                                <f:facet name="right">
+
+                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                                     actionListener="#{settingHome.cancelar()}" 
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                                     update="@form:pnlEditar"/>
+                                    <p:menuButton value="#{i18n['common.options']}">
+                                        <p:menuitem value="#{i18n['common.restore']}" icon="fa fa-undo" />
+                                    </p:menuButton>
+                                </f:facet>
+
+                            </p:toolbar>
                         </div>
                     </div>
 

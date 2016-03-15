@@ -20,7 +20,10 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.ejb.SettingService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -33,6 +36,8 @@ import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.QueryData;
+import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -53,7 +58,10 @@ public class SettingHome extends FedeController implements Serializable {
     private Setting setting;
    
     private Long settingId;
+    
     private List<Setting> settings = new ArrayList<>();
+    
+    private List<Setting> overwritableSettings = new ArrayList<>();
 
     public void preRenderView() {
         this.buscar();
@@ -77,17 +85,36 @@ public class SettingHome extends FedeController implements Serializable {
         return s.getValue();
     }
 
+    /**
+     * Obtener todas las configuraciones del sistema que son suceptibles de ser 
+     * sobreescritar para el usuario actual
+     */
+    protected List<Setting> findSettingsForOverwrite(){
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("owner", null);
+        filters.put("codeType", CodeType.SYSTEM); ///propiedades del sistema
+        filters.put("overwritable", true);
+        QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
+    }
+    /**
+     * Busca las configuraciones del sistema 
+     */
     public void buscar() {
-        Setting settingBuscar = new Setting();
-        settings = new ArrayList<>();
-        //settingBuscar.setName(criterioBusqueda);
-        List<Setting> settingsSistema = settingService.findByCriteriaOwnerNone(settingBuscar);
-        Setting settingBuscar1 = new Setting();
-        //settingBuscar1.setName(criterioBusqueda);
-        settingBuscar1.setOwner(subject);
-        List<Setting> settingsSubjects = settingService.findByCriteria(settingBuscar1);
-        settings.addAll(settingsSistema);
-        settings.addAll(settingsSubjects);
+//        Setting settingBuscar = new Setting();
+//        settings = new ArrayList<>();
+//        //settingBuscar.setName(criterioBusqueda);
+//        List<Setting> settingsSistema = settingService.findByCriteriaOwnerNone(settingBuscar);
+//        Setting settingBuscar1 = new Setting();
+//        //settingBuscar1.setName(criterioBusqueda);
+//        settingBuscar1.setOwner(subject);
+//        List<Setting> settingsSubjects = settingService.findByCriteria(settingBuscar1);
+//        settings.addAll(settingsSistema);
+//        settings.addAll(settingsSubjects);
+        Map<String, Object> filters = new HashMap<String, Object>();
+        filters.put("owner", subject);
+        QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
+        settings.addAll(queryData.getResult());
     }
 
     public void cancelar() {
@@ -176,6 +203,17 @@ public class SettingHome extends FedeController implements Serializable {
 
     public void setSettingId(Long settingId) {
         this.settingId = settingId;
+    }
+
+    public List<Setting> getOverwritableSettings() {
+        if (overwritableSettings.isEmpty()){
+            setOverwritableSettings(findSettingsForOverwrite());
+        }
+        return overwritableSettings;
+    }
+
+    public void setOverwritableSettings(List<Setting> overwritableSettings) {
+        this.overwritableSettings = overwritableSettings;
     }
 
     //</editor-fold> 
