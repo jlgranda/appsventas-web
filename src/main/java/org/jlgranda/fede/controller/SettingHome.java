@@ -38,6 +38,7 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.jpapi.util.Strings;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -59,13 +60,15 @@ public class SettingHome extends FedeController implements Serializable {
 
     private Long settingId;
 
+    private String settingName;
+
     private List<Setting> settings = new ArrayList<>();
 
     private List<Setting> overwritableSettings = new ArrayList<>();
 
     @PostConstruct
     public void init() {
-        setSetting(settingService.createInstance());
+        setOutcome("");
     }
 
     public void crear() {
@@ -109,30 +112,33 @@ public class SettingHome extends FedeController implements Serializable {
 //    }
 
     public void cancelar() {
-        setSetting(settingService.createInstance());
+        setSetting(null);
     }
 
     public void save() {
         try {
-            List<Setting> settingsbyNameAndOwner = settingService.findByNamedQuery("Setting.findByNameAndOwner", this.setting.getName(), subject);
-            Setting settingByNameAndOwner = !settingsbyNameAndOwner.isEmpty() ? settingsbyNameAndOwner.get(0) : null;
-            if (settingByNameAndOwner == null) {
-                setting = newSetting(settingByNameAndOwner);
-            }
-            if (!this.setting.isPersistent()) {
-                settingService.save(this.setting);
-                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
-                return;
-            }
+//            List<Setting> settingsbyNameAndOwner = settingService.findByNamedQuery("Setting.findByNameAndOwner", this.setting.getName(), subject);
+//            Setting settingByNameAndOwner = !settingsbyNameAndOwner.isEmpty() ? settingsbyNameAndOwner.get(0) : null;
+//            if (settingByNameAndOwner == null) {
+//                setting = newSetting(settingByNameAndOwner);
+//            }
+//            if (!this.setting.isPersistent()) {
+//                settingService.save(this.setting);
+//                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+//                return;
+//            }
+//            settingService.save(getSetting().getId(), getSetting());
+//            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
+//            FacesContext facesContext = FacesContext.getCurrentInstance();
+//            String param = (String) facesContext.getExternalContext().getRequestParameterMap().get(I18nUtil.getMessages("common.tipoGrabado"));
+//            if (param != null) {
+//                if (param.equalsIgnoreCase(I18nUtil.getMessages("common.tipoGrabado.save"))) {
+//                    settingService.createInstance();
+//                }
+//            }
+
             settingService.save(getSetting().getId(), getSetting());
-            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
-            FacesContext facesContext = FacesContext.getCurrentInstance();
-            String param = (String) facesContext.getExternalContext().getRequestParameterMap().get(I18nUtil.getMessages("common.tipoGrabado"));
-            if (param != null) {
-                if (param.equalsIgnoreCase(I18nUtil.getMessages("common.tipoGrabado.save"))) {
-                    settingService.createInstance();
-                }
-            }
+            addDefaultSuccessMessage();
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
@@ -159,24 +165,36 @@ public class SettingHome extends FedeController implements Serializable {
     }
 
     public Setting getSetting() {
-        if (settingId != null && !this.setting.isPersistent()) {
+        if (!Strings.isNullOrEmpty(settingName) && this.setting == null) {
+            //Cargar objeto setting por nombre
+            List<Setting> settingsByNameAndOwner = settingService.findByNamedQuery("Setting.findByNameAndOwner", this.settingName, subject);
+            if (!settingsByNameAndOwner.isEmpty()) {
+                //El objeto configuración de usuario
+                this.setting = settingsByNameAndOwner.get(0);
+            } else {
+                //Crear el objeto configuración nuevo, como una copia del objeto del sistema
+                this.setting = buildSettingFrom((Setting) settingService.findByNamedQuery("Setting.findByName", this.settingName).get(0));
+            }
+        } else if (settingId != null && this.setting == null) {
+            //Cargar objeto setting por id, carga el objeto directamente.
             this.setting = settingService.find(settingId);
         }
-        return setting;
+        
+        return this.setting;
     }
 
-    private Setting newSetting(Setting settingByNameAndOwner) {
-        settingByNameAndOwner = settingService.createInstance();
-        settingByNameAndOwner.setOwner(subject);
-        settingByNameAndOwner.setCodeType(CodeType.SUBJECT);
-        settingByNameAndOwner.setOverwritable(false);
-        settingByNameAndOwner.setUuid(java.util.UUID.randomUUID().toString());
-        settingByNameAndOwner.setActive(Boolean.TRUE);
-        settingByNameAndOwner.setName(setting.getName());
-        settingByNameAndOwner.setValue(setting.getValue());
-        settingByNameAndOwner.setLabel(setting.getLabel());
-        settingByNameAndOwner.setDescription(setting.getDescription());
-        return settingByNameAndOwner;
+    private Setting buildSettingFrom(Setting src) {
+        Setting dest = settingService.createInstance();
+        dest.setOwner(subject);
+        dest.setCodeType(CodeType.SUBJECT);
+        dest.setOverwritable(false);
+        dest.setUuid(java.util.UUID.randomUUID().toString());
+        dest.setActive(Boolean.TRUE);
+        dest.setName(src.getName());
+        dest.setValue(src.getValue());
+        dest.setLabel(src.getLabel());
+        dest.setDescription(src.getDescription());
+        return dest;
     }
 
     public void setSetting(Setting setting) {
@@ -189,6 +207,14 @@ public class SettingHome extends FedeController implements Serializable {
 
     public void setSettingId(Long settingId) {
         this.settingId = settingId;
+    }
+
+    public String getSettingName() {
+        return settingName;
+    }
+
+    public void setSettingName(String settingName) {
+        this.settingName = settingName;
     }
 
     public List<Setting> getOverwritableSettings() {

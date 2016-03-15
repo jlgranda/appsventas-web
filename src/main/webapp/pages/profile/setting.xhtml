@@ -73,6 +73,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="settingId" value="#{settingHome.settingId}" />
+            <f:viewParam name="settingName" value="#{settingHome.settingName}" />
         </f:metadata>
     </ui:define>
     <ui:define name="subheader">
@@ -91,7 +92,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          paginator="true" rows="10"
                                          value="#{settingHome.overwritableSettings}">
                                 <p:column filterBy="#{setting.label}" sortBy="#{setting.label}" filterMatchMode="contains">
-                                    <h:link title="#{setting.label}" outcome="/pages/profile/setting.jsf?settingId=#{setting.id}"
+                                    <h:link title="#{setting.label}" outcome="/pages/profile/setting.jsf?settingName=#{setting.name}"
                                                    styleClass="" style="margin-right:10px;display:inline-block"
                                                    >
                                         <h:outputText value="#{setting.label}" style="display:inline-block"/>
@@ -106,7 +107,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="Container100">
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
-                            <p:panel id="pnlEditar" >
+                            <p:panel id="pnlEmpty" rendered="#{settingHome.setting == null}">
+                                <p>Seleccione una configuración</p>
+                            </p:panel>
+                            <p:panel id="pnlEditar" rendered="#{settingHome.setting != null}">
                                 <jlgranda:input id="lbl" name="label" type="text" 
                                                 label="#{i18n['Label']}" 
                                                 value="#{settingHome.setting.label}"
@@ -130,7 +134,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             
                             <div class="EmptyBox10"></div>
 
-                            <p:toolbar>
+                            <p:toolbar rendered="#{settingHome.setting != null}">
                                 <f:facet name="left">
 
                                     <p:commandButton value="#{i18n['Save']}" ajax="true" 

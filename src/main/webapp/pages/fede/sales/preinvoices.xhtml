@@ -71,7 +71,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     </ui:define>
 
     <ui:define name="subheader">
-        #{i18n['Invoices']}#{'/'}#{i18n['app.fede.allmysales']}
+        #{i18n['Invoices']}#{'/'}#{i18n['app.fede.sales']}
     </ui:define>
 
     <ui:define name="content">
@@ -83,15 +83,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <p:tabView style="margin:-20px; border:none 0px;">
-                            <p:tab title="#{i18n['app.fede.sales']}">
+                            <p:tab title="#{i18n['app.fede.allmysales']}">
+                                <!-- overrides title on tab-->
+                                <f:facet name="title">
+                                    <h:outputText value="#{i18n['app.fede.allmysales']}"/>
+                                    #{' ('}
+                                    <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastPreInvoices)}">
+                                        <f:convertNumber type="currency"/>
+                                    </h:outputText>
+                                    #{')'}
+                                </f:facet>
                                 <div class="Container100">
                                     <div class="Container100 Responsive100">
                                         <div class="ContainerIndent">
                                             <div class="Container100 TexAlCenter DispBlock">
                                                 <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf"/>
                                             </div>
-                                            <div class="EmptyBox10"></div>
-                                            <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.allmysales']}</div>
                                             <div class="EmptyBox10"></div>
                                             <ui:repeat value="#{invoiceHome.myLastlastPreInvoices}" var="entity">
                                                 <div class="Container60 Fs50 FontRobotoLight Orange">
@@ -135,14 +142,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </p:tab>
                             <p:tab title="#{i18n['Invoices']}">
+                                <f:facet name="title">
+                                    <h:outputText value="#{i18n['app.fede.allmyinvoices']}"/>
+                                    #{' ('}
+                                    <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices)}">
+                                        <f:convertNumber type="currency"/>
+                                    </h:outputText>
+                                    #{')'}
+                                </f:facet>
                                 <div class="Container100">
                                     <div class="Container100 Responsive100">
                                         <div class="ContainerIndent">
                                             <div class="Container100 TexAlCenter DispBlock">
                                                 <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf"/>
                                             </div>
-                                            <div class="EmptyBox10"></div>
-                                            <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.allinvoices']}</div>
                                             <div class="EmptyBox10"></div>
                                             <ui:repeat value="#{invoiceHome.myLastlastInvoices}" var="entity">
                                                 <div class="Container100 Fs50 FontRobotoLight Orange">

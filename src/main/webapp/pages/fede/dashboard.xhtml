@@ -86,7 +86,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <h:form>
                             <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '20')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
                             <p:tabView style="margin:-20px; border:none 0px;">
-                                <p:tab title="#{i18n['app.fede.sales']}">
+                                <p:tab title="#{i18n['PreInvoiced']}">
                                     <div class="Container100">
                                         <div class="Container100 Responsive100">
                                             <div class="ContainerIndent">
@@ -139,7 +139,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </div>
                                     </div>
                                 </p:tab>
-                                <p:tab title="#{i18n['Invoices']}">
+                                <p:tab title="#{i18n['Invoiced']}">
                                     <div class="Container100">
                                         <div class="Container100 Responsive100">
                                             <div class="ContainerIndent">
@@ -290,7 +290,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </div>
 
             <!-- Section 2 -->
-            <div class="Container100">
+<!--            <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile">
                         <h:form>
@@ -335,7 +335,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </h:form>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
 
 

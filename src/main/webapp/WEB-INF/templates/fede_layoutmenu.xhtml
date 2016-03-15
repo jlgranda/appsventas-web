@@ -9,8 +9,10 @@
     <div class="Animated05" id="layout-menu-cover">
         <h:form id="menuform">
             <pm:menu>
-                <p:menuitem id="rm_dashboard" value="Dashboard" icon="icon-dvr" outcome="/dashboard"/>
-                <p:submenu id="colors" label="Color Variations" icon="icon-color_lens">
+                <p:menuitem id="rm_dashboard" value="#{i18n['Dashboard']}" icon="icon-dvr" url="/pages/fede/dashboard.jsf"/>
+                <p:menuitem id="rm_inventory" value="#{i18n['app.fede.inventory']}" icon="fa fa-cubes " url="/pages/fede/inventory/dashboard.jsf"/>
+                <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="icon-paper" url="/pages/fede/sales/preinvoices.jsf" />
+<!--                <p:submenu id="colors" label="Color Variations" icon="icon-color_lens">
                     <p:menuitem id="gray_geometric" value="Gray" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('GrayModena Geometry');"/>
                     <p:menuitem id="blue_geometric" value="Blue" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('BlueModena Geometry');"/>
                     <p:menuitem id="indigo_geometric" value="Indigo" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('IndigoModena Geometry');"/>
@@ -55,8 +57,8 @@
                             </p:submenu>
                         </p:submenu>
                     </p:submenu>
-                </p:submenu>
-                <p:menuitem id="rm_icons" value="Font Icons" icon="icon-stars" outcome="/font-icons" />
+                </p:submenu>-->
+               
 
 <!--                <p:submenu id="rm_docs" label="Documentation" icon="icon-card_membership">
                     <p:submenu id="rm_docs_core" label="Core CSS Docs" icon="fa fa-code">

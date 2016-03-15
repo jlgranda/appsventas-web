@@ -65,26 +65,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                     </ui:repeat>
                     <div class="EmptyBox20"></div>
-                    <div class="Wid33 Fleft Responsive50">
-                        <p:commandButton value="#{i18n['app.fede.collect']}" ajax="true" 
-                                         actionListener="#{invoiceHome.collect()}" 
-                                         action="preinvoices" disabled="false" rendered="#{invoiceHome.invoice.isPersistent()}"
-                                         styleClass="CyanButton Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                    </div>
-                    <div class="EmptyBox5 ShowOnMobile"></div>
-                    <div class="Wid33 Fleft Responsive50">
-                        <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                         actionListener="#{invoiceHome.save()}" 
-                                         action="preinvoices" disabled="false" rendered="true" 
-                                         styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                    </div>
-                    <div class="EmptyBox5 ShowOnMobile"></div>
-                    <div class="Wid33 Fleft Responsive50">
-                        <p:commandButton value="#{i18n['Cancel']}" 
-                                         actionListener="#{invoiceHome.closeDialog(null)}"
-                                         ajax="true" immediate="true" action="home" disabled="false" 
-                                         styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                    </div>
+                    <p:toolbar>
+                        <f:facet name="left">
+
+                            <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                                             actionListener="#{invoiceHome.save()}" action="preinvoices" disabled="false" 
+                                             style="width: auto !important;"
+                                             action="#{settingHome.getOutcome()}" type="submit"/>
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                            <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                                             actionListener="#{invoiceHome.collect()}" action="preinvoices" 
+                                             rendered="#{invoiceHome.invoice.isPersistent()}" disabled="false" 
+                                             style="width: auto !important;"
+                                             action="#{settingHome.getOutcome()}" type="submit"/>
+                        </f:facet>
+
+                        <f:facet name="right">
+
+                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                                             actionListener="#{invoiceHome.closeDialog(null)}" 
+                                             action="home"
+                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             update="@form:pnlEditar"/>
+                            <p:menuButton value="#{i18n['common.options']}">
+                                <p:menuitem value="#{i18n['common.restore']}" icon="fa fa-undo" />
+                            </p:menuButton>
+                        </f:facet>
+
+                    </p:toolbar>
                 </div>
             </div>
         </div>
