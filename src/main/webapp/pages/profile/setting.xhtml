@@ -74,10 +74,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <f:metadata>
             <f:viewParam name="settingId" value="#{settingHome.settingId}" />
         </f:metadata>
-        <f:metadata>
-            <f:event type="preRenderView" 
-                     listener="#{settingHome.preRenderView()}"/>
-        </f:metadata>
     </ui:define>
     <ui:define name="subheader">
         #{i18n['Settings']}
@@ -138,7 +134,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <f:facet name="left">
 
                                     <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                                     actionListener="#{tareaHome.save()}" disabled="false" 
+                                                     actionListener="#{settingHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
                                                      action="#{settingHome.getOutcome()}" type="submit"/>
                                     <span class="ui-separator">
