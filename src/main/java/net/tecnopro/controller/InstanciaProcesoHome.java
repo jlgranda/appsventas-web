@@ -18,11 +18,16 @@ package net.tecnopro.controller;
 
 import com.jlgranda.fede.SettingNames;
 import java.io.Serializable;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import net.tecnopro.document.ejb.ProcesoService;
-import net.tecnopro.document.model.Proceso;
+import net.tecnopro.document.ejb.InstanciaProcesoService;
+import net.tecnopro.document.ejb.TareaService;
+import net.tecnopro.document.model.InstanciaProceso;
+import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
@@ -37,38 +42,45 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-public class ProcesoHome extends FedeController implements Serializable {
+@ManagedBean
+@ViewScoped
+public class InstanciaProcesoHome extends FedeController implements Serializable {
 
-    Logger logger = LoggerFactory.getLogger(ProcesoHome.class);
+    Logger logger = LoggerFactory.getLogger(InstanciaProcesoHome.class);
 
     @Inject
     @LoggedIn
     private Subject subject;
-    
+
     private Long procesoId;
-    
-    private Proceso proceso;
-    
+
+    private InstanciaProceso instanciaProceso;
+
     @Inject
     private SettingHome settingHome;
-    
+
     @EJB
-    private ProcesoService procesoService;
-    
+    private InstanciaProcesoService instanciaProcesoService;
+    @EJB
+    private TareaService tareaService;
+
+    private Tarea ultimaTarea;
+    private List<Tarea> tareas;
+
     @PostConstruct
     public void init() {
         int amount = 0;
         try {
             amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
-        } catch (java.lang.NumberFormatException nfe){
+        } catch (java.lang.NumberFormatException nfe) {
             amount = 30;
         }
-        
+
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        
+
         setOutcome("procesos");
-        
+        setInstanciaProceso(instanciaProcesoService.createInstance());
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
@@ -81,17 +93,50 @@ public class ProcesoHome extends FedeController implements Serializable {
         this.procesoId = procesoId;
     }
 
-    public Proceso getProceso() {
-        if (this.procesoId != null && !this.proceso.isPersistent()) {
-            this.proceso = procesoService.find(procesoId);
+    public InstanciaProceso getInstanciaProceso() {
+        if (this.procesoId != null && !this.instanciaProceso.isPersistent()) {
+            this.instanciaProceso = instanciaProcesoService.find(procesoId);
         }
-        return proceso;
+        return instanciaProceso;
     }
 
-    public void setProceso(Proceso proceso) {
-        this.proceso = proceso;
+    public void setInstanciaProceso(InstanciaProceso instanciaProceso) {
+        this.instanciaProceso = instanciaProceso;
     }
-    
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public Tarea getUltimaTarea() {
+        if (procesoId != null && this.instanciaProceso.isPersistent()) {
+            List<Tarea> tareasUltima = tareaService.findByNamedQuery("Tarea.findLastByInstanciaProceso", getInstanciaProceso());
+            ultimaTarea = tareasUltima.isEmpty() ? new Tarea() : (Tarea) tareasUltima.get(0);
+        }
+        return ultimaTarea;
+    }
+
+    public void setUltimaTarea(Tarea ultimaTarea) {
+        this.ultimaTarea = ultimaTarea;
+    }
+
+    public List<Tarea> getTareas() {
+        if (procesoId != null && this.instanciaProceso.isPersistent()) {
+            List<Tarea> tareasInstanciaProceso = tareaService.findByNamedQuery("Tarea.findLastsByInstanciaProceso", getInstanciaProceso());
+            tareasInstanciaProceso.remove(this.ultimaTarea);
+            tareas = tareasInstanciaProceso;
+        }
+        return tareas;
+    }
+
+    public void setTareas(List<Tarea> tareas) {
+        this.tareas = tareas;
+    }
+
     @Override
     public void handleReturn(SelectEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -101,5 +146,5 @@ public class ProcesoHome extends FedeController implements Serializable {
     public Group getDefaultGroup() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

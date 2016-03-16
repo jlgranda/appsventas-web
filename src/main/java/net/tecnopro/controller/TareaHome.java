@@ -30,11 +30,11 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import net.tecnopro.document.ejb.DocumentoService;
-import net.tecnopro.document.ejb.ProcesoService;
+import net.tecnopro.document.ejb.InstanciaProcesoService;
 import net.tecnopro.document.ejb.TareaService;
 import net.tecnopro.document.model.Documento;
 import net.tecnopro.document.model.EstadoTipo;
-import net.tecnopro.document.model.Proceso;
+import net.tecnopro.document.model.InstanciaProceso;
 import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
@@ -88,7 +88,7 @@ public class TareaHome extends FedeController implements Serializable {
     private OrganizationService organizationService;
 
     @EJB
-    private ProcesoService procesoService;
+    private InstanciaProcesoService procesoService;
 
     @EJB
     private TareaService tareaService;
@@ -99,7 +99,7 @@ public class TareaHome extends FedeController implements Serializable {
     private List<Tarea> misUltimasTareasRecibidas = new ArrayList<>();
     private List<Documento> documentosRemovidos = new ArrayList<>();
     private Tarea tarea;
-    private Proceso proceso;
+    private InstanciaProceso proceso;
     private Tarea siguienteTarea;
     private Tarea ultimaTareaRecibida;
     private Tarea ultimaTareaEnviada;
@@ -242,7 +242,7 @@ public class TareaHome extends FedeController implements Serializable {
                 //Completar la primera tarea
                 //getTarea().setName(settingHome.getValue("fede.documents.task.firts.name", "Tarea inicial de proceso ") + proceso.getCode());
                 //getTarea().setDescription(settingHome.getValue("fede.documents.task.firts.description", "Tarea inicial de creación de proceso ") + proceso.getCode());
-                getTarea().setProceso(this.proceso);
+                getTarea().setInstanciaProceso(this.proceso);
                 //Es temporral hasta que se pueda seleccionar una organización
                 getTarea().setDepartamento("temporal");
                 getTarea().setAuthor(subject); //usuario logeado
@@ -263,7 +263,7 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void complete() {
         try {
-            getSiguienteTarea().setProceso(getTarea().getProceso());
+            getSiguienteTarea().setInstanciaProceso(getTarea().getInstanciaProceso());
             getSiguienteTarea().setAuthor(subject);
             getSiguienteTarea().setOwner(getDestinatario());
             getSiguienteTarea().setDepartamento("Temporal");
@@ -403,16 +403,16 @@ public class TareaHome extends FedeController implements Serializable {
             getDocumentos(this.tarea);
             setDestinatario(tarea.getOwner());
             setSolicitante(tarea.getAuthor());
-            setProceso(tarea.getProceso());
+        setProceso(tarea.getInstanciaProceso());
         }
         return tarea;
     }
 
-    public Proceso getProceso() {
+    public InstanciaProceso getProceso() {
         return proceso;
     }
 
-    public void setProceso(Proceso proceso) {
+    public void setProceso(InstanciaProceso proceso) {
         this.proceso = proceso;
     }
 
