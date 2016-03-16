@@ -93,8 +93,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          value="#{settingHome.overwritableSettings}">
                                 <p:column filterBy="#{setting.label}" sortBy="#{setting.label}" filterMatchMode="contains">
                                     <h:link title="#{setting.label}" outcome="/pages/profile/setting.jsf?settingName=#{setting.name}"
-                                                   styleClass="" style="margin-right:10px;display:inline-block"
-                                                   >
+                                            styleClass="" style="margin-right:10px;display:inline-block"
+                                            >
                                         <h:outputText value="#{setting.label}" style="display:inline-block"/>
                                     </h:link>
                                 </p:column>
@@ -131,7 +131,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
                                                 container="none"/>
                             </p:panel>
-                            
+
                             <div class="EmptyBox10"></div>
 
                             <p:toolbar rendered="#{settingHome.setting != null}">
@@ -153,9 +153,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      actionListener="#{settingHome.cancelar()}" 
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                                      update="@form:pnlEditar"/>
-                                    <p:menuButton value="#{i18n['common.options']}">
-                                        <p:menuitem value="#{i18n['common.restore']}" icon="fa fa-undo" />
-                                    </p:menuButton>
+                                    <p:commandButton title="#{i18n['common.restore']}" actionListener="#{settingHome.restaurar()}"
+                                                     styleClass="GrayButton" type="submit"
+                                                     update="@form:pnlEditar" rendered="#{settingHome.setting.persistent}"
+                                                     icon="fa fa-undo Fs14 Black"/>
+                                     <!--<p:menuButton value="{i18n['common.options']}">
+                                         <p:menuitem value="{i18n['common.restore']}" action="{settingHome.restaurar()}"
+                                                     ajax="true"  update="@form:pnlEditar" rendered="{settingHome.setting.persistent}"
+                                                     icon="fa fa-undo" />
+                                     </p:menuButton>-->
                                 </f:facet>
 
                             </p:toolbar>

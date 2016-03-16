@@ -100,16 +100,6 @@ public class SettingHome extends FedeController implements Serializable {
         QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
-//    /**
-//     * Busca las configuraciones del sistema 
-//     */
-//    public void buscar() {
-//        Map<String, Object> filters = new HashMap<>();
-//        filters.put("owner", subject);
-//        settingService.findByNamedQuery(outcome);
-//        QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
-//        settings.addAll(queryData.getResult());
-//    }
 
     public void cancelar() {
         setSetting(null);
@@ -117,26 +107,6 @@ public class SettingHome extends FedeController implements Serializable {
 
     public void save() {
         try {
-//            List<Setting> settingsbyNameAndOwner = settingService.findByNamedQuery("Setting.findByNameAndOwner", this.setting.getName(), subject);
-//            Setting settingByNameAndOwner = !settingsbyNameAndOwner.isEmpty() ? settingsbyNameAndOwner.get(0) : null;
-//            if (settingByNameAndOwner == null) {
-//                setting = newSetting(settingByNameAndOwner);
-//            }
-//            if (!this.setting.isPersistent()) {
-//                settingService.save(this.setting);
-//                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
-//                return;
-//            }
-//            settingService.save(getSetting().getId(), getSetting());
-//            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully"));
-//            FacesContext facesContext = FacesContext.getCurrentInstance();
-//            String param = (String) facesContext.getExternalContext().getRequestParameterMap().get(I18nUtil.getMessages("common.tipoGrabado"));
-//            if (param != null) {
-//                if (param.equalsIgnoreCase(I18nUtil.getMessages("common.tipoGrabado.save"))) {
-//                    settingService.createInstance();
-//                }
-//            }
-
             settingService.save(getSetting().getId(), getSetting());
             addDefaultSuccessMessage();
         } catch (Exception e) {
@@ -144,9 +114,17 @@ public class SettingHome extends FedeController implements Serializable {
         }
     }
 
-//    public void editar(Setting setting) {
-//        setSetting(settingService.find(setting.getId()));
-//    }
+    public void restaurar() {
+        if (this.setting.isPersistent()) {
+            List<Setting> settingsByName = settingService.findByNamedQuery("Setting.findByName", getSetting().getName());
+            Setting settingByName = !settingsByName.isEmpty() ? settingsByName.get(0) : null;
+            if (settingByName != null) {
+                getSetting().setValue(settingByName.getValue());
+                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("common.setting.action.restaurar"));
+            }
+        }
+    }
+
     public String getGlobalValue(String name, String defaultValue) {
         Setting s = settingService.findByName(name, null);
         if (s == null) {
@@ -179,7 +157,7 @@ public class SettingHome extends FedeController implements Serializable {
             //Cargar objeto setting por id, carga el objeto directamente.
             this.setting = settingService.find(settingId);
         }
-        
+
         return this.setting;
     }
 
