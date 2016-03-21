@@ -219,7 +219,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * @return lista de facturas electrónicas
      */
     public List<FacturaElectronica> listarFacturasElectronicasPorIds() {
-        if (getKeys().isEmpty())
+        if (getKeys() == null  || getKeys().isEmpty())
             return new ArrayList<>();
         
         List<Long> ids = new ArrayList<>();
