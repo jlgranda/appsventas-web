@@ -202,8 +202,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['ride.no']} - #{facturaElectronicaHome.ultimaFacturaElectronica.code}</span>
                                                     <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{facturaElectronicaHome.ultimaFacturaElectronica.author.firstname}, #{facturaElectronicaHome.ultimaFacturaElectronica.author.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{facturaElectronicaHome.ultimaFacturaElectronica.createdOn}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.emissionDate']} - #{facturaElectronicaHome.ultimaFacturaElectronica.fechaEmision}</span>
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/factura.jsf" style="width:75%"/>
@@ -221,7 +222,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                         <h:outputText value="#{entity.importeTotal}" styleClass="Fs16 BoldGray FontRobotoLight">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.createdOn}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
+                                                        <h:outputText value="#{entity.fechaEmision}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
                                                         <h:outputText value="#{entity.author.firstname}, #{entity.author.surname}" styleClass="Fs10 BoldGray FontRobotoLight"></h:outputText>
                                                     </div>
                                                 </ui:repeat>

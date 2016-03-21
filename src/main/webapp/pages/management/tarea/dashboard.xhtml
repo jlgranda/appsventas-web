@@ -103,7 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
                                                     <p:button value="#{i18n['app.documents.task.complete']}" styleClass="CyanButton Fright" 
-                                                              outcome="/pages/management/tarea/tarea_completar.jsf?tareaId=#{tareaHome.ultimaTareaRecibida.id}" style="width:75%"
+                                                              outcome="/pages/management/tarea/instancia_proceso.jsf?instanciaProcesoId=#{tareaHome.ultimaTareaRecibida.instanciaProceso.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaRecibida.persistent}"/>
                                                 </div>
                                                 <div class="EmptyBox10"></div>

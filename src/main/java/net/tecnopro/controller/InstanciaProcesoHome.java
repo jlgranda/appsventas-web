@@ -52,7 +52,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     @LoggedIn
     private Subject subject;
 
-    private Long procesoId;
+    private Long instanciaProcesoId;
 
     private InstanciaProceso instanciaProceso;
 
@@ -85,17 +85,17 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
 
-    public Long getProcesoId() {
-        return procesoId;
+    public Long getInstanciaProcesoId() {
+        return instanciaProcesoId;
     }
 
-    public void setProcesoId(Long procesoId) {
-        this.procesoId = procesoId;
+    public void setInstanciaProcesoId(Long instanciaProcesoId) {
+        this.instanciaProcesoId = instanciaProcesoId;
     }
 
     public InstanciaProceso getInstanciaProceso() {
-        if (this.procesoId != null && !this.instanciaProceso.isPersistent()) {
-            this.instanciaProceso = instanciaProcesoService.find(procesoId);
+        if (this.instanciaProcesoId != null && !this.instanciaProceso.isPersistent()) {
+            this.instanciaProceso = instanciaProcesoService.find(instanciaProcesoId);
         }
         return instanciaProceso;
     }
@@ -113,7 +113,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     }
 
     public Tarea getUltimaTarea() {
-        if (procesoId != null && this.instanciaProceso.isPersistent()) {
+        if (instanciaProcesoId != null && this.instanciaProceso.isPersistent()) {
             List<Tarea> tareasUltima = tareaService.findByNamedQuery("Tarea.findLastByInstanciaProceso", getInstanciaProceso());
             ultimaTarea = tareasUltima.isEmpty() ? new Tarea() : (Tarea) tareasUltima.get(0);
         }
@@ -125,7 +125,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     }
 
     public List<Tarea> getTareas() {
-        if (procesoId != null && this.instanciaProceso.isPersistent()) {
+        if (instanciaProcesoId != null && this.instanciaProceso.isPersistent()) {
             List<Tarea> tareasInstanciaProceso = tareaService.findByNamedQuery("Tarea.findLastsByInstanciaProceso", getInstanciaProceso());
             tareasInstanciaProceso.remove(this.ultimaTarea);
             tareas = tareasInstanciaProceso;

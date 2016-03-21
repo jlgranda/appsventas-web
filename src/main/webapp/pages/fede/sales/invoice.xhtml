@@ -71,7 +71,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:commandButton value="#{i18n['Save']}" ajax="true" 
                                              actionListener="#{invoiceHome.save()}" action="preinvoices" disabled="false" 
                                              style="width: auto !important;"
-                                             action="#{settingHome.getOutcome()}" type="submit"/>
+                                             type="submit"/>
                             <span class="ui-separator">
                                 <span class="fa fa-ellipsis-v SoftGray" />
                             </span>
@@ -79,7 +79,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              actionListener="#{invoiceHome.collect()}" action="preinvoices" 
                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="false" 
                                              style="width: auto !important;"
-                                             action="#{settingHome.getOutcome()}" type="submit"/>
+                                             type="submit"/>
                         </f:facet>
 
                         <f:facet name="right">
@@ -88,7 +88,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                              action="home"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
-                                             update="@form:pnlEditar"/>
+                                             />
                             <p:menuButton value="#{i18n['common.options']}">
                                 <p:menuitem value="#{i18n['common.restore']}" icon="fa fa-undo" />
                             </p:menuButton>
