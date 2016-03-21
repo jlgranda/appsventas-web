@@ -40,73 +40,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                               header="#{instanciaProcesoHome.ultimaTarea.name}" toggleable="true" closable="true" 
                               toggleSpeed="500" closeSpeed="500" 
                               >
-                        <div class="Container100">
-                            <div class="ContainerIndent">
-                                <div class="Card ShadowEffect ui-fluid">
-                                    <div class="Container100 Fs20 BoldGray FontRobotoRegular">#{instanciaProcesoHome.ultimaTarea.name}</div>
-                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{instanciaProcesoHome.ultimaTarea.author.firstname}, #{instanciaProcesoHome.ultimaTarea.author.surname}</span>
-                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{instanciaProcesoHome.ultimaTarea.createdOn}</span>
-                                    <div class="EmptyBox20"></div>
-                                    <div class="Container100 Fs14 FontRobotoLight">
-                                        <span class="DispBlock">
-                                            #{instanciaProcesoHome.ultimaTarea.description}
-                                        </span>
-                                        <div class="Separator"></div>
-                                        <ui:repeat value="#{instanciaProcesoHome.ultimaTarea.documentos}" var="documento">
-                                            <div class="Container5 Responsive50">
-                                                <div class="Card SoftGrayBack TexAlCenter">
-                                                    <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
-                                                    <div class="EmptyBox5"></div>
-                                                    <span class="FontRobotoLight Fs10">
-                                                        <p:commandLink ajax="false" immediate="true" value="#{documento.name}" >
-                                                            <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
-                                                        </p:commandLink>
-                                                    </span>    
-                                                </div>
-                                            </div>
-                                        </ui:repeat>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <ui:repeat value="#{instanciaProcesoHome.ultimaTarea.documentos}" var="documento">
+                            <h:panelGroup layout="block" class="ContainerIndent">
+                                <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
+                                <p:commandLink ajax="false" immediate="true" value="#{documento.name}" >
+                                    <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
+                                </p:commandLink>  
+                            </h:panelGroup>
+                        </ui:repeat>
+
                     </p:panel>
                     <div class="Separator"></div>
                     <ui:repeat value="#{instanciaProcesoHome.tareas}" var="tarea">
                         <p:panel 
                             header="#{tarea.name}" toggleable="true" collapsed="true" closable="true" 
                             toggleSpeed="500" closeSpeed="500"
-                           >
-                            <div class="Container100">
-                                <div class="ContainerIndent">
-                                    <div class="Card ShadowEffect ui-fluid">
-                                        <div class="Container100 Fs20 BoldGray FontRobotoRegular">#{tarea.name}</div>
-                                        <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{tarea.author.firstname}, #{tarea.author.surname}</span>
-                                        <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{tarea.createdOn}</span>
-                                        <div class="EmptyBox20"></div>
-                                        <div class="Container100 Fs14 FontRobotoLight">
-                                            <span class="DispBlock">
-                                                #{tarea.description}
-                                            </span>
-                                            <div class="Separator"></div>
-                                            <ui:repeat value="#{tarea.documentos}" var="documento">
-                                                <div class="Container5 Responsive50">
-                                                    <div class="Card SoftGrayBack TexAlCenter">
-                                                        <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
-                                                        <div class="EmptyBox5"></div>
-                                                        <span class="FontRobotoLight Fs10">
-                                                            <p:commandLink ajax="false" immediate="true" value="#{documento.name}" >
-                                                                <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
-                                                            </p:commandLink>
-                                                        </span>    
-                                                    </div>
-                                                </div>
-                                            </ui:repeat>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            >
+                            
+                            <ui:repeat value="#{tarea.documentos}" var="documento">
+                                <h:panelGroup layout="block" class="ContainerIndent">
+                                    <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
+                                    <p:commandLink ajax="false" immediate="true" value="#{documento.name}" >
+                                        <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
+                                    </p:commandLink>  
+                                </h:panelGroup>
+                            </ui:repeat>
                         </p:panel> 
-                         <div class="EmptyBox20"></div>
+                        <div class="EmptyBox20"></div>
                         <div class="Separator"></div>
                     </ui:repeat>
                 </div>
