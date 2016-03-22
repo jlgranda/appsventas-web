@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -46,7 +47,7 @@ import org.primefaces.event.SelectEvent;
  * @author jlgranda
  */
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class SettingHome extends FedeController implements Serializable {
 
     @Inject
@@ -65,6 +66,8 @@ public class SettingHome extends FedeController implements Serializable {
     private List<Setting> settings = new ArrayList<>();
 
     private List<Setting> overwritableSettings = new ArrayList<>();
+    
+    private Map<String, String> cache = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -81,10 +84,20 @@ public class SettingHome extends FedeController implements Serializable {
     }
 
     public String getValue(String name, String defaultValue) {
+        //Buscar en cache
+        if (cache.containsKey(name)){
+            logger.info("La propiedad {} se recupera desde cache.", name);
+            return cache.get(name);
+        }
+        
         Setting s = settingService.findByName(name, subject);
         if (s == null) { //No existe configuración de usuario, tomar la configuración global, sino el valor por defecto
-            return getGlobalValue(name, defaultValue);
+            String value = getGlobalValue(name, defaultValue);
+            cache.put(name, value);
+            return value;
         }
+        
+        cache.put(name, s.getValue());
         return s.getValue();
     }
 
@@ -128,6 +141,7 @@ public class SettingHome extends FedeController implements Serializable {
     public String getGlobalValue(String name, String defaultValue) {
         Setting s = settingService.findByName(name, null);
         if (s == null) {
+            logger.info("La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
             return defaultValue;
         }
         return s.getValue();

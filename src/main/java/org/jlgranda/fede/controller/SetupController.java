@@ -22,20 +22,17 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpSession;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.jlgranda.fede.database.SetupService;
 import org.jpapi.util.Dates;
 import org.picketlink.idm.IdentityManagementException;
@@ -78,15 +75,25 @@ public class SetupController implements Serializable {
     public SetupController() {
     }
 
-    public void validate(@Observes final HttpSession session) {
+//    public void validate(@Observes final HttpSession session) {
+//        
+//    }
+
+    
+    @PostConstruct
+    public void init() {
+        log.info("Start validate default admin role");
+        validateAdminRole();
+        log.info("End validate default admin role");
+        
         log.info("Start validate setup database");
         service.validate();
         log.info("End validate setup database");
     }
 
-    @PostConstruct
-    public void init() {
+    private static final long serialVersionUID = -2202084526171728773L;
 
+    private void validateAdminRole() {
         IdentityManager identityManager = null;
         List<Realm> realms = partitionManager.getPartitions(Realm.class);
         if (realms.isEmpty()) {
@@ -128,7 +135,7 @@ public class SetupController implements Serializable {
                 grantGroupRole(relationshipManager, user, superuser, group);
                 // Grant the "superuser" application role to jane
                 grantRole(relationshipManager, user, superuser);
-                log.info("Creador usuario " + user);
+                log.info("Se ageró el usuario " + user);
                 this.userTransaction.commit();
             } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
                 try {
@@ -138,9 +145,6 @@ public class SetupController implements Serializable {
                 throw new RuntimeException("Could not create default security entities.", e);
             }
         }
-
     }
-
-    private static final long serialVersionUID = -2202084526171728773L;
 }
 
