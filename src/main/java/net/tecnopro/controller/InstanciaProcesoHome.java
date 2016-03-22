@@ -127,7 +127,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     public List<Tarea> getTareas() {
         if (instanciaProcesoId != null && this.instanciaProceso.isPersistent()) {
             List<Tarea> tareasInstanciaProceso = tareaService.findByNamedQuery("Tarea.findLastsByInstanciaProceso", getInstanciaProceso());
-            tareasInstanciaProceso.remove(this.ultimaTarea);
             tareas = tareasInstanciaProceso;
         }
         return tareas;

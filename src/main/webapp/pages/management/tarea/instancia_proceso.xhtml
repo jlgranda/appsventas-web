@@ -20,7 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
         <ui:param name="title" value="#{i18n['app.documents.task']}" />
@@ -35,50 +36,89 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="content">
             <h:form id="form" enctype="multipart/form-data">
                 <div class="Container100">
-                    <p:panel  rendered="#{instanciaProcesoHome.ultimaTarea !=null}" 
-                              header="#{instanciaProcesoHome.ultimaTarea.name}" toggleable="true" closable="true" 
-                              toggleSpeed="500" closeSpeed="500" 
-                              >
-                        <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">
-                            <h:panelGrid > 
-
-                                <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{instanciaProcesoHome.ultimaTarea.author.firstname}, #{instanciaProcesoHome.ultimaTarea.author.surname}</span> 
-                                <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{instanciaProcesoHome.ultimaTarea.createdOn}</span>  
-                                <strong>#{instanciaProcesoHome.ultimaTarea.documentos.size()} #{i18n['Documents']}</strong>
-                                <ui:repeat value="#{instanciaProcesoHome.ultimaTarea.documentos}" var="documento">
+                    <p:accordionPanel value="#{instanciaProcesoHome.tareas}" var="tarea">
+                        <p:tab title="#{tarea.name}">
+                            <h:panelGroup layout="block" class="ContainerIndent">
+                                <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{tarea.author.firstname}, #{tarea.author.surname}</span>
+                                <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{tarea.createdOn}</span> 
+                                <strong>#{tarea.documentos.size()} #{i18n['Documents']}</strong>
+                                <ui:repeat value="#{tarea.documentos}" var="documento">
                                     <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
                                     <p:commandLink ajax="false" immediate="true" value="#{documento.name}" >
                                         <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
                                     </p:commandLink>
                                 </ui:repeat>
-                            </h:panelGrid>
-                        </h:panelGroup>
-                    </p:panel>
-                    <div class="Separator"></div>
-                    <ui:repeat value="#{instanciaProcesoHome.tareas}" var="tarea">
-                        <p:panel 
-                            header="#{tarea.name}" toggleable="true" collapsed="true" closable="true" 
-                            toggleSpeed="500" closeSpeed="500"
-                            >
-                            <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">
-                                <h:panelGrid > 
-                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{tarea.author.firstname}, #{tarea.author.surname}</span>
-                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{tarea.createdOn}</span> 
-                                    <strong>#{tarea.documentos.size()} #{i18n['Documents']}</strong>
-                                    <ui:repeat value="#{tarea.documentos}" var="documento">
-                                        <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs30 Gray DispBlock"></i>
-                                        <p:commandLink ajax="false" immediate="true" value="#{documento.name}" >
-                                            <p:fileDownload value="#{tareaHome.downloadDocument(documento)}" />
-                                        </p:commandLink>
-                                    </ui:repeat>
-                                </h:panelGrid>
-                            </h:panelGroup>  
+                                <h2 class="BigTopic">#{i18n['app.documents.task.consignee']}</h2>
+                                <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
+                                                var="entidad" itemLabel="#{entidad.surname}, #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
+                                                converter="subjectConverter" forceSelection="true">
+                                    <p:column>
+                                        <h:outputText value="#{entidad.surname}, #{entidad.firstname}"/>
+                                    </p:column>
+                                </p:autoComplete>
+                                <jlgranda:input type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                                                execute="@this save" value="#{tareaHome.siguienteTarea.name}" required="true"
+                                                container="none"/>
+                                <jlgranda:input  type="richtext" label="#{i18n['app.document.task.description']}" 
+                                                value="#{tareaHome.siguienteTarea.description}" execute="@this save" 
+                                                required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                                container="none"/>
+                                <p:toolbar>
+                                    <f:facet name="left">
+                                        <p:commandButton value="#{i18n['Send']}" 
+                                                         actionListener="#{tareaHome.complete(tarea)}" 
+                                                         style="width: auto !important;"
+                                                         type="submit"/>
 
-                        </p:panel> 
-                        <div class="EmptyBox20"></div>
+                                        <p:commandButton 
+                                            icon="fa fa-paperclip Fs14 Black" styleClass="GrayButton" 
+                                            rendered="#{true}" type="button"/>
 
-                    </ui:repeat>
+                                        <span class="ui-separator">
+                                            <span class="fa fa-ellipsis-v SoftGray" />
+                                        </span>
+                                    </f:facet>
+                                    <f:facet name="right">
+                                        <p:commandButton ajax="false" action="#{tareaHome.getOutcome()}" disabled="false" immediate="true"
+                                                         icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                                    </f:facet>
+
+                                </p:toolbar>
+                            </h:panelGroup>
+                            <!--<p:overlayPanel widgetVar="overlay" 
+                                            showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
+                                            my="right bottom" at="left bottom">
+                                <p:panelGrid columns="3" layout="grid">
+                                    <jlgranda:input id="documentName" name="documentName" type="text" 
+                                                    placeholder="true" label="#{i18n['name']}" 
+                                                    value="#{tareaHome.documento.name}" required="false" 
+                                                    container="default"/>
+
+                                    <jlgranda:input id="documentType" name="documentType" type="select" 
+                                                    placeholder="true" label="#{i18n['common.type']}" 
+                                                    value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
+                                                    converter="omnifaces.SelectItemsConverter"
+                                                    required="false" 
+                                                    execute="none" listener="none" render="none"
+                                                    onchange="return;"
+                                                    container="default"/>
+
+                                    <p:fileUpload fileUploadListener="#{tareaHome.procesarUploadFileSiguienteTarea}"
+                                                  mode="advanced" dragDropSupport="true" auto="true" 
+                                                  process="@form" update="@form" 
+                                                  oncomplete="overlay.hide();"
+                                                  immediate="true" multiple="true"
+                                                  label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
+                                                  cancelLabel="#{i18n['Cancel']}"
+                                                  sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
+                                                  fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
+                                                  allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
+                                </p:panelGrid>
+                            </p:overlayPanel >-->
+                        </p:tab>
+                    </p:accordionPanel>
                 </div>
             </h:form>
         </ui:define>
     </ui:composition>
+</html>

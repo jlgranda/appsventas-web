@@ -261,9 +261,9 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
-    public void complete() {
+    public void complete(Tarea t) {
         try {
-            getSiguienteTarea().setInstanciaProceso(getTarea().getInstanciaProceso());
+            getSiguienteTarea().setInstanciaProceso(t.getInstanciaProceso());
             getSiguienteTarea().setAuthor(subject);
             getSiguienteTarea().setOwner(getDestinatario());
             getSiguienteTarea().setDepartamento("Temporal");
@@ -271,8 +271,10 @@ public class TareaHome extends FedeController implements Serializable {
             tareaService.save(getSiguienteTarea());
             procesarDocumentos(getSiguienteTarea());
             eliminarDocumentos();
-            getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
-            tareaService.save(getTarea().getId(), getTarea());
+//            getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
+            t.setEstadoTipo(EstadoTipo.RESUELTO);
+//            tareaService.save(getTarea().getId(), getTarea());
+            tareaService.save(t.getId(), t);
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
@@ -403,7 +405,7 @@ public class TareaHome extends FedeController implements Serializable {
             getDocumentos(this.tarea);
             setDestinatario(tarea.getOwner());
             setSolicitante(tarea.getAuthor());
-        setProceso(tarea.getInstanciaProceso());
+            setProceso(tarea.getInstanciaProceso());
         }
         return tarea;
     }
