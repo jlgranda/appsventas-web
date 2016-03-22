@@ -31,3 +31,25 @@ and open the template in the editor.
     border: 1px solid lightgray;
 }
 
+
+.ui-accordion-header {
+    border-radius: 0px;
+    font-size: 16px !important;
+    color: #828B9C;
+    background-color: #E0E0E0;
+    padding: 13px 5px 13px 30px !important;
+    margin-bottom: 1px !important;
+    font-weight: normal !important;
+    font-family: "robotolight";
+}
+
+.ui-accordion .ui-accordion-header.ui-state-hover, .ui-accordion .ui-accordion-header.ui-state-active {
+    background-color: #E0E0E0;
+    color: #828B9C;
+}
+
+.ui-accordion .ui-tabs-outline {
+    outline: medium none !important;
+    background-color: #E0E0E0;
+    color: #828B9C;
+}
