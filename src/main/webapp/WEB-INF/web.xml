@@ -2,7 +2,7 @@
 <!-- Use this definition if using a Java EE 6 container
      This also stops Eclipse from complaining that 3.0 is not a valid version    -->
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://java.sun.com/xml/ns/javaee       http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <display-name>fede beta</display-name>
+    <display-name>appsventas</display-name>
     <context-param>
         <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
         <param-value>.xhtml</param-value>
@@ -40,10 +40,6 @@
         <param-value>true</param-value>
     </context-param>
     <context-param>
-        <param-name>facelets.DEVELOPMENT</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
         <param-name>primefaces.UPLOADER</param-name>
         <param-value>auto</param-value>
     </context-param>
@@ -74,25 +70,6 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
-    <context-param>
-        <param-name>com.ocpsoft.pretty.PRODUCTION</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.ocpsoft.pretty.BASE_PACKAGES</param-name>
-        <param-value>
-            org.jlgranda.fede.controller
-        </param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.ocpsoft.pretty.SCAN_LIB_DIRECTORY</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <!--Database-->
-    <persistence-unit-ref>
-        <persistence-unit-ref-name>fede/pu</persistence-unit-ref-name>
-        <persistence-unit-name>fede</persistence-unit-name>
-    </persistence-unit-ref>
     <!--Facebook signin-->
     <servlet>
         <servlet-name>fb-signin</servlet-name>
