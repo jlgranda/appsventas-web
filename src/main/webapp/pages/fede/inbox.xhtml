@@ -18,11 +18,24 @@
             <!-- SUB TOPBAR START -->
             <div class="Container100 UserLinks">
                 <div class="ContainerIndent">
-                    <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop"><i class="icon-arrow-right"></i> 
+                    <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop Container30"><i class="icon-arrow-right"></i> 
                         <ui:insert name="subheader">
                             #{i18n['Invoices']}#{': '}
                         </ui:insert>
                     </span>
+                    <div class="Container70">
+                        <p:inputText id="globalFilter" value="#{facturaElectronicaHome.keyword}" placeholder="#{i18n['Search']}"
+                                     required="false" disabled="false"
+                                     class="">
+                        </p:inputText>
+                        <p:defaultCommand target="filter-button" />
+                        <span class="ui-inputfield ui-button ui-widget GrayButton Fs18">
+                            <p:commandLink id="filter-button" actionListener="#{facturaElectronicaHome.filter}" ajax="false"
+                                           styleClass="GrayButton">
+                                <i class="icon-search"></i>
+                            </p:commandLink>
+                        </span>
+                    </div>
                 </div>
 
                 <div class="Container100 UserLinks">
@@ -62,6 +75,22 @@
                                               iconStyleClass="Gray"
                                               menuStyleClass="Gray">
                                 </p:menuButton>
+                            </f:facet>
+                            <f:facet name="right">
+                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <p:calendar value="#{facturaElectronicaHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                                </p:calendar>
+                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <p:calendar value="#{facturaElectronicaHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                                </p:calendar>
+                                <span id="pagination-info" class=""></span>
+                                <div class="ui-inputfield ui-button ui-widget GrayButton">
+                                    <button id="pagination-previous" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-left"></i></button>
+                                    &nbsp;
+                                    <button id="pagination-next" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-right"></i></button>
+                                </div>
                             </f:facet>
                         </p:toolbar>
 
