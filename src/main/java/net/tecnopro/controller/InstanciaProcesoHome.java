@@ -280,6 +280,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         }
     }
 
+    @Deprecated
     public List<Subject> completeSubjects(final String query) {
         List<Subject> result = new ArrayList<>();
         if (!"".equals(query.trim())) {

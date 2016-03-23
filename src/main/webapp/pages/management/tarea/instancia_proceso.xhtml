@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="Container100  Responsive50">
                             <h:panelGroup layout="block" class="ContainerIndent">
                                 <h2 class="BigTopic">#{i18n['app.documents.task.consignee']}</h2>
-                                <p:autoComplete value="#{instanciaProcesoHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{instanciaProcesoHome.completeSubjects}"
+                                <p:autoComplete value="#{instanciaProcesoHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{subjectHome.find}"
                                                 var="entidad" itemLabel="#{entidad.surname}, #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
                                                 converter="subjectConverter" forceSelection="true">
                                     <p:column>

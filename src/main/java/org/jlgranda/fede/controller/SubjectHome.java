@@ -20,7 +20,9 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -37,9 +39,12 @@ import javax.transaction.UserTransaction;
 import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jpapi.model.CodeType;
+import org.jpapi.model.Setting;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.QueryData;
+import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
 import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManagementException;
@@ -215,7 +220,19 @@ public class SubjectHome extends FedeController implements Serializable {
         }
 
     }
-
+    
+    public List<Subject> find(String keyword){
+        Map<String, Object> filters = new HashMap<>();
+        Map<String, String> columns = new HashMap<>();
+        columns.put("username", keyword);
+        columns.put("firstname", keyword);
+        columns.put("surname", keyword);
+        filters.put("dummy", columns);
+        QueryData<Subject> queryData = subjectService.find(-1, -1, "surname, firstname", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
+    }
+    
+    
     @Override
     public org.jpapi.model.Group getDefaultGroup() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
