@@ -119,7 +119,7 @@
 
                                 <!--<p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE :form:labelsOverlayPanel"/>
                                 <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE :form:labelsOverlayPanel"/>-->
-                                <!--<p:ajax event="rowSelect" listener="#{instanciaProcesoHome.onRowSelect}"/>-->
+                                <p:ajax event="rowSelect" listener="#{instanciaProcesoHome.onRowSelect}"/>
                                 <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
                                 <p:column headerText="#{i18n['name']}" sortBy="#{instanciaProceso.name}">
                                     <h:outputText value="#{instanciaProceso.name}" />

@@ -432,7 +432,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/management/tarea/instancia_proceso.jsf?instanciaProcesoId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
