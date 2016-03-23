@@ -18,6 +18,7 @@ package net.tecnopro.controller;
 
 import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,10 +31,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import net.tecnopro.document.ejb.DocumentoService;
 import net.tecnopro.document.ejb.InstanciaProcesoService;
@@ -43,10 +47,14 @@ import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.InstanciaProceso;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
+import org.jlgranda.fede.model.document.FacturaElectronica;
+import org.jlgranda.fede.ui.model.LazyInstanciaProcesoDataModel;
 import org.jlgranda.fede.ui.util.SubjectConverter;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -54,6 +62,7 @@ import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
@@ -80,6 +89,8 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     @Inject
     private SettingHome settingHome;
+    @EJB
+    private GroupService groupService;
 
     @EJB
     private InstanciaProcesoService instanciaProcesoService;
@@ -89,11 +100,13 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     private Tarea tarea;
 
     private List<Tarea> tareas;
+    private List<Group> groups = new ArrayList<>();
     private Documento documento;
     private Subject solicitante;
 
     private Subject destinatario;
 
+    private LazyInstanciaProcesoDataModel lazyDataModel;
     @EJB
     private SubjectService subjectService;
 
@@ -104,6 +117,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     //UI variables
     private String activeIndex;
+    private String keys;
 
     @PostConstruct
     public void init() {
@@ -386,9 +400,89 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
     public Group getDefaultGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.defaultGroup == null) {
+            return groupService.findByCode(settingHome.getValue(SettingNames.DEFAULT_INVOICES_GROUP_NAME, "fede"));
+        }
+        return this.defaultGroup;
     }
 
+    public void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyInstanciaProcesoDataModel(instanciaProcesoService);
+        }
+
+        lazyDataModel.setOwner(subject);
+        lazyDataModel.setStart(getStart());
+        lazyDataModel.setEnd(getEnd());
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+        FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
+
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        this.selectedBussinesEntities.remove((InstanciaProceso) event.getObject());
+        logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
+    }
+
+    public String getKeys() {
+        return keys;
+    }
+
+    public void setKeys(String keys) {
+        this.keys = keys;
+    }
+
+    public String getSelectedKeys() {
+        String _keys = "";
+        if (getSelectedBussinesEntities() != null && !getSelectedBussinesEntities().isEmpty()) {
+            _keys = Lists.toString(getSelectedBussinesEntities());
+        }
+        return _keys;
+    }
+
+    public LazyInstanciaProcesoDataModel getLazyDataModel() {
+
+        filter();
+
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyInstanciaProcesoDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+
+    public List<Group> getGroups() {
+        if (groups.isEmpty()) {
+            groups = groupService.findAllByOwner(subject);
+        }
+
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
 }

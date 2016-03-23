@@ -1,10 +1,10 @@
 /*
- * Copyright (C) 2015 jlgranda
+ * Copyright (C) 2016 Jorge
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.jlgranda.fede.ui.model;
 
@@ -25,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import net.tecnopro.document.ejb.InstanciaProcesoService;
+import net.tecnopro.document.model.InstanciaProceso;
+import net.tecnopro.document.model.InstanciaProceso_;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaElectronica_;
 import org.jpapi.model.BussinesEntity;
@@ -39,43 +41,42 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author jlgranda
+ * @author Jorge
  */
-public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectronica> implements Serializable {
+public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProceso> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
-    Logger  logger = LoggerFactory.getLogger(LazyFacturaElectronicaDataModel.class);
+    Logger logger = LoggerFactory.getLogger(LazyInstanciaProcesoDataModel.class);
 
-    private FacturaElectronicaService bussinesEntityService;
-    
-    private List<FacturaElectronica> resultList;
+    private InstanciaProcesoService bussinesEntityService;
+
+    private List<InstanciaProceso> resultList;
     private int firstResult = 0;
-    
+
     private BussinesEntityType type;
-    
+
     private Subject owner;
     /**
      * Lista de etiquetas para filtrar facturas
      */
     private String tags;
-    
+
     /**
      * Inicio del rango de fecha
      */
     private Date start;
-    
+
     /**
      * Fin del rango de fecha
      */
     private Date end;
-    
+
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
-    
     private String filterValue;
 
-    public LazyFacturaElectronicaDataModel(FacturaElectronicaService bussinesEntityService) {
+    public LazyInstanciaProcesoDataModel(InstanciaProcesoService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
         this.bussinesEntityService = bussinesEntityService;
@@ -85,7 +86,7 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     public void init() {
     }
 
-    public List<FacturaElectronica> getResultList() {
+    public List<InstanciaProceso> getResultList() {
         logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
@@ -180,18 +181,18 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     }
 
     @Override
-    public FacturaElectronica getRowData(String rowKey) {
+    public InstanciaProceso getRowData(String rowKey) {
         return bussinesEntityService.find(Long.valueOf(rowKey));
     }
 
     @Override
-    public Object getRowKey(FacturaElectronica entity) {
+    public Object getRowKey(InstanciaProceso entity) {
         System.err.println("//--> getRowKey:entity" + entity);
         return entity.getName();
     }
 
     @Override
-    public List<FacturaElectronica> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<InstanciaProceso> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
 
         int end = first + pageSize;
 
@@ -204,20 +205,20 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         range.put("start", getStart());
         range.put("end", getEnd());
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-        _filters.put(FacturaElectronica_.owner.getName(), getOwner()); //Filtro por defecto
-        _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
-        _filters.put("tag", getTags()); //Filtro de etiquetas
-        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+        _filters.put(InstanciaProceso_.owner.getName(), getOwner()); //Filtro por defecto
+       // _filters.put(InstanciaProceso_.createdOn.getName(), range); //Filtro de fecha inicial
+        //_filters.put("tag", getTags()); //Filtro de etiquetas
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-        
+
         _filters.putAll(filters);
-        
-        if (sortField == null){
-            sortField = FacturaElectronica_.fechaEmision.getName();
+
+        if (sortField == null) {
+            sortField = InstanciaProceso_.createdOn.getName();
         }
 
-        QueryData<FacturaElectronica> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<InstanciaProceso> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
