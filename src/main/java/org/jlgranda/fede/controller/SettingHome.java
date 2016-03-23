@@ -20,7 +20,6 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.ejb.SettingService;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +27,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jpapi.model.CodeType;
@@ -122,6 +119,11 @@ public class SettingHome extends FedeController implements Serializable {
         try {
             settingService.save(getSetting().getId(), getSetting());
             addDefaultSuccessMessage();
+            
+            //Actualizar el cache
+            this.cache.put(getSetting().getName(), getSetting().getValue());
+            //vaciar objeto en edición
+            setSetting(null);
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
@@ -206,6 +208,9 @@ public class SettingHome extends FedeController implements Serializable {
     }
 
     public void setSettingName(String settingName) {
+        if (!settingName.equalsIgnoreCase(this.settingName)){
+            setSetting(null);
+        }
         this.settingName = settingName;
     }
 
