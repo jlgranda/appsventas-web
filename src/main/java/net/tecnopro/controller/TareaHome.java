@@ -518,11 +518,11 @@ public class TareaHome extends FedeController implements Serializable {
      */
     public void procesarDocumentos(Tarea t) {
         for (Documento doc : t.getDocumentos()) {
-            if (!doc.isPersistent()) {
-                documentoService.save(doc);
-            } else {
-                documentoService.save(doc.getId(), doc);
-            }
+//            if (!doc.isPersistent()) {
+//                documentoService.save(doc);
+//            } else {
+//                documentoService.save(doc.getId(), doc);
+//            }
             generaDocumento(new File(doc.getRuta()), doc.getContents());
         }
     }

@@ -125,7 +125,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         <p:toolbar>
                             <f:facet name="left">
-
                                 <p:commandButton value="#{i18n['Send']}" ajax="false" 
                                                  actionListener="#{instanciaProcesoHome.send()}" disabled="false" 
                                                  style="width: auto !important;"
@@ -155,6 +154,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </f:facet>
 
                         </p:toolbar>
+                        <p:overlayPanel id="addDocumentOverlayPanel" for="addDocumentButton" widgetVar="overlay" 
+                                        showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
+                                        my="right bottom" at="left bottom">
+                            <p:panelGrid columns="3" layout="grid">
+                                <jlgranda:input id="documentName" name="documentName" type="text" 
+                                                placeholder="true" label="#{i18n['name']}" 
+                                                value="#{instanciaProcesoHome.documento.name}" required="false" 
+                                                container="default"/>
+
+                                <jlgranda:input id="documentType" name="documentType" type="select" 
+                                                placeholder="true" label="#{i18n['common.type']}" 
+                                                value="#{instanciaProcesoHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
+                                                converter="omnifaces.SelectItemsConverter"
+                                                required="false" 
+                                                execute="none" listener="none" render="none"
+                                                onchange="return;"
+                                                container="default"/>
+
+                                <p:fileUpload fileUploadListener="#{instanciaProcesoHome.handleFileUpload}"
+                                              mode="advanced" dragDropSupport="true" auto="true" 
+                                              process="@form" update="@form:documentPanel" 
+                                              oncomplete="overlay.hide();"
+                                              immediate="true" multiple="true"
+                                              label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
+                                              cancelLabel="#{i18n['Cancel']}"
+                                              sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
+                                              fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
+                                              allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
+                            </p:panelGrid>
+                        </p:overlayPanel >
                     </p:panel>
                 </div>
             </h:form>

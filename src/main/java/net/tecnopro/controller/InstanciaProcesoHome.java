@@ -21,11 +21,15 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -41,13 +45,18 @@ import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.util.SubjectConverter;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +89,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     private Tarea tarea;
 
     private List<Tarea> tareas;
-
+    private Documento documento;
     private Subject solicitante;
 
     private Subject destinatario;
@@ -92,7 +101,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     private DocumentoService documentoService;
 
     private List<Documento> documentosRemovidos = new ArrayList<>();
-    
+
     //UI variables
     private String activeIndex;
 
@@ -111,7 +120,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         setOutcome("procesos");
 
         setTarea(tareaService.createInstance()); //Siempre listo para recibir la respuesta del proceso
-
+        setDocumento(documentoService.createInstance());
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
@@ -182,13 +191,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             tarea.setOwner(getDestinatario());
             tarea.setDepartamento("Temporal");
             tarea.setEstadoTipo(EstadoTipo.ESPERA);
+            getInstanciaProceso().addTarea(tarea);
             procesarDocumentos(tarea);
             eliminarDocumentos();
-
-            getInstanciaProceso().addTarea(tarea);
-
             instanciaProcesoService.save(getInstanciaProceso().getId(), getInstanciaProceso());
-
             //Encerar tarea para recoger nueva respuesta
             setTarea(tareaService.createInstance());
             setDestinatario(null);
@@ -200,15 +206,50 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         }
     }
 
+    public void handleFileUpload(FileUploadEvent event) {
+        procesarUploadFile(event.getFile());
+    }
+
+    public void procesarUploadFile(UploadedFile file) {
+        if (file == null) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            return;
+        }
+
+        if (subject == null) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            return;
+        }
+        try {
+            Documento doc = crearDocumento(file, tarea);
+            if (tarea != null) {
+                tarea.getDocumentos().add(doc);
+            }
+            //Encerar el obeto para edición de nuevo documento
+            setDocumento(documentoService.createInstance());
+
+        } catch (Exception e) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), e.getMessage());
+        }
+    }
+
     public void procesarDocumentos(Tarea t) {
         for (Documento doc : t.getDocumentos()) {
-            if (!doc.isPersistent()) {
-                documentoService.save(doc);
-            } else {
-                documentoService.save(doc.getId(), doc);
-            }
             generaDocumento(new File(doc.getRuta()), doc.getContents());
         }
+    }
+
+    public StreamedContent downloadDocument(Documento doc) {
+        StreamedContent fileDownload = null;
+        try {
+            if (doc != null) {
+                InputStream stream = new FileInputStream(new File(doc.getRuta()));
+
+                fileDownload = new DefaultStreamedContent(stream, doc.getMimeType(), doc.getFileName());
+            }
+        } catch (FileNotFoundException e) {
+        }
+        return fileDownload;
     }
 
     public void eliminarDocumentos() {
@@ -218,6 +259,11 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             }
             documentosRemovidos.remove(doc);
         }
+    }
+
+    public void removerDocumento(Documento doc, Tarea t) {
+        this.documentosRemovidos.add(doc);
+        t.getDocumentos().remove(doc);
     }
 
     public void generaDocumento(File file, byte[] bytes) {
@@ -247,11 +293,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         return result;
     }
 
-    
-    public void setActiveIndex (String activeIndex){
+    public void setActiveIndex(String activeIndex) {
         this.activeIndex = activeIndex;
     }
-    
+
     /**
      * Calcula los indices de los tabs a mostrar expandidos, en función del
      * estado de las tareas de la instancia de proceso
@@ -288,6 +333,51 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             }
         }
         return showResponseForm;
+    }
+
+    private Documento crearDocumento(UploadedFile file, Tarea t) {
+        Documento doc = documentoService.createInstance();
+        doc.setTarea(t);
+        doc.setOwner(t.getOwner());
+        doc.setAuthor(t.getOwner());
+
+        if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
+            doc.setName(file.getFileName());
+            doc.setDocumentType(DocumentType.UNDEFINED);
+        } else {
+            doc.setName(getDocumento().getName());
+            doc.setDocumentType(getDocumento().getDocumentType());
+        }
+        doc.setFileName(file.getFileName());
+        doc.setNumeroRegistro(UUID.randomUUID().toString());
+
+        doc.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + file.getFileName());
+
+        doc.setMimeType(file.getContentType());
+
+        /**
+         * Permite que el documento tenga asignado los bytes para posteriormete
+         * con dichos bytes generar el documento digital y guardarlo en la ruta
+         * definida
+         */
+        doc.setContents(file.getContents());
+        return doc;
+    }
+
+    public Documento getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(Documento documento) {
+        this.documento = documento;
+    }
+
+    public List<Documento> getDocumentosRemovidos() {
+        return documentosRemovidos;
+    }
+
+    public void setDocumentosRemovidos(List<Documento> documentosRemovidos) {
+        this.documentosRemovidos = documentosRemovidos;
     }
 
     @Override
