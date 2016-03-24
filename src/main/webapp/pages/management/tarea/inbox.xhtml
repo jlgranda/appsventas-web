@@ -40,11 +40,11 @@
                                               buttonStyleClass="ToolbarButton Fs14" 
                                               iconStyleClass="Gray"
                                               menuStyleClass="Gray">
-                                    <p:menuitem value="#{i18n['Show']} #{i18n['RIDE']}" icon="fa fa-eye"
+<!--                                    <p:menuitem value="#{i18n['Show']} #{i18n['RIDE']}" icon="fa fa-eye"
                                                 onclick="triggerHiddenEventShowRIDE();
                                                         return false;"
                                                 disabled="#{empty instanciaProcesoHome.selectedBussinesEntities}">
-                                    </p:menuitem>
+                                    </p:menuitem>-->
                                 </p:menuButton>
                                <!-- <p:menuButton value="#{i18n['Import']}" iconPos="right" 
                                               styleClass="MarRight10"
@@ -72,12 +72,12 @@
                         <!--hidden buttons for trigger dialogReturn-->
                         <!--http://stackoverflow.com/questions/20931384/primefaces-dialog-framework-dialogreturn-event-from-menuitem-->
                        
-                       <!-- <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
-                                outcome="/pages/fede/dashboard.jsf?faces-redirect=true">
+                        <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
+                                outcome="/pages/management/tarea/dashboard.jsf?faces-redirect=true">
                         </h:link>
-                        <h:link id="hiddenCommandShowRIDE" rendered="#{true}" 
-                                outcome="/pages/fede/ride.jsf?faces-redirect=true">
-                            <f:param name="key" value="#{instanciaProcesoHome.selectedKeys}"></f:param>
+<!--                        <h:link id="hiddenCommandShowRIDE" rendered="#{true}" 
+                                outcome="/pages/management/tarea/instancia_proceso.jjsf?faces-redirect=true">
+                            <f:param name="instanciaProcesoId" value="#{instanciaProcesoHome.selectedKeys}"></f:param>
                         </h:link>-->
                         <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
                                         showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
