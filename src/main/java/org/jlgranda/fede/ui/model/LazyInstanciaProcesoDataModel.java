@@ -206,7 +206,7 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
         range.put("end", getEnd());
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
         _filters.put(InstanciaProceso_.owner.getName(), getOwner()); //Filtro por defecto
-       // _filters.put(InstanciaProceso_.createdOn.getName(), range); //Filtro de fecha inicial
+        _filters.put(InstanciaProceso_.createdOn.getName(), range); //Filtro de fecha inicial
         //_filters.put("tag", getTags()); //Filtro de etiquetas
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general

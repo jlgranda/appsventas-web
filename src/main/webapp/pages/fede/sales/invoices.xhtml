@@ -18,12 +18,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                template="/WEB-INF/templates/fede_template.xhtml">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
 
     <ui:define name="head">
         <script type="text/javascript">
@@ -70,10 +71,98 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
     </ui:define>
 
-    <ui:define name="subheader">
-        #{i18n['Invoices']}#{'/'}#{i18n['app.fede.allmysales']}
-    </ui:define>
 
+    <ui:define name="toolbar">
+        <!-- SUB TOPBAR START -->
+        <div class="Container100 UserLinks">
+            <div class="ContainerIndent">
+                <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop Container30"><i class="icon-arrow-right"></i> 
+                    <ui:define name="subheader">
+                        #{i18n['Invoices']}#{'/'}#{i18n['app.fede.allmysales']}
+                    </ui:define>
+                </span>
+                <div class="Container70">
+                    <p:inputText id="globalFilter" value="#{invoiceHome.keyword}" placeholder="#{i18n['Search']}"
+                                 required="false" disabled="false"
+                                 class="">
+                    </p:inputText>
+                    <p:defaultCommand target="filter-button" />
+                    <span class="ui-inputfield ui-button ui-widget GrayButton Fs18">
+                        <p:commandLink id="filter-button" actionListener="#{invoiceHome.filter}" ajax="false"
+                                       styleClass="GrayButton">
+                            <i class="icon-search"></i>
+                        </p:commandLink>
+                    </span>
+                </div>
+            </div>
+
+            <div class="Container100 UserLinks">
+                <div class="ContainerIndent TexAlLeft">
+                    <p:toolbar id="toolbar">
+                        <f:facet name="left">
+                            <p:commandButton type="button" icon="fa fa-arrow-left" styleClass="ToolbarButton Fs14" 
+                                             onclick="triggerHiddenCommandLinkBack();
+                                                     return false;" />
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                            <p:menuButton value="#{i18n['More']}" iconPos="right"
+                                          styleClass="MarRight10"
+                                          buttonStyleClass="ToolbarButton Fs14" 
+                                          iconStyleClass="Gray"
+                                          menuStyleClass="Gray">
+                            </p:menuButton>
+                            <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
+                                          styleClass="MarRight10"
+                                          buttonStyleClass="ToolbarButton Fs14" 
+                                          iconStyleClass="Gray"
+                                          menuStyleClass="Gray">
+                            </p:menuButton>
+                        </f:facet>
+                        <f:facet name="right">
+                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                            </p:calendar>
+                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                            </p:calendar>
+                            <span id="pagination-info" class=""></span>
+                            <div class="ui-inputfield ui-button ui-widget GrayButton">
+                                <button id="pagination-previous" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-left"></i></button>
+                                &nbsp;
+                                <button id="pagination-next" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-right"></i></button>
+                            </div>
+                        </f:facet>
+                    </p:toolbar>
+
+
+                    <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
+                            outcome="/pages/fede/dashboard.jsf?faces-redirect=true">
+                    </h:link>
+                    <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
+                                    showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
+                                    my="left bottom" at="left bottom">
+                        <pe:triStateManyCheckbox id="labelTriBasic"  
+                                                 value="#{invoiceHome.selectedTriStateGroups}"  
+                                                 layout="pageDirection"  
+                                                 styleClass=""
+                                                 stateOneTitle=""  
+                                                 stateTwoTitle=""  
+                                                 stateThreeTitle=""
+                                                 stateTwoIcon="ui-icon-check"  
+                                                 stateThreeIcon="ui-icon-minus" 
+                                                 rendered="#{not empty invoiceHome.selectedBussinesEntities}">  
+                            <f:selectItems value="#{invoiceHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
+                        </pe:triStateManyCheckbox> 
+                    </p:overlayPanel>
+                </div>
+            </div>
+            <div class="EmptyBox5"></div>
+        </div>
+        <!-- SUB TOPBAR END -->
+    </ui:define>
     <ui:define name="content">
         <!-- Left Column -->
         <div class="Container100 Responsive100">
@@ -123,3 +212,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     </ui:define>
 
 </ui:composition>
+</html>
