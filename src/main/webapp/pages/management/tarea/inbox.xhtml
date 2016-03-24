@@ -23,19 +23,7 @@
                             #{i18n['app.documents.instanciaproceso.procesos']}#{': '}
                         </ui:insert>
                     </span>
-                    <div class="Container70">
-                        <p:inputText id="globalFilter" value="#{instanciaProcesoHome.keyword}" placeholder="#{i18n['Search']}"
-                                     required="false" disabled="false"
-                                     class="">
-                        </p:inputText>
-                        <p:defaultCommand target="filter-button" />
-                        <span class="ui-inputfield ui-button ui-widget GrayButton Fs18">
-                            <p:commandLink id="filter-button" actionListener="#{instanciaProcesoHome.filter}" ajax="false"
-                                           styleClass="GrayButton">
-                                <i class="icon-search"></i>
-                            </p:commandLink>
-                        </span>
-                    </div>
+
                 </div>
 
                 <div class="Container100 UserLinks">
@@ -79,7 +67,7 @@
                             </f:facet>
                         </p:toolbar>
 
-                      
+
                         <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
                                 outcome="/pages/fede/dashboard.jsf?faces-redirect=true">
                         </h:link>
@@ -106,6 +94,15 @@
             <!-- SUB TOPBAR END -->
         </ui:define>
         <!--./toolbar-->
+        <ui:define name="sidebar">
+            <ul class="nav" id="side-menu">
+                <ui:repeat var="tag" value="#{instanciaProcesoHome.groups}">
+                    <li>
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}">#{tag.name}</a>
+                    </li>
+                </ui:repeat>
+            </ul>
+        </ui:define>
         <ui:define name="content">
             <!-- /.row -->
             <div class="Container100 Responsive100">
