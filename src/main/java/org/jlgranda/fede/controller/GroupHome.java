@@ -69,23 +69,26 @@ public class GroupHome extends FedeController implements Serializable {
         Map<String, String> props = new HashMap<String, String>();
         
         //email settings
-        props.put("fede", "fede {panel-success, fa fa-cloud fa-5x}");
-        props.put("salud", "Salud {panel-primary, fa fa-heartbeat fa-5x}");
-        props.put("alimentos", "Alimentos {panel-sucess, fa fa-icon-shopping-cart fa-5x}");
-        props.put("ropa", "Ropa {panel-green, fa fa-tag fa-5x}");
-        props.put("educacion", "Educación {panel-yellow, fa fa-graduation-cap fa-5x}");
-        props.put("vivienda", "Vivienda {panel-red, fa fa-home fa-5x}");
+        props.put("fede", "fede {1, panel-success, fa fa-cloud fa-5x}");
+        props.put("salud", "Salud {2, panel-primary, fa fa-heartbeat fa-5x}");
+        props.put("alimentos", "Alimentos {3, panel-sucess, fa fa-icon-shopping-cart fa-5x}");
+        props.put("ropa", "Ropa {4, panel-green, fa fa-tag fa-5x}");
+        props.put("educacion", "Educación {5, panel-yellow, fa fa-graduation-cap fa-5x}");
+        props.put("vivienda", "Vivienda {6, panel-red, fa fa-home fa-5x}");
+        props.put("favorito", "Favoritos {7, panel-red, fa fa-heart-o}");
 
         Group group = null;
         String value = null;
+        Short orden = null;
         String icon = null;
         String color = null;
         String attrs = null;
         for (String key : props.keySet()){
             value = props.get(key);
             attrs = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
-            color = attrs.split(",")[0];
-            icon = attrs.split(",")[1];
+            orden = Short.valueOf(attrs.split(",")[0]);
+            color = attrs.split(",")[1];
+            icon = attrs.split(",")[2];
             value = value.substring(0, (value.indexOf("{") - 1));
             group = groupService.createInstance();
             group.setCode(key);
@@ -93,6 +96,7 @@ public class GroupHome extends FedeController implements Serializable {
             group.setOwner(subject);
             group.setColor(color);
             group.setIcon(icon);
+            group.setOrden(orden);
             
             groupService.save(group);
             
