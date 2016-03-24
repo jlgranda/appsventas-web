@@ -173,7 +173,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <p:dataTable var="entity" 
                                      value="#{invoiceHome.lazyDataModel}" 
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                      rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                      sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
                                      reflow="true" selection="#{invoiceHome.selectedBussinesEntities}" 
                                      rowKey="#{invoice.id}" 
