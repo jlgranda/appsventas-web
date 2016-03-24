@@ -32,7 +32,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            #{instanciaProcesoHome.instanciaProcesoId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.instanciaproceso.procesos']).concat(': ') : i18n['common.edit'].concat(': ')} #{instanciaProcesoHome.instanciaProceso.name} #{instanciaProcesoHome.subject.fullName}
+            <h:panelGrid columns="2">
+                #{instanciaProcesoHome.instanciaProcesoId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.instanciaproceso.procesos']).concat(': ') : i18n['common.edit'].concat(': ')} #{instanciaProcesoHome.instanciaProceso.name} #{instanciaProcesoHome.subject.fullName}
+                <p:link title="#{i18n['Cancel']}" outcome="#{instanciaProcesoHome.outcome}">
+                     <i class="fa fa-reply Fright Fs30"></i>
+                </p:link>
+            </h:panelGrid>
         </ui:define>
         <ui:define name="content">
             <h:form id="form" enctype="multipart/form-data">

@@ -130,8 +130,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
-
-        setOutcome("procesos");
+        setOutcome("inboxInstanciaProceso");
 
         setTarea(tareaService.createInstance()); //Siempre listo para recibir la respuesta del proceso
         setDocumento(documentoService.createInstance());
