@@ -14,30 +14,14 @@
                 <f:viewParam name="tags" value="#{facturaElectronicaHome.tags}" />
             </f:metadata>
         </ui:define>
+        <ui:define name="subheader">
+            <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop">
+                <i class="icon-arrow-right"></i> #{i18n['Invoices']}#{': '}
+            </span>
+        </ui:define>
         <ui:define name="toolbar">
             <!-- SUB TOPBAR START -->
             <div class="Container100 UserLinks">
-                <div class="ContainerIndent">
-                    <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop Container30"><i class="icon-arrow-right"></i> 
-                        <ui:insert name="subheader">
-                            #{i18n['Invoices']}#{': '}
-                        </ui:insert>
-                    </span>
-                    <div class="Container70">
-                        <p:inputText id="globalFilter" value="#{facturaElectronicaHome.keyword}" placeholder="#{i18n['Search']}"
-                                     required="false" disabled="false"
-                                     class="">
-                        </p:inputText>
-                        <p:defaultCommand target="filter-button" />
-                        <span class="ui-inputfield ui-button ui-widget GrayButton Fs18">
-                            <p:commandLink id="filter-button" actionListener="#{facturaElectronicaHome.filter}" ajax="false"
-                                           styleClass="GrayButton">
-                                <i class="icon-search"></i>
-                            </p:commandLink>
-                        </span>
-                    </div>
-                </div>
-
                 <div class="Container100 UserLinks">
                     <div class="ContainerIndent TexAlLeft">
                         <p:toolbar id="toolbar">
@@ -130,6 +114,37 @@
                                                      rendered="#{not empty facturaElectronicaHome.selectedBussinesEntities}">  
                                 <f:selectItems value="#{facturaElectronicaHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
                             </pe:triStateManyCheckbox> 
+                            <ul>
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <p:commandLink id="button-labels" actionListener="#{facturaElectronicaHome.mostrarFormularioNuevaEtiqueta()}" ajax="false"
+                                               styleClass=""
+                                               rendered="#{empty facturaElectronicaHome.selectedBussinesEntities}">
+                                    <i class="fa fa-pencil-square-o">&nbsp;</i><h:outputText value="#{i18n['New']} #{i18n['Label']}" />
+                                    <p:ajax event="dialogReturn" update="@form"
+                                            listener="#{facturaElectronicaHome.handleReturn}">
+                                    </p:ajax>
+                                </p:commandLink>
+                            </li>
+                            <li>
+                                <h:link rendered="#{empty facturaElectronicaHome.selectedBussinesEntities}"
+                                        outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" ajax="false" 
+                                        styleClass=""
+                                        disabled="#{empty facturaElectronicaHome.selectedBussinesEntities}">
+                                     <i class="fa fa-tags"></i>&nbsp;#{i18n['Manage']}&nbsp;#{i18n['Labels']}
+                                </h:link>
+                            </li>
+                            <li>
+                                <p:commandLink id="button-apply-labels" actionListener="#{facturaElectronicaHome.applySelectedGroups}" ajax="false"
+                                               styleClass=""
+                                               rendered="#{not empty facturaElectronicaHome.selectedBussinesEntities}">
+                                    <h:outputText value="#{i18n['Apply']}" />
+                                    <p:ajax event="dialogReturn" update="@form"
+                                            listener="#{facturaElectronicaHome.handleReturn}">
+                                    </p:ajax>
+                                </p:commandLink>
+                            </li>
+                        </ul>
                         </p:overlayPanel>
                     </div>
                 </div>
@@ -138,6 +153,15 @@
             <!-- SUB TOPBAR END -->
         </ui:define>
         <!--./toolbar-->
+        <ui:define name="sidebar">
+            <ul class="nav" id="side-menu">
+                <ui:repeat var="tag" value="#{facturaElectronicaHome.groups}">
+                    <li>
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf?tags=#{tag.code}">#{tag.name}</a>
+                    </li>
+                </ui:repeat>
+            </ul>
+        </ui:define>
         <ui:define name="content">
             <!-- /.row -->
             <div class="Container100 Responsive100">

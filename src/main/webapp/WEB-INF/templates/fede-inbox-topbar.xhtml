@@ -22,7 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:ui="http://java.sun.com/jsf/facelets">
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
 
 
     <!-- TOPBAR START -->
@@ -34,17 +35,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </a>
         <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" id="logo">
             <h:graphicImage value="/resources/images/appsventas.png" styleClass="Fleft" title="#{i18n['app.name']} #{i18n['app.version']}"/>
+            &nbsp;
         </a>
+        <p:inputText id="globalFilter" value="#{facturaElectronicaHome.keyword}" placeholder="#{i18n['Search']}"
+                         required="false" disabled="false"
+                         class="">
+        </p:inputText>
+        <p:defaultCommand target="filter-button" />
+        <span class="ui-inputfield ui-button ui-widget GrayButton Fs18">
+            <p:commandLink id="filter-button" actionListener="#{facturaElectronicaHome.filter}" ajax="false"
+                            styleClass="GrayButton">
+                <i class="icon-search"></i>
+            </p:commandLink>
+        </span>
 
         <a id="show-top-menu" class="ShowOnMobile ripplelink"><i class="icon-more_vert" id="active"></i><i class="icon-close DispNone" id="passive"></i> </a>
-        <ul id="top-menu-info">
-            <li>
-                <a href="#" class="DispInlBlock Fright BoldGray HoverEffect"><i class="icon-shopping_cart Fs30"><span class="CartText White">2</span></i> </a>
-                <a href="#" class="DispInlBlock Fright BoldGray MarRight10 HoverEffect"><span class="Fs22 FontRobotoLight">#{i18n['Hello']}#{', '}#{subject.firstname}#{' '}#{subject.surname}</span> <i class="icon-account_circle Fright Fs30"></i></a>
-            </li>
-        </ul>
         <ul id="top-menu">
-            <li>
+            <!--<li>
                 <a class="ripplelink"><i class="icon-search"></i> <span class="ShowOnMobile">#{i18n['Search']}</span></a>
                 <ul>
                     <li>
@@ -52,7 +59,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </li>
                 </ul>
             </li>
-            <!--            <li>
+                        <li>
                             <a class="ripplelink"><i class="icon-archive"></i> <span class="ShowOnMobile">Task Manager</span></a>
                             <ul>
                                 <li><a href="#"><i class="icon-alarm_on"></i> Completed Tasks</a></li>

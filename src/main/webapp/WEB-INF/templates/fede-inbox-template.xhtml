@@ -24,24 +24,34 @@
     <ui:insert name="params">
     </ui:insert>
     <h:body class="GrayModena Geometry">
+        <h:form id="form">
+            <ui:include src="fede-inbox-topbar.xhtml" />
 
-        <ui:include src="fede-inbox-topbar.xhtml" />
+            <div id="wrapper">
+                <div id="wrapperIndent">
 
-        <div id="wrapper">
-            <div id="wrapperIndent">
+                    <ui:include src="fede_layoutmenu.xhtml" />
 
-                <ui:include src="fede_layoutmenu.xhtml" />
-
-                <div id="layout-portlets-cover">
-                    <div class="Container96 Fnone MarAuto">
-
-                        <h:form id="form">
-                            <ui:insert name="toolbar"></ui:insert>
-                            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <ui:insert name="content">
-                                Template
-                            </ui:insert>
-                        </h:form>
+                    <div id="layout-portlets-cover">
+                        <div class="Container100 Fnone MarAuto">
+                            <div class="Container10">
+                                <ui:insert name="subheader"></ui:insert>
+                            </div>
+                            <div class="Container90">
+                                <ui:insert name="toolbar"></ui:insert>
+                            </div>
+                        </div>
+                        <div class="Container100 Fnone MarAuto">
+                            <div class="Container10">
+                                <ui:insert name="sidebar"></ui:insert>
+                            </div>
+                            <div class="Container90">
+                                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                                <ui:insert name="content">
+                                    Template
+                                </ui:insert>
+                            </div>
+                        </div>
                         <!-- footer -->
                         <div class="Container100">
                             <div class="ContainerIndent TexAlCenter Fs14 BoldGray">
@@ -50,20 +60,19 @@
                         </div>
 
                     </div>
+
+                    <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
+                        <f:facet name="start">
+                            <p:graphicImage name="images/preloader.gif" library="modena-layout"/>
+                        </f:facet>
+
+                        <f:facet name="complete">
+                            <h:outputText value="" />
+                        </f:facet>
+                    </p:ajaxStatus>
                 </div>
-
-                <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
-                    <f:facet name="start">
-                        <p:graphicImage name="images/preloader.gif" library="modena-layout"/>
-                    </f:facet>
-
-                    <f:facet name="complete">
-                        <h:outputText value="" />
-                    </f:facet>
-                </p:ajaxStatus>
             </div>
-        </div>
-
+        </h:form>
         <h:outputStylesheet name="css/core-layout.css" library="modena-layout" />
         <h:outputStylesheet name="css/animate.css" library="modena-layout" />
         <h:outputStylesheet name="css/modena-font.css" library="modena-layout" />
