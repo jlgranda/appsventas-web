@@ -29,17 +29,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:param name="title" value="#{i18n['fede']}" />
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="tags" value="#{instanciaProcesoHome.tags}" />
+                <f:viewParam name="tags" value="#{subjectAdminHome.tags}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            <p:menuButton value="#{i18n['app.documents.instanciaproceso.procesos']}" iconPos="right"
+            <p:menuButton value="#{i18n['fede.subject.usuarios']}" iconPos="right"
                           styleClass="MarRight10"
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['Invoices']}" icon="fa fa-paper-plane-o" 
-                            url="/pages/fede/dashboard.jsf?faces-redirect=true"
+                <p:menuitem value="#{i18n['common.add']}" icon="fa fa-paper-plane-o" 
+                            url="/pages/admin/profile.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
             </p:menuButton>
@@ -71,11 +71,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </f:facet>
                         <f:facet name="right">
                             <label class="Gray">#{i18n['Start']}&nbsp;</label>
-                            <p:calendar value="#{instanciaProcesoHome.start}" class="input-sm">
+                            <p:calendar value="#{subjectAdminHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
                             <label class="Gray">#{i18n['End']}&nbsp;</label>
-                            <p:calendar value="#{instanciaProcesoHome.end}" class="input-sm">
+                            <p:calendar value="#{subjectAdminHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
                             <span id="pagination-info" class=""></span>
@@ -95,7 +95,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
                                     my="left bottom" at="left bottom">
                         <pe:triStateManyCheckbox id="labelTriBasic"  
-                                                 value="#{instanciaProcesoHome.selectedTriStateGroups}"  
+                                                 value="#{subjectAdminHome.selectedTriStateGroups}"  
                                                  layout="pageDirection"  
                                                  styleClass=""
                                                  stateOneTitle=""  
@@ -103,7 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  stateThreeTitle=""
                                                  stateTwoIcon="ui-icon-check"  
                                                  stateThreeIcon="ui-icon-minus" 
-                                                 rendered="#{not empty instanciaProcesoHome.selectedBussinesEntities}">  
+                                                 rendered="#{not empty subjectAdminHome.selectedBussinesEntities}">  
                             <f:selectItems value="#{instanciaProcesoHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
                         </pe:triStateManyCheckbox> 
                     </p:overlayPanel>
@@ -115,7 +115,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <!--./toolbar-->
         <ui:define name="sidebar">
             <ul class="ui-menu-list ui-helper-reset" id="side-menu">
-                <ui:repeat var="tag" value="#{instanciaProcesoHome.groups}">
+                <ui:repeat var="tag" value="#{subjectAdminHome.groups}">
                     <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem">
                         <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}">#{tag.name}</a>
                     </li>
@@ -127,29 +127,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="Container100 Responsive100">
                 <div class="Card ShadowEffect">
                     <div class="dataTable_wrapper">
-                        <p:dataTable var="instanciaProceso" 
-                                     value="#{instanciaProcesoHome.lazyDataModel}" 
+                        <p:dataTable var="subject" 
+                                     value="#{subjectAdminHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                      sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{instanciaProcesoHome.selectedBussinesEntities}" 
-                                     rowKey="#{instanciaProceso.id}" 
+                                     reflow="true" selection="#{subjectAdminHome.selectedBussinesEntities}" 
+                                     rowKey="#{subject.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                            <p:ajax event="rowSelect" listener="#{instanciaProcesoHome.onRowSelect}"/>
+                            <p:ajax event="rowSelect" listener="#{subjectAdminHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                            <p:column headerText="#{i18n['name']}" sortBy="#{instanciaProceso.name}">
-                                <h:outputText value="#{instanciaProceso.name}" />
+                            <p:column headerText="#{i18n['fullname']}" sortBy="#{subject.fullname}">
+                                <h:outputText value="#{subject.fullname}" />
                             </p:column>
 
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{instanciaProceso.createdOn}"
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{subject.createdOn}"
                                        styleClass="text-right">
-                                <h:outputText value="#{instanciaProceso.createdOn}">
+                                <h:outputText value="#{subject.createdOn}">
                                     <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="tipo"  headerText="#{i18n['common.type']}" sortBy="#{instanciaProceso.procesoTipo}"
+                            <p:column  id="code"  headerText="#{i18n['subject.code']}" sortBy="#{subject.ruc}"
                                        styleClass="text-right">
-                                <h:outputText value="#{instanciaProceso.procesoTipo}"/>
+                                <h:outputText value="#{subject.ruc}"/>
+                            </p:column>
+                            <p:column  id="codeType"  headerText="#{i18n['common.type']}" sortBy="#{subject.codeType}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{subject.codeType}"/>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.accion']}">
+                                <p:button value="#{i18n['common.edit']}" styleClass="CyanButton Fright" outcome="/pages/admin/profile.jsf?subjectId=#{subject.id}"/>
                             </p:column>
                         </p:dataTable>
                     </div>
@@ -171,9 +178,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </style>
             <script>
 
-                $(document).ready(function () {
+                $(document).ready(function() {
 
-                    $("#globalFilter").keyup(function () {
+                    $("#globalFilter").keyup(function() {
                         //onkeyup="PF('dataTable_wv').filter()" 
                         //var dataTable = $('#dataTable_wv').dataTable();
                         //dataTable.fnFilter(this.value);
@@ -181,19 +188,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         dataTable.filter();
                     });
 
-                    $("#pagination-next").click(function () {
+                    $("#pagination-next").click(function() {
                         var dataTable = PF('dataTable_wv');
                         dataTable.getPaginator().nextLink.click();
                         //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
                     });
 
-                    $("#pagination-previous").click(function () {
+                    $("#pagination-previous").click(function() {
                         var dataTable = PF('dataTable_wv');
                         dataTable.getPaginator().prevLink.click();
                         //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
                     });
 
-                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function (event) {
+                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function(event) {
                         //The event won't be propagated to the document NODE and 
                         // therefore events delegated to document won't be fired
                         event.stopPropagation();
