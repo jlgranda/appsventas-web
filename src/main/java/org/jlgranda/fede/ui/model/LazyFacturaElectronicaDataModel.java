@@ -203,10 +203,12 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         Map<String, Date> range = new HashMap<>();
         range.put("start", getStart());
         range.put("end", getEnd());
-        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
         _filters.put(FacturaElectronica_.owner.getName(), getOwner()); //Filtro por defecto
         _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
-        _filters.put("tag", getTags()); //Filtro de etiquetas
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
         if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
