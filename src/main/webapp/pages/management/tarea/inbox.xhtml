@@ -86,6 +86,37 @@
                                                      rendered="#{not empty instanciaProcesoHome.selectedBussinesEntities}">  
                                 <f:selectItems value="#{instanciaProcesoHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
                             </pe:triStateManyCheckbox> 
+                            <ul>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <p:commandLink id="button-labels" actionListener="#{instanciaProcesoHome.mostrarFormularioNuevaEtiqueta()}" ajax="false"
+                                                   styleClass=""
+                                                   rendered="#{empty instanciaProcesoHome.selectedBussinesEntities}">
+                                        <i class="fa fa-pencil-square-o">&nbsp;</i><h:outputText value="#{i18n['New']} #{i18n['Label']}" />
+                                        <p:ajax event="dialogReturn" update="@form"
+                                                listener="#{instanciaProcesoHome.handleReturn}">
+                                        </p:ajax>
+                                    </p:commandLink>
+                                </li>
+                                <li>
+                                    <h:link rendered="#{empty instanciaProcesoHome.selectedBussinesEntities}"
+                                            outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" ajax="false" 
+                                            styleClass=""
+                                            disabled="#{empty instanciaProcesoHome.selectedBussinesEntities}">
+                                        <i class="fa fa-tags"></i>&nbsp;#{i18n['Manage']}&nbsp;#{i18n['Labels']}
+                                    </h:link>
+                                </li>
+                                <li>
+                                    <p:commandLink id="button-apply-labels" actionListener="#{instanciaProcesoHome.applySelectedGroups}" ajax="false"
+                                                   styleClass=""
+                                                   rendered="#{not empty instanciaProcesoHome.selectedBussinesEntities}">
+                                        <h:outputText value="#{i18n['Apply']}" />
+                                        <p:ajax event="dialogReturn" update="@form"
+                                                listener="#{instanciaProcesoHome.handleReturn}">
+                                        </p:ajax>
+                                    </p:commandLink>
+                                </li>
+                            </ul>
                         </p:overlayPanel>
                     </div>
                 </div>

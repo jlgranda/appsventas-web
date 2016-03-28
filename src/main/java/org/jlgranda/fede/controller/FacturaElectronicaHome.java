@@ -592,7 +592,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
 
         this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
-
     }
 
     public void onRowSelect(SelectEvent event) {

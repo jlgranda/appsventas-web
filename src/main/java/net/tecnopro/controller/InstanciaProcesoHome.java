@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
@@ -151,6 +153,13 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             this.instanciaProceso = instanciaProcesoService.find(instanciaProcesoId);
         }
         return instanciaProceso;
+    }
+
+    public boolean mostrarFormularioNuevaEtiqueta() {
+        String width = settingHome.getValue(SettingNames.POPUP_SMALL_WIDTH, "400");
+        String height = settingHome.getValue(SettingNames.POPUP_SMALL_HEIGHT, "240");
+        super.openDialog(SettingNames.POPUP_NUEVA_ETIQUETA, width, height, true);
+        return true;
     }
 
     public void setInstanciaProceso(InstanciaProceso instanciaProceso) {
@@ -382,6 +391,46 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         return documento;
     }
 
+    public void applySelectedGroups() {
+        String status = "";
+        Group group = null;
+        Set<String> addedGroups = new LinkedHashSet<>();
+        for (BussinesEntity instanciaProceso : getSelectedBussinesEntities()) {
+            for (String key : selectedTriStateGroups.keySet()) {
+                group = findGroup(key);
+                status = selectedTriStateGroups.get(key);
+                if ("0".equalsIgnoreCase(status)) {
+                    if (instanciaProceso.containsGroup(key)) {
+                        instanciaProceso.remove(group);
+                    }
+                } else if ("1".equalsIgnoreCase(status)) {
+                    if (!instanciaProceso.containsGroup(key)) {
+                        instanciaProceso.add(group);
+                        addedGroups.add(group.getName());
+                    }
+                } else if ("2".equalsIgnoreCase(status)) {
+                    if (!instanciaProceso.containsGroup(key)) {
+                        instanciaProceso.add(group);
+                        addedGroups.add(group.getName());
+                    }
+                }
+            }
+
+            instanciaProcesoService.save(instanciaProceso.getId(), (InstanciaProceso) instanciaProceso);
+        }
+
+        this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
+    }
+
+    private Group findGroup(String key) {
+        for (Group g : getGroups()) {
+            if (key.equalsIgnoreCase(g.getCode())) {
+                return g;
+            }
+        }
+        return new Group("null", "null");
+    }
+
     public void setDocumento(Documento documento) {
         this.documento = documento;
     }
@@ -396,7 +445,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     @Override
     public void handleReturn(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     public Group getDefaultGroup() {
