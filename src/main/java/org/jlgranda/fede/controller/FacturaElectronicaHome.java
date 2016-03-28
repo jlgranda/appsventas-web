@@ -463,12 +463,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
             instancia = facturaElectronicaService.save(instancia);
 
-            //Establecer grupo por defecto
-            if (instancia.isPersistent() && getDefaultGroup().isPersistent()) {
-                instancia.add(getDefaultGroup());
-                facturaElectronicaService.save(instancia.getId(), instancia);
-            }
-
         } else {
             this.addWarningMessage(I18nUtil.getMessages("action.warning"), "El archivo " + filename + " contiene una factura que ya existe en fede. ID: " + codigo + ".");
         }
@@ -486,9 +480,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public Group getDefaultGroup() {
-        if (this.defaultGroup == null) {
-            return groupService.findByCode(settingHome.getValue(SettingNames.DEFAULT_INVOICES_GROUP_NAME, "fede"));
-        }
         return this.defaultGroup;
     }
 
@@ -510,7 +501,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public List<Group> getGroups() {
         if (groups.isEmpty()) {
-            groups = groupService.findAllByOwner(subject);
+            //Todos los grupos para el modulo fede
+            groups = groupService.findByOwnerAndModuleAndType(subject, "fede", Group.Type.LABEL);
         }
 
         return groups;

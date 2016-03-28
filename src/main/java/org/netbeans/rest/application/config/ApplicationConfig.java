@@ -41,8 +41,6 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(org.jlgranda.fede.service.FacturaElectronicaFacadeREST.class);
-        resources.add(org.jlgranda.fede.service.GroupFacadeREST.class);
     }
     
 }

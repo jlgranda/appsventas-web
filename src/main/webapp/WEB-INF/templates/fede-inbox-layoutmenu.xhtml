@@ -1,0 +1,31 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pm="http://primefaces.org/modena">
+
+    <div class="Animated05" id="layout-menu-cover">
+        <pm:menu styleClass="ShowOnDesktop">
+            <p:menuitem id="rm_appsventas" value="#{i18n['app.name']}" icon="icon-dvr" url="/"/>
+            <p:menuitem id="rm_dashboard" value="#{i18n['Dashboard']}" icon="icon-dvr" url="/pages/fede/dashboard.jsf"/>
+            <p:menuitem id="rm_inventory" value="#{i18n['app.fede.inventory']}" icon="fa fa-cubes " url="/pages/fede/inventory/dashboard.jsf"/>
+            <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="icon-paper" url="/pages/fede/sales/preinvoices.jsf" />
+        </pm:menu>
+        <div class="EmptyBox5"></div>
+        <ul class="layout-menu modena-menu ShowOnMobile" id="side-menu">
+            <li class="" role="menuitem">
+                <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf" 
+                   class="menulink ripplelink #{facturaElectronicaHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
+            </li>
+            <ui:repeat var="tag" value="#{facturaElectronicaHome.groups}">
+                <li class="" role="menuitem">
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf?tags=#{tag.code}" 
+                       class="menulink ripplelink #{facturaElectronicaHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                </li>
+            </ui:repeat>
+        </ul>
+    </div>
+
+</ui:composition>

@@ -33,22 +33,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <span class="ButtonLine" id="ButtonLine2"></span>
             <span class="ButtonLine" id="ButtonLine3"></span>
         </a>
-        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" id="logo">
-            <h:graphicImage value="/resources/images/appsventas.png" styleClass="Fleft" title="#{i18n['app.name']} #{i18n['app.version']}"/>
-            &nbsp;
+        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" class="OvHidden BigTopic Fs20 White Container10 ShowOnDesktop">
+            #{facturaElectronicaHome.tags eq null ? i18n['app.name'] : facturaElectronicaHome.tags}
         </a>
-        <p:inputText id="globalFilter" value="#{facturaElectronicaHome.keyword}" placeholder="#{i18n['Search']}"
-                         required="false" disabled="false"
-                         class="">
-        </p:inputText>
-        <p:defaultCommand target="filter-button" />
-        <span class="ui-inputfield ui-button ui-widget GrayButton Fs18">
-            <p:commandLink id="filter-button" actionListener="#{facturaElectronicaHome.filter}" ajax="false"
-                            styleClass="GrayButton">
-                <i class="icon-search"></i>
-            </p:commandLink>
-        </span>
-
+        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" class="OvHidden BigTopic Fs20 White Container60 ShowOnMobile">
+            #{facturaElectronicaHome.tags eq null ? i18n['app.name'] : facturaElectronicaHome.tags}
+        </a>
+        <div class="ui-toolbar-group-left ShowOnDesktop">
+            <p:inputText id="globalFilter" value="#{facturaElectronicaHome.keyword}" placeholder="#{i18n['Search']}"
+                             required="false" disabled="false">
+            </p:inputText>
+            <p:defaultCommand target="filter-button"/>
+            <span class="ui-inputfield ui-button ui-widget GrayButton Fs18 ">
+                <p:commandLink id="filter-button" actionListener="#{facturaElectronicaHome.filter}" ajax="false"
+                                styleClass="GrayButton">
+                    <i class="icon-search"></i>
+                </p:commandLink>
+            </span>
+        </div>
         <a id="show-top-menu" class="ShowOnMobile ripplelink"><i class="icon-more_vert" id="active"></i><i class="icon-close DispNone" id="passive"></i> </a>
         <ul id="top-menu">
             <!--<li>

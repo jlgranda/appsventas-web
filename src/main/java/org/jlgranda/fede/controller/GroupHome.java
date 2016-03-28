@@ -17,6 +17,7 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,14 +25,8 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import org.apache.commons.lang3.StringUtils;
-import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
-import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.util.Dates;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,18 +64,18 @@ public class GroupHome extends FedeController implements Serializable {
         Map<String, String> props = new HashMap<String, String>();
         
         //email settings
-        props.put("fede", "fede {1, panel-success, fa fa-cloud fa-5x}");
-        props.put("salud", "Salud {2, panel-primary, fa fa-heartbeat fa-5x}");
-        props.put("alimentos", "Alimentos {3, panel-sucess, fa fa-icon-shopping-cart fa-5x}");
-        props.put("ropa", "Ropa {4, panel-green, fa fa-tag fa-5x}");
-        props.put("educacion", "Educación {5, panel-yellow, fa fa-graduation-cap fa-5x}");
-        props.put("vivienda", "Vivienda {6, panel-red, fa fa-home fa-5x}");
-        props.put("favorito", "Favoritos {7, panel-red, fa fa-heart-o}");
+        props.put("salud", "Salud {1, panel-primary, fa fa-heartbeat fa-5x, fede}");
+        props.put("alimentos", "Alimentos {2, panel-sucess, fa fa-icon-shopping-cart fa-5x, fede}");
+        props.put("ropa", "Ropa {3, panel-green, fa fa-tag fa-5x, fede}");
+        props.put("educacion", "Educación {4, panel-yellow, fa fa-graduation-cap fa-5x, fede}");
+        props.put("vivienda", "Vivienda {5, panel-red, fa fa-home fa-5x, fede}");
+        props.put("favorito", "Favoritos {1, panel-red, fa fa-heart-o, " + SettingNames.GENERAL_MODULE +"}");
 
         Group group = null;
         String value = null;
         Short orden = null;
         String icon = null;
+        String module = null;
         String color = null;
         String attrs = null;
         for (String key : props.keySet()){
@@ -89,14 +84,17 @@ public class GroupHome extends FedeController implements Serializable {
             orden = Short.valueOf(attrs.split(",")[0]);
             color = attrs.split(",")[1];
             icon = attrs.split(",")[2];
+            module = attrs.split(",")[3];
             value = value.substring(0, (value.indexOf("{") - 1));
             group = groupService.createInstance();
-            group.setCode(key);
-            group.setName(value);
+            group.setCode(key.trim());
+            group.setName(value.trim());
             group.setOwner(subject);
-            group.setColor(color);
-            group.setIcon(icon);
+            group.setColor(color.trim());
+            group.setIcon(icon.trim());
+            group.setModule(module.trim()); //Marcar con null para el caso de etiquetas generales
             group.setOrden(orden);
+            group.setGroupType(Group.Type.LABEL);
             
             groupService.save(group);
             

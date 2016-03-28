@@ -524,7 +524,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     public List<Group> getGroups() {
         if (groups.isEmpty()) {
-            groups = groupService.findAllByOwner(subject);
+            groups = groupService.findByOwnerAndModuleAndType(subject, "documents", Group.Type.LABEL);
         }
 
         return groups;

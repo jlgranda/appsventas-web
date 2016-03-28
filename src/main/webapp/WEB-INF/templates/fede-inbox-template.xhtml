@@ -30,22 +30,22 @@
             <div id="wrapper">
                 <div id="wrapperIndent">
 
-                    <ui:include src="fede_layoutmenu.xhtml" />
+                    <ui:include src="fede-inbox-layoutmenu.xhtml" />
 
                     <div id="layout-portlets-cover">
                         <div class="Container100 Fnone MarAuto">
-                            <div class="Container10">
+                            <div class="Container10 Responsive100 ShowOnDesktop">
                                 <ui:insert name="subheader"></ui:insert>
                             </div>
-                            <div class="Container90">
+                            <div class="Container90 Responsive100 ShowOnDesktop">
                                 <ui:insert name="toolbar"></ui:insert>
                             </div>
                         </div>
                         <div class="Container100 Fnone MarAuto">
-                            <div class="Container10">
+                            <div class="Container10 Responsive100 ShowOnDesktop">
                                 <ui:insert name="sidebar"></ui:insert>
                             </div>
-                            <div class="Container90">
+                            <div class="Container90 Responsive100">
                                 <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                                 <ui:insert name="content">
                                     Template
