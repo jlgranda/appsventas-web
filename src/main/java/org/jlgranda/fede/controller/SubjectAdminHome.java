@@ -23,7 +23,9 @@ import com.jlgranda.fede.ejb.SubjectService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -46,6 +48,7 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Lists;
 import org.jpapi.util.Strings;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
@@ -129,8 +132,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazySubjectDataModel(subjectService);
         }
-
-//        lazyDataModel.setOwner(subject);
+        lazyDataModel.setOwner(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
 
@@ -241,12 +243,13 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
                 //Finalmente crear en fede
                 getSubjectEdit().setUuid(user.getId());
+                getSubjectEdit().setOwner(subject);
                 getSubjectEdit().setSubjectType(Subject.Type.NATURAL);
                 subjectService.save(getSubjectEdit());
 
                 //Crear grupos por defecto para el subject
-                groupHome.createDefaultGroups(getSubjectEdit());
-
+//                groupHome.createDefaultGroups(getSubjectEdit());
+                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
             } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
                 try {
                     this.userTransaction.rollback();
@@ -256,6 +259,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             }
             return;
         }
+        getSubjectEdit().setOwner(subject);
         subjectService.save(subject.getId(), subject);
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
     }
@@ -271,4 +275,43 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         this.subjectEdit = subjectEdit;
     }
 
+    public void applySelectedGroups() {
+        String status = "";
+        Group group = null;
+        Set<String> addedGroups = new LinkedHashSet<>();
+        for (BussinesEntity fe : getSelectedBussinesEntities()) {
+            for (String key : selectedTriStateGroups.keySet()) {
+                group = findGroup(key);
+                status = selectedTriStateGroups.get(key);
+                if ("0".equalsIgnoreCase(status)) {
+                    if (fe.containsGroup(key)) {
+                        fe.remove(group);
+                    }
+                } else if ("1".equalsIgnoreCase(status)) {
+                    if (!fe.containsGroup(key)) {
+                        fe.add(group);
+                        addedGroups.add(group.getName());
+                    }
+                } else if ("2".equalsIgnoreCase(status)) {
+                    if (!fe.containsGroup(key)) {
+                        fe.add(group);
+                        addedGroups.add(group.getName());
+                    }
+                }
+            }
+
+            subjectService.save(fe.getId(), (Subject) fe);
+        }
+
+        this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
+    }
+
+    private Group findGroup(String key) {
+        for (Group g : getGroups()) {
+            if (key.equalsIgnoreCase(g.getCode())) {
+                return g;
+            }
+        }
+        return new Group("null", "null");
+    }
 }

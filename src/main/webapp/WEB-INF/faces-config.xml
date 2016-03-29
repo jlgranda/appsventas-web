@@ -44,5 +44,10 @@
             <to-view-id>/pages/management/tarea/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>inboxSubject</from-outcome>
+            <to-view-id>/pages/admin/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
 </faces-config>

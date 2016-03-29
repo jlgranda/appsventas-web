@@ -43,7 +43,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
 
     private static final int MAX_RESULTS = 5;
     Logger logger = LoggerFactory.getLogger(LazySubjectDataModel.class);
-    private SubjectService subjectService;
+    private SubjectService bussinesEntityService;
     private List<Subject> resultList;
     private int firstResult = 0;
 
@@ -78,26 +78,18 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     public LazySubjectDataModel(SubjectService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
-        this.subjectService = bussinesEntityService;
+        this.bussinesEntityService = bussinesEntityService;
     }
 
     @PostConstruct
     public void init() {
     }
 
-    public SubjectService getSubjectService() {
-        return subjectService;
-    }
-
-    public void setSubjectService(SubjectService subjectService) {
-        this.subjectService = subjectService;
-    }
-
     public List<Subject> getResultList() {
         logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
-            resultList = subjectService.find(this.getPageSize(), this.getFirstResult());
+            resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
         return resultList;
     }
@@ -129,12 +121,12 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     }
 
     public boolean isNextExists() {
-        return subjectService.count() > this.getPageSize() + firstResult;
+        return bussinesEntityService.count() > this.getPageSize() + firstResult;
     }
 
     @Override
     public Subject getRowData(String rowKey) {
-        return subjectService.find(Long.valueOf(rowKey));
+        return bussinesEntityService.find(Long.valueOf(rowKey));
     }
 
     @Override
@@ -142,6 +134,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
         return entity.getName();
     }
 
+    @Override
     public List<Subject> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
 
         int end = first + pageSize;
@@ -155,12 +148,9 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
         range.put("start", getStart());
         range.put("end", getEnd());
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-//        _filters.put(Subject_.author.getName(), getAuthor()); //Filtro por defecto
-//        _filters.put(Subject_.createdOn.getName(), range); //Filtro de fecha inicial
-//        if (getTags() != null && !getTags().isEmpty()) {
-//            _filters.put("tag", getTags()); //Filtro de etiquetas
-//        }
-
+        _filters.put(Subject_.author.getName(), getAuthor()); //Filtro por defecto
+        _filters.put(Subject_.createdOn.getName(), range); //Filtro de fecha inicial
+        _filters.put("tag", getTags());
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
@@ -171,7 +161,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
             sortField = Subject_.createdOn.getName();
         }
 
-        QueryData<Subject> qData = subjectService.find(first, end, sortField, order, _filters);
+        QueryData<Subject> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

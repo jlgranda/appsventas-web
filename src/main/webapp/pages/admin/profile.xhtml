@@ -62,12 +62,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             execute="@this save" render="password"/>
                             <div class="Wid50 Fleft Responsive50">
                                 <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                                 actionListener="#{subjectHome.save(subject)}" disabled="false" 
+                                                 actionListener="#{subjectAdminHome.save(subject)}" disabled="false" 
+                                                 action="inboxSubject"
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
                             <div class="EmptyBox5 ShowOnMobile"></div>
                             <div class="Wid50 Fleft Responsive50">
-                                <p:commandButton value="#{i18n['Cancel']}" ajax="true" action="home" disabled="false" 
+                                <p:commandButton value="#{i18n['Cancel']}" ajax="false" immediate="true" action="inboxSubject" disabled="false" 
                                                  styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                             </div>
                         </div>

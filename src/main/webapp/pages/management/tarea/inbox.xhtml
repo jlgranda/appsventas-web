@@ -38,10 +38,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['Invoices']}" icon="fa fa-paper-plane-o" 
+                <!--<p:menuitem value="{i18n['Invoices']}" icon="fa fa-paper-plane-o" 
                             url="/pages/fede/dashboard.jsf?faces-redirect=true"
                             disabled="#{false}">
-                </p:menuitem>
+                </p:menuitem>-->
             </p:menuButton>
         </ui:define>
         <ui:define name="toolbar">
@@ -114,10 +114,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
         <!--./toolbar-->
         <ui:define name="sidebar">
-            <ul class="ui-menu-list ui-helper-reset" id="side-menu">
+            <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
+                <li class="" role="menuitem">
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf" 
+                       class="menulink ripplelink #{instanciaProcesoHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
+                </li>
                 <ui:repeat var="tag" value="#{instanciaProcesoHome.groups}">
-                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem">
-                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}">#{tag.name}</a>
+                    <li class="" role="menuitem">
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}" 
+                           class="menulink ripplelink #{instanciaProcesoHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
                     </li>
                 </ui:repeat>
             </ul>
@@ -171,9 +176,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </style>
             <script>
 
-                $(document).ready(function () {
+                $(document).ready(function() {
 
-                    $("#globalFilter").keyup(function () {
+                    $("#globalFilter").keyup(function() {
                         //onkeyup="PF('dataTable_wv').filter()" 
                         //var dataTable = $('#dataTable_wv').dataTable();
                         //dataTable.fnFilter(this.value);
@@ -181,19 +186,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         dataTable.filter();
                     });
 
-                    $("#pagination-next").click(function () {
+                    $("#pagination-next").click(function() {
                         var dataTable = PF('dataTable_wv');
                         dataTable.getPaginator().nextLink.click();
                         //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
                     });
 
-                    $("#pagination-previous").click(function () {
+                    $("#pagination-previous").click(function() {
                         var dataTable = PF('dataTable_wv');
                         dataTable.getPaginator().prevLink.click();
                         //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
                     });
 
-                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function (event) {
+                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function(event) {
                         //The event won't be propagated to the document NODE and 
                         // therefore events delegated to document won't be fired
                         event.stopPropagation();
