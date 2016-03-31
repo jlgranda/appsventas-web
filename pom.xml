@@ -179,7 +179,11 @@
             <groupId>org.picketlink</groupId>
             <artifactId>picketlink</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.picketlink.idm</groupId>
+            <artifactId>picketlink-idm-core</artifactId>
+            <version>1.5.0.Alpha02</version>
+        </dependency>
         <dependency>
             <groupId>org.picketlink</groupId>
             <artifactId>picketlink-idm-simple-schema</artifactId>
