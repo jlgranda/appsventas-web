@@ -14,4 +14,5 @@
         <class>org.apache.deltaspike.jpa.impl.transaction.TransactionalInterceptor</class>
         <class>org.apache.deltaspike.security.impl.extension.SecurityInterceptor</class>
     </interceptors>-->
+   
 </beans>

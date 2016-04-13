@@ -16,157 +16,152 @@
 package org.jlgranda.fede.controller.security;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.TransactionAttribute;
-import javax.faces.bean.ViewScoped;
+import javax.annotation.Resource;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+import org.jlgranda.fede.controller.FedeController;
+import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.Identity;
-import org.picketlink.idm.api.Group;
-import org.picketlink.idm.api.IdentitySession;
+import org.picketlink.idm.IdentityManagementException;
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.common.exception.IdentityException;
-import org.picketlink.idm.impl.api.model.SimpleGroup;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.Group;
+import org.primefaces.event.SelectEvent;
 
-/**
- *
- * @author cesar
- */
 @Named
 @ViewScoped
-public class SecurityGroupHome implements Serializable {
-
+public class SecurityGroupHome extends FedeController implements Serializable {
+    
     private static final long serialVersionUID = 7632987414391869389L;
-
-    @Inject
-    private EntityManager entityManager;
     @Inject
     private Identity identity;
     @Inject
-    private IdentitySession security;
-    private Group instance;
-    @Inject
-    private SecurityGroupService securityGroupService;
+    private PartitionManager partitionManager;
+    @Resource
+    private UserTransaction userTransaction;
+    IdentityManager identityManager = null;
+    private Group group;
     private String groupKey;
-    private String groupName;
-
+    private SecurityGroupLazyDataService lazyDataModel;
+    
     @PostConstruct
     public void init() {
-        securityGroupService.setSecurity(security);
+        group = createInstance();
     }
-
+    
     public String getGroupKey() {
         return groupKey;
     }
-
+    
     public void setGroupKey(String groupKey) {
         this.groupKey = groupKey;
     }
-
-    public String getGroupName() {
-        if (isManaged()) {
-            setGroupName(getInstance().getName());
-        }
-        return groupName;
+    
+    public void setGroup(Group group) {
+        this.group = group;
     }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public void setInstance(Group instance) {
-        this.instance = instance;
-    }
-
-    public Group getInstance() {
-        if (instance == null) {
-            initInstance();
-        }
-        return instance;
-    }
-
-    @TransactionAttribute
-    public String saveGroup() {
-        if (isManaged()) {
-            //TODO implementar actualización de nombre de grupo, evaluar si es necesario
-        } else {
+    
+    public Group getGroup() {
+        
+        if (this.groupKey != null && group.getId() == null) {
             try {
-                security.getPersistenceManager().createGroup(getGroupName(), "GROUP");
+                Group g = find();
+                if (g != null) {
+                    group = g;
+                }
             } catch (IdentityException ex) {
                 Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return "/pages/admin/security/list?faces-redirect=true";
+        return group;
     }
-
+    
+    public String saveGroup() {
+        identityManager = partitionManager.createIdentityManager();
+        try {
+            if (this.group.getId() != null) {
+                this.userTransaction.begin();
+                identityManager.update(group);
+                this.addDefaultSuccessMessage();
+                this.userTransaction.commit();
+            } else {
+                
+                this.userTransaction.begin();
+                identityManager.add(group);
+                this.userTransaction.commit();
+//            return "/pages/admin/security/list?faces-redirect=true";
+                return "";
+                
+            }
+        } catch (IdentityManagementException |
+                SecurityException | IllegalStateException e) {
+            try {
+                this.userTransaction.rollback();
+            } catch (SystemException ignore) {
+            }
+            throw new RuntimeException("Could not create default security entities.", e);
+        } catch (NotSupportedException ex) {
+            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SystemException ex) {
+            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RollbackException ex) {
+            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeuristicMixedException ex) {
+            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeuristicRollbackException ex) {
+            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public SecurityGroupLazyDataService getLazyDataModel() {
+        
+        filter();
+        
+        return lazyDataModel;
+    }
+    
+    public void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new SecurityGroupLazyDataService();
+        }
+        lazyDataModel.setResultList(lazyDataModel.find("", identityManager));
+    }
+    
+    public void setLazyDataModel(SecurityGroupLazyDataService lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+    
+    public Group find() throws IdentityException {
+        identityManager = partitionManager.createIdentityManager();
+        Group group = BasicModel.getGroup(this.identityManager, this.groupKey);
+        return group;
+    }
+    
     protected Group createInstance() {
-        Group u = new SimpleGroup("New Group", "GROUP");
+        Group u = new Group("NEW GROUP");
         return u;
     }
-
-    @TransactionAttribute
-    public void load() {
-        if (isIdDefined()) {
-            wire();
-        }
+    
+    @Override
+    public void handleReturn(SelectEvent event) {
+        
     }
-
-    @TransactionAttribute
-    public void wire() {
-        getInstance();
-    }
-
-    public boolean isPersistent() {
-        return getInstance().getKey() != null;
-    }
-
-    public boolean isIdDefined() {
-        return getGroupKey() != null && !"".equals(getGroupKey());
-    }
-
-    public Group find() throws IdentityException {
-        if (securityGroupService.getSecurity() != null) {
-            Group result = securityGroupService.findByKey(getGroupKey());
-            if (result == null) {
-                result = handleNotFound();
-            }
-            return result;
-        } else {
-            return null;
-        }
-    }
-
-    public void clearInstance() {
-        setInstance(null);
-        setGroupKey(null);
-    }
-
-    protected void initInstance() {
-        if (isIdDefined()) {
-            if (true /*!isTransactionMarkedRollback()*/) {
-                try {
-                    //we cache the instance so that it does not "disappear"
-                    //after remove() is called on the instance
-                    //is this really a Good Idea??
-                    setInstance(find());
-                } catch (IdentityException ex) {
-                    Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        } else {
-            setInstance(createInstance());
-        }
-    }
-
-    private Group handleNotFound() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public boolean isManaged() {
-        return getInstance() != null
-                && getGroupKey() != null;
+    
+    @Override
+    public org.jpapi.model.Group getDefaultGroup() {
+        return null;
     }
 }
