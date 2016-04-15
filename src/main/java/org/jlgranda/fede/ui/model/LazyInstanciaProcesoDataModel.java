@@ -16,7 +16,6 @@
  */
 package org.jlgranda.fede.ui.model;
 
-import com.jlgranda.fede.ejb.FacturaElectronicaService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,8 +26,6 @@ import javax.annotation.PostConstruct;
 import net.tecnopro.document.ejb.InstanciaProcesoService;
 import net.tecnopro.document.model.InstanciaProceso;
 import net.tecnopro.document.model.InstanciaProceso_;
-import org.jlgranda.fede.model.document.FacturaElectronica;
-import org.jlgranda.fede.model.document.FacturaElectronica_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;

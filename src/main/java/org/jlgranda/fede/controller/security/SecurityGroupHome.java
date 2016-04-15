@@ -30,8 +30,8 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.ui.model.LazyGroupDataModel;
 import org.omnifaces.cdi.ViewScoped;
-import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
@@ -43,10 +43,8 @@ import org.primefaces.event.SelectEvent;
 @Named
 @ViewScoped
 public class SecurityGroupHome extends FedeController implements Serializable {
-    
+
     private static final long serialVersionUID = 7632987414391869389L;
-    @Inject
-    private Identity identity;
     @Inject
     private PartitionManager partitionManager;
     @Resource
@@ -54,27 +52,27 @@ public class SecurityGroupHome extends FedeController implements Serializable {
     IdentityManager identityManager = null;
     private Group group;
     private String groupKey;
-    private SecurityGroupLazyDataService lazyDataModel;
-    
+    private LazyGroupDataModel lazyDataModel;
+
     @PostConstruct
     public void init() {
         group = createInstance();
     }
-    
+
     public String getGroupKey() {
         return groupKey;
     }
-    
+
     public void setGroupKey(String groupKey) {
         this.groupKey = groupKey;
     }
-    
+
     public void setGroup(Group group) {
         this.group = group;
     }
-    
+
     public Group getGroup() {
-        
+
         if (this.groupKey != null && group.getId() == null) {
             try {
                 Group g = find();
@@ -87,7 +85,7 @@ public class SecurityGroupHome extends FedeController implements Serializable {
         }
         return group;
     }
-    
+
     public String saveGroup() {
         identityManager = partitionManager.createIdentityManager();
         try {
@@ -96,15 +94,13 @@ public class SecurityGroupHome extends FedeController implements Serializable {
                 identityManager.update(group);
                 this.addDefaultSuccessMessage();
                 this.userTransaction.commit();
-            } else {
-                
+                return "inboxGroup";
+            } 
                 this.userTransaction.begin();
                 identityManager.add(group);
                 this.userTransaction.commit();
-//            return "/pages/admin/security/list?faces-redirect=true";
-                return "";
-                
-            }
+                return "inboxGroup";
+
         } catch (IdentityManagementException |
                 SecurityException | IllegalStateException e) {
             try {
@@ -123,43 +119,54 @@ public class SecurityGroupHome extends FedeController implements Serializable {
         } catch (HeuristicRollbackException ex) {
             Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return "";
     }
-    
-    public SecurityGroupLazyDataService getLazyDataModel() {
-        
+
+    public LazyGroupDataModel getLazyDataModel() {
+
         filter();
-        
+
         return lazyDataModel;
     }
-    
+
     public void filter() {
         if (lazyDataModel == null) {
-            lazyDataModel = new SecurityGroupLazyDataService();
+            identityManager = partitionManager.createIdentityManager();
+            lazyDataModel = new LazyGroupDataModel(identityManager);
         }
-        lazyDataModel.setResultList(lazyDataModel.find("", identityManager));
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
     }
-    
-    public void setLazyDataModel(SecurityGroupLazyDataService lazyDataModel) {
+
+    public void setLazyDataModel(LazyGroupDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-    
+
     public Group find() throws IdentityException {
         identityManager = partitionManager.createIdentityManager();
         Group group = BasicModel.getGroup(this.identityManager, this.groupKey);
         return group;
     }
-    
+
     protected Group createInstance() {
         Group u = new Group("NEW GROUP");
         return u;
     }
-    
+
     @Override
     public void handleReturn(SelectEvent event) {
-        
+
     }
-    
+
     @Override
     public org.jpapi.model.Group getDefaultGroup() {
         return null;

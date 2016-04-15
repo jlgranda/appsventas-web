@@ -49,5 +49,10 @@
             <to-view-id>/pages/admin/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>inboxGroup</from-outcome>
+            <to-view-id>/pages/admin/security/group.inboxjsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
 </faces-config>
