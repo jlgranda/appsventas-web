@@ -17,13 +17,9 @@ package org.jlgranda.fede.controller.security;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
 import javax.faces.model.ListDataModel;
-import javax.inject.Inject;
-import javax.transaction.UserTransaction;
-import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.model.basic.Group;
 import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.idm.query.IdentityQueryBuilder;
@@ -38,7 +34,11 @@ public class SecurityGroupLazyDataService extends ListDataModel<Group> implement
     private List<Group> resultList;
 
     public SecurityGroupLazyDataService() {
-        resultList = new ArrayList<Group>();
+        resultList = new ArrayList<>();
+    }
+
+    @PostConstruct
+    public void init() {
     }
 
     public List<Group> getResultList() {
@@ -49,15 +49,12 @@ public class SecurityGroupLazyDataService extends ListDataModel<Group> implement
         this.resultList = resultList;
     }
 
-    public List<Group> find(String name, IdentityManager identityManager) {
-        if (name == null) {
-            throw new IllegalArgumentException("Invalid login name.");
+    public List<Group> find(IdentityManager identityManager) {
+        if (identityManager == null) {
         }
         IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
-        IdentityQuery<Group> query = queryBuilder.createIdentityQuery(Group.class);
-
-        query.where(queryBuilder.equal(Group.NAME, name));
-
+        IdentityQuery<Group> query = queryBuilder.createIdentityQuery(Group.class)
+                .where(queryBuilder.equal(Group.NAME, "fede"));
         return query.getResultList();
     }
 
