@@ -302,20 +302,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         }
     }
 
-    @Deprecated
-    public List<Subject> completeSubjects(final String query) {
-        List<Subject> result = new ArrayList<>();
-        if (!"".equals(query.trim())) {
-            Subject subjectBuscar = new Subject();
-            subjectBuscar.setUsername(query);
-            subjectBuscar.setFirstname(query);
-            subjectBuscar.setSurname(query);
-            result = subjectService.buscarPorCriterio(subjectBuscar);
-        }
-        SubjectConverter.setSubjects(result);
-        return result;
-    }
-
     public void setActiveIndex(String activeIndex) {
         this.activeIndex = activeIndex;
     }

@@ -43,7 +43,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
 
     private static final int MAX_RESULTS = 5;
     Logger logger = LoggerFactory.getLogger(LazySubjectDataModel.class);
-    private SubjectService bussinesEntityService;
+    private SubjectService service;
     private List<Subject> resultList;
     private int firstResult = 0;
 
@@ -78,7 +78,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     public LazySubjectDataModel(SubjectService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
-        this.bussinesEntityService = bussinesEntityService;
+        this.service = bussinesEntityService;
     }
 
     @PostConstruct
@@ -86,10 +86,9 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     }
 
     public List<Subject> getResultList() {
-        logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
-            resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
+            resultList = service.find(this.getPageSize(), this.getFirstResult());
         }
         return resultList;
     }
@@ -121,12 +120,12 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     }
 
     public boolean isNextExists() {
-        return bussinesEntityService.count() > this.getPageSize() + firstResult;
+        return service.count() > this.getPageSize() + firstResult;
     }
 
     @Override
     public Subject getRowData(String rowKey) {
-        return bussinesEntityService.find(Long.valueOf(rowKey));
+        return service.find(Long.valueOf(rowKey));
     }
 
     @Override
@@ -161,7 +160,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
             sortField = Subject_.createdOn.getName();
         }
 
-        QueryData<Subject> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<Subject> qData = service.find(first, end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

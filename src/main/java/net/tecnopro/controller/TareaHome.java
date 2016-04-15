@@ -359,19 +359,6 @@ public class TareaHome extends FedeController implements Serializable {
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
 
-    public List<Subject> completeSubjects(final String query) {
-        List<Subject> result = new ArrayList<>();
-        if (!"".equals(query.trim())) {
-            Subject subjectBuscar = new Subject();
-            subjectBuscar.setUsername(query);
-            subjectBuscar.setFirstname(query);
-            subjectBuscar.setSurname(query);
-            result = subjectService.buscarPorCriterio(subjectBuscar);
-        }
-        SubjectConverter.setSubjects(result);
-        return result;
-    }
-
     public void getDocumentos(Tarea t) {
         for (Documento doc : t.getDocumentos()) {
             doc.setContents(obtenerBytes(new File(doc.getRuta())));
