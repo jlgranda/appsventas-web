@@ -83,7 +83,7 @@ public class SettingHome extends FedeController implements Serializable {
     public String getValue(String name, String defaultValue) {
         //Buscar en cache
         if (cache.containsKey(name)){
-            logger.info("La propiedad {} se recupera desde cache.", name);
+            //logger.info("La propiedad {} se recupera desde cache.", name);
             return cache.get(name);
         }
         
@@ -101,6 +101,7 @@ public class SettingHome extends FedeController implements Serializable {
     /**
      * Obtener todas las configuraciones del sistema que son suceptibles de ser
      * sobreescritar para el usuario actual
+     * @return la lista de propiedades sobreescribibles
      */
     protected List<Setting> findSettingsForOverwrite() {
         Map<String, Object> filters = new HashMap<>();
@@ -143,7 +144,7 @@ public class SettingHome extends FedeController implements Serializable {
     public String getGlobalValue(String name, String defaultValue) {
         Setting s = settingService.findByName(name, null);
         if (s == null) {
-            logger.info("La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
+            //logger.info("La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
             return defaultValue;
         }
         return s.getValue();

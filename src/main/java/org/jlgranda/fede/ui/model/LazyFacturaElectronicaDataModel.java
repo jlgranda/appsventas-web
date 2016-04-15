@@ -30,6 +30,8 @@ import org.jlgranda.fede.model.document.FacturaElectronica_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.model.profile.Subject_;
+import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.model.LazyDataModel;
@@ -201,10 +203,20 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
-        range.put("start", getStart());
-        range.put("end", getEnd());
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
+        }
+        
         _filters.put(FacturaElectronica_.owner.getName(), getOwner()); //Filtro por defecto
-        _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
+        
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }

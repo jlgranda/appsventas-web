@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jlgranda.fede.controller;
+package org.jlgranda.fede.controller.admin;
 
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
@@ -33,34 +33,20 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.GroupHome;
+import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.controller.SubjectHome;
 import org.jlgranda.fede.ui.model.LazySubjectDataModel;
 import org.jpapi.model.BussinesEntity;
-import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
-import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
-import org.jpapi.util.Strings;
-import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
-import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.basic.BasicModel;
-import static org.picketlink.idm.model.basic.BasicModel.addToGroup;
-import static org.picketlink.idm.model.basic.BasicModel.grantGroupRole;
-import static org.picketlink.idm.model.basic.BasicModel.grantRole;
-import org.picketlink.idm.model.basic.Role;
-import org.picketlink.idm.model.basic.User;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -89,10 +75,13 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     SubjectService subjectService;
     @EJB
     SettingService settingService;
-    @Resource
-    private UserTransaction userTransaction;
+    
     private List<org.jpapi.model.Group> groups = new ArrayList<>();
+    
     private LazySubjectDataModel lazyDataModel;
+    
+    @Inject
+    private SubjectHome subjectHome;
 
     public SubjectAdminHome() {
     }
@@ -107,10 +96,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
 
         setEnd(Dates.now());
+        setEnd(Dates.addDays(getEnd(), 1)); //sumar un día para mostrar los creados hoy
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        setOutcome("inboxInstanciaProceso");
+        setOutcome("admin-inbox");
 
-        setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la respuesta del proceso
+        setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la petición de creación
 
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
@@ -118,7 +108,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public List<org.jpapi.model.Group> getGroups() {
         if (groups.isEmpty()) {
-            groups = groupService.findByOwnerAndModuleAndType(subject, "documents", org.jpapi.model.Group.Type.LABEL);
+            groups = groupService.findByOwnerAndModuleAndType(subject, "admin", org.jpapi.model.Group.Type.LABEL);
         }
 
         return groups;
@@ -150,7 +140,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public LazySubjectDataModel getLazyDataModel() {
         filter();
-
         return lazyDataModel;
     }
 
@@ -170,7 +159,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/admin/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, ex);
@@ -183,86 +172,21 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     @Override
     public Group getDefaultGroup() {
-        if (this.defaultGroup == null) {
-            return groupService.findByCode(settingHome.getValue(SettingNames.DEFAULT_INVOICES_GROUP_NAME, "fede"));
-        }
         return this.defaultGroup;
     }
 
-    public void save(Subject subject) {
+    public void save() {
+        //Realizar signup
         if (!subjectEdit.isPersistent()) {
-            identityManager = partitionManager.createIdentityManager();
-            try {
-
-                //Prepare password
-                Password password = new Password(getSubjectEdit().getPassword());
-                //separar nombres
-                List<String> names = Strings.splitNamesAt(getSubjectEdit().getFirstname());
-
-                if (names.size() > 1) {
-                    getSubjectEdit().setFirstname(names.get(0));
-                    getSubjectEdit().setSurname(names.get(1));
-                }
-                getSubjectEdit().setUsername(getSubjectEdit().getEmail());
-
-                this.userTransaction.begin();
-                User user = new User(getSubjectEdit().getUsername());
-                user.setFirstName(getSubjectEdit().getFirstname());
-                user.setLastName(getSubjectEdit().getSurname());
-                user.setEmail(getSubjectEdit().getEmail());
-                user.setCreatedDate(Dates.now());
-                identityManager.add(user);
-
-                identityManager.updateCredential(user, password);
-
-                // Create application role "superuser"
-                Role superuser = BasicModel.getRole(identityManager, "superuser");
-
-                org.picketlink.idm.model.basic.Group group = BasicModel.getGroup(identityManager, "fede");
-
-                RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
-                // Make john a member of the "sales" group
-                addToGroup(relationshipManager, user, group);
-                // Make mary a manager of the "sales" group
-                grantGroupRole(relationshipManager, user, superuser, group);
-                // Grant the "superuser" application role to jane
-                grantRole(relationshipManager, user, superuser);
-
-                this.userTransaction.commit();
-
-                //Conectar con el user auth
-                String passwrod_ = new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
-                getSubjectEdit().setUsername(getSubjectEdit().getEmail());
-                getSubjectEdit().setCodeType(CodeType.CEDULA);
-                getSubjectEdit().setPassword(passwrod_);
-                getSubjectEdit().setUsernameConfirmed(true);
-
-                //Set fede email
-                getSubjectEdit().setFedeEmail(getSubjectEdit().getCode().concat("@").concat(settingService.findByName("mail.imap.host").getValue()));
-                getSubjectEdit().setFedeEmailPassword(passwrod_);
-
-                //Finalmente crear en fede
-                getSubjectEdit().setUuid(user.getId());
-                getSubjectEdit().setOwner(subject);
-                getSubjectEdit().setSubjectType(Subject.Type.NATURAL);
-                subjectService.save(getSubjectEdit());
-
-                //Crear grupos por defecto para el subject
-//                groupHome.createDefaultGroups(getSubjectEdit());
-                addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
-            } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-                try {
-                    this.userTransaction.rollback();
-                } catch (SystemException ignore) {
-                }
-                throw new RuntimeException("Could not create default security entities.", e);
-            }
-            return;
+            subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
+            addDefaultSuccessMessage();
+        } else{
+            //Solo actualizar
+            subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+            addDefaultSuccessMessage();
         }
-        getSubjectEdit().setOwner(subject);
-        subjectService.save(subject.getId(), subject);
-        addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
     }
+    
 
     public Subject getSubjectEdit() {
         if (subjectId != null && !this.subjectEdit.isPersistent()) {

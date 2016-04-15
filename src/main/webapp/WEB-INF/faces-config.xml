@@ -40,13 +40,13 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>inboxInstanciaProceso</from-outcome>
+            <from-outcome>procesos</from-outcome>
             <to-view-id>/pages/management/tarea/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>inboxSubject</from-outcome>
-            <to-view-id>/pages/admin/inbox.jsf</to-view-id>
+            <from-outcome>admin-inbox</from-outcome>
+            <to-view-id>/pages/admin/subject/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
     </navigation-rule>

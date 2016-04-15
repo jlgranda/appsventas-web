@@ -60,17 +60,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
                                             value="#{subjectAdminHome.subjectEdit.password}" required="true" placeholder="true"
                                             execute="@this save" render="password"/>
-                            <div class="Wid50 Fleft Responsive50">
-                                <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                                 actionListener="#{subjectAdminHome.save(subject)}" disabled="false" 
-                                                 action="inboxSubject"
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                            </div>
-                            <div class="EmptyBox5 ShowOnMobile"></div>
-                            <div class="Wid50 Fleft Responsive50">
-                                <p:commandButton value="#{i18n['Cancel']}" ajax="false" immediate="true" action="inboxSubject" disabled="false" 
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                            </div>
+                            
+                            <div class="EmptyBox10"></div>
+
+                            <p:toolbar>
+                                <f:facet name="left">
+                                    <p:commandButton value="#{i18n['Send']}" ajax="false" 
+                                                     actionListener="#{subjectAdminHome.save()}" disabled="false" 
+                                                     style="width: auto !important;"
+                                                     action="#{subjectAdminHome.getOutcome()}" type="submit"/>
+
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+
+                                </f:facet>
+
+                                <f:facet name="right">
+
+                                    <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+
+<!--                                    <p:menuButton value="#{i18n['common.options']}">
+                                        <p:menuitem value="Save" icon="fa fa-save" />
+                                        <p:menuitem value="Update" icon="fa fa-upload" />
+                                        <p:menuitem value="Delete" icon="fa fa-trash" />
+                                        <p:menuitem value="Homepage" icon="fa fa-home" />
+                                    </p:menuButton>-->
+                                </f:facet>
+
+                            </p:toolbar>
                         </div>
                     </div>
                 </div>

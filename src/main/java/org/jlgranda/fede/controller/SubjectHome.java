@@ -144,33 +144,35 @@ public class SubjectHome extends FedeController implements Serializable {
     }
 
     /**
-     * Procesa la creación de una cuenta en fede
+     * Procesa la creación de una cuenta en fede para el usuario dado
+     * @param _signup el objeto <tt>Subject</tt> a agregar
+     * @param owner el propietario del objeto a agregar
      */
-    public void processSignup() {
+    public void processSignup(Subject _signup, Subject owner) {
 
         identityManager = partitionManager.createIdentityManager();
 
-        logger.info("Procesar signup para {} ", signup);
-        if (signup != null) {
+        logger.info("Procesar signup para {} ", _signup);
+        if (_signup != null) {
             //Crear la identidad para acceso al sistema
             try {
 
                 //Prepare password
-                Password password = new Password(signup.getPassword());
+                Password password = new Password(_signup.getPassword());
                 //separar nombres
-                List<String> names = Strings.splitNamesAt(signup.getFirstname());
+                List<String> names = Strings.splitNamesAt(_signup.getFirstname());
 
                 if (names.size() > 1) {
-                    signup.setFirstname(names.get(0));
-                    signup.setSurname(names.get(1));
+                    _signup.setFirstname(names.get(0));
+                    _signup.setSurname(names.get(1));
                 }
-                signup.setUsername(signup.getEmail());
+                _signup.setUsername(_signup.getEmail());
 
                 this.userTransaction.begin();
-                User user = new User(signup.getUsername());
-                user.setFirstName(signup.getFirstname());
-                user.setLastName(signup.getSurname());
-                user.setEmail(signup.getEmail());
+                User user = new User(_signup.getUsername());
+                user.setFirstName(_signup.getFirstname());
+                user.setLastName(_signup.getSurname());
+                user.setEmail(_signup.getEmail());
                 user.setCreatedDate(Dates.now());
                 identityManager.add(user);
 
@@ -193,22 +195,23 @@ public class SubjectHome extends FedeController implements Serializable {
 
                 //Conectar con el user auth
                 String passwrod_ = new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
-                signup.setUsername(signup.getEmail());
-                signup.setCodeType(CodeType.CEDULA);
-                signup.setPassword(passwrod_);
-                signup.setUsernameConfirmed(true);
+                _signup.setUsername(_signup.getEmail());
+                _signup.setCodeType(CodeType.CEDULA);
+                _signup.setPassword(passwrod_);
+                _signup.setUsernameConfirmed(true);
 
                 //Set fede email
-                signup.setFedeEmail(signup.getCode().concat("@").concat(settingService.findByName("mail.imap.host").getValue()));
-                signup.setFedeEmailPassword(passwrod_);
+                _signup.setFedeEmail(_signup.getCode().concat("@").concat(settingService.findByName("mail.imap.host").getValue()));
+                _signup.setFedeEmailPassword(passwrod_);
 
                 //Finalmente crear en fede
-                signup.setUuid(user.getId());
-                signup.setSubjectType(Subject.Type.NATURAL);
-                subjectService.save(signup);
+                _signup.setUuid(user.getId());
+                _signup.setSubjectType(Subject.Type.NATURAL);
+                _signup.setOwner(owner);
+                subjectService.save(_signup);
 
                 //Crear grupos por defecto para el subject
-                groupHome.createDefaultGroups(signup);
+                groupHome.createDefaultGroups(_signup);
 
             } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
                 try {
@@ -219,6 +222,13 @@ public class SubjectHome extends FedeController implements Serializable {
             }
         }
 
+    }
+    
+    /**
+     * Procesa la creación de una cuenta en fede
+     */
+    public void processSignup() {
+        processSignup(this.signup, null);
     }
 
     public List<Subject> find(String keyword) {

@@ -28,6 +28,7 @@ import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.model.profile.Subject_;
+import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.model.LazyDataModel;
@@ -143,13 +144,27 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
             order = QuerySortOrder.ASC;
         }
         Map<String, Object> _filters = new HashMap<>();
+        
         Map<String, Date> range = new HashMap<>();
-        range.put("start", getStart());
-        range.put("end", getEnd());
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(Subject_.createdOn.getName(), range); //Filtro de fecha de creación
+        }
+        
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-        _filters.put(Subject_.author.getName(), getAuthor()); //Filtro por defecto
-        _filters.put(Subject_.createdOn.getName(), range); //Filtro de fecha inicial
-        _filters.put("tag", getTags());
+        _filters.put(Subject_.owner.getName(), getOwner()); //Filtro por defecto
+
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
