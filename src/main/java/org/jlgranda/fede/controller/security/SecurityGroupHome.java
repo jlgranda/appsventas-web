@@ -15,12 +15,12 @@
  */
 package org.jlgranda.fede.controller.security;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.HeuristicMixedException;
@@ -30,7 +30,6 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jlgranda.fede.controller.FedeController;
-import org.jlgranda.fede.ui.model.LazyGroupDataModel;
 import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
@@ -52,11 +51,11 @@ public class SecurityGroupHome extends FedeController implements Serializable {
     IdentityManager identityManager = null;
     private Group group;
     private String groupKey;
-    private LazyGroupDataModel lazyDataModel;
 
     @PostConstruct
     public void init() {
         group = createInstance();
+        setOutcome("group-inbox");
     }
 
     public String getGroupKey() {
@@ -86,7 +85,7 @@ public class SecurityGroupHome extends FedeController implements Serializable {
         return group;
     }
 
-    public String saveGroup() {
+    public void saveGroup() {
         identityManager = partitionManager.createIdentityManager();
         try {
             if (this.group.getId() != null) {
@@ -94,12 +93,12 @@ public class SecurityGroupHome extends FedeController implements Serializable {
                 identityManager.update(group);
                 this.addDefaultSuccessMessage();
                 this.userTransaction.commit();
-                return "inboxGroup";
-            } 
-                this.userTransaction.begin();
-                identityManager.add(group);
-                this.userTransaction.commit();
-                return "inboxGroup";
+                redirectTo("/pages/admin/security/group/inbox.jsf");
+            }
+            this.userTransaction.begin();
+            identityManager.add(group);
+            this.userTransaction.commit();
+            redirectTo("/pages/admin/security/group/inbox.jsf");
 
         } catch (IdentityManagementException |
                 SecurityException | IllegalStateException e) {
@@ -118,37 +117,9 @@ public class SecurityGroupHome extends FedeController implements Serializable {
             Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
         } catch (HeuristicRollbackException ex) {
             Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "";
-    }
-
-    public LazyGroupDataModel getLazyDataModel() {
-
-        filter();
-
-        return lazyDataModel;
-    }
-
-    public void filter() {
-        if (lazyDataModel == null) {
-            identityManager = partitionManager.createIdentityManager();
-            lazyDataModel = new LazyGroupDataModel(identityManager);
-        }
-
-        if (getKeyword() != null && getKeyword().startsWith("label:")) {
-            String parts[] = getKeyword().split(":");
-            if (parts.length > 1) {
-                lazyDataModel.setTags(parts[1]);
-            }
-            lazyDataModel.setFilterValue(null);//No buscar por keyword
-        } else {
-            lazyDataModel.setTags(getTags());
-            lazyDataModel.setFilterValue(getKeyword());
-        }
-    }
-
-    public void setLazyDataModel(LazyGroupDataModel lazyDataModel) {
-        this.lazyDataModel = lazyDataModel;
     }
 
     public Group find() throws IdentityException {

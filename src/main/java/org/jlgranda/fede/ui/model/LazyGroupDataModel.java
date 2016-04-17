@@ -16,6 +16,7 @@
  */
 package org.jlgranda.fede.ui.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +24,26 @@ import java.util.Map;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jpapi.util.QuerySortOrder;
+import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.api.UnsupportedCriterium;
 import org.picketlink.idm.common.exception.IdentityException;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
 import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.idm.query.IdentityQueryBuilder;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -43,21 +53,26 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jorge
  */
-public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializable {
+@Named
+@ViewScoped
+public class LazyGroupDataModel extends LazyDataModel<Group> {
 
     private static final int MAX_RESULTS = 5;
     Logger logger = LoggerFactory.getLogger(LazyGroupDataModel.class);
     IdentityManager identityManager = null;
+    @Inject
+    private PartitionManager partitionManager;
     @Resource
     private UserTransaction userTransaction;
     private int firstResult = 0;
+    private Group[] selectedGroups;
+    private Group selectedGroup;
     private List<Group> resultList;
     private String filterValue;
     private String tags;
 
-    public LazyGroupDataModel(IdentityManager identityManager) {
+    public LazyGroupDataModel() {
         setPageSize(MAX_RESULTS);
-        this.identityManager = identityManager;
         resultList = new ArrayList<>();
     }
 
@@ -65,15 +80,37 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
     public void init() {
     }
 
-    public List<Group> getResultList() {
-        logger.info("load BussinesEntitys");
-
-        if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
+    public List<Group> find(int first, int end, String sortField, QuerySortOrder order, Map<String, Object> _filters)
+            throws UnsupportedCriterium, IdentityException {
+        try {
+            identityManager = partitionManager.createIdentityManager();
             IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
             IdentityQuery<Group> query = queryBuilder.createIdentityQuery(Group.class);
             return query.getResultList();
+        } catch (IdentityManagementException |
+                SecurityException | IllegalStateException e) {
+            throw new RuntimeException("Could not create default security entities.", e);
         }
-        return resultList;
+    }
+
+    public Group findName(String name) {
+        identityManager = partitionManager.createIdentityManager();
+        Group group = BasicModel.getGroup(this.identityManager, name);
+        return group;
+    }
+
+    @Override
+    public List<Group> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+        List<Group> result = new ArrayList<Group>();
+        try {
+            result = find(first, first, sortField, QuerySortOrder.ASC, filters);
+            this.resultList = result;
+            this.setRowCount(result.size());
+            return result;
+        } catch (UnsupportedCriterium | IdentityException ex) {
+            java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ArrayList<>();
     }
 
     public int getNextFirstResult() {
@@ -84,82 +121,51 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         return this.getPageSize() >= firstResult ? 0 : firstResult - this.getPageSize();
     }
 
-    public Integer getFirstResult() {
+    public int getFirstResult() {
         return firstResult;
     }
 
-    public String getFilterValue() {
-        return filterValue;
-    }
-
-    public void setFilterValue(String filterValue) {
-        this.filterValue = filterValue;
-    }
-
-    public void setFirstResult(Integer firstResult) {
-        logger.info("set first result + firstResult");
+    public void setFirstResult(int firstResult) {
         this.firstResult = firstResult;
-        this.resultList = null;
     }
 
-    public boolean isPreviousExists() {
-        return firstResult > 0;
+    public Group getSelectedGroup() {
+        return selectedGroup;
     }
 
-    public String getTags() {
-        return tags;
+    public void setSelectedGroup(Group selectedGroup) {
+        this.selectedGroup = selectedGroup;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
+    public Group[] getSelectedGroups() {
+        return selectedGroups;
     }
 
-    public boolean isNextExists() {
-        IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
-        IdentityQuery<Group> query = queryBuilder.createIdentityQuery(Group.class)
-                .where(queryBuilder.equal(Group.NAME, "fede"));
-        return query.getResultCount() > this.getPageSize() + firstResult;
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+                setSelectedGroup(((Group) event.getObject()));
+                context.redirect(context.getRequestContextPath() + "/pages/admin/security/group/group.jsf?groupKey=" + ((Group) event.getObject()).getName());
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    public void onRowUnselect(UnselectEvent event) {
+        this.setSelectedGroup(null);
     }
 
     @Override
     public Group getRowData(String rowKey) {
-        return BasicModel.getGroup(this.identityManager, rowKey);
+        return findName(rowKey);
+
     }
 
     @Override
     public Object getRowKey(Group entity) {
-        System.err.println("//--> getRowKey:entity" + entity);
         return entity.getName();
     }
-
-    public List<Group> find(int first, int end, String sortField, QuerySortOrder order, Map<String, Object> _filters)
-            throws UnsupportedCriterium, IdentityException {
-        try {
-            IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
-            IdentityQuery<org.picketlink.idm.model.basic.Group> query = queryBuilder.createIdentityQuery(org.picketlink.idm.model.basic.Group.class);
-            return query.getResultList();
-        } catch (IdentityManagementException |
-                SecurityException | IllegalStateException e) {
-            try {
-                this.userTransaction.rollback();
-            } catch (SystemException ignore) {
-            }
-            throw new RuntimeException("Could not create default security entities.", e);
-        }
-    }
-
-    @Override
-    public List<Group> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-
-        try {
-            return find(first, first, sortField, QuerySortOrder.ASC, filters);
-        } catch (UnsupportedCriterium ex) {
-            java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IdentityException ex) {
-            java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return new ArrayList<>();
-    }
-
 }
