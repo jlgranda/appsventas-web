@@ -18,10 +18,13 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.OrganizationService;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -32,13 +35,11 @@ import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.ui.model.LazyOrganizationDataModel;
-import org.jlgranda.fede.ui.model.LazyTareaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.Membership;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
-import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -74,6 +75,9 @@ public class OrganizationHome extends FedeController implements Serializable {
     private boolean toHaveChildren;
     
     private LazyOrganizationDataModel lazyDataModel;
+    
+    @EJB
+    private GroupService groupService;
 
     @PostConstruct
     private void init() {
@@ -227,14 +231,32 @@ public class OrganizationHome extends FedeController implements Serializable {
         }
     }
 
+    
+    @Override
+    public List<org.jpapi.model.Group> getGroups() {
+        if (this.groups.isEmpty()) {
+            //Todos los grupos para el modulo actual
+            setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "security", "security"), org.jpapi.model.Group.Type.LABEL));
+        }
+
+        return this.groups;
+    }
+    
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //TODO establecer objeto en edición y levantar popup
+            if (event != null && event.getObject() != null) {
+                redirectTo("/pages/admin/management/organization/organization.jsf?faces-redirect=true");
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(org.picketlink.idm.model.basic.Group.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void onRowUnselect(UnselectEvent event) {
         FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
         FacesContext.getCurrentInstance().addMessage(null, msg);
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
 
-    @Override
-    public List<Group> getGroups() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

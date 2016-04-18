@@ -18,8 +18,6 @@ and open the template in the editor.
         <ui:param name="title" value="#{i18n['app.documents.task']}" />
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="tareaId" value="#{tareaHome.tareaId}" />
-                <f:viewParam name="comando" value="#{tareaHome.comando}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
@@ -33,7 +31,7 @@ and open the template in the editor.
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                             <p:tabView>
-                                <p:tab title="#{i18n['common.basic.data']}" rendered="#{not tareaHome.tarea.persistent}">
+                                <p:tab title="#{i18n['common.basic.data']}" rendered="#{not organizationHome.organization.persistent}">
                                     <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['RUC']}" 
                                         value="#{organizationHome.organization.ruc}" required="true" 
                                         inlinehelp="#{messages['RUC.inlinehelp']}" execute="@this save" render="ruc"
@@ -60,18 +58,41 @@ and open the template in the editor.
                                 </p:tab>
                                 
                             </p:tabView>
-
-                            <div class="Wid50 Fleft Responsive">
-                                <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                                 actionListener="#{organizationHome.save()}" disabled="false" 
-                                                 action="tareas"
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                            </div>
                             
-                            <div class="Wid50 Fleft Responsive">
-                                <p:commandButton value="#{i18n['Cancel']}" ajax="false" action="organizations" disabled="false" immediate="true"
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                            </div>
+                            <div class="EmptyBox10"></div>
+
+                            <p:toolbar>
+                                <f:facet name="left">
+
+                                    <p:commandButton value="#{i18n['Save']}" ajax="false" 
+                                                     actionListener="#{organizationHome.save()}" disabled="false" 
+                                                     style="width: auto !important;"
+                                                     action="#{tareaHome.getOutcome()}" type="submit"/>
+
+                                    <p:commandButton id="addDocumentButton"
+                                                     icon="fa fa-paperclip Fs14 Black" styleClass="GrayButton" 
+                                                     rendered="#{true}" type="button"/>
+
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+
+                                </f:facet>
+
+                                <f:facet name="right">
+
+                                    <p:commandButton ajax="false" action="#{organizationHome.getOutcome()}" disabled="false" immediate="true"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+
+<!--                                    <p:menuButton value="#{i18n['common.options']}">
+                                        <p:menuitem value="Save" icon="fa fa-save" />
+                                        <p:menuitem value="Update" icon="fa fa-upload" />
+                                        <p:menuitem value="Delete" icon="fa fa-trash" />
+                                        <p:menuitem value="Homepage" icon="fa fa-home" />
+                                    </p:menuButton>-->
+                                </f:facet>
+
+                            </p:toolbar>
                         </div>
                     </div>
                 </div>

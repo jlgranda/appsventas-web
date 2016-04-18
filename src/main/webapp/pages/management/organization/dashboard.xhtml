@@ -73,7 +73,7 @@
                                             <div class="ContainerIndent">
                                                 <p:dataTable var="entity" 
                                                              value="#{organizationHome.lazyDataModel}" 
-                                                             paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                                             paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                                              sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
                                                              reflow="true" selection="#{organizationHome.selectedBussinesEntities}" 
                                                              rowKey="#{entity.id}" 
