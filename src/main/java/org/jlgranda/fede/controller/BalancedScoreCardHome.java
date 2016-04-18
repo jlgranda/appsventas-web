@@ -20,6 +20,7 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.ejb.BalancedScoreCardService;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -102,6 +103,11 @@ public class BalancedScoreCardHome extends FedeController implements Serializabl
 
     @Override
     public Group getDefaultGroup() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

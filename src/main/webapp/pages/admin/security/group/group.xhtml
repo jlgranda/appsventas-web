@@ -30,6 +30,19 @@
                                     <p:commandButton id="save" actionListener="#{securityGroupHome.saveGroup}" value="#{i18n['common.save']}" 
                                                      ajax="false" type="submit" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"/>   
                                 </f:facet>
+                                
+                                <f:facet name="right">
+
+                                    <p:commandButton ajax="false" action="#{securityGroupHome.getOutcome()}" disabled="false" immediate="true"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+
+<!--                                    <p:menuButton value="#{i18n['common.options']}">
+                                        <p:menuitem value="Save" icon="fa fa-save" />
+                                        <p:menuitem value="Update" icon="fa fa-upload" />
+                                        <p:menuitem value="Delete" icon="fa fa-trash" />
+                                        <p:menuitem value="Homepage" icon="fa fa-home" />
+                                    </p:menuButton>-->
+                                </f:facet>
                             </p:toolbar>
                         </div>
                     </div>

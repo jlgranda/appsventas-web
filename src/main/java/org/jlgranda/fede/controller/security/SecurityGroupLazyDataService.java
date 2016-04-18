@@ -73,9 +73,4 @@ public class SecurityGroupLazyDataService extends ListDataModel<Group> implement
         }
         return null;
     }
-//
-//    @PostConstruct
-//    public void init() {
-//        securityGroupService.setEntityManager(em);
-//    }
 }

@@ -18,6 +18,7 @@
 package org.jlgranda.fede.controller.inventory;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,10 +28,12 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Group;
+import org.jpapi.model.profile.Subject;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +50,10 @@ public class InventoryHome extends FedeController implements Serializable {
     
     @Inject
     private SettingHome settingHome;
-    
+
+    @EJB
+    private GroupService groupService;
+
     private Long productId;
     
     private Product lastProduct;
@@ -58,6 +64,10 @@ public class InventoryHome extends FedeController implements Serializable {
     
     @EJB
     private ProductService productService; 
+    
+    @Inject
+    @LoggedIn
+    private Subject subject;
 
     @PostConstruct
     private void init() {
@@ -125,5 +135,19 @@ public class InventoryHome extends FedeController implements Serializable {
     @Override
     public Group getDefaultGroup() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Retorna los grupos para este controlador
+     * @return
+     */
+    @Override
+    public List<Group> getGroups() {
+        if (this.groups.isEmpty()) {
+            //Todos los grupos para el modulo actual
+            setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "inventory", "inventory"), Group.Type.LABEL));
+        }
+
+        return this.groups;
     }
 }

@@ -343,4 +343,9 @@ public class InvoiceHome extends FedeController implements Serializable {
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner);
         }
     }
+
+    @Override
+    public List<Group> getGroups() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

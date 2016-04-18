@@ -18,22 +18,17 @@ package org.jlgranda.fede.ui.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import org.jlgranda.fede.controller.security.SecurityGroupService;
 import org.jpapi.util.QuerySortOrder;
-import org.picketlink.idm.IdentityManagementException;
-import org.picketlink.idm.IdentityManager;
+import org.jpapi.util.Strings;
 import org.picketlink.idm.api.UnsupportedCriterium;
 import org.picketlink.idm.common.exception.IdentityException;
-import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
-import org.picketlink.idm.query.IdentityQuery;
-import org.picketlink.idm.query.IdentityQueryBuilder;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -47,18 +42,17 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
 
     private static final int MAX_RESULTS = 5;
     Logger logger = LoggerFactory.getLogger(LazyGroupDataModel.class);
-    IdentityManager identityManager = null;
-    @Resource
-    private UserTransaction userTransaction;
+
     private int firstResult = 0;
     private List<Group> resultList;
     private String filterValue;
-    private String tags;
 
-    public LazyGroupDataModel(IdentityManager identityManager) {
+    private SecurityGroupService securityGroupService;
+
+    public LazyGroupDataModel(SecurityGroupService securityGroupService) {
         setPageSize(MAX_RESULTS);
-        this.identityManager = identityManager;
         resultList = new ArrayList<>();
+        this.securityGroupService = securityGroupService;
     }
 
     @PostConstruct
@@ -69,9 +63,13 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
-            IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
-            IdentityQuery<Group> query = queryBuilder.createIdentityQuery(Group.class);
-            return query.getResultList();
+            try {
+                resultList = securityGroupService.find(this.getPageSize(), this.getFirstResult());
+            } catch (IdentityException ex) {
+                java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedCriterium ex) {
+                java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return resultList;
     }
@@ -106,25 +104,16 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         return firstResult > 0;
     }
 
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
     public boolean isNextExists() {
-        IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
-        IdentityQuery<Group> query = queryBuilder.createIdentityQuery(Group.class)
-                .where(queryBuilder.equal(Group.NAME, "fede"));
-        return query.getResultCount() > this.getPageSize() + firstResult;
+        return securityGroupService.count() > this.getPageSize() + firstResult;
 
     }
 
     @Override
     public Group getRowData(String rowKey) {
-        return BasicModel.getGroup(this.identityManager, rowKey);
+
+        return (Group) securityGroupService.findByKey(rowKey);
+
     }
 
     @Override
@@ -133,33 +122,23 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         return entity.getName();
     }
 
-    public List<Group> find(int first, int end, String sortField, QuerySortOrder order, Map<String, Object> _filters)
-            throws UnsupportedCriterium, IdentityException {
-        try {
-            IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
-            IdentityQuery<org.picketlink.idm.model.basic.Group> query = queryBuilder.createIdentityQuery(org.picketlink.idm.model.basic.Group.class);
-            return query.getResultList();
-        } catch (IdentityManagementException |
-                SecurityException | IllegalStateException e) {
-            try {
-                this.userTransaction.rollback();
-            } catch (SystemException ignore) {
-            }
-            throw new RuntimeException("Could not create default security entities.", e);
-        }
-    }
-
     @Override
     public List<Group> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+        List<Group> result = new ArrayList<>();
 
-        try {
-            return find(first, first, sortField, QuerySortOrder.ASC, filters);
-        } catch (UnsupportedCriterium ex) {
-            java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IdentityException ex) {
-            java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
+        int end = first + pageSize;
+        QuerySortOrder order = QuerySortOrder.ASC;
+        if (sortOrder == SortOrder.DESCENDING) {
+            order = QuerySortOrder.DESC;
         }
-        return new ArrayList<>();
+        Map<String, Object> _filters = new HashMap<>();
+        if (!Strings.isNullOrEmpty(getFilterValue())){
+            _filters.put(Group.NAME.toString(), getFilterValue());
+        }
+        result = securityGroupService.find(first, end, sortField, order, _filters);
+        this.setRowCount(result.size());  //importante para cargar datos 
+
+        return result;
     }
 
 }

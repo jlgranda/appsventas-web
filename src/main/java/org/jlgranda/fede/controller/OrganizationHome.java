@@ -232,4 +232,9 @@ public class OrganizationHome extends FedeController implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
+
+    @Override
+    public List<Group> getGroups() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

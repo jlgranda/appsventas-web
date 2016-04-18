@@ -39,8 +39,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['common.add']}" icon="fa fa-paper-plane-o" 
-                            url="/pages/admin/subject/profile.jsf"
+                <p:menuitem value="#{i18n['security.group']}" icon="fa fa-users" 
+                            url="/pages/admin/security/group/inbox.jsf"
                             disabled="#{false}">
                 </p:menuitem>
             </p:menuButton>
@@ -144,18 +144,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </ui:define>
         <!--./toolbar-->
         <ui:define name="sidebar">
-            <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
-                <li class="" role="menuitem">
-                    <a href="#{facesContext.externalContext.requestContextPath}/pages/admin/subject/inbox.jsf" 
-                       class="menulink ripplelink #{subjectAdminHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
-                </li>
-                <ui:repeat var="tag" value="#{subjectAdminHome.groups}">
+            <div class="Container100 Responsive100 TexAlCenter">
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/admin/subject/profile.jsf"/>
+            </div>
+            <div class="EmptyBox10"></div>
+            <div class="Container100 Responsive100">
+                <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
                     <li class="" role="menuitem">
-                        <a href="#{facesContext.externalContext.requestContextPath}/pages/admin/subject/inbox.jsf?tags=#{tag.code}" 
-                           class="menulink ripplelink #{subjectAdminHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/admin/subject/inbox.jsf" 
+                           class="menulink ripplelink #{subjectAdminHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
                     </li>
-                </ui:repeat>
-            </ul>
+                    <ui:repeat var="tag" value="#{subjectAdminHome.groups}">
+                        <li class="" role="menuitem">
+                            <a href="#{facesContext.externalContext.requestContextPath}/pages/admin/subject/inbox.jsf?tags=#{tag.code}" 
+                               class="menulink ripplelink #{subjectAdminHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </div>
         </ui:define>
         <ui:define name="content">
             <!-- /.row -->

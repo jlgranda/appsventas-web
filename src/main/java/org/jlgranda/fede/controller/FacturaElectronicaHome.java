@@ -120,8 +120,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      */
     private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<FacturaElectronica>());
 
-    private List<Group> groups = new ArrayList<>();
-
     public FacturaElectronicaHome() {
     }
 
@@ -500,19 +498,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return _keys;
     }
 
-    public List<Group> getGroups() {
-        if (groups.isEmpty()) {
-            //Todos los grupos para el modulo fede
-            groups = groupService.findByOwnerAndModuleAndType(subject, "fede", Group.Type.LABEL);
-        }
-
-        return groups;
-    }
-
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
-    }
-
     public List<String> getGroupNames() {
         List<String> names = new ArrayList<>();
 
@@ -613,6 +598,20 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             }
         }
         return new Group("null", "null");
+    }
+ 
+    /**
+     * Retorna los grupos para este controlador
+     * @return
+     */
+    @Override
+    public List<Group> getGroups() {
+        if (this.groups.isEmpty()) {
+            //Todos los grupos para el modulo actual
+            setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "inventory", "fede"), Group.Type.LABEL));
+        }
+
+        return this.groups;
     }
 
 }

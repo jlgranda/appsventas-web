@@ -21,6 +21,7 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -104,6 +105,11 @@ public class GroupHome extends FedeController implements Serializable {
 
     @Override
     public Group getDefaultGroup() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

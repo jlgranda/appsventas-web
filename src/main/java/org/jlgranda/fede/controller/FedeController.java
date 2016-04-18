@@ -18,6 +18,7 @@
 package org.jlgranda.fede.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,7 +31,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.apache.deltaspike.core.api.projectstage.ProjectStage;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.util.I18nUtil;
@@ -71,6 +71,8 @@ public abstract class FedeController {
     protected List<BussinesEntity> selectedBussinesEntities;
 
     protected Map<String, String> selectedTriStateGroups = new LinkedHashMap<>();
+    
+    protected List<Group> groups = new ArrayList<>();
 
     public List<BussinesEntity> getSelectedBussinesEntities() {
         return selectedBussinesEntities;
@@ -344,6 +346,12 @@ public abstract class FedeController {
 
     public void addDefaultSuccessMessage() {
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
+    }
+    
+    public abstract List<Group> getGroups();
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
     }
     
 }

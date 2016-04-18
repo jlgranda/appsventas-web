@@ -15,26 +15,37 @@
  */
 package org.jlgranda.fede.controller.security;
 
+import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.GroupService;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.ui.model.LazyGroupDataModel;
+import org.jpapi.model.profile.Subject;
 import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
+import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.common.exception.IdentityException;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
@@ -45,18 +56,48 @@ import org.primefaces.event.SelectEvent;
 public class SecurityGroupHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = 7632987414391869389L;
+    
+    
+    @Inject
+    @LoggedIn
+    private Subject subject;
+    
+    @Inject
+    private SettingHome settingHome;
+    
     @Inject
     private PartitionManager partitionManager;
+    @Inject
+    private IdentityManager identityManager;
+    @Inject
+    private RelationshipManager relationshipManager;
     @Resource
     private UserTransaction userTransaction;
-    IdentityManager identityManager = null;
     private Group group;
     private String groupKey;
     private LazyGroupDataModel lazyDataModel;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
+    
+     @Inject
+    private SecurityGroupService securityGroupService;
+     
+    private List<Group> selectedGroups;
+    
+    @EJB
+    private GroupService groupService;
+
 
     @PostConstruct
     public void init() {
         group = createInstance();
+        setOutcome("admin-group");
+
+        securityGroupService.setIdentityManager(identityManager);
+        securityGroupService.setRelationshipManager(relationshipManager);
+        securityGroupService.setPartitionManager(partitionManager);
+        
     }
 
     public String getGroupKey() {
@@ -72,18 +113,18 @@ public class SecurityGroupHome extends FedeController implements Serializable {
     }
 
     public Group getGroup() {
-
-        if (this.groupKey != null && group.getId() == null) {
-            try {
-                Group g = find();
-                if (g != null) {
-                    group = g;
-                }
-            } catch (IdentityException ex) {
-                Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        if (this.groupKey != null) {
+            setGroup(securityGroupService.findByKey(groupKey));
         }
         return group;
+    }
+
+    public List<Group> getSelectedGroups() {
+        return selectedGroups;
+    }
+
+    public void setSelectedGroups(List<Group> selectedGroups) {
+        this.selectedGroups = selectedGroups;
     }
 
     public String saveGroup() {
@@ -108,15 +149,7 @@ public class SecurityGroupHome extends FedeController implements Serializable {
             } catch (SystemException ignore) {
             }
             throw new RuntimeException("Could not create default security entities.", e);
-        } catch (NotSupportedException ex) {
-            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SystemException ex) {
-            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RollbackException ex) {
-            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HeuristicMixedException ex) {
-            Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HeuristicRollbackException ex) {
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException ex) {
             Logger.getLogger(SecurityGroupHome.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
@@ -131,20 +164,10 @@ public class SecurityGroupHome extends FedeController implements Serializable {
 
     public void filter() {
         if (lazyDataModel == null) {
-            identityManager = partitionManager.createIdentityManager();
-            lazyDataModel = new LazyGroupDataModel(identityManager);
+            lazyDataModel = new LazyGroupDataModel(securityGroupService);
         }
 
-        if (getKeyword() != null && getKeyword().startsWith("label:")) {
-            String parts[] = getKeyword().split(":");
-            if (parts.length > 1) {
-                lazyDataModel.setTags(parts[1]);
-            }
-            lazyDataModel.setFilterValue(null);//No buscar por keyword
-        } else {
-            lazyDataModel.setTags(getTags());
-            lazyDataModel.setFilterValue(getKeyword());
-        }
+        lazyDataModel.setFilterValue(getKeyword());
     }
 
     public void setLazyDataModel(LazyGroupDataModel lazyDataModel) {
@@ -158,8 +181,7 @@ public class SecurityGroupHome extends FedeController implements Serializable {
     }
 
     protected Group createInstance() {
-        Group u = new Group("NEW GROUP");
-        return u;
+        return new Group(settingHome.getValue("app.admin.group.defaultname", "Nuevo grupo"));
     }
 
     @Override
@@ -171,4 +193,26 @@ public class SecurityGroupHome extends FedeController implements Serializable {
     public org.jpapi.model.Group getDefaultGroup() {
         return null;
     }
+
+    @Override
+    public List<org.jpapi.model.Group> getGroups() {
+        if (this.groups.isEmpty()) {
+            //Todos los grupos para el modulo actual
+            setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "security", "security"), org.jpapi.model.Group.Type.LABEL));
+        }
+
+        return this.groups;
+    }
+    
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                redirectTo("/pages/admin/security/group/group.jsf?groupKey=" + ((Group) event.getObject()).getId());
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(Group.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

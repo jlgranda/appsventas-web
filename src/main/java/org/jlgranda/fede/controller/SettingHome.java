@@ -238,4 +238,9 @@ public class SettingHome extends FedeController implements Serializable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 //</editor-fold>        
+
+    @Override
+    public List<Group> getGroups() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

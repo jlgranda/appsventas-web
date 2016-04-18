@@ -45,13 +45,18 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>admin-inbox</from-outcome>
+            <from-outcome>admin-dashboard</from-outcome>
+            <to-view-id>/pages/admin/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>admin-subject</from-outcome>
             <to-view-id>/pages/admin/subject/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>inboxGroup</from-outcome>
-            <to-view-id>/pages/admin/security/group.inboxjsf</to-view-id>
+            <from-outcome>admin-group</from-outcome>
+            <to-view-id>/pages/admin/security/group/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
     </navigation-rule>

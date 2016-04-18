@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectronica> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
+    
     Logger  logger = LoggerFactory.getLogger(LazyFacturaElectronicaDataModel.class);
 
     private FacturaElectronicaService bussinesEntityService;
