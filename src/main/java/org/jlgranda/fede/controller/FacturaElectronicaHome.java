@@ -70,7 +70,7 @@ import org.jpapi.util.Strings;
 import org.primefaces.event.UnselectEvent;
 
 /**
- *
+ * Controlador de aplicaciones de factura electrónica
  * @author jlgranda
  */
 @ManagedBean
