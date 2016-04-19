@@ -111,7 +111,6 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     }
 
     public void setFirstResult(int firstResult) {
-        logger.info("set first result + firstResult");
         this.firstResult = firstResult;
         this.resultList = null;;
     }

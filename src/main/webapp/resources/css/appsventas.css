@@ -53,3 +53,11 @@ and open the template in the editor.
     background-color: #E0E0E0;
     color: #828B9C;
 }
+
+.ui-accordion .ui-accordion-header {
+    cursor: pointer;
+    position: relative;
+    margin-top: 1px;
+    min-height: 16px;
+    padding: 0.5em 0.5em 0.5em 2.2em;
+}

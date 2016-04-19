@@ -7,6 +7,7 @@ package net.tecnopro.controller;
 
 import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
@@ -44,7 +45,7 @@ import org.jlgranda.fede.controller.OrganizationHome;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
-import org.jlgranda.fede.ui.util.SubjectConverter;
+import org.jlgranda.fede.ui.converter.SubjectConverter;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -56,6 +57,7 @@ import org.primefaces.event.UnselectEvent;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.BeanUtils;
+import org.jlgranda.fede.controller.SubjectHome;
 import org.jpapi.util.Dates;
 import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
@@ -83,6 +85,9 @@ public class TareaHome extends FedeController implements Serializable {
 
     @Inject
     private SettingHome settingHome;
+    
+    @Inject
+    private SubjectHome subjectHome;
 
     @EJB
     private OrganizationService organizationService;
@@ -92,8 +97,10 @@ public class TareaHome extends FedeController implements Serializable {
 
     @EJB
     private TareaService tareaService;
+    
     @EJB
-    private SubjectService subjectService;
+    private GroupService groupService;
+
     private List<Tarea> ultimasTareas = new ArrayList<>();
     private List<Tarea> misUltimasTareasEnviadas = new ArrayList<>();
     private List<Tarea> misUltimasTareasRecibidas = new ArrayList<>();
@@ -224,7 +231,15 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
+    /**
+     * Guardar la tarea
+     * TODO analisar conveniencia de migrar hacia la creación de instancia de proceso
+     */
     public void save() {
+        if (getDestinatario() == null || getSolicitante() == null){
+            addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("error.task.persons"));
+            return;
+        }
         try {
             if (!tarea.isPersistent()) {//Comando nulo, es tarea nueva
                 //Crear proceso y asignar a tarea
@@ -234,22 +249,19 @@ public class TareaHome extends FedeController implements Serializable {
                 this.proceso.setDescription(getTarea().getDescription());
                 this.proceso.setAuthor(subject);
                 this.proceso.setProcesoTipo(ProcesoTipo.NEGOCIO);
-
                 this.proceso.setOwner(getSolicitante()); //El solicitante del proceso o tramite
 
                 procesoService.save(this.proceso.getId(), this.proceso);
 
-                //Completar la primera tarea
-                //getTarea().setName(settingHome.getValue("fede.documents.task.firts.name", "Tarea inicial de proceso ") + proceso.getCode());
-                //getTarea().setDescription(settingHome.getValue("fede.documents.task.firts.description", "Tarea inicial de creación de proceso ") + proceso.getCode());
-                getTarea().setInstanciaProceso(this.proceso);
-                //Es temporral hasta que se pueda seleccionar una organización
-                getTarea().setDepartamento("temporal");
-                getTarea().setAuthor(subject); //usuario logeado
-                getTarea().setOwner(getDestinatario()); //destinatario
-                getTarea().setEstadoTipo(EstadoTipo.ESPERA);//La tarea se completa al iniciar el proceso
+                //Crear dos tareas iniciales para el nuevo proceso
+                //1. Tarea recepción documentos, se realiza al momento de crear el proceso
+                prepareTarea(getTarea(), settingHome.getValue("fede.documents.task.first.name", "Recibir documentación inicial"), getTarea().getDescription(), subject, subject, EstadoTipo.RESUELTO);
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
+                
+                //2. Siguiente tarea
+                Tarea _tarea = buildTarea(settingHome.getValue("fede.documents.task.second.name", "Evaluar documentación y redirigir"), "", subject, getDestinatario(), EstadoTipo.ESPERA);
+                tareaService.save(_tarea.getId(), _tarea);
             } else {
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
@@ -260,10 +272,38 @@ public class TareaHome extends FedeController implements Serializable {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
     }
+    
+    private Tarea prepareTarea(Tarea _tarea, String name, String description, Subject author, Subject owner, EstadoTipo estado) {
+        //2. Siguiente tarea
+        _tarea.setName(name);
+        _tarea.setDescription(description);
+        _tarea.setInstanciaProceso(this.proceso);
+        //Es temporral hasta que se pueda seleccionar una organización
+        _tarea.setDepartamento("temporal");
+        _tarea.setAuthor(author); //usuario logeado
+        _tarea.setOwner(owner); //destinatario
+        _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
+        return _tarea;
+    }
+    
+    private Tarea buildTarea(String name, String description, Subject author, Subject owner, EstadoTipo estado) {
+        //2. Siguiente tarea
+        Tarea _tarea = tareaService.createInstance();
+        _tarea.setName(name);
+        _tarea.setDescription(description);
+        _tarea.setInstanciaProceso(this.proceso);
+        //Es temporral hasta que se pueda seleccionar una organización
+        _tarea.setDepartamento("temporal");
+        _tarea.setAuthor(author); //usuario logeado
+        _tarea.setOwner(owner); //destinatario
+        _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
+        return _tarea;
+    }
 
     public void complete(Tarea t) {
         try {
             getSiguienteTarea().setInstanciaProceso(t.getInstanciaProceso());
+            getSiguienteTarea().setName(t.getName());
             getSiguienteTarea().setAuthor(subject);
             getSiguienteTarea().setOwner(getDestinatario());
             getSiguienteTarea().setDepartamento("Temporal");
@@ -271,9 +311,9 @@ public class TareaHome extends FedeController implements Serializable {
             tareaService.save(getSiguienteTarea());
             procesarDocumentos(getSiguienteTarea());
             eliminarDocumentos();
-//            getTarea().setEstadoTipo(EstadoTipo.RESUELTO);
+            
+            //Actualizar tarea en edición
             t.setEstadoTipo(EstadoTipo.RESUELTO);
-//            tareaService.save(getTarea().getId(), getTarea());
             tareaService.save(t.getId(), t);
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
@@ -287,17 +327,6 @@ public class TareaHome extends FedeController implements Serializable {
                 documentoService.remove(doc.getId(), doc);
             }
             documentosRemovidos.remove(doc);
-        }
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        try {
-            //Redireccionar a RIDE de objeto seleccionado
-            if (event != null && event.getObject() != null) {
-                redirectTo("/pages/management/tarea.jsf?tareaId=" + ((BussinesEntity) event.getObject()).getId());
-            }
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -336,8 +365,8 @@ public class TareaHome extends FedeController implements Serializable {
             lazyDataModel = new LazyTareaDataModel(tareaService);
         }
 
-        //lazyDataModel.setOwner(subject);
-        lazyDataModel.setAuthor(subject);
+        lazyDataModel.setOwner(subject);
+        //lazyDataModel.setAuthor(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
 
@@ -353,6 +382,23 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
 
+    /**
+     * Disparar la apertura de vista de instancia de proceso, para la tarea seleccionada
+     * @param event evento click en tabla de datos
+     */
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                //redirectTo("/pages/management/tarea/tarea.jsf?tareaId=" + ((BussinesEntity) event.getObject()).getId());
+                Tarea _tarea = (Tarea) event.getObject();
+                redirectTo("/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=" + _tarea.getInstanciaProceso().getId());
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void onRowUnselect(UnselectEvent event) {
         FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -505,11 +551,6 @@ public class TareaHome extends FedeController implements Serializable {
      */
     public void procesarDocumentos(Tarea t) {
         for (Documento doc : t.getDocumentos()) {
-//            if (!doc.isPersistent()) {
-//                documentoService.save(doc);
-//            } else {
-//                documentoService.save(doc.getId(), doc);
-//            }
             generaDocumento(new File(doc.getRuta()), doc.getContents());
         }
     }
@@ -552,7 +593,6 @@ public class TareaHome extends FedeController implements Serializable {
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
             addErrorMessage(ex, I18nUtil.getMessages("common.error.uploadfail"));
         }
     }
@@ -575,9 +615,6 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public Documento getDocumento() {
-//        if (documentoId != null && !documento.isPersistent()) {
-//            this.documento = documentoService.find(documentoId);
-//        }
         return documento;
     }
 
@@ -649,9 +686,12 @@ public class TareaHome extends FedeController implements Serializable {
         this.documentoAceptar = documentoAceptar;
     }
 
-    @Override
+   @Override
     public List<Group> getGroups() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        if (groups.isEmpty()) {
+            groups = groupService.findByOwnerAndModuleAndType(subject, "documents", Group.Type.LABEL);
+        }
 
+        return groups;
+    }
 }

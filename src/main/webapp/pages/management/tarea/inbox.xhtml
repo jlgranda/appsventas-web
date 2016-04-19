@@ -29,19 +29,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:param name="title" value="#{i18n['fede']}" />
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="tags" value="#{instanciaProcesoHome.tags}" />
+                <f:viewParam name="tags" value="#{tareaHome.tags}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            <p:menuButton value="#{i18n['app.documents.instanciaproceso.procesos']}" iconPos="right"
+            <p:menuButton value="#{i18n['app.documents.tasks']}" iconPos="right"
                           styleClass="MarRight10"
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <!--<p:menuitem value="{i18n['Invoices']}" icon="fa fa-paper-plane-o" 
-                            url="/pages/fede/dashboard.jsf?faces-redirect=true"
+                <p:menuitem value="#{i18n['app.documents.instanciaproceso.procesos']}" icon="fa fa-stack-overflow" 
+                            url="/pages/management/proceso/inbox.jsf?faces-redirect=true"
                             disabled="#{false}">
-                </p:menuitem>-->
+                </p:menuitem>
             </p:menuButton>
         </ui:define>
         <ui:define name="toolbar">
@@ -71,11 +71,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </f:facet>
                         <f:facet name="right">
                             <label class="Gray">#{i18n['Start']}&nbsp;</label>
-                            <p:calendar value="#{instanciaProcesoHome.start}" class="input-sm">
+                            <p:calendar value="#{tareaHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
                             <label class="Gray">#{i18n['End']}&nbsp;</label>
-                            <p:calendar value="#{instanciaProcesoHome.end}" class="input-sm">
+                            <p:calendar value="#{tareaHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
                             <span id="pagination-info" class=""></span>
@@ -89,13 +89,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
                     <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
-                            outcome="/pages/fede/dashboard.jsf?faces-redirect=true">
+                            outcome="/pages/management/tarea/dashboard.jsf?faces-redirect=true">
                     </h:link>
                     <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
                                     showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
                                     my="left bottom" at="left bottom">
                         <pe:triStateManyCheckbox id="labelTriBasic"  
-                                                 value="#{instanciaProcesoHome.selectedTriStateGroups}"  
+                                                 value="#{tareaHome.selectedTriStateGroups}"  
                                                  layout="pageDirection"  
                                                  styleClass=""
                                                  stateOneTitle=""  
@@ -103,8 +103,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  stateThreeTitle=""
                                                  stateTwoIcon="ui-icon-check"  
                                                  stateThreeIcon="ui-icon-minus" 
-                                                 rendered="#{not empty instanciaProcesoHome.selectedBussinesEntities}">  
-                            <f:selectItems value="#{instanciaProcesoHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
+                                                 rendered="#{not empty tareaHome.selectedBussinesEntities}">  
+                            <f:selectItems value="#{tareaHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
                         </pe:triStateManyCheckbox> 
                     </p:overlayPanel>
                 </div>
@@ -114,18 +114,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
         <!--./toolbar-->
         <ui:define name="sidebar">
-            <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
-                <li class="" role="menuitem">
-                    <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf" 
-                       class="menulink ripplelink #{instanciaProcesoHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
-                </li>
-                <ui:repeat var="tag" value="#{instanciaProcesoHome.groups}">
+            <div class="Container100 Responsive100 TexAlCenter">
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/tarea/tarea.jsf"/>
+            </div>
+            <div class="EmptyBox10"></div>
+            <div class="Container100 Responsive100">
+                <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
                     <li class="" role="menuitem">
-                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}" 
-                           class="menulink ripplelink #{instanciaProcesoHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf" 
+                           class="menulink ripplelink #{tareaHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
                     </li>
-                </ui:repeat>
-            </ul>
+                    <ui:repeat var="tag" value="#{tareaHome.groups}">
+                        <li class="" role="menuitem">
+                            <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}" 
+                               class="menulink ripplelink #{tareaHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </div>
         </ui:define>
         <ui:define name="content">
             <!-- /.row -->
@@ -133,15 +139,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="Card ShadowEffect">
                     <div class="dataTable_wrapper">
                         <p:dataTable var="instanciaProceso" 
-                                     value="#{instanciaProcesoHome.lazyDataModel}" 
+                                     value="#{tareaHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                      sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{instanciaProcesoHome.selectedBussinesEntities}" 
+                                     reflow="true" selection="#{tareaHome.selectedBussinesEntities}" 
                                      rowKey="#{instanciaProceso.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                            <p:ajax event="rowSelect" listener="#{instanciaProcesoHome.onRowSelect}"/>
+                            <p:ajax event="rowSelect" listener="#{tareaHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                            
                             <p:column headerText="#{i18n['name']}" sortBy="#{instanciaProceso.name}">
                                 <h:outputText value="#{instanciaProceso.name}" />
                             </p:column>
@@ -152,10 +159,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="tipo"  headerText="#{i18n['common.type']}" sortBy="#{instanciaProceso.procesoTipo}"
+<!--                            <p:column  id="tipo"  headerText="#{i18n['common.type']}" sortBy="#{instanciaProceso.procesoTipo}"
                                        styleClass="text-right">
                                 <h:outputText value="#{instanciaProceso.procesoTipo}"/>
-                            </p:column>
+                            </p:column>-->
                         </p:dataTable>
                     </div>
                     <!--/.panel-body -->

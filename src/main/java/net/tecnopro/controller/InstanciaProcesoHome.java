@@ -53,9 +53,7 @@ import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
-import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.ui.model.LazyInstanciaProcesoDataModel;
-import org.jlgranda.fede.ui.util.SubjectConverter;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -91,6 +89,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     @Inject
     private SettingHome settingHome;
+    
     @EJB
     private GroupService groupService;
 
@@ -100,8 +99,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     private TareaService tareaService;
 
     private Tarea tarea;
-
-    private List<Tarea> tareas;
+    
     private List<Group> groups = new ArrayList<>();
     private Documento documento;
     private Subject solicitante;
@@ -109,8 +107,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     private Subject destinatario;
 
     private LazyInstanciaProcesoDataModel lazyDataModel;
-    @EJB
-    private SubjectService subjectService;
 
     @EJB
     private DocumentoService documentoService;
@@ -130,9 +126,9 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             amount = 30;
         }
 
-        setEnd(Dates.now());
+        setEnd(Dates.now()); //Hoy más un día para que incluya lo creados hoy
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        setOutcome("inboxInstanciaProceso");
+        setOutcome("procesos");
 
         setTarea(tareaService.createInstance()); //Siempre listo para recibir la respuesta del proceso
         setDocumento(documentoService.createInstance());
@@ -198,25 +194,29 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         this.destinatario = destinatario;
     }
 
-    public void send() {
+    public void send(Tarea todo) {
         try {
 
             //Actualizar tarea pendiente
-            for (Tarea t : getInstanciaProceso().getTareas()) {
-                if (EstadoTipo.ESPERA.equals(t.getEstadoTipo())) {
-                    t.setEstadoTipo(EstadoTipo.RESUELTO);
-                }
-            }
-
+//            for (Tarea t : getInstanciaProceso().getTareas()) {
+//                if (EstadoTipo.ESPERA.equals(t.getEstadoTipo())) {
+//                    t.setEstadoTipo(EstadoTipo.RESUELTO);
+//                }
+//            }
             //Preparar tarea para envio
-            tarea.setAuthor(subject);
-            tarea.setOwner(getDestinatario());
-            tarea.setDepartamento("Temporal");
-            tarea.setEstadoTipo(EstadoTipo.ESPERA);
-            getInstanciaProceso().addTarea(tarea);
-            procesarDocumentos(tarea);
+            //1. Obtener tarea pendiente, para actualizar descripción y estado
+            prepareTarea(todo, getTarea().getDescription(), EstadoTipo.RESUELTO);
+            procesarDocumentos(todo);
             eliminarDocumentos();
+            
+            //2. Crear siguiente tarea
+            Tarea next = buildTarea(getTarea().getName(), "", subject, getDestinatario(), EstadoTipo.ESPERA);
+            
+            //Guardar cambios
+            getInstanciaProceso().addTarea(next);
+            
             instanciaProcesoService.save(getInstanciaProceso().getId(), getInstanciaProceso());
+            
             //Encerar tarea para recoger nueva respuesta
             setTarea(tareaService.createInstance());
             setDestinatario(null);
@@ -226,6 +226,29 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
+    }
+    
+    private Tarea prepareTarea(Tarea _tarea, String description, EstadoTipo estado) {
+        //2. Siguiente tarea
+        _tarea.setDescription(description);
+        //Es temporral hasta que se pueda seleccionar una organización
+        _tarea.setDepartamento("temporal");
+        _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
+        return _tarea;
+    }
+    
+    private Tarea buildTarea(String name, String description, Subject author, Subject owner, EstadoTipo estado) {
+        //2. Siguiente tarea
+        Tarea _tarea = tareaService.createInstance();
+        _tarea.setName(name);
+        _tarea.setDescription(description);
+        _tarea.setInstanciaProceso(this.instanciaProceso);
+        //Es temporral hasta que se pueda seleccionar una organización
+        _tarea.setDepartamento("temporal");
+        _tarea.setAuthor(author); //usuario logeado
+        _tarea.setOwner(owner); //destinatario
+        _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
+        return _tarea;
     }
 
     public void handleFileUpload(FileUploadEvent event) {
@@ -297,7 +320,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
             addErrorMessage(ex, I18nUtil.getMessages("common.error.uploadfail"));
         }
     }
@@ -330,16 +352,20 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         return activeIndex;
     }
 
-    public boolean calculeShowResponseForm() {
+    @Deprecated
+    public boolean calculeShowResponseForm(Tarea tarea) {
         boolean showResponseForm = false;
         if (getInstanciaProceso() != null) {
-            for (Tarea t : getInstanciaProceso().getTareas()) {
-                //Sólo hay una tarea a la espera y corresponde al usuario actual
-                if (EstadoTipo.ESPERA.equals(t.getEstadoTipo()) && subject.equals(t.getOwner())) {
-                    showResponseForm = true;
-                    break; //finalizar bucle, ya se econtro.
-                }
+            if (EstadoTipo.ESPERA.equals(tarea.getEstadoTipo()) && subject.equals(tarea.getOwner())) {
+                showResponseForm = true;
             }
+//            for (Tarea t : getInstanciaProceso().getTareas()) {
+//                //Sólo hay una tarea a la espera y corresponde al usuario actual
+//                if (EstadoTipo.ESPERA.equals(t.getEstadoTipo()) && subject.equals(t.getOwner())) {
+//                    showResponseForm = true;
+//                    break; //finalizar bucle, ya se econtro.
+//                }
+//            }
         }
         return showResponseForm;
     }
@@ -381,31 +407,31 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         String status = "";
         Group group = null;
         Set<String> addedGroups = new LinkedHashSet<>();
-        for (BussinesEntity instanciaProceso : getSelectedBussinesEntities()) {
+        for (BussinesEntity _instanciaProceso : getSelectedBussinesEntities()) {
             for (String key : selectedTriStateGroups.keySet()) {
                 group = findGroup(key);
                 status = selectedTriStateGroups.get(key);
                 if ("0".equalsIgnoreCase(status)) {
-                    if (instanciaProceso.containsGroup(key)) {
-                        instanciaProceso.remove(group);
+                    if (_instanciaProceso.containsGroup(key)) {
+                        _instanciaProceso.remove(group);
                     }
                 } else if ("1".equalsIgnoreCase(status)) {
-                    if (!instanciaProceso.containsGroup(key)) {
-                        instanciaProceso.add(group);
+                    if (!_instanciaProceso.containsGroup(key)) {
+                        _instanciaProceso.add(group);
                         addedGroups.add(group.getName());
                     }
                 } else if ("2".equalsIgnoreCase(status)) {
-                    if (!instanciaProceso.containsGroup(key)) {
-                        instanciaProceso.add(group);
+                    if (!_instanciaProceso.containsGroup(key)) {
+                        _instanciaProceso.add(group);
                         addedGroups.add(group.getName());
                     }
                 }
             }
 
-            instanciaProcesoService.save(instanciaProceso.getId(), (InstanciaProceso) instanciaProceso);
+            instanciaProcesoService.save(_instanciaProceso.getId(), (InstanciaProceso) _instanciaProceso);
         }
 
-        this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
+        this.addSuccessMessage("Los procesos se agregaron a " + Lists.toString(addedGroups), "");
     }
 
     private Group findGroup(String key) {
@@ -434,10 +460,8 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     }
 
+    @Override
     public Group getDefaultGroup() {
-        if (this.defaultGroup == null) {
-            return groupService.findByCode(settingHome.getValue(SettingNames.DEFAULT_INVOICES_GROUP_NAME, "fede"));
-        }
         return this.defaultGroup;
     }
 
@@ -508,6 +532,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         this.lazyDataModel = lazyDataModel;
     }
 
+    @Override
     public List<Group> getGroups() {
         if (groups.isEmpty()) {
             groups = groupService.findByOwnerAndModuleAndType(subject, "documents", Group.Type.LABEL);
@@ -516,6 +541,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         return groups;
     }
 
+    @Override
     public void setGroups(List<Group> groups) {
         this.groups = groups;
     }

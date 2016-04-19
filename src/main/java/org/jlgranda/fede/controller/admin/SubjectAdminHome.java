@@ -96,9 +96,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
 
         setEnd(Dates.now());
-        setEnd(Dates.addDays(getEnd(), 1)); //sumar un día para mostrar los creados hoy
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        setOutcome("admin-inbox");
+        setOutcome("admin-subject");
 
         setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la petición de creación
 
@@ -106,6 +105,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
 
+    @Override
     public List<org.jpapi.model.Group> getGroups() {
         if (groups.isEmpty()) {
             groups = groupService.findByOwnerAndModuleAndType(subject, "admin", org.jpapi.model.Group.Type.LABEL);
@@ -114,6 +114,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return groups;
     }
 
+    @Override
     public void setGroups(List<org.jpapi.model.Group> groups) {
         this.groups = groups;
     }

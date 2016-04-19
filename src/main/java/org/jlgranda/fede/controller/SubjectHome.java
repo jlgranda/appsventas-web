@@ -159,13 +159,17 @@ public class SubjectHome extends FedeController implements Serializable {
 
                 //Prepare password
                 Password password = new Password(_signup.getPassword());
+                
                 //separar nombres
-                List<String> names = Strings.splitNamesAt(_signup.getFirstname());
+                if (Strings.isNullOrEmpty(_signup.getSurname())){
+                    List<String> names = Strings.splitNamesAt(_signup.getFirstname());
 
-                if (names.size() > 1) {
-                    _signup.setFirstname(names.get(0));
-                    _signup.setSurname(names.get(1));
+                    if (names.size() > 1) {
+                        _signup.setFirstname(names.get(0));
+                        _signup.setSurname(names.get(1));
+                    }
                 }
+                
                 _signup.setUsername(_signup.getEmail());
 
                 this.userTransaction.begin();
@@ -231,7 +235,14 @@ public class SubjectHome extends FedeController implements Serializable {
         processSignup(this.signup, null);
     }
 
+    /**
+     * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
+     * usernae, firstname, surname
+     * @param keyword
+     * @return una lista de objetos <tt>Subject</tt> que coinciden con la palabra clave dada.
+     */
     public List<Subject> find(String keyword) {
+        keyword = keyword.trim();
         Map<String, Object> filters = new HashMap<>();
         Map<String, String> columns = new HashMap<>();
         columns.put("username", keyword);

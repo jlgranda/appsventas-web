@@ -47,11 +47,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
                                     <h2 class="BigTopic">#{i18n['app.documents.task.applicant']}</h2>
-                                    <p:autoComplete value="#{tareaHome.solicitante}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
-                                                    var="entidad" itemLabel="#{entidad.surname}, #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
-                                                    converter="subjectConverter" forceSelection="true">
+                                    <p:autoComplete value="#{tareaHome.solicitante}" effect="fade" 
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                                    var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" forceSelection="true">
                                         <p:column>
-                                            <h:outputText value="#{entidad.surname}, #{entidad.firstname}"/>
+                                            <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
                                         </p:column>
                                     </p:autoComplete>
                                 </h:panelGroup>
@@ -61,11 +63,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
                                     <h2 class="BigTopic">#{i18n['app.documents.task.consignee']}</h2>
-                                    <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{tareaHome.completeSubjects}"
-                                                    var="entidad" itemLabel="#{entidad.surname}, #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
-                                                    converter="subjectConverter" forceSelection="true">
+                                    <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" 
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                                    var="entidad" itemValue="#{entidad}"  itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" forceSelection="true">
                                         <p:column>
-                                            <h:outputText value="#{entidad.surname}, #{entidad.firstname}"/>
+                                            <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
                                         </p:column>
                                     </p:autoComplete>
 <!--                                    <p:tree id="organizationTree" value="#{tareaHome.organizationHome.organizationNode}" var="node" orientation="vertical" 
@@ -159,7 +163,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 my="right bottom" at="left bottom">
                     <p:panelGrid columns="3" layout="grid">
 
-                        <jlgranda:input id="documentName" name="documentName" type="text" 
+                        <jlgranda:input id="_documentName" name="_documentName" type="text" 
                                         placeholder="true" label="#{i18n['name']}" 
                                         value="#{tareaHome.documento.name}" required="false" 
                                         container="default"/>
@@ -193,7 +197,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <!-- <p:media id="documentoMedia" rendered="{tareaHome.documento.id!=null and tareaHome.documento.isMimeType(i18n['pdf'])}"
                                           value="/fedeServlet?entity=documento&amp;id={tareaHome.documento.id}"
                                           player="pdf" width="100%" height="250"/>-->
-                                <jlgranda:input id="documentNam" name="documentNam" type="text" 
+                                <jlgranda:input id="documentName" name="documentName" type="text" 
                                                 label="#{i18n['name']}" 
                                                 value="#{tareaHome.documentoAceptar.name}" required="false" 
                                                 execute="@this save" render="documentNam"

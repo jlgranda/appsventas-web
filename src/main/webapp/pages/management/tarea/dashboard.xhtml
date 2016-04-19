@@ -93,19 +93,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <div class="ContainerIndent">
                                                 <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttask']}</div>
                                                 <div class="EmptyBox20"></div>
-                                                <div class="Container60 Fs50 FontRobotoLight Orange">
+                                                <div class="Container60 Fs50 FontRobotoLight Orange #{tareaHome.ultimaTareaRecibida.persistent ? '' : 'hide'}">
                                                     <span class="DispBlock">
-                                                        #{tareaHome.ultimaTareaRecibida.name}
+                                                            #{tareaHome.ultimaTareaRecibida.name}
                                                     </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{tareaHome.ultimaTareaRecibida.author.firstname}, #{tareaHome.ultimaTareaRecibida.author.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{tareaHome.ultimaTareaRecibida.createdOn}</span>
+                                                    <span class="BoldGray Fs12 FontRobotoLight DispBlock">#{tareaHome.ultimaTareaRecibida.instanciaProceso.name}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.author']}: #{tareaHome.ultimaTareaRecibida.author.firstname}, #{tareaHome.ultimaTareaRecibida.author.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaRecibida.createdOn}</span>
+                                                </div>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange #{not tareaHome.ultimaTareaRecibida.persistent ? '' : 'hide'}">
+                                                    <span class="DispBlock">
+                                                            #{i18n['app.document.task.todo.empty']}
+                                                    </span>
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
                                                     <p:button value="#{i18n['app.documents.task.complete']}" styleClass="CyanButton Fright" 
-                                                              outcome="/pages/management/tarea/instancia_proceso.jsf?instanciaProcesoId=#{tareaHome.ultimaTareaRecibida.instanciaProceso.id}" style="width:75%"
+                                                              outcome="/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=#{tareaHome.ultimaTareaRecibida.instanciaProceso.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaRecibida.persistent}"/>
                                                 </div>
+
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Separator"></div>
                                                 <div class="EmptyBox10"></div>
@@ -138,8 +145,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="DispBlock">
                                                         #{tareaHome.ultimaTareaEnviada.name}
                                                     </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{tareaHome.ultimaTareaEnviada.author.firstname}, #{tareaHome.ultimaTareaEnviada.author.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{tareaHome.ultimaTareaEnviada.createdOn}</span>
+                                                    <span class="BoldGray Fs12 FontRobotoLight DispBlock">#{tareaHome.ultimaTareaEnviada.instanciaProceso.name}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.consignee']}: #{tareaHome.ultimaTareaEnviada.owner.firstname}, #{tareaHome.ultimaTareaEnviada.owner.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaEnviada.createdOn}</span>
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
@@ -163,7 +171,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="TexAlCenter DispBlock">
                                                     <p:button value="#{i18n['ShowAll']}" 
                                                               styleClass="OrangeButton White Fs14" icon="fa fa-table"
-                                                              outcome="/pages/management/tarea/tareas.jsf"/>
+                                                              outcome="/pages/management/tarea/inbox.jsf"/>
                                                 </div>
                                             </div>
                                         </div>

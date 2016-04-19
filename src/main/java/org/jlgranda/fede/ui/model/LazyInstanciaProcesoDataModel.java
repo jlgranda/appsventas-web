@@ -29,6 +29,8 @@ import net.tecnopro.document.model.InstanciaProceso_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.model.profile.Subject_;
+import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.model.LazyDataModel;
@@ -84,9 +86,7 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
     }
 
     public List<InstanciaProceso> getResultList() {
-        logger.info("load BussinesEntitys");
-
-        if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
+        if (resultList.isEmpty()) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
         return resultList;
@@ -199,12 +199,24 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
-        range.put("start", getStart());
-        range.put("end", getEnd());
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(InstanciaProceso_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
         _filters.put(InstanciaProceso_.owner.getName(), getOwner()); //Filtro por defecto
-        _filters.put(InstanciaProceso_.createdOn.getName(), range); //Filtro de fecha inicial
-        _filters.put("tag", getTags()); //Filtro de etiquetas
+        
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
