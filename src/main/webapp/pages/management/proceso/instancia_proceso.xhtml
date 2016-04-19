@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:tab>
                             <f:facet name="title">
                                 <div class="Container80 Fs16 BoldGray FontRobotoRegular">
-                                    <h:outputText value="#{tarea.id} #{tarea.author.fullName} - #{tarea.name}" escape="false"></h:outputText>
+                                    <h:outputText value="#{tarea.author.fullName} - #{tarea.name}" escape="false"></h:outputText>
                                 </div>
                                 <div class="Container20 Fs14 BoldGray FontRobotoRegular #{empty tarea.documentos ? '' : 'hide'}">
                                     <h:outputText value="#{tarea.createdOn}" escape="false" class="Fright"></h:outputText>
