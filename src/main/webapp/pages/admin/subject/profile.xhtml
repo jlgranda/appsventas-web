@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:param name="title" value="#{i18n['Profile']}" />
         <ui:define name="params">
             <f:metadata>
+                <f:viewParam name="subjectId" value="#{subjectAdminHome.subjectId}" />             
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
@@ -57,10 +58,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             required="true" placeholder="true" 
                                             execute="@this save" render="email"/>
 
-                            <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
-                                            value="#{subjectAdminHome.subjectEdit.password}" required="true" placeholder="true"
-                                            execute="@this save" render="password"/>
-                            
+
+
                             <div class="EmptyBox10"></div>
 
                             <p:toolbar>
@@ -73,6 +72,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <span class="ui-separator">
                                         <span class="fa fa-ellipsis-v SoftGray" />
                                     </span>
+                                        <p:commandButton actionListener="#{subjectAdminHome.mostrarFormularioCambiarClave()}"
+                                                     icon="fa fa-paperclip Fs14 Black" styleClass="GrayButton" 
+                                                      >
+                                        <p:ajax event="dialogReturn" update="@form"
+                                                listener="#{subjectAdminHome.handleReturn}">
+                                        </p:ajax>
+                                    </p:commandButton>
 
                                 </f:facet>
 
@@ -80,7 +86,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                     <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
-
 <!--                                    <p:menuButton value="#{i18n['common.options']}">
                                         <p:menuitem value="Save" icon="fa fa-save" />
                                         <p:menuitem value="Update" icon="fa fa-upload" />

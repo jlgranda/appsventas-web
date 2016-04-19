@@ -31,6 +31,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.UserTransaction;
@@ -53,10 +55,10 @@ import org.primefaces.event.SelectEvent;
  *
  * @author Jorge
  */
-@Named(value = "subjectAdminHome")
-@RequestScoped
+@ManagedBean(name = "subjectAdminHome")
+@ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
-
+    
     private Long subjectId;
     @Inject
     @LoggedIn
@@ -82,10 +84,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     
     @Inject
     private SubjectHome subjectHome;
-
+    private String confirmarClave;
+    
     public SubjectAdminHome() {
     }
-
+    
     @PostConstruct
     public void init() {
         int amount = 0;
@@ -94,30 +97,30 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         } catch (java.lang.NumberFormatException nfe) {
             amount = 30;
         }
-
+        
         setEnd(Dates.now());
         setEnd(Dates.addDays(getEnd(), 1)); //sumar un día para mostrar los creados hoy
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        setOutcome("admin-inbox");
-
+        setOutcome("admin-subject");
+        
         setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la petición de creación
 
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
-
+    
     public List<org.jpapi.model.Group> getGroups() {
         if (groups.isEmpty()) {
             groups = groupService.findByOwnerAndModuleAndType(subject, "admin", org.jpapi.model.Group.Type.LABEL);
         }
-
+        
         return groups;
     }
-
+    
     public void setGroups(List<org.jpapi.model.Group> groups) {
         this.groups = groups;
     }
-
+    
     public void filter() {
         if (lazyDataModel == null) {
             lazyDataModel = new LazySubjectDataModel(subjectService);
@@ -125,7 +128,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         lazyDataModel.setOwner(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
-
+        
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
@@ -137,24 +140,31 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             lazyDataModel.setFilterValue(getKeyword());
         }
     }
-
+    
     public LazySubjectDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
     }
-
+    
+    public boolean mostrarFormularioCambiarClave() {
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_CAMBIAR_CLAVE, width, height, true);
+        return true;
+    }
+    
     public void setLazyDataModel(LazySubjectDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-
+    
     public Long getSubjectId() {
         return subjectId;
     }
-
+    
     public void setSubjectId(Long subjectId) {
         this.subjectId = subjectId;
     }
-
+    
     public void onRowSelect(SelectEvent event) {
         try {
             //Redireccionar a RIDE de objeto seleccionado
@@ -165,40 +175,48 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             java.util.logging.Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     @Override
     public void handleReturn(SelectEvent event) {
     }
-
+    
     @Override
     public Group getDefaultGroup() {
         return this.defaultGroup;
     }
-
+    
     public void save() {
         //Realizar signup
         if (!subjectEdit.isPersistent()) {
             subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
             addDefaultSuccessMessage();
-        } else{
+        } else {
             //Solo actualizar
             subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
             addDefaultSuccessMessage();
         }
     }
     
-
+    public void changePassword() {
+        if (subjectEdit.getPassword().equals(this.confirmarClave)) {
+            subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+            addDefaultSuccessMessage();
+        } else {
+            addWarningMessage("La clave no coinciden", "La clave no coinciden");
+        }
+    }
+    
     public Subject getSubjectEdit() {
         if (subjectId != null && !this.subjectEdit.isPersistent()) {
             this.subjectEdit = subjectService.find(subjectId);
         }
         return subjectEdit;
     }
-
+    
     public void setSubjectEdit(Subject subjectEdit) {
         this.subjectEdit = subjectEdit;
     }
-
+    
     public void applySelectedGroups() {
         String status = "";
         Group group = null;
@@ -223,13 +241,13 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                     }
                 }
             }
-
+            
             subjectService.save(fe.getId(), (Subject) fe);
         }
-
+        
         this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
     }
-
+    
     private Group findGroup(String key) {
         for (Group g : getGroups()) {
             if (key.equalsIgnoreCase(g.getCode())) {
@@ -238,4 +256,13 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
         return new Group("null", "null");
     }
+    
+    public String getConfirmarClave() {
+        return confirmarClave;
+    }
+    
+    public void setConfirmarClave(String confirmarClave) {
+        this.confirmarClave = confirmarClave;
+    }
+    
 }
