@@ -89,7 +89,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     @Inject
     private SettingHome settingHome;
-    
+
     @EJB
     private GroupService groupService;
 
@@ -99,7 +99,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     private TareaService tareaService;
 
     private Tarea tarea;
-    
+
     private List<Group> groups = new ArrayList<>();
     private Documento documento;
     private Subject solicitante;
@@ -206,17 +206,19 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             //Preparar tarea para envio
             //1. Obtener tarea pendiente, para actualizar descripción y estado
             prepareTarea(todo, getTarea().getDescription(), EstadoTipo.RESUELTO);
+            for (Documento doc : getTarea().getDocumentos()) {
+                todo.getDocumentos().add(doc);
+            }
             procesarDocumentos(todo);
             eliminarDocumentos();
-            
             //2. Crear siguiente tarea
             Tarea next = buildTarea(getTarea().getName(), "", subject, getDestinatario(), EstadoTipo.ESPERA);
-            
+
             //Guardar cambios
             getInstanciaProceso().addTarea(next);
-            
+
             instanciaProcesoService.save(getInstanciaProceso().getId(), getInstanciaProceso());
-            
+
             //Encerar tarea para recoger nueva respuesta
             setTarea(tareaService.createInstance());
             setDestinatario(null);
@@ -227,7 +229,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
     }
-    
+
     private Tarea prepareTarea(Tarea _tarea, String description, EstadoTipo estado) {
         //2. Siguiente tarea
         _tarea.setDescription(description);
@@ -236,7 +238,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
         return _tarea;
     }
-    
+
     private Tarea buildTarea(String name, String description, Subject author, Subject owner, EstadoTipo estado) {
         //2. Siguiente tarea
         Tarea _tarea = tareaService.createInstance();
@@ -281,7 +283,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     public void procesarDocumentos(Tarea t) {
         for (Documento doc : t.getDocumentos()) {
             generaDocumento(new File(doc.getRuta()), doc.getContents());
-        }
+        };
     }
 
     public StreamedContent downloadDocument(Documento doc) {
