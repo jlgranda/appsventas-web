@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
@@ -52,7 +53,7 @@ import org.primefaces.event.SelectEvent;
  * @author Jorge
  */
 @ManagedBean(name= "subjectAdminHome")
-@RequestScoped
+@ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
 
     private Long subjectId;
@@ -63,8 +64,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Inject
     private SettingHome settingHome;
     @Inject
-    private PartitionManager partitionManager;
-    @Inject
     GroupHome groupHome;
     IdentityManager identityManager = null;
     @EJB
@@ -73,7 +72,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     SubjectService subjectService;
     @EJB
     SettingService settingService;
-
     private List<org.jpapi.model.Group> groups = new ArrayList<>();
 
     private LazySubjectDataModel lazyDataModel;
