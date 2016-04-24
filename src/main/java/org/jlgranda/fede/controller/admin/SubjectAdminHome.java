@@ -208,6 +208,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
     }
 
+    /**
+     * El método debe actualizar en picketlink, de otra manera no tiene efecto el cambio de clave.
+     */
     public void changePassword() {
         if (this.clave.equals(this.confirmarClave)) {
             try {
