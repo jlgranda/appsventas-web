@@ -27,12 +27,19 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.GroupHome;
@@ -43,16 +50,21 @@ import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
+import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
+import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.User;
 import org.primefaces.event.SelectEvent;
 
 /**
  *
  * @author Jorge
  */
-@ManagedBean(name= "subjectAdminHome")
+@Named(value = "subjectAdminHome")
 @ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
 
@@ -65,7 +77,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private SettingHome settingHome;
     @Inject
     GroupHome groupHome;
+    @Inject
+    private PartitionManager partitionManager;
     IdentityManager identityManager = null;
+    @Resource
+    private UserTransaction userTransaction;
     @EJB
     private GroupService groupService;
     @EJB
@@ -79,6 +95,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Inject
     private SubjectHome subjectHome;
     private String confirmarClave;
+    private String clave;
 
     public SubjectAdminHome() {
     }
@@ -100,7 +117,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
-
 
     @Override
     public List<org.jpapi.model.Group> getGroups() {
@@ -193,11 +209,24 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     public void changePassword() {
-        if (subjectEdit.getPassword().equals(this.confirmarClave)) {
-            subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
-            addDefaultSuccessMessage();
+        if (this.clave.equals(this.confirmarClave)) {
+            try {
+                identityManager = partitionManager.createIdentityManager();
+                this.userTransaction.begin();
+                Password password = new Password(this.clave);
+                User user = BasicModel.getUser(identityManager, getSubjectEdit().getUsername());
+                identityManager.update(user);
+                identityManager.updateCredential(user, password);
+                this.userTransaction.commit();
+                String password_ = new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
+                subjectEdit.setPassword(password_);
+                subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+                addDefaultSuccessMessage();
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
-            addWarningMessage("La clave no coinciden", "La clave no coinciden");
+            addWarningMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
         }
     }
 
@@ -258,6 +287,14 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public void setConfirmarClave(String confirmarClave) {
         this.confirmarClave = confirmarClave;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
     }
 
 }

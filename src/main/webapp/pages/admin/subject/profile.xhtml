@@ -95,17 +95,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave"  header="#{i18n['common.password.change']}" 
                           modal="true" draggable="true" position="center" closable="false" >
                     <div class="Container100">
+                         <p:messages id="messagesDlg" showDetail="true" autoUpdate="true" closable="true" />
                         <div class="ContainerIndent">
                             <div class="Card ShadowEffect ui-fluid">
                                 <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
-                                                value="#{subjectAdminHome.subjectEdit.password}" required="true" placeholder="true"
-                                                execute="@this save" render="password"/>
+                                                value="#{subjectAdminHome.clave}"  required="true" placeholder="true"
+                                                validator="passwordValidator"
+                                                execute="@this save" render="password">
+                                </jlgranda:input>
                                 <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['password']}" 
                                                 value="#{subjectAdminHome.confirmarClave}" required="true" placeholder="true"
+                                                validator="passwordValidator"
                                                 execute="@this save" render="confirmar-password"/>
                                 <div class="EmptyBox10"></div>
                                 <div class="Wid50 Fleft Responsive">
                                         <p:commandButton value="#{i18n['Save']}"  icon="fa fa-save Fs14"
+                                                         update="@form:messagesDlg,@form:password,@form:confirmar-password"
                                                          action="#{subjectAdminHome.changePassword()}"
                                                          style="width: auto !important;" >
                                         </p:commandButton>
