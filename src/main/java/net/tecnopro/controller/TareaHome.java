@@ -261,6 +261,14 @@ public class TareaHome extends FedeController implements Serializable {
                 Tarea _tarea = buildTarea(settingHome.getValue("fede.documents.task.second.name", "Evaluar documentación y redirigir"), "", subject, getDestinatario(), EstadoTipo.ESPERA);
                 tareaService.save(_tarea.getId(), _tarea);
             } else {
+                
+                //Actualizar destinatario si hay cambios.
+                //TODO  notificar al destinatario anterior y nuevo
+                Subject temp = null;
+                if (!getTarea().getOwner().equals(getDestinatario())){
+                    temp = getTarea().getOwner();
+                    getTarea().setOwner(getDestinatario());
+                }
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
                 eliminarDocumentos();

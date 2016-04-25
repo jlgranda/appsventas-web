@@ -171,10 +171,6 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
             sortField = Tarea_.createdOn.getName();
         }
 
-        System.out.println("org.jlgranda.fede.ui.model.LazyTareaDataModel.load()...");
-        System.out.println("---> with sortField" + ": " + sortField);
-        System.out.println("---> with order" + ": " + order.name());
-        
         QueryData<Tarea> qData = tareaService.find(first, end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();

@@ -51,7 +51,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
                                                     var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
                                                     maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" forceSelection="true">
+                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                    forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
                                         <p:column>
                                             <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
                                         </p:column>
@@ -67,7 +68,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
                                                     var="entidad" itemValue="#{entidad}"  itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
                                                     maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" forceSelection="true">
+                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                    forceSelection="true" required="true">
                                         <p:column>
                                             <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
                                         </p:column>
