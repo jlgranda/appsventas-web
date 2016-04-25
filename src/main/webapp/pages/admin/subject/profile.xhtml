@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                     <p:menuButton value="#{i18n['common.options']}">
-                                        <p:menuitem value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" />
+                                        <p:menuitem value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
                                         <!--                                        <p:menuitem value="Update" icon="fa fa-upload" />
                                                                                 <p:menuitem value="Delete" icon="fa fa-trash" />
                                                                                 <p:menuitem value="Homepage" icon="fa fa-home" />-->
@@ -89,7 +89,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave"  header="#{i18n['common.password.change']}" 
                           modal="true" draggable="true" position="center" closable="false" >
                     <div class="Container100">
-                         <p:messages id="messagesDlg" showDetail="true" autoUpdate="true" closable="true" />
+                        <p:messages id="messagesDlg" showDetail="true" autoUpdate="true" closable="true" />
                         <div class="ContainerIndent">
                             <div class="Card ShadowEffect ui-fluid">
                                 <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
@@ -103,16 +103,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 execute="@this save" render="confirmar-password"/>
                                 <div class="EmptyBox10"></div>
                                 <div class="Wid50 Fleft Responsive">
-                                        <p:commandButton value="#{i18n['Save']}"  icon="fa fa-save Fs14"
-                                                         update="@form:messagesDlg,@form:password,@form:confirmar-password"
-                                                         action="#{subjectAdminHome.changePassword()}"
-                                                         style="width: auto !important;" >
-                                        </p:commandButton>
+                                    <p:commandButton value="#{i18n['Save']}"  icon="fa fa-save Fs14"
+                                                     update="@form:messagesDlg,@form:password,@form:confirmar-password"
+                                                     action="#{subjectAdminHome.changePassword()}"
+                                                     onsuccess="PF('dlgCambiarClave').hide()"
+                                                     style="width: auto !important;" >
+                                    </p:commandButton>
                                 </div>
-                                 <div class="Wid50 Fleft Responsive">
-                                        <p:commandButton icon="fa fa-close Fs14"
-                                            onclick="PF('dlgCambiarClave').hide()" value="#{i18n['common.cancel']}"/>
-                                 </div>
+                                <div class="Wid50 Fleft Responsive">
+                                    <p:commandButton icon="fa fa-close Fs14"
+                                                     onclick="PF('dlgCambiarClave').hide()" value="#{i18n['common.cancel']}" immediate="true"/>
+                                </div>
                             </div> 
                         </div>
                     </div>
