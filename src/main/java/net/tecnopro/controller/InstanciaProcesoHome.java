@@ -196,18 +196,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     public void send(Tarea todo) {
         try {
-
-            //Actualizar tarea pendiente
-//            for (Tarea t : getInstanciaProceso().getTareas()) {
-//                if (EstadoTipo.ESPERA.equals(t.getEstadoTipo())) {
-//                    t.setEstadoTipo(EstadoTipo.RESUELTO);
-//                }
-//            }
-            //Preparar tarea para envio
             //1. Obtener tarea pendiente, para actualizar descripción y estado
             prepareTarea(todo, getTarea().getDescription(), EstadoTipo.RESUELTO);
             for (Documento doc : getTarea().getDocumentos()) {
-                todo.getDocumentos().add(doc);
+                todo.addDocumento(doc);
             }
             procesarDocumentos(todo);
             eliminarDocumentos();
@@ -268,7 +260,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             return;
         }
         try {
-            Documento doc = crearDocumento(file, tarea);
+            Documento doc = crearDocumento(file);
             if (tarea != null) {
                 tarea.getDocumentos().add(doc);
             }
@@ -372,11 +364,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         return showResponseForm;
     }
 
-    private Documento crearDocumento(UploadedFile file, Tarea t) {
+    private Documento crearDocumento(UploadedFile file) {
         Documento doc = documentoService.createInstance();
-        doc.setTarea(t);
-        doc.setOwner(t.getOwner());
-        doc.setAuthor(t.getOwner());
+        doc.setOwner(subject);
+        doc.setAuthor(subject);
 
         if (getDocumento() != null && Strings.isNullOrEmpty(getDocumento().getName())) {
             doc.setName(file.getFileName());

@@ -18,7 +18,6 @@ import net.tecnopro.document.model.Tarea_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.model.profile.Subject_;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
@@ -132,8 +131,10 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
         return entity.getName();
     }
 
+    @Override
     public List<Tarea> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
 
+        
         int end = first + pageSize;
 
         QuerySortOrder order = QuerySortOrder.DESC;
@@ -141,22 +142,22 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
             order = QuerySortOrder.ASC;
         }
         Map<String, Object> _filters = new HashMap<>();
-       Map<String, Date> range = new HashMap<>();
-        if (getStart() != null){
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
             range.put("start", getStart());
-            if (getEnd() != null){
+            if (getEnd() != null) {
                 range.put("end", getEnd());
             } else {
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()){
+        if (!range.isEmpty()) {
             _filters.put(Tarea_.createdOn.getName(), range); //Filtro de fecha inicial
         }
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
         _filters.put(Tarea_.owner.getName(), getOwner()); //Filtro por defecto
-        
-        if (getTags() != null && !getTags().isEmpty()){
+
+        if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
 

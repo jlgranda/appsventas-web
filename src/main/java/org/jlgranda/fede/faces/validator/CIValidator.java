@@ -94,7 +94,6 @@ public class CIValidator implements Validator {
     }
 
     private void validateNationalIdentityDocument(String nid) {
-        System.out.println("eqaula --> validateNationalIdentityDocument" + nid);
         message = Interpolator.interpolate(
                 I18nUtil.getMessages("validation.lengthIdentificationNumber"),
                 new Object[0]);

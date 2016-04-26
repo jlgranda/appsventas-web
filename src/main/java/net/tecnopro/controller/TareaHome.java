@@ -9,7 +9,6 @@ import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.OrganizationService;
-import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,7 +44,6 @@ import org.jlgranda.fede.controller.OrganizationHome;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyTareaDataModel;
-import org.jlgranda.fede.ui.converter.SubjectConverter;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -263,6 +261,14 @@ public class TareaHome extends FedeController implements Serializable {
                 Tarea _tarea = buildTarea(settingHome.getValue("fede.documents.task.second.name", "Evaluar documentación y redirigir"), "", subject, getDestinatario(), EstadoTipo.ESPERA);
                 tareaService.save(_tarea.getId(), _tarea);
             } else {
+                
+                //Actualizar destinatario si hay cambios.
+                //TODO  notificar al destinatario anterior y nuevo
+                Subject temp = null;
+                if (!getTarea().getOwner().equals(getDestinatario())){
+                    temp = getTarea().getOwner();
+                    getTarea().setOwner(getDestinatario());
+                }
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
                 eliminarDocumentos();

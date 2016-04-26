@@ -230,7 +230,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            addWarningMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
+            addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
         }
     }
 
