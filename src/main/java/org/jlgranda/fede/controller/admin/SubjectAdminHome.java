@@ -58,6 +58,7 @@ import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.User;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -96,6 +97,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private SubjectHome subjectHome;
     private String confirmarClave;
     private String clave;
+    private boolean cambiarClave;
 
     public SubjectAdminHome() {
     }
@@ -108,7 +110,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         } catch (java.lang.NumberFormatException nfe) {
             amount = 30;
         }
-
+        this.cambiarClave=false;
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("admin-subject");
@@ -157,11 +159,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return lazyDataModel;
     }
 
-    public boolean mostrarFormularioCambiarClave() {
-        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
-        super.openDialog(SettingNames.POPUP_FORMULARIO_CAMBIAR_CLAVE, width, height, true);
-        return true;
+    public void mostrarFormularioCambiarClave() {
+        this.cambiarClave =true;
+//        RequestContext.getCurrentInstance().execute("PF('dlgCambiarClave').show()");
     }
 
     public void setLazyDataModel(LazySubjectDataModel lazyDataModel) {
@@ -209,7 +209,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     /**
-     * El método debe actualizar en picketlink, de otra manera no tiene efecto el cambio de clave.
+     * El método debe actualizar en picketlink, de otra manera no tiene efecto
+     * el cambio de clave.
      */
     public void changePassword() {
         if (this.clave.equals(this.confirmarClave)) {
@@ -300,4 +301,12 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         this.clave = clave;
     }
 
+    public boolean isCambiarClave() {
+        return cambiarClave;
+    }
+
+    public void setCambiarClave(boolean cambiarClave) {
+        this.cambiarClave = cambiarClave;
+    }
+    
 }
