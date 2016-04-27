@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.HeuristicMixedException;
@@ -52,13 +54,13 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
+import org.jpapi.util.StringValidations;
 import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.User;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -110,7 +112,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         } catch (java.lang.NumberFormatException nfe) {
             amount = 30;
         }
-        this.cambiarClave=false;
+        this.cambiarClave = false;
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("admin-subject");
@@ -160,7 +162,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     public void mostrarFormularioCambiarClave() {
-        this.cambiarClave =true;
+        this.cambiarClave = true;
 //        RequestContext.getCurrentInstance().execute("PF('dlgCambiarClave').show()");
     }
 
@@ -213,6 +215,10 @@ public class SubjectAdminHome extends FedeController implements Serializable {
      * el cambio de clave.
      */
     public void changePassword() {
+        if (!StringValidations.isPassword(clave)) {
+            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
+            return;
+        }
         if (this.clave.equals(this.confirmarClave)) {
             try {
                 identityManager = partitionManager.createIdentityManager();
@@ -308,5 +314,5 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     public void setCambiarClave(boolean cambiarClave) {
         this.cambiarClave = cambiarClave;
     }
-    
+
 }

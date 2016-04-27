@@ -43,19 +43,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                             <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
                                             value="#{subjectAdminHome.subjectEdit.code}" validator="ciValidator"
-                                            required="true" placeholder="true" execute="@this save" render="code"/>
+                                            required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" execute="@this save" render="code"/>
                             <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
-                                            value="#{subjectAdminHome.subjectEdit.firstname}" required="true" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                                            value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
                             <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
-                                            value="#{subjectAdminHome.subjectEdit.surname}" required="true" inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+                                            value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
+                                            inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
                             <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" execute="@this save" render="bio"/>
+                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                            execute="@this save" render="bio"/>
                             <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
                                             value="#{subjectAdminHome.subjectEdit.description}" required="false" inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
 
                             <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
                                             value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                            required="true" placeholder="true" 
+                                            required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
                                             execute="@this save" render="email"/>
 
 
@@ -75,9 +77,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                     <p:menuButton value="#{i18n['common.options']}">
-                                        <p:menuitem value="#{i18n['common.password.change']}" icon="fa fa-key" 
-                                                    onclick="PF('dlgCambiarClave').show();"
-                                                    oncomplete="#{subjectAdminHome.mostrarFormularioCambiarClave()}" />
                                         <p:menuitem value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
                                         <!--                                        <p:menuitem value="Update" icon="fa fa-upload" />
                                                                                 <p:menuitem value="Delete" icon="fa fa-trash" />
@@ -90,20 +89,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                 </div>
                 <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
-                          header="#{i18n['common.password.change']}" rendered="#{subjectAdminHome.cambiarClave}"
+                          header="#{i18n['common.password.change']}" 
                           modal="true" draggable="true" position="center" closable="false" >
                     <div class="Container100">
                         <p:messages id="messagesDlg" showDetail="true" autoUpdate="true" closable="true" />
                         <div class="ContainerIndent">
                             <div class="Card ShadowEffect ui-fluid">
                                 <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
-                                                value="#{subjectAdminHome.clave}"  required="true" placeholder="true"
-                                                validator="passwordValidator"
+                                                value="#{subjectAdminHome.clave}"  placeholder="true"
+                                                
                                                 execute="@this save" render="password">
                                 </jlgranda:input>
                                 <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['password']}" 
-                                                value="#{subjectAdminHome.confirmarClave}" required="true" placeholder="true"
-                                                validator="passwordValidator"
+                                                value="#{subjectAdminHome.confirmarClave}" placeholder="true"
+                                               
                                                 execute="@this save" render="confirmar-password"/>
                                 <div class="EmptyBox10"></div>
                                 <div class="Wid50 Fleft Responsive">
