@@ -17,6 +17,7 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
@@ -38,6 +39,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.controller.mail.TemplateHome;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -86,8 +88,8 @@ public class SubjectHome extends FedeController implements Serializable {
     @EJB
     SubjectService subjectService;
 
-    @EJB
-    SettingService settingService;
+    @Inject
+    private SettingHome settingHome;
 
     @Inject
     GroupHome groupHome;
@@ -98,6 +100,9 @@ public class SubjectHome extends FedeController implements Serializable {
     private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
 
     IdentityManager identityManager = null;
+    
+    @Inject
+    private TemplateHome templateHome;
 
     @Produces
     @LoggedIn
@@ -205,7 +210,7 @@ public class SubjectHome extends FedeController implements Serializable {
                 _signup.setUsernameConfirmed(true);
 
                 //Set fede email
-                _signup.setFedeEmail(_signup.getCode().concat("@").concat(settingService.findByName("mail.imap.host").getValue()));
+                _signup.setFedeEmail(_signup.getCode().concat("@").concat(settingHome.getValue("mail.imap.host", "localhost")));
                 _signup.setFedeEmailPassword(passwrod_);
 
                 //Finalmente crear en fede
@@ -233,6 +238,14 @@ public class SubjectHome extends FedeController implements Serializable {
      */
     public void processSignup() {
         processSignup(this.signup, null);
+        //Notificar alta en appsventas
+        String confirm_url = settingHome.getValue("app.login.confirm.url", "localhost");
+        Map<String, Object> values = new HashMap<>();
+        //TODO definir la plantilla y agregar parámetros según corresponda
+        values.put("fullname", this.signup.getFullName());
+        values.put("url", confirm_url + this.signup.getUuid());
+        
+        templateHome.sendEmail(this.signup, settingHome.getValue("app.mail.template.login", "app.mail.template.login"), values);
     }
 
     /**

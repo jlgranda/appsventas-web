@@ -31,8 +31,12 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import net.tecnopro.document.model.Template;
+import net.tecnopro.helper.mail.MailingHelper;
+import net.tecnopro.helper.mail.VelocityHelper;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
+import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -353,5 +357,4 @@ public abstract class FedeController {
     public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
-    
 }
