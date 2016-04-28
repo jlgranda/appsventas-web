@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.HeuristicMixedException;
@@ -52,6 +54,7 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
+import org.jpapi.util.StringValidations;
 import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
@@ -96,6 +99,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private SubjectHome subjectHome;
     private String confirmarClave;
     private String clave;
+    private boolean cambiarClave;
 
     public SubjectAdminHome() {
     }
@@ -108,7 +112,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         } catch (java.lang.NumberFormatException nfe) {
             amount = 30;
         }
-
+        this.cambiarClave = false;
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("admin-subject");
@@ -157,11 +161,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return lazyDataModel;
     }
 
-    public boolean mostrarFormularioCambiarClave() {
-        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
-        super.openDialog(SettingNames.POPUP_FORMULARIO_CAMBIAR_CLAVE, width, height, true);
-        return true;
+    public void mostrarFormularioCambiarClave() {
+        this.cambiarClave = true;
+//        RequestContext.getCurrentInstance().execute("PF('dlgCambiarClave').show()");
     }
 
     public void setLazyDataModel(LazySubjectDataModel lazyDataModel) {
@@ -209,9 +211,14 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     /**
-     * El método debe actualizar en picketlink, de otra manera no tiene efecto el cambio de clave.
+     * El método debe actualizar en picketlink, de otra manera no tiene efecto
+     * el cambio de clave.
      */
     public void changePassword() {
+        if (!StringValidations.isPassword(clave)) {
+            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
+            return;
+        }
         if (this.clave.equals(this.confirmarClave)) {
             try {
                 identityManager = partitionManager.createIdentityManager();
@@ -298,6 +305,14 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public void setClave(String clave) {
         this.clave = clave;
+    }
+
+    public boolean isCambiarClave() {
+        return cambiarClave;
+    }
+
+    public void setCambiarClave(boolean cambiarClave) {
+        this.cambiarClave = cambiarClave;
     }
 
 }
