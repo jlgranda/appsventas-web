@@ -26,13 +26,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
-import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.HeuristicMixedException;
@@ -62,6 +58,8 @@ import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.User;
 import org.primefaces.event.SelectEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -70,7 +68,9 @@ import org.primefaces.event.SelectEvent;
 @Named(value = "subjectAdminHome")
 @ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
-
+    
+    Logger logger = LoggerFactory.getLogger(SubjectAdminHome.class);
+    
     private Long subjectId;
     @Inject
     @LoggedIn
@@ -185,7 +185,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage(), ex);
         }
     }
 
@@ -233,7 +233,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
                 addDefaultSuccessMessage();
             } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(ex.getMessage(), ex);
             }
         } else {
             addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));

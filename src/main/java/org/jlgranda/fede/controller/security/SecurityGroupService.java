@@ -26,8 +26,6 @@ import org.jpapi.util.QuerySortOrder;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.api.UnsupportedCriterium;
-import org.picketlink.idm.common.exception.IdentityException;
 import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
@@ -93,7 +91,7 @@ public class SecurityGroupService implements Serializable {
         return 0;
     }
 
-    public Group findByName(final String name) throws IdentityException {
+    public Group findByName(final String name) {
         return BasicModel.getGroup(identityManager, name);
     }
     
@@ -125,21 +123,21 @@ public class SecurityGroupService implements Serializable {
         List<Group> result = query.getResultList();
         return result.isEmpty() ? new ArrayList<Group>() : result;
     }
-    public void removeGroup(Group g) throws IdentityException {    
+    public void removeGroup(Group g) {    
         identityManager.remove(g);
     }
     
-    public void associate(Group g, User u) throws IdentityException {
+    public void associate(Group g, User u) {
         Account a = identityManager.lookupById(Account.class, u.getId());
         BasicModel.addToGroup(relationshipManager, a, g);
     }
 
-    public void disassociate(Group g, User u) throws IdentityException {
+    public void disassociate(Group g, User u){
         Account a = identityManager.lookupById(Account.class, u.getId());
         BasicModel.removeFromGroup(relationshipManager, a, g);
     }
 
-    public User findUser(String usr) throws IdentityException {
+    public User findUser(String usr) {
         IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
         List<User> result = queryBuilder
                 .createIdentityQuery(User.class)
@@ -163,9 +161,9 @@ public class SecurityGroupService implements Serializable {
 //        return b;
 //    }
 
-    public List<Group> find(int pageSize, Integer firstResult) throws IdentityException, UnsupportedCriterium {
+    public List<Group> find(int pageSize, Integer firstResult) {
         IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
         List<Group> result = queryBuilder.createIdentityQuery(Group.class).setLimit(firstResult).setLimit(pageSize).getResultList();
-        return result.isEmpty() ? new ArrayList<Group>() : result;
+        return result.isEmpty() ? new ArrayList<>() : result;
     }
 }

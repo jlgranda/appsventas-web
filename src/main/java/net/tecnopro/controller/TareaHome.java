@@ -71,6 +71,8 @@ import org.primefaces.model.StreamedContent;
 @ViewScoped
 public class TareaHome extends FedeController implements Serializable {
 
+    private static final long serialVersionUID = 439606517163781752L;
+
     Logger logger = LoggerFactory.getLogger(TareaHome.class);
 
     @Inject

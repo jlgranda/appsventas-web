@@ -30,13 +30,10 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import net.tecnopro.document.model.Template;
-import net.tecnopro.helper.mail.MailingHelper;
-import net.tecnopro.helper.mail.VelocityHelper;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
-import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -50,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public abstract class FedeController {
 
     Logger logger = LoggerFactory.getLogger(FedeController.class);
+
 
     public static final String KEY_SEPARATOR = ",";
 
@@ -357,4 +355,28 @@ public abstract class FedeController {
     public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
+    
+    //Invalidate the session and send a redirect to index.html
+    public void logout() throws IOException {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+        session.invalidate();
+        HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+        response.sendRedirect("index.html");
+        facesContext.responseComplete();
+    }
+    
+    
+    //This method return the stack trace string from the Exception
+    public String getStackTrace() {
+        Throwable throwable = (Throwable)  FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.exception");
+        StringBuilder builder = new StringBuilder();
+        builder.append(throwable.getMessage()).append("\n");
+        for (StackTraceElement element : throwable.getStackTrace()) {
+            builder.append(element).append("\n");
+        }
+        return builder.toString();
+    }
+    
+    
 }

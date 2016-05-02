@@ -22,7 +22,7 @@ import javax.faces.context.FacesContext;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.PersistentObject;
 import org.omnifaces.converter.SelectItemsConverter;
-import org.picketlink.idm.impl.api.model.SimpleGroup;
+import org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity;
 
 /**
  *
@@ -34,8 +34,8 @@ public class BussinesEntityConverter extends SelectItemsConverter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         String key = null;
-        if (value instanceof SimpleGroup) {
-            key = ((SimpleGroup) value).getName();
+        if (value instanceof GroupTypeEntity) {
+            key = ((GroupTypeEntity) value).getName();
         } else {
             Long id = null;
             if (value instanceof BussinesEntity) {

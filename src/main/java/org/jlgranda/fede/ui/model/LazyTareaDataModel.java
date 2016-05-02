@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
+    private static final long serialVersionUID = 778762601256543919L;
     Logger logger = LoggerFactory.getLogger(LazyTareaDataModel.class);
     private TareaService tareaService;
     private List<Tarea> resultList;

@@ -26,8 +26,6 @@ import javax.annotation.PostConstruct;
 import org.jlgranda.fede.controller.security.SecurityGroupService;
 import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
-import org.picketlink.idm.api.UnsupportedCriterium;
-import org.picketlink.idm.common.exception.IdentityException;
 import org.picketlink.idm.model.basic.Group;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -63,13 +61,11 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
-            try {
+            //try {
                 resultList = securityGroupService.find(this.getPageSize(), this.getFirstResult());
-            } catch (IdentityException ex) {
-                java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UnsupportedCriterium ex) {
-                java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            } catch (IdentityException ex) {
+//                java.util.logging.Logger.getLogger(LazyGroupDataModel.class.getName()).log(Level.SEVERE, null, ex);
+//            } 
         }
         return resultList;
     }

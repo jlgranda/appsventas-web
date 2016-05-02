@@ -18,7 +18,6 @@
 package org.jlgranda.fede.ui.model;
 
 import java.io.Serializable;
-import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.jpapi.model.profile.Subject;
 import org.primefaces.model.LazyDataModel;
 

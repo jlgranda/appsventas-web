@@ -22,24 +22,18 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
-import javax.inject.Qualifier;
 import org.apache.deltaspike.security.api.authorization.SecurityBindingType;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 
-@Qualifier
-@Inherited
+
+@Retention(value = RUNTIME)
 @Target({ TYPE, METHOD, PARAMETER, FIELD })
-@Retention(RUNTIME)
 @Documented
 @SecurityBindingType
-public @interface LoggedIn
-{
-
-}
+public @interface LoggedIn {}

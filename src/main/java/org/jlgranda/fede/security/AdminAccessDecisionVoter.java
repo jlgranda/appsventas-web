@@ -20,7 +20,6 @@ package org.jlgranda.fede.security;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.apache.deltaspike.core.api.scope.WindowScoped;
 import org.apache.deltaspike.security.api.authorization.AbstractAccessDecisionVoter;
 import org.apache.deltaspike.security.api.authorization.AccessDecisionVoterContext;
 import org.apache.deltaspike.security.api.authorization.SecurityViolation;
@@ -32,6 +31,8 @@ import org.jlgranda.fede.controller.SubjectHome;
  */
 @ApplicationScoped
 public class AdminAccessDecisionVoter extends AbstractAccessDecisionVoter {
+
+    private static final long serialVersionUID = 2761136481974573555L;
     
     @Inject
     private SubjectHome subjectHome;

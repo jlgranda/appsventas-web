@@ -59,5 +59,10 @@
             <to-view-id>/pages/admin/security/group/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>admin-template</from-outcome>
+            <to-view-id>/pages/admin/template/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
 </faces-config>

@@ -21,8 +21,8 @@
         <version.wildfly.maven.plugin>1.1.0.Alpha7</version.wildfly.maven.plugin>
 
         <!-- PicketLink dependency versions -->
-        <version.picketlink.javaee.bom>2.7.1.Final</version.picketlink.javaee.bom>
-        <!--<deltaspike.version>1.5.0</deltaspike.version>-->
+        <version.picketlink.javaee.bom>2.8.0.Beta1-SNAPSHOT</version.picketlink.javaee.bom>
+        <deltaspike.version>1.6.2-SNAPSHOT</deltaspike.version>
     </properties>
     
     
@@ -46,6 +46,20 @@
             <id>central</id>
             <url>http://repo.maven.apache.org/maven2/</url>
         </repository>
+        
+
+        <repository>
+            <id>apache-snapshot-repository</id>
+            <url>http://repository.apache.org/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+
         <repository>
             <id>picketlink snapshot</id>
             <url>http://repository-picketlink.forge.cloudbees.com/snapshot/</url>
@@ -60,45 +74,81 @@
 
     <dependencyManagement>
         <dependencies>
-             <!--Dependency Management for PicketLink and Java EE 6.0.--> 
+            <!-- Dependency Management for PicketLink and Java EE 6.0. -->
             <dependency>
                 <groupId>org.picketlink</groupId>
-                <artifactId>picketlink-javaee-6.0</artifactId>
+                <artifactId>picketlink-javaee-7.0</artifactId>
                 <version>${version.picketlink.javaee.bom}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.deltaspike.distribution</groupId>
+                <artifactId>distributions-bom</artifactId>
+                <version>${deltaspike.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
   
     <dependencies>
+        <!-- DeltaSpike modules -->
+        <dependency>
+            <groupId>org.apache.deltaspike.core</groupId>
+            <artifactId>deltaspike-core-api</artifactId>
+            <version>1.6.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.deltaspike.core</groupId>
+            <artifactId>deltaspike-core-impl</artifactId>
+            <version>1.6.2-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.deltaspike.modules</groupId>
-            <artifactId>deltaspike-jpa-module-api</artifactId>
-            <version>1.1.0</version>
+            <artifactId>deltaspike-jsf-module-api</artifactId>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.deltaspike.core</groupId>
-                    <artifactId>deltaspike-core-api</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-jsf-module-impl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-security-module-api</artifactId>
+             <version>1.6.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-security-module-impl</artifactId>
+             <version>1.6.2-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <!--        picketlink-->
+        <dependency>
+            <groupId>org.picketlink</groupId>
+            <artifactId>picketlink-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.picketlink</groupId>
+            <artifactId>picketlink-impl</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.deltaspike.modules</groupId>
-            <artifactId>deltaspike-jpa-module-impl</artifactId>
-            <version>1.1.0</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.deltaspike.core</groupId>
-                    <artifactId>deltaspike-core-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.deltaspike.core</groupId>
-                    <artifactId>deltaspike-core-impl</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.picketlink</groupId>
+            <artifactId>picketlink-idm-simple-schema</artifactId>
         </dependency>
         
         <dependency>
@@ -173,22 +223,6 @@
             <scope>runtime</scope>
         </dependency>
          
-        <!--        picketlink-->
-        
-        <dependency>
-            <groupId>org.picketlink</groupId>
-            <artifactId>picketlink</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.picketlink.idm</groupId>
-            <artifactId>picketlink-idm-core</artifactId>
-            <version>1.5.0.Alpha02</version>
-        </dependency>
-        <dependency>
-            <groupId>org.picketlink</groupId>
-            <artifactId>picketlink-idm-simple-schema</artifactId>
-        </dependency>
-    
         <!--        Facebook signin-->
         <dependency>
             <groupId>org.facebook4j</groupId>

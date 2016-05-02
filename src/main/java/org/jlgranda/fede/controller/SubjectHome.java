@@ -17,8 +17,6 @@
  */
 package org.jlgranda.fede.controller;
 
-import com.jlgranda.fede.SettingNames;
-import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -38,8 +36,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jasypt.util.password.BasicPasswordEncryptor;
-import org.jlgranda.fede.cdi.LoggedIn;
-import org.jlgranda.fede.controller.mail.TemplateHome;
+import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -93,6 +90,7 @@ public class SubjectHome extends FedeController implements Serializable {
 
     @Inject
     GroupHome groupHome;
+    
     @Inject
     private PartitionManager partitionManager;
 
@@ -105,21 +103,21 @@ public class SubjectHome extends FedeController implements Serializable {
     private TemplateHome templateHome;
 
     @Produces
-    @LoggedIn
     @Named("subject")
     public Subject getLoggedIn() {
         if (identity.isLoggedIn() && !loggedIn.isPersistent()) {
             try {
                 Account account = identity.getAccount();
+                
                 loggedIn = subjectService.findUniqueByNamedQuery("Subject.findUserByUUID", account.getId());
+                
                 if (loggedIn != null) {
                     loggedIn.setLoggedIn(true);
                 }
             } catch (NoResultException e) {
                 throw e;
             }
-        } else if (!identity.isLoggedIn()) {
-        }
+        } 
         return loggedIn;
     }
 
@@ -245,7 +243,7 @@ public class SubjectHome extends FedeController implements Serializable {
         values.put("fullname", this.signup.getFullName());
         values.put("url", confirm_url + this.signup.getUuid());
         
-        templateHome.sendEmail(this.signup, settingHome.getValue("app.mail.template.login", "app.mail.template.login"), values);
+        templateHome.sendEmail(this.signup, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values);
     }
 
     /**

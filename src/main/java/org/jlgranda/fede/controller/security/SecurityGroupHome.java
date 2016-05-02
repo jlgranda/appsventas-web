@@ -46,7 +46,6 @@ import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.common.exception.IdentityException;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
 import org.primefaces.event.SelectEvent;
@@ -174,7 +173,7 @@ public class SecurityGroupHome extends FedeController implements Serializable {
         this.lazyDataModel = lazyDataModel;
     }
 
-    public Group find() throws IdentityException {
+    public Group find() {
         identityManager = partitionManager.createIdentityManager();
         Group group = BasicModel.getGroup(this.identityManager, this.groupKey);
         return group;
