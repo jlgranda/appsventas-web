@@ -69,7 +69,33 @@
                         <h2 class="CardTopic TexAlCenter">#{i18n['common.applications']}</h2>
                         <div class="EmptyBox20"></div>
                         
-                        <div class="Container50 Responsive50">
+                        <div class="Container33 Responsive100">
+                            <div class="ContainerIndent">
+                                <div class="Card RedBack SoftRed TexAlCenter">
+                                    <i class="fa fa-gears Fs50 DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18"></span>
+                                    <span class="FontRobotoRegular Fs18">#{i18n['common.admin']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button value="#{i18n['common.go']}" styleClass="GreenButton" outcome="pages/admin/dashboard.jsf"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="Container33 Responsive100">
+                            <div class="ContainerIndent">
+                                <div class="Card SoftBlueBack TexAlCenter">
+                                    <i class="icon-message Fs50 White DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{tareaHome.countRowsByTag("own")}</span>
+                                    <span class="FontRobotoRegular Fs18 White">#{i18n['Documents']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button value="#{i18n['common.go']}" styleClass="GreenButton" outcome="pages/management/tarea/dashboard.jsf"/>
+                                </div>
+                            </div>
+                        </div> 
+                        
+                        <div class="Container33 Responsive100">
                             <div class="ContainerIndent">
                                 <div class="Card RedBack SoftRed TexAlCenter">
                                     <i class="fa fa-institution Fs50 DispBlock"></i>
@@ -82,7 +108,7 @@
                             </div>
                         </div>
 
-                        <div class="Container50 Responsive50">
+                        <div class="Container33 Responsive100">
                             <div class="ContainerIndent">
                                 <div class="Card SoftGreenBack TexAlCenter">
                                     <i class="icon-layers Fs50 BoldGray DispBlock"></i>
@@ -95,20 +121,7 @@
                             </div> 
                         </div>
                         
-                        <div class="Container50 Responsive50">
-                            <div class="ContainerIndent">
-                                <div class="Card SoftBlueBack TexAlCenter">
-                                    <i class="icon-message Fs50 White DispBlock"></i>
-                                    <div class="EmptyBox5"></div>
-                                    <span class="FontRobotoLight Fs18">#{tareaHome.countRowsByTag("own")}</span>
-                                    <span class="FontRobotoRegular Fs18 White">#{i18n['Documents']}</span>
-                                    <div class="EmptyBox10"></div>
-                                    <p:button value="#{i18n['common.go']}" styleClass="GreenButton" outcome="pages/management/tarea/dashboard.jsf"/>
-                                </div>
-                            </div>
-                        </div>  
-
-                        <div class="Container50 Responsive50">
+                        <div class="Container33 Responsive100">
                             <div class="ContainerIndent">
                                 <div class="Card SoftOrangeBack TexAlCenter">
                                     <i class="icon-cloud_done Fs50 DispBlock"></i>

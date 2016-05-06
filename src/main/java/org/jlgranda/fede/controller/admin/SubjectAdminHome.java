@@ -209,6 +209,19 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             addDefaultSuccessMessage();
         }
     }
+    
+    public void confirm(boolean force){
+        if (force){
+            getSubjectEdit().setConfirmed(false);
+            subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+        }
+        
+        if (!getSubjectEdit().isConfirmed()){
+            subjectHome.sendConfirmation(getSubjectEdit());
+        } else {
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.subject.confirmed"));
+        }
+    }
 
     /**
      * El método debe actualizar en picketlink, de otra manera no tiene efecto

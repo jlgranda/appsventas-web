@@ -78,6 +78,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                     <p:menuButton value="#{i18n['common.options']}">
                                         <p:menuitem value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
+                                        <p:menuitem value="#{i18n['Send']} #{i18n['common.message']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(false)}" icon="fa fa-magic" 
+                                                    immediate="true" rendered="#{!subjectAdminHome.subjectEdit.confirmed}"/>
+                                        <p:menuitem value="#{i18n['common.force']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(true)}" icon="fa fa-magic" 
+                                                    immediate="true" rendered="#{subjectAdminHome.subjectEdit.confirmed}"/>
                                         <!--                                        <p:menuitem value="Update" icon="fa fa-upload" />
                                                                                 <p:menuitem value="Delete" icon="fa fa-trash" />
                                                                                 <p:menuitem value="Homepage" icon="fa fa-home" />-->

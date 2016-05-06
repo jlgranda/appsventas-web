@@ -215,6 +215,8 @@ public class SubjectHome extends FedeController implements Serializable {
                 _signup.setUuid(user.getId());
                 _signup.setSubjectType(Subject.Type.NATURAL);
                 _signup.setOwner(owner);
+                _signup.setConfirmed(false);
+                
                 subjectService.save(_signup);
 
                 //Crear grupos por defecto para el subject
@@ -236,14 +238,25 @@ public class SubjectHome extends FedeController implements Serializable {
      */
     public void processSignup() {
         processSignup(this.signup, null);
-        //Notificar alta en appsventas
-        String confirm_url = settingHome.getValue("app.login.confirm.url", "localhost");
-        Map<String, Object> values = new HashMap<>();
-        //TODO definir la plantilla y agregar parámetros según corresponda
-        values.put("fullname", this.signup.getFullName());
-        values.put("url", confirm_url + this.signup.getUuid());
-        
-        templateHome.sendEmail(this.signup, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values);
+        sendConfirmation(this.signup);
+    }
+    
+    public void sendConfirmation(Subject _subject) {
+        if (_subject.isPersistent() && !_subject.isConfirmed()) {
+            //Notificar alta en appsventas
+            String confirm_url = settingHome.getValue("app.login.confirm.url", "http://localhost:8080/appsventas/confirm.jsf?uuid=");
+            Map<String, Object> values = new HashMap<>();
+            //TODO definir la plantilla y agregar parámetros según corresponda
+            values.put("fullname", _subject.getFullName());
+            values.put("url", confirm_url + _subject.getUuid());
+
+//            if (templateHome.sendEmail(_subject, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values)){
+            if (templateHome.sendEmail(_subject, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values)){
+                addDefaultSuccessMessage();
+            } else {
+                addDefaultErrorMessage();
+            }
+        }
     }
 
     /**

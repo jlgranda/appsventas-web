@@ -230,19 +230,21 @@ public class TemplateHome extends FedeController implements Serializable {
 
             String host = settingHome.getValue("mail.smtps.host", "jlgranda.com");
             String port = settingHome.getValue("mail.smtps.port", "25");
-            String from = settingHome.getValue("mail.smtps.from", "AppsVentas <consiguemas@jlgranda.com>");
+            String _from = settingHome.getValue("mail.smtps.from", "AppsVentas <consiguemas@jlgranda.com>");
             String username = settingHome.getValue("mail.smtps.username", "consiguemas@jlgranda.com");
             String password = settingHome.getValue("mail.smtps.password", "LitePorePrudePursed13");
             String smtpAuth = settingHome.getValue("mail.smtps.auth", "true");
             String tlsEnable = settingHome.getValue("mail.smtps.tls", "true");
             String title;
             String message;
+            Subject from = new Subject();
+            from.setFirstname(_from.substring(0,  _from.indexOf('<') - 1));
+            from.setEmail(_from.substring(_from.indexOf('<') + 1,  _from.indexOf('>')));
             try {
                 title = VelocityHelper.getRendererMessage(template.getTitle(), values);
                 message = VelocityHelper.getRendererMessage(template.getBody(), values);
-                valorRetorno = MailingHelper.enviar(host, port, username, password, smtpAuth,
-                        tlsEnable, from, subject.getEmail(), title,
-                        message);
+                valorRetorno = MailingHelper.sendHtmlEmail(host, port, username, password, smtpAuth, 
+                        tlsEnable, subject, from, title, message, message, false);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
             }

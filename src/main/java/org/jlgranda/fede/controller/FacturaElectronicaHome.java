@@ -356,8 +356,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                 }
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | FacturaXMLReadException e) {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), e.getMessage());
         }
     }
@@ -397,8 +396,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             throw new FacturaXMLReadException("No fue posible leer el contenido XML!");
         }
 
-        CodeType codeType = CodeType.encode(factura.getInfoFactura().getTipoIdentificacionComprador());
-        logger.info("IdentificacionComprador {}, CodeType {}", factura.getInfoFactura().getIdentificacionComprador(), codeType);
+        //CodeType codeType = CodeType.encode(factura.getInfoFactura().getTipoIdentificacionComprador());
+        //logger.info("IdentificacionComprador {}, CodeType {}", factura.getInfoFactura().getIdentificacionComprador(), codeType);
 
         if (!(factura.getInfoFactura().getIdentificacionComprador().startsWith(subject.getCode())
                 || subject.getCode().startsWith(factura.getInfoFactura().getIdentificacionComprador()))) {
@@ -433,7 +432,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
             instancia.setSourceType(sourceType); //El tipo de importación realizado
 
-            logger.info("Author {}, CodeType {}", factura.getInfoTributaria().getRuc(), CodeType.RUC);
             Subject author = null;
             if ((author = subjectService.findUniqueByNamedQuery("BussinesEntity.findByCodeAndCodeType", factura.getInfoTributaria().getRuc(), CodeType.RUC)) == null) {
                 author = subjectService.createInstance();
@@ -452,7 +450,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                 author.setPassword((new org.apache.commons.codec.digest.Crypt().crypt("dummy")));
                 author.setActive(Boolean.FALSE);
 
-                subjectService.save(author);
+                author = subjectService.save(author);
+                logger.info("Added new Subject as author. RUC {}, CodeType {}", factura.getInfoTributaria().getRuc(), CodeType.RUC);
+            
 
             }
 

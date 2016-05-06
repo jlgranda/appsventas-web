@@ -55,6 +55,8 @@ import org.slf4j.LoggerFactory;
 @RequestScoped
 public class OrganizationHome extends FedeController implements Serializable {
 
+    private static final long serialVersionUID = -7712000810185595430L;
+
     Logger logger = LoggerFactory.getLogger(OrganizationHome.class);
     
     Organization organization;

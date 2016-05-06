@@ -281,12 +281,12 @@ public abstract class FedeController {
 //        values.add(bookName);
 //        params.put("bookName", values);
         RequestContext.getCurrentInstance().openDialog(name, options, null);
-        logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
+        //logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
     }
 
     public void closeDialog(Object data) {
         RequestContext.getCurrentInstance().closeDialog(data);
-        logger.info("Popup '{}' cerrado, con data {}. Context: {}", "activo", data, RequestContext.getCurrentInstance());
+        //logger.info("Popup '{}' cerrado, con data {}. Context: {}", "activo", data, RequestContext.getCurrentInstance());
     }
 
     public void redirectTo(String url) throws IOException {
@@ -348,6 +348,14 @@ public abstract class FedeController {
 
     public void addDefaultSuccessMessage() {
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
+    }
+    
+    public void addDefaultErrorMessage() {
+        addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("action.fail.detail"));
+    }
+    
+    public void addDefaultWarningMessage() {
+        addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("action.warning.detail"));
     }
     
     public abstract List<Group> getGroups();
