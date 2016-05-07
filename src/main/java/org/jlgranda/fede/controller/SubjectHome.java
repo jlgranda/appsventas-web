@@ -75,9 +75,6 @@ public class SubjectHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(SubjectHome.class);
 
-    @Inject
-    private Identity identity;
-
     Subject loggedIn = new Subject();
 
     Subject signup = null;
@@ -102,29 +99,14 @@ public class SubjectHome extends FedeController implements Serializable {
     @Inject
     private TemplateHome templateHome;
 
-    @Produces
-    @Named("subject")
-    public Subject getLoggedIn() {
-        if (identity.isLoggedIn() && !loggedIn.isPersistent()) {
-            try {
-                Account account = identity.getAccount();
-                
-                loggedIn = subjectService.findUniqueByNamedQuery("Subject.findUserByUUID", account.getId());
-                
-                if (loggedIn != null) {
-                    loggedIn.setLoggedIn(true);
-                }
-            } catch (NoResultException e) {
-                throw e;
-            }
-        } 
-        return loggedIn;
-    }
-
     public boolean isLoggedIn() {
         return loggedIn != null && loggedIn.getId() != null;
     }
 
+    /**
+     * Guardar la instancia <tt>Subject</tt>
+     * @param subject la instancia a guardar
+     */
     public void save(Subject subject) {
         subjectService.save(subject.getId(), subject);
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
@@ -234,11 +216,14 @@ public class SubjectHome extends FedeController implements Serializable {
     }
     
     /**
-     * Procesa la creación de una cuenta en fede
+     * Procesa la creación de una cuenta en fede, 
+     * se asigna admin como propietario
      */
     public void processSignup() {
-        processSignup(this.signup, null);
+        Subject admin = subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", "admin");
+        processSignup(this.signup, admin);
         sendConfirmation(this.signup);
+        
     }
     
     public void sendConfirmation(Subject _subject) {
@@ -246,11 +231,11 @@ public class SubjectHome extends FedeController implements Serializable {
             //Notificar alta en appsventas
             String confirm_url = settingHome.getValue("app.login.confirm.url", "http://localhost:8080/appsventas/confirm.jsf?uuid=");
             Map<String, Object> values = new HashMap<>();
-            //TODO definir la plantilla y agregar parámetros según corresponda
+            
+            //TODO implementar una forma de definición de parametros desde coniguración
             values.put("fullname", _subject.getFullName());
             values.put("url", confirm_url + _subject.getUuid());
 
-//            if (templateHome.sendEmail(_subject, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values)){
             if (templateHome.sendEmail(_subject, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values)){
                 addDefaultSuccessMessage();
             } else {
