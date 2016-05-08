@@ -88,8 +88,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Inject
     private PartitionManager partitionManager;
     IdentityManager identityManager = null;
-     @Inject
-    private SecurityGroupService securityGroupService;
+
     @Resource
     private UserTransaction userTransaction;
     @EJB
@@ -98,7 +97,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     SubjectService subjectService;
     @EJB
     SettingService settingService;
-    private List<org.jpapi.model.Group> groups = new ArrayList<>();
+    private List<org.jpapi.model.Group> groups;
 
     private LazySubjectDataModel lazyDataModel;
 
@@ -109,6 +108,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private boolean cambiarClave;
 
     public SubjectAdminHome() {
+        this.groups = new ArrayList<>();
     }
 
     @PostConstruct
@@ -123,7 +123,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("admin-subject");
-        
+
         this.subjectSelectedCheckbox = new ArrayList<>();
         setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la petición de creación
         //TODO Establecer temporalmente la organización por defecto
@@ -315,14 +315,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     public void rowSelectCheckbox(SelectEvent evt) {
         Subject s = (Subject) evt.getSource();
         this.subjectSelectedCheckbox.add(s);
-    }
-
-    public void asignarGruposUsuarios(Subject subject,List<Group> groups) {
-        try {
-
-        } catch (Exception e) {
-            java.util.logging.Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, e);
-        }
     }
 
     public String getConfirmarClave() {
