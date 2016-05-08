@@ -137,7 +137,6 @@ public class SubjectHome extends FedeController implements Serializable {
 
         identityManager = partitionManager.createIdentityManager();
 
-        logger.info("Procesar signup para {} ", _signup);
         if (_signup != null) {
             //Crear la identidad para acceso al sistema
             try {

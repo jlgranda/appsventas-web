@@ -47,16 +47,10 @@ public class SubjectConverter implements Converter, Serializable {
 
     @PostConstruct
     public void setup() {
-
-        System.out.println("UserConverter started up");
-
     }
 
     @PreDestroy
     public void shutdown() {
-
-        System.out.println("UserConverter shutting down");
-
     }
 
     @Override

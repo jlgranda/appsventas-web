@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import net.tecnopro.document.ejb.TareaService;
+import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.Tarea;
 import net.tecnopro.document.model.Tarea_;
 import org.jpapi.model.BussinesEntity;
@@ -60,6 +61,8 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
     private Date end;
 
     private String typeName;
+    
+    private EstadoTipo state;
 
     private BussinesEntity[] selectedBussinesEntities;
 
@@ -129,7 +132,7 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
 
     @Override
     public Object getRowKey(Tarea entity) {
-        return entity.getName();
+        return entity.getId();
     }
 
     @Override
@@ -160,6 +163,10 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
 
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
+        if (getState() != null) {
+            _filters.put("estadoTipo", getState()); //Filtro de etiquetas
         }
 
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
@@ -256,5 +263,14 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
     public void setFilterValue(String filterValue) {
         this.filterValue = filterValue;
     }
+
+    public EstadoTipo getState() {
+        return state;
+    }
+
+    public void setState(EstadoTipo state) {
+        this.state = state;
+    }
+
 
 }

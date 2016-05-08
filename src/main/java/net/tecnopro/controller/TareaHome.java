@@ -54,8 +54,11 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.jlgranda.fede.controller.SubjectHome;
+import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.util.Dates;
 import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
@@ -128,6 +131,9 @@ public class TareaHome extends FedeController implements Serializable {
 
     @Inject
     private OrganizationHome organizationHome;
+    
+    @Inject
+    private TemplateHome templateHome;
 
     @PostConstruct
     public void init() {
@@ -262,6 +268,11 @@ public class TareaHome extends FedeController implements Serializable {
                 //2. Siguiente tarea
                 Tarea _tarea = buildTarea(settingHome.getValue("fede.documents.task.second.name", "Evaluar documentación y redirigir"), "", subject, getDestinatario(), EstadoTipo.ESPERA);
                 tareaService.save(_tarea.getId(), _tarea);
+                
+                //Enviar notificación de inicio de proceso
+                sendNotification(this.proceso, "app.mail.template.process.start", false);
+                //Enviar notificación de tarea por realizar
+                sendNotification(_tarea, "app.mail.template.task.assign", false);
             } else {
                 
                 //Actualizar destinatario si hay cambios.
@@ -274,6 +285,9 @@ public class TareaHome extends FedeController implements Serializable {
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
                 eliminarDocumentos();
+                
+                //Enviar notificación de modificación de tarea
+                sendNotification(getTarea(), "app.mail.template.task.assign", false);
             }
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
@@ -307,7 +321,59 @@ public class TareaHome extends FedeController implements Serializable {
         _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
         return _tarea;
     }
+    
+    public void sendNotification(InstanciaProceso instanciaProceso, String templateName, boolean displayMessage) {
+        if (instanciaProceso.isPersistent()) {
+            //Notificar alta en appsventas
+            String url = settingHome.getValue("app.documents.url.process.detail", "http://localhost:8080/appsventas/pages/management/proceso/instancia_proceso.jsf?uuid=");
+            String url_title = instanciaProceso.getName();
+            Map<String, Object> values = new HashMap<>();
+            
+            //TODO implementar una forma de definición de parametros desde configuración
+            values.put("instanciaProceso", instanciaProceso);
+            values.put("url", url + instanciaProceso.getCode());
+            values.put("url_title", url_title);
 
+            if (templateHome.sendEmail(instanciaProceso.getAuthor(), settingHome.getValue(templateName, templateName), values)
+                    && templateHome.sendEmail(instanciaProceso.getOwner(), settingHome.getValue(templateName, templateName), values)){
+                if (displayMessage) addDefaultSuccessMessage();
+            } else {
+                if (displayMessage) addDefaultErrorMessage();
+            }
+        }
+    }
+    
+    public void sendNotification(Tarea tarea, String templateName, boolean displayMessage) {
+        if (tarea.isPersistent()) {
+            //Notificar alta en appsventas
+            String url = settingHome.getValue("app.documents.url.process.detail", "http://localhost:8080/appsventas/pages/management/proceso/instancia_prooceso.jsf?id=");
+            String url_title = tarea.getName();
+            Map<String, Object> values = new HashMap<>();
+            
+            //TODO implementar una forma de definición de parametros desde configuración
+            values.put("tarea", tarea);
+            values.put("url", url + tarea.getInstanciaProceso().getId());
+            values.put("url_title", url_title);
+
+            if (templateHome.sendEmail(tarea.getAuthor(), settingHome.getValue(templateName, templateName), values)
+                    && templateHome.sendEmail(tarea.getOwner(), settingHome.getValue(templateName, templateName), values)){
+                if (displayMessage) addDefaultSuccessMessage();
+            } else {
+                if (displayMessage) addDefaultErrorMessage();
+            }
+        }
+    }
+    
+    public void sendNotification(Tarea tarea, String templateName, boolean displayMessage, boolean force) {
+        if (!tarea.isPersistent() && force) {
+            tarea.setId(-1L);//forzar el envio de la notificación
+            sendNotification(tarea, templateName, displayMessage);
+        } else {
+            sendNotification(tarea, templateName, displayMessage);
+        }
+    }
+
+    @Deprecated
     public void complete(Tarea t) {
         try {
             getSiguienteTarea().setInstanciaProceso(t.getInstanciaProceso());
@@ -374,6 +440,7 @@ public class TareaHome extends FedeController implements Serializable {
         }
 
         lazyDataModel.setOwner(subject);
+        lazyDataModel.setState(EstadoTipo.ESPERA);
         //lazyDataModel.setAuthor(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());

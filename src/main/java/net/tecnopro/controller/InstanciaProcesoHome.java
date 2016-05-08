@@ -19,7 +19,6 @@ package net.tecnopro.controller;
 import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
-import com.jlgranda.fede.ejb.SubjectService;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,6 +76,8 @@ import org.slf4j.LoggerFactory;
 @ViewScoped
 public class InstanciaProcesoHome extends FedeController implements Serializable {
 
+    private static final long serialVersionUID = -2712214748501882991L;
+
     Logger logger = LoggerFactory.getLogger(InstanciaProcesoHome.class);
 
     @Inject
@@ -116,6 +117,9 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     //UI variables
     private String activeIndex;
     private String keys;
+    
+    @Inject
+    private TareaHome tareaHome;
 
     @PostConstruct
     public void init() {
@@ -215,6 +219,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             setTarea(tareaService.createInstance());
             setDestinatario(null);
             setActiveIndex(null);
+            
+            //Enviar notificación de tarea completada y por completar
+            tareaHome.sendNotification(todo, "app.mail.template.task.done", false);
+            tareaHome.sendNotification(next, "app.mail.template.task.assign", false, true); //Forzar ya que next no tiene ID
 
             this.addDefaultSuccessMessage();
         } catch (Exception e) {
@@ -344,24 +352,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         }
 
         return activeIndex;
-    }
-
-    @Deprecated
-    public boolean calculeShowResponseForm(Tarea tarea) {
-        boolean showResponseForm = false;
-        if (getInstanciaProceso() != null) {
-            if (EstadoTipo.ESPERA.equals(tarea.getEstadoTipo()) && subject.equals(tarea.getOwner())) {
-                showResponseForm = true;
-            }
-//            for (Tarea t : getInstanciaProceso().getTareas()) {
-//                //Sólo hay una tarea a la espera y corresponde al usuario actual
-//                if (EstadoTipo.ESPERA.equals(t.getEstadoTipo()) && subject.equals(t.getOwner())) {
-//                    showResponseForm = true;
-//                    break; //finalizar bucle, ya se econtro.
-//                }
-//            }
-        }
-        return showResponseForm;
     }
 
     private Documento crearDocumento(UploadedFile file) {
