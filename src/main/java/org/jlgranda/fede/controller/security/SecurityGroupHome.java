@@ -28,8 +28,6 @@ import javax.ejb.EJB;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -55,15 +53,14 @@ import org.primefaces.event.SelectEvent;
 public class SecurityGroupHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = 7632987414391869389L;
-    
-    
+
     @Inject
     @LoggedIn
     private Subject subject;
-    
+
     @Inject
     private SettingHome settingHome;
-    
+
     @Inject
     private PartitionManager partitionManager;
     @Inject
@@ -76,17 +73,13 @@ public class SecurityGroupHome extends FedeController implements Serializable {
     private String groupKey;
     private LazyGroupDataModel lazyDataModel;
     
-    @PersistenceContext
-    private EntityManager entityManager;
-    
-     @Inject
+    @Inject
     private SecurityGroupService securityGroupService;
-     
+
     private List<Group> selectedGroups;
-    
+
     @EJB
     private GroupService groupService;
-
 
     @PostConstruct
     public void init() {
@@ -96,7 +89,6 @@ public class SecurityGroupHome extends FedeController implements Serializable {
         securityGroupService.setIdentityManager(identityManager);
         securityGroupService.setRelationshipManager(relationshipManager);
         securityGroupService.setPartitionManager(partitionManager);
-        
     }
 
     public String getGroupKey() {
@@ -135,11 +127,11 @@ public class SecurityGroupHome extends FedeController implements Serializable {
                 this.addDefaultSuccessMessage();
                 this.userTransaction.commit();
                 return "inboxGroup";
-            } 
-                this.userTransaction.begin();
-                identityManager.add(group);
-                this.userTransaction.commit();
-                return "inboxGroup";
+            }
+            this.userTransaction.begin();
+            identityManager.add(group);
+            this.userTransaction.commit();
+            return "inboxGroup";
 
         } catch (IdentityManagementException |
                 SecurityException | IllegalStateException e) {
@@ -202,7 +194,8 @@ public class SecurityGroupHome extends FedeController implements Serializable {
 
         return this.groups;
     }
-    
+
+
     public void onRowSelect(SelectEvent event) {
         try {
             //Redireccionar a RIDE de objeto seleccionado

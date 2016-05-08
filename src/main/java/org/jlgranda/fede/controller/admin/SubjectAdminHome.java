@@ -20,12 +20,14 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -43,6 +45,7 @@ import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.GroupHome;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.SubjectHome;
+import org.jlgranda.fede.controller.security.SecurityGroupService;
 import org.jlgranda.fede.ui.model.LazySubjectDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -68,14 +71,16 @@ import org.slf4j.LoggerFactory;
 @Named(value = "subjectAdminHome")
 @ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
-    
+
     Logger logger = LoggerFactory.getLogger(SubjectAdminHome.class);
-    
+
     private Long subjectId;
     @Inject
     @LoggedIn
     private Subject subject;
     private Subject subjectEdit;
+    private List<Subject> subjectSelectedCheckbox;
+
     @Inject
     private SettingHome settingHome;
     @Inject
@@ -83,6 +88,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Inject
     private PartitionManager partitionManager;
     IdentityManager identityManager = null;
+     @Inject
+    private SecurityGroupService securityGroupService;
     @Resource
     private UserTransaction userTransaction;
     @EJB
@@ -116,7 +123,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("admin-subject");
-
+        
+        this.subjectSelectedCheckbox = new ArrayList<>();
         setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la petición de creación
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
@@ -209,14 +217,14 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             addDefaultSuccessMessage();
         }
     }
-    
-    public void confirm(boolean force){
-        if (force){
+
+    public void confirm(boolean force) {
+        if (force) {
             getSubjectEdit().setConfirmed(false);
             subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
         }
-        
-        if (!getSubjectEdit().isConfirmed()){
+
+        if (!getSubjectEdit().isConfirmed()) {
             subjectHome.sendConfirmation(getSubjectEdit());
         } else {
             addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.subject.confirmed"));
@@ -304,6 +312,19 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return new Group("null", "null");
     }
 
+    public void rowSelectCheckbox(SelectEvent evt) {
+        Subject s = (Subject) evt.getSource();
+        this.subjectSelectedCheckbox.add(s);
+    }
+
+    public void asignarGruposUsuarios(Subject subject,List<Group> groups) {
+        try {
+
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(SubjectAdminHome.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
     public String getConfirmarClave() {
         return confirmarClave;
     }
@@ -328,4 +349,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         this.cambiarClave = cambiarClave;
     }
 
+    public List<Subject> getSubjectSelectedCheckbox() {
+        return subjectSelectedCheckbox;
+    }
+
+    public void setSubjectSelectedCheckbox(List<Subject> subjectSelectedCheckbox) {
+        this.subjectSelectedCheckbox = subjectSelectedCheckbox;
+    }
 }

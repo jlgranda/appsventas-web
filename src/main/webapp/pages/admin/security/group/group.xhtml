@@ -28,13 +28,13 @@
                             <p:toolbar>
                                 <f:facet name="left">
                                     <p:commandButton id="save" actionListener="#{securityGroupHome.saveGroup}" value="#{i18n['common.save']}" 
-                                                     ajax="false" type="submit" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"/>   
+                                                     ajax="false" action="#{securityGroupHome.getOutcome()}" type="submit" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"/>   
                                 </f:facet>
                                 
                                 <f:facet name="right">
 
                                     <p:commandButton ajax="false" action="#{securityGroupHome.getOutcome()}" disabled="false" immediate="true"
-                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                                                     title="#{i18n['Cancel']}" icon="fa fa-arrow-left Fs14 Black" styleClass="GrayButton" type="submit"/>
 
 <!--                                    <p:menuButton value="#{i18n['common.options']}">
                                         <p:menuitem value="Save" icon="fa fa-save" />
