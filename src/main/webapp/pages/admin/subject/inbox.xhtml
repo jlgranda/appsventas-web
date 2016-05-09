@@ -62,11 +62,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                           buttonStyleClass="ToolbarButton Fs14" 
                                           iconStyleClass="Gray"
                                           menuStyleClass="Gray">
-                                <p:menuitem value="#{i18n['subject.asignargrupos']}"  
+                                <p:menuitem value="#{i18n['subject.asignargrupos']}" actionListener="#{subjectAdminHome.mostrarAsignarGruposUsuarios()}"  
                                             icon="fa fa-group Fs14 Black">
-                                    <f:setPropertyActionListener target="#{subjectAdminHome.subjectSelectedCheckbox}" 
-
-                                                                 value="#{subjectAdminHome.subjectSelectedCheckbox}" />
+                                    
                                 </p:menuitem>
                             </p:menuButton>
                             <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"

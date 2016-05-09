@@ -20,7 +20,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.HeuristicMixedException;
@@ -30,7 +32,9 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jlgranda.fede.controller.FedeController;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.I18nUtil;
 import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
@@ -49,19 +53,26 @@ import org.primefaces.event.SelectEvent;
 @Named(value = "securityGroupUserHome")
 @ViewScoped
 public class SecurityGroupUserHome extends FedeController implements Serializable {
-
+    
     @Inject
     private PartitionManager partitionManager;
     IdentityManager identityManager = null;
     RelationshipManager relationshipManager = null;
     @Resource
     private UserTransaction userTransaction;
-
+    private List<BussinesEntity> selectedSubjects;
+    
     public SecurityGroupUserHome() {
     }
-
+    
+    @PostConstruct
+    public void init() {
+        selectedSubjects = (List<BussinesEntity>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(I18nUtil.getMessages("subject.selected"));
+//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(I18nUtil.getMessages("subject.selected"));
+    }
+    
     public void asignarGruposUsuarios(Subject subject, List<Group> groups) throws RollbackException {
-
+        
         identityManager = partitionManager.createIdentityManager();
         relationshipManager = partitionManager.createRelationshipManager();
         User user = BasicModel.getUser(identityManager, subject.getUsername());
@@ -76,20 +87,29 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
             }
         }
     }
-
+    
     @Override
     public void handleReturn(SelectEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public org.jpapi.model.Group getDefaultGroup() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public List<org.jpapi.model.Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public List<BussinesEntity> getSelectedSubjects() {
+        return selectedSubjects;
+    }
+
+    public void setSelectedSubjects(List<BussinesEntity> selectedSubjects) {
+        this.selectedSubjects = selectedSubjects;
+    }
+    
+ 
 }

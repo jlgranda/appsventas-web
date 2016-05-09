@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.HeuristicMixedException;
@@ -79,7 +80,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @LoggedIn
     private Subject subject;
     private Subject subjectEdit;
-    private List<Subject> subjectSelectedCheckbox;
 
     @Inject
     private SettingHome settingHome;
@@ -123,8 +123,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("admin-subject");
-
-        this.subjectSelectedCheckbox = new ArrayList<>();
         setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la petición de creación
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
@@ -312,9 +310,18 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return new Group("null", "null");
     }
 
-    public void rowSelectCheckbox(SelectEvent evt) {
-        Subject s = (Subject) evt.getSource();
-        this.subjectSelectedCheckbox.add(s);
+    public void mostrarAsignarGruposUsuarios() {
+        try {
+            List<Subject> subjects = new ArrayList<>();
+            getSelectedBussinesEntities().stream().map((entity) -> (Subject) entity).forEach((s) -> {
+                subjects.add(s);
+            });
+
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(I18nUtil.getMessages("subject.selected"), getSelectedBussinesEntities());
+            redirectTo("/pages/admin/subject/subjects_group.jsf");
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     public String getConfirmarClave() {
@@ -341,11 +348,4 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         this.cambiarClave = cambiarClave;
     }
 
-    public List<Subject> getSubjectSelectedCheckbox() {
-        return subjectSelectedCheckbox;
-    }
-
-    public void setSubjectSelectedCheckbox(List<Subject> subjectSelectedCheckbox) {
-        this.subjectSelectedCheckbox = subjectSelectedCheckbox;
-    }
 }
