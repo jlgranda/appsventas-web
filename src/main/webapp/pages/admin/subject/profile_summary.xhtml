@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
+        <ui:param name="sitename" value="#{i18n['Sitename']}" />
+        <ui:param name="title" value="#{i18n['fede']}" />
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="subjectId" value="#{subjectAdminHome.subjectId}" />       
+            </f:metadata>
+        </ui:define>
+        <ui:define name="subheader">
+            <p:menuButton value="#{subjectAdminHome.subjectEdit.fullName}" iconPos="right"
+                          styleClass="MarRight10"
+                          buttonStyleClass="ToolbarButton Fs18" 
+                          iconStyleClass="Gray"
+                          menuStyleClass="Gray">
+                <p:menuitem value="#{i18n['security.group']}" icon="fa fa-users" 
+                            url="/pages/admin/security/group/inbox.jsf"
+                            disabled="#{false}">
+                </p:menuitem>
+            </p:menuButton>
+        </ui:define>
+        <ui:define name="toolbar">
+            <!-- SUB TOPBAR START -->
+            <div class="Container100 Responsive100">
+                <div class="ShadowEffect">
+                    <p:toolbar id="toolbar">
+                        <f:facet name="left">
+                            <p:commandButton type="button" icon="fa fa-arrow-left" styleClass="ToolbarButton Fs14" 
+                                             onclick="triggerHiddenCommandLinkBack();
+                                                     return false;" />
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                            <p:commandButton type="button" value="#{i18n['common.edit']}" icon="fa fa-pencil" styleClass="ToolbarButton Fs14" 
+                                             onclick="triggerHiddenCommandLinkEdit();
+                                                     return false;" />
+                        </f:facet>
+                    </p:toolbar>
+
+                    <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
+                            outcome="/pages/admin/subject/inbox.jsf">
+                        <f:param name="faces-redirect" value="true" />
+                    </h:link>
+                    <h:link id="hiddenCommandLinkEdit" rendered="#{true}" style="display:none" 
+                             outcome="/pages/admin/subject/profile.jsf">
+                        <f:param name="subjectId" value="#{subjectAdminHome.subjectId}" />
+                        <f:param name="faces-redirect" value="true" />
+                    </h:link>
+                    <!--// Fin hidden buttons for trigger dialogReturn-->
+                </div>
+            </div>
+            <!-- SUB TOPBAR END -->
+        </ui:define>
+        <!--./toolbar-->
+        <ui:define name="sidebar">
+            <div class="Container100 Responsive100 TexAlCenter">
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/admin/subject/profile.jsf"/>
+            </div>
+            <div class="EmptyBox10"></div>
+            <div class="Container100 Responsive100">
+                <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
+                    <li class="" role="menuitem">
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/admin/subject/inbox.jsf" 
+                           class="menulink ripplelink #{subjectAdminHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
+                    </li>
+                    <ui:repeat var="tag" value="#{subjectAdminHome.groups}">
+                        <li class="" role="menuitem">
+                            <a href="#{facesContext.externalContext.requestContextPath}/pages/admin/subject/inbox.jsf?tags=#{tag.code}" 
+                               class="menulink ripplelink #{subjectAdminHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </div>
+        </ui:define>
+        <ui:define name="content">
+            <!-- /.row -->
+            <div class="Container100 Responsive100">
+                <div class="Card ShadowEffect">
+                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                                    value="#{subjectAdminHome.subjectEdit.code}" validator="ciValidator"
+                                    required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" execute="@this save" render="code"
+                                    mode="read"/>
+                    <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
+                                    value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" 
+                                    inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"
+                                    mode="read"/>
+                    <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
+                                    value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
+                                    inlinehelp="#{messages['lastname.inlinehelp']}" 
+                                    execute="@this save" render="lstn"
+                                    mode="read"/>
+                    <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
+                                    value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                    execute="@this save" render="bio" mode="read"/>
+                    <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
+                                    value="#{subjectAdminHome.subjectEdit.description}" required="false" 
+                                    inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"
+                                    mode="read"/>
+
+                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                                    value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                    required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
+                                    execute="@this save" render="email" mode="read"/>
+                </div>
+            </div>
+            <div class="Container100 Responsive100">
+                <div class="Card ShadowEffect">
+                    <p>TODO modificar para tabla de grupos</p>
+                    <div class="dataTable_wrapper">
+                        <p:dataTable var="_subject" 
+                                     value="#{subjectAdminHome.lazyDataModel}" 
+                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                     reflow="true" selection="#{subjectAdminHome.selectedBussinesEntities}" 
+                                     rowKey="#{_subject.id}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+
+                            <p:ajax event="rowSelect" listener="#{subjectAdminHome.onRowSelect}"/>
+                            <p:ajax event="rowSelectCheckbox" 
+                                    process="dataTable" update="dataTable"/>
+                            <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                            <p:column headerText="#{i18n['common.surname']}" sortBy="#{_subject.surname}">
+                                <h:outputText value="#{_subject.surname}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{_subject.firstname}">
+                                <h:outputText value="#{_subject.firstname}" />
+                            </p:column>
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{_subject.createdOn}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{_subject.createdOn}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="code"  headerText="#{i18n['subject.code']}" sortBy="#{_subject.code}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{_subject.code}"/>
+                            </p:column>
+                            <p:column  id="codeType"  headerText="#{i18n['common.email']}" sortBy="#{_subject.email}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{_subject.email}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <!--/.panel-body -->
+                </div>
+                <!--/.panel--> 
+            </div>
+            <!-- /.row -->
+
+        </ui:define>
+        <ui:define name="script">
+            <style>
+                /*Ocultar el paginador de primefaces */
+                .ui-paginator {
+                    display: none;
+                }
+
+            </style>
+            <script>
+
+                function triggerHiddenCommandLinkBack() {
+                    document.getElementById("form:hiddenCommandLinkBack").click();
+                }
+                function triggerHiddenCommandLinkEdit() {
+                    document.getElementById("form:hiddenCommandLinkEdit").click();
+                }
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
