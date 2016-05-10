@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Servicio de gestión de grupos de seguridades
+ *
  * @author jlgranda
  */
 public class SecurityGroupService implements Serializable {
@@ -45,7 +46,7 @@ public class SecurityGroupService implements Serializable {
     Logger logger = LoggerFactory.getLogger(SecurityGroupService.class);
     private static final long serialVersionUID = -8856264241192917839L;
     private EntityManager entityManager;
-    
+
     PartitionManager partitionManager;
     IdentityManager identityManager;
     RelationshipManager relationshipManager;
@@ -60,7 +61,7 @@ public class SecurityGroupService implements Serializable {
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
-    
+
     public PartitionManager getPartitionManager() {
         return partitionManager;
     }
@@ -94,8 +95,8 @@ public class SecurityGroupService implements Serializable {
     public Group findByName(final String name) {
         return BasicModel.getGroup(identityManager, name);
     }
-    
-    public Group findByKey(final String key){
+
+    public Group findByKey(final String key) {
         Map<String, Object> _filters = new HashMap<>();
         _filters.put(Group.ID.toString(), key);
         List<Group> result = find(1, 2, Group.ID.toString(), QuerySortOrder.DESC, _filters);
@@ -105,34 +106,35 @@ public class SecurityGroupService implements Serializable {
     public List<Group> find(int first, int end, String sortField, QuerySortOrder order, Map<String, Object> _filters) {
 
         IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
-        
-        IdentityQuery<Group> query  =  queryBuilder.createIdentityQuery(Group.class);
-        if (!_filters.isEmpty()){
+
+        IdentityQuery<Group> query = queryBuilder.createIdentityQuery(Group.class);
+        if (!_filters.isEmpty()) {
             Condition condition = null;
-            for (String key : _filters.keySet()){
-                if (Group.NAME.toString().equalsIgnoreCase(key)){
-                    condition = queryBuilder.like(Group.NAME, (String)_filters.get(key));
-                } else if (Group.ID.toString().equalsIgnoreCase(key)){
-                    condition = queryBuilder.equal(Group.ID, (String)_filters.get(key));
-                } else if (Group.PATH.toString().equalsIgnoreCase(key)){
-                    condition = queryBuilder.like(Group.PATH, (String)_filters.get(key));
-                } 
+            for (String key : _filters.keySet()) {
+                if (Group.NAME.toString().equalsIgnoreCase(key)) {
+                    condition = queryBuilder.like(Group.NAME, (String) _filters.get(key));
+                } else if (Group.ID.toString().equalsIgnoreCase(key)) {
+                    condition = queryBuilder.equal(Group.ID, (String) _filters.get(key));
+                } else if (Group.PATH.toString().equalsIgnoreCase(key)) {
+                    condition = queryBuilder.like(Group.PATH, (String) _filters.get(key));
+                }
             }
             query.where(condition);
         }
         List<Group> result = query.getResultList();
         return result.isEmpty() ? new ArrayList<Group>() : result;
     }
-    public void removeGroup(Group g) {    
+
+    public void removeGroup(Group g) {
         identityManager.remove(g);
     }
-    
+
     public void associate(Group g, User u) {
         Account a = identityManager.lookupById(Account.class, u.getId());
         BasicModel.addToGroup(relationshipManager, a, g);
     }
 
-    public void disassociate(Group g, User u){
+    public void disassociate(Group g, User u) {
         Account a = identityManager.lookupById(Account.class, u.getId());
         BasicModel.removeFromGroup(relationshipManager, a, g);
     }
@@ -143,14 +145,13 @@ public class SecurityGroupService implements Serializable {
                 .createIdentityQuery(User.class)
                 .where(queryBuilder.equal(User.LOGIN_NAME, usr))
                 .getResultList();
-       
+
         return result.isEmpty() ? null : result.get(0);
     }
 
 //    Collection<Group> find(User user) throws IdentityException {
 //        return relationshipManager.findAssociatedGroups(user);
 //    }
-
 //    boolean isAssociated(Group group, User user) throws IdentityException {
 //        return relationshipManager.isAssociated(group, user);
 //    }
@@ -160,10 +161,15 @@ public class SecurityGroupService implements Serializable {
 //        logger.info("Eqaula-->  valor de asociacion "+b);
 //        return b;
 //    }
-
     public List<Group> find(int pageSize, Integer firstResult) {
         IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
         List<Group> result = queryBuilder.createIdentityQuery(Group.class).setLimit(firstResult).setLimit(pageSize).getResultList();
+        return result.isEmpty() ? new ArrayList<>() : result;
+    }
+
+    public List<Group> find() {
+        IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
+        List<Group> result = queryBuilder.createIdentityQuery(Group.class).getResultList();
         return result.isEmpty() ? new ArrayList<>() : result;
     }
 }

@@ -188,6 +188,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
+                
                 //TODO leer desde configuración el url destino
                 //redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
                 redirectTo("/pages/admin/subject/profile_summary.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
@@ -311,6 +312,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
         return new Group("null", "null");
     }
+
+    
 
     public void mostrarAsignarGruposUsuarios() {
         try {

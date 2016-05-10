@@ -16,32 +16,35 @@
  */
 package org.jlgranda.fede.ui.converter;
 
-
-import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import org.jpapi.model.profile.Subject;
+import org.jlgranda.fede.controller.security.SecurityGroupService;
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.PartitionManager;
+import org.picketlink.idm.model.basic.Group;
 
 /**
  *
- * @author jlgranda
+ * @author Jorge
  */
 @RequestScoped
-@FacesConverter("org.jlgranda.fede.ui.converter.SubjectConverter")
-public class SubjectConverter implements Converter, Serializable {
+@FacesConverter("org.jlgranda.fede.ui.converter.GroupConverter")
+public class GroupConverter implements Converter, Serializable{
 
     private static final long serialVersionUID = -3057944404700510467L;
-    
-    @EJB
-    private SubjectService subjectService;
+    @Inject
+    private SecurityGroupService securityGroupService;
+    @Inject
+    private PartitionManager partitionManager;
+    IdentityManager identityManager = null;
 
     @PostConstruct
     public void setup() {
@@ -53,13 +56,14 @@ public class SubjectConverter implements Converter, Serializable {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-
-
-        if (value != null && !value.isEmpty() && subjectService != null) {
+        
+        if (value != null && !value.isEmpty() && securityGroupService!= null) {
             try {
-                return subjectService.find(getKey(value));
+                identityManager=partitionManager.createIdentityManager();
+                securityGroupService.setIdentityManager(identityManager);
+                return securityGroupService.findByName(value);
             } catch (NoResultException e) {
-                return new Subject();
+                return new Group();
             }
 
         }
@@ -80,6 +84,6 @@ public class SubjectConverter implements Converter, Serializable {
             return value.toString();
         } else {
             return null;
-        }        
+        }
     }
 }
