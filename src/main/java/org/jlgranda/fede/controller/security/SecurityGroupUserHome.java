@@ -20,8 +20,10 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -36,8 +38,11 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.ui.model.LazyGroupDataModel;
+import org.jlgranda.fede.ui.model.LazyUserMemberGroupDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.I18nUtil;
 import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
@@ -47,6 +52,7 @@ import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
 import org.picketlink.idm.model.basic.GroupMembership;
 import org.picketlink.idm.model.basic.User;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -77,6 +83,7 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     private Subject subject;
 
     private Long subjectId;
+    private LazyUserMemberGroupDataModel lazyDataModel;
 
     public SecurityGroupUserHome() {
     }
@@ -85,7 +92,9 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     public void init() {
         setSubject(subjectService.createInstance());
         identityManager = partitionManager.createIdentityManager();
+        relationshipManager = partitionManager.createRelationshipManager();
         securityGroupService.setIdentityManager(identityManager);
+        securityGroupService.setRelationshipManager(relationshipManager);
 
     }
 
@@ -93,18 +102,34 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
 
         identityManager = partitionManager.createIdentityManager();
         relationshipManager = partitionManager.createRelationshipManager();
-//        this.subject = (Subject) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("profileSummary");
         User user = BasicModel.getUser(identityManager, this.subject.getUsername());
 
         for (Group g : selectedGroups) {
             try {
-                this.userTransaction.begin();
-                relationshipManager.add(new GroupMembership(user, g));
-                this.userTransaction.commit();
+                if (!BasicModel.isMember(relationshipManager, user, g)) {
+                    this.userTransaction.begin();
+                    relationshipManager.add(new GroupMembership(user, g));
+                    this.userTransaction.commit();
+                    addSuccessMessage(I18nUtil.getMessages("user.member.group.add"), I18nUtil.getMessages("user.member.group.add"));
+                }
             } catch (IdentityManagementException | NotSupportedException | SystemException |
                     HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException | RollbackException e) {
                 java.util.logging.Logger.getLogger(SecurityGroupUserHome.class.getName()).log(Level.SEVERE, null, e);
             }
+        }
+    }
+
+    public void removerUserFromGroup(Group g) {
+        try {
+            identityManager = partitionManager.createIdentityManager();
+            relationshipManager = partitionManager.createRelationshipManager();
+            User user = BasicModel.getUser(identityManager, this.subject.getUsername());
+            this.userTransaction.begin();
+            BasicModel.removeFromGroup(relationshipManager, user, g);
+            this.userTransaction.commit();
+            addSuccessMessage(I18nUtil.getMessages("subject.removeGroup"), I18nUtil.getMessages("subject.removeGroup"));
+        } catch (IdentityManagementException | NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+            java.util.logging.Logger.getLogger(SecurityGroupUserHome.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -120,7 +145,7 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
 
     @Override
     public List<org.jpapi.model.Group> getGroups() {
-        if (groups.isEmpty()) {
+        if (groups.isEmpty() && subject.isPersistent()) {
             groups = groupService.findByOwnerAndModuleAndType(subject, "admin", org.jpapi.model.Group.Type.LABEL);
         }
 
@@ -153,12 +178,16 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
         return grupos;
     }
 
-    public boolean mostrarFormularioAsignarGruposUsuario() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("profileSummary", getSubject());
-        String width = settingHome.getValue(SettingNames.POPUP_SMALL_WIDTH, "400");
-        String height = settingHome.getValue(SettingNames.POPUP_SMALL_HEIGHT, "240");
-        super.openDialog(SettingNames.POPUP_SELECCIONAR_GRUPOS_USUARIO, width, height, true);
-        return true;
+    public void mostrarFormularioAsignarGruposUsuario() {
+        selectedGroups = new Group[0];
+        setSelectedGroups(selectedGroups);
+        RequestContext context = RequestContext.getCurrentInstance();
+        context.execute("PF('dlgSeleccionarGrupo').show();");
+//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("profileSummary", getSubject());
+//        String width = settingHome.getValue(SettingNames.POPUP_SMALL_WIDTH, "400");
+//        String height = settingHome.getValue(SettingNames.POPUP_SMALL_HEIGHT, "240");
+//        super.openDialog(SettingNames.POPUP_SELECCIONAR_GRUPOS_USUARIO, width, height, true);
+//        return true;
     }
 
     public void setGrupos(List<Group> grupos) {
@@ -184,4 +213,23 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
         this.subjectId = subjectId;
     }
 
+    public LazyUserMemberGroupDataModel getLazyDataModel() {
+
+        filter();
+
+        return lazyDataModel;
+    }
+
+    public void filter() {
+        if (lazyDataModel == null) {
+            User user = BasicModel.getUser(identityManager, getSubject().getUsername());
+            lazyDataModel = new LazyUserMemberGroupDataModel(securityGroupService, user);
+        }
+
+        lazyDataModel.setFilterValue(getKeyword());
+    }
+
+    public void setLazyDataModel(LazyUserMemberGroupDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
 }

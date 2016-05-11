@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </p:menuButton>
         </ui:define>
         <ui:define name="toolbar">
-            <!-- SUB TOPBAR START -->
+
             <div class="Container100 Responsive100">
                 <div class="ShadowEffect">
                     <p:toolbar id="toolbar">
@@ -68,15 +68,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             outcome="/pages/admin/subject/inbox.jsf">
                         <f:param name="faces-redirect" value="true" />
                     </h:link>
-                    <h:link id="hiddenCommandLinkEdit" rendered="#{true}" style="display:none" 
+                    <h:link id="hiddenCommandLinkEdit" rendered="#{true and securityGroupUserHome.subjectId!=null}" style="display:none" 
                             outcome="/pages/admin/subject/profile.jsf">
                         <f:param name="subjectId" value="#{securityGroupUserHome.subjectId}" />
                         <f:param name="faces-redirect" value="true" />
                     </h:link>
-                    <!--// Fin hidden buttons for trigger dialogReturn-->
+
                 </div>
             </div>
-            <!-- SUB TOPBAR END -->
+
         </ui:define>
         <!--./toolbar-->
         <ui:define name="sidebar">
@@ -98,7 +98,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </ui:repeat>
                 </ul>
             </div>
-        </ui:define>-->
+        </ui:define>
         <ui:define name="content">
             <!-- /.row -->
             <div class="Container100 Responsive100">
@@ -132,26 +132,64 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </div>
             <div class="Container100 Responsive100">
                 <div class="Card ShadowEffect">
-                    <p>TODO modificar para tabla de grupos</p>
-                    <p:commandButton onclick="PF('dlgSeleccionarGrupo').show()" disabled="false" immediate="true"
-                                     icon="fa fa-group Fs14 Black" styleClass="GrayButton" type="submit"/>
+                     <p:toolbar>
+                    <f:facet name="right">
+                        <p:commandButton actionListener="#{securityGroupUserHome.mostrarFormularioAsignarGruposUsuario()}"
+                                         update="@form:dlgSeleccionarGrupo"
+                                         disabled="false" immediate="true"
+                                         icon="fa fa-group Fs14 " styleClass="RedButton" type="submit"/>
+                    </f:facet>
+                     </p:toolbar>
+                    <p:dataTable var="group" 
+                                 value="#{securityGroupUserHome.lazyDataModel}" 
+                                 paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                 reflow="true" selection="#{securityGroupHome.selectedGroups}"
+                                 rowKey="#{group.id}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                 id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                        <!--<p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
+                        <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
+                        <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>-->
+                        <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                        <p:column headerText="#{i18n['security.group.name']}" sortBy="#{group.name}">
+                            <h:outputText value="#{group.name}" />
+                        </p:column>
+                        <p:column headerText="#{i18n['security.group.path']}" sortBy="#{group.path}">
+                            <h:outputText value="#{group.path}" />
+                        </p:column> 
+                        <p:column headerText="#{i18n['user.member.group.eliminar']}" >
+                            <p:commandButton  onclick="if (!confirm('#{i18n['subject.removeGroup.confirm']}'))
+                                        return false;" update="@form:dataTable" actionListener="#{securityGroupUserHome.removerUserFromGroup(group)}"  disabled="false" immediate="true"
+                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                        </p:column> 
+                    </p:dataTable>
                 </div>
             </div>
-            <p:dialog id="dlgSeleccionarGrupo"  widgetVar="dlgSeleccionarGrupo" 
+            <p:dialog id="dlgSeleccionarGrupo" width="400"  widgetVar="dlgSeleccionarGrupo" 
                       header="#{i18n['subject.asignargrupos']}" 
                       modal="true" draggable="true" position="center" closable="false" >
                 <div class="Container100">
                     <div class="ContainerIndent">
-                        <div class="Card ShadowEffect ui-fluid">
 
-                            <h:outputLabel for="menu" value="Location:" />
-                            <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.selectedGroups}"  label="Grupos"
-                                                  converter="org.jlgranda.fede.ui.converter.GroupConverter"   filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+ 
+                            <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.selectedGroups}"  label="#{i18n['user.member.group.selectCheckbox']}"
+                                                  converter="org.jlgranda.fede.ui.converter.GroupConverter"   filter="true" 
+                                                  filterMatchMode="startsWith" scrollHeight="100">
                                 <f:selectItems var="group" itemValue="#{group.name}" itemLabel="#{group.name}" value="#{securityGroupUserHome.grupos}" />
                             </p:selectCheckboxMenu>
+                        <div class="EmptyBox10"></div>
+                        <p:toolbar>
+                            <f:facet name="left">
                             <p:commandButton ajax="false" actionListener="#{securityGroupUserHome.asignarGruposUsuarios()}"  
-                                              icon="fa fa-group Fs14 Black" styleClass="GrayButton" />
-                        </div>
+                                             icon="fa fa-group Fs14 " styleClass="RedButton" />
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:commandButton ajax="false" onclick="PF('dlgSeleccionarGrupo').show()" 
+                                             icon="fa fa-arrow-left Fs14 Black" styleClass="GrayButton" />
+                            </f:facet>
+                        </p:toolbar>
+                       
                     </div>
                 </div>
             </p:dialog>

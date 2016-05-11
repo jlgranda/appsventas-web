@@ -29,10 +29,12 @@ import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
+import org.picketlink.idm.model.basic.GroupMembership;
 import org.picketlink.idm.model.basic.User;
 import org.picketlink.idm.query.Condition;
-import org.picketlink.idm.query.IdentityQueryBuilder;
 import org.picketlink.idm.query.IdentityQuery;
+import org.picketlink.idm.query.IdentityQueryBuilder;
+import org.picketlink.idm.query.RelationshipQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,5 +173,45 @@ public class SecurityGroupService implements Serializable {
         IdentityQueryBuilder queryBuilder = identityManager.getQueryBuilder();
         List<Group> result = queryBuilder.createIdentityQuery(Group.class).getResultList();
         return result.isEmpty() ? new ArrayList<>() : result;
+    }
+
+    /**
+     * *
+     * Listar Grupos de Usuario
+     *
+     * @param first
+     * @param end
+     * @param sortField
+     * @param order
+     * @param user
+     * @param _filters
+     * @return
+     */
+    public List<Group> find(int first, int end, String sortField, QuerySortOrder order, Map<String, Object> _filters, User user) {
+
+        RelationshipQuery<GroupMembership> query
+                = this.relationshipManager.createRelationshipQuery(GroupMembership.class);
+
+        query.setParameter(GroupMembership.MEMBER, user);
+
+        final List<Group> groups = new ArrayList<>();
+
+        query.getResultList().stream().forEach((membership) -> {
+            groups.add(membership.getGroup());
+        });
+
+        return groups;
+    }
+
+    public List<Group> find(int pageSize, Integer firstResult, User user) {
+        RelationshipQuery<GroupMembership> query = this.relationshipManager.createRelationshipQuery(GroupMembership.class);
+        query.setParameter(GroupMembership.MEMBER, user);
+        query.setLimit(firstResult).setLimit(pageSize);
+        final List<Group> groups = new ArrayList<>();
+        query.getResultList().stream().forEach((membership) -> {
+            groups.add(membership.getGroup());
+        });
+
+        return groups;
     }
 }
