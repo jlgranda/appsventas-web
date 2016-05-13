@@ -21,9 +21,11 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -36,6 +38,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import org.apache.commons.collections.ListUtils;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.ui.model.LazyGroupDataModel;
@@ -170,24 +173,27 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
 
     public List<Group> getGrupos() {
         try {
-            this.grupos = securityGroupService.find();
-        } catch (Exception e) {
+
+            List<Group> gruposAll = securityGroupService.find();
+            User user = BasicModel.getUser(identityManager, getSubject().getUsername());
+            List<Group> groupsUser = securityGroupService.find(user);
+            this.grupos = new ArrayList<>();
+            gruposAll.stream().filter((group) -> (!groupsUser.contains(group))).forEach((group) -> {
+                this.grupos.add(group);
+            });
+        } catch (IdentityManagementException e) {
             java.util.logging.Logger.getLogger(SecurityGroupUserHome.class.getName()).log(Level.SEVERE, null, e);
         }
 
         return grupos;
     }
 
-    public void mostrarFormularioAsignarGruposUsuario() {
-        selectedGroups = new Group[0];
-        setSelectedGroups(selectedGroups);
-        RequestContext context = RequestContext.getCurrentInstance();
-        context.execute("PF('dlgSeleccionarGrupo').show();");
-//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("profileSummary", getSubject());
-//        String width = settingHome.getValue(SettingNames.POPUP_SMALL_WIDTH, "400");
-//        String height = settingHome.getValue(SettingNames.POPUP_SMALL_HEIGHT, "240");
-//        super.openDialog(SettingNames.POPUP_SELECCIONAR_GRUPOS_USUARIO, width, height, true);
-//        return true;
+    public boolean mostrarFormularioAsignarGruposUsuario() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("profileSummary", getSubject());
+        String width = settingHome.getValue(SettingNames.POPUP_SMALL_WIDTH, "400");
+        String height = settingHome.getValue(SettingNames.POPUP_SMALL_HEIGHT, "240");
+        super.openDialog(SettingNames.POPUP_SELECCIONAR_GRUPOS_USUARIO, width, height, true);
+        return true;
     }
 
     public void setGrupos(List<Group> grupos) {
