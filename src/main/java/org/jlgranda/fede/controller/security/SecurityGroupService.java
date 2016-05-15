@@ -214,4 +214,14 @@ public class SecurityGroupService implements Serializable {
 
         return groups;
     }
+    public List<Group> find(User user) {
+        RelationshipQuery<GroupMembership> query = this.relationshipManager.createRelationshipQuery(GroupMembership.class);
+        query.setParameter(GroupMembership.MEMBER, user);
+        final List<Group> groups = new ArrayList<>();
+        query.getResultList().stream().forEach((membership) -> {
+            groups.add(membership.getGroup());
+        });
+
+        return groups;
+    }
 }
