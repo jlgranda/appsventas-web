@@ -70,7 +70,7 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
-    <!--Facebook signin-->
+    <!--Facebook signin
     <servlet>
         <servlet-name>fb-signin</servlet-name>
         <servlet-class>org.jlgranda.fede.servlet.facebook.signin.SignInServlet</servlet-class>
@@ -103,14 +103,15 @@
         <servlet-name>fb-post</servlet-name>
         <url-pattern>/fb-post</url-pattern>
     </servlet-mapping>
+    -->
     <welcome-file-list>
         <welcome-file>faces/index.xhtml</welcome-file>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-    <error-page>
+    <!--error-page>
         <exception-type>facebook4j.FacebookException</exception-type>
         <location>/error.jsf</location>
-    </error-page>
+    </error-page-->
     <error-page>
         <error-code>500</error-code>
         <location>/error.jsf</location>

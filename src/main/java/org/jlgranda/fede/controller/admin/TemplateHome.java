@@ -18,6 +18,8 @@ package org.jlgranda.fede.controller.admin;
 
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.mailing.MessageService;
+import com.jlgranda.fede.ejb.mailing.NotificationService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -32,6 +34,8 @@ import net.tecnopro.document.ejb.TemplateService;
 import net.tecnopro.document.model.Template;
 import net.tecnopro.helper.mail.MailingHelper;
 import net.tecnopro.helper.mail.VelocityHelper;
+import net.tecnopro.mailing.Message;
+import net.tecnopro.mailing.Notification;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
@@ -66,6 +70,12 @@ public class TemplateHome extends FedeController implements Serializable {
 
     @EJB
     private GroupService groupService;
+    
+    @EJB
+    private NotificationService notificationService;
+    
+    @EJB
+    private MessageService messageService;
 
     @EJB
     private TemplateService templateService;
@@ -205,7 +215,7 @@ public class TemplateHome extends FedeController implements Serializable {
     }
     
     ///////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////// MAIL UTILS ////////////////////////////
+    //////////////////////////////// MAILING subsytem /////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     /**
      * Envia un mensaje de correo para el <tt>Subject</tt> destinatario, usando
@@ -225,30 +235,35 @@ public class TemplateHome extends FedeController implements Serializable {
 
         if (template == null) {//Nada que hacer!
             valorRetorno = false;
-            logger.warn(I18nUtil.getMessages("app.mail.template.404"));
+            logger.warn(I18nUtil.getMessages("app.mail.template.404", templateId));
         } else {
 
-            String host = settingHome.getValue("mail.smtps.host", "jlgranda.com");
-            String port = settingHome.getValue("mail.smtps.port", "25");
             String _from = settingHome.getValue("mail.smtps.from", "AppsVentas <consiguemas@jlgranda.com>");
-            String username = settingHome.getValue("mail.smtps.username", "consiguemas@jlgranda.com");
-            String password = settingHome.getValue("mail.smtps.password", "LitePorePrudePursed13");
-            String smtpAuth = settingHome.getValue("mail.smtps.auth", "true");
-            String tlsEnable = settingHome.getValue("mail.smtps.tls", "true");
             String title;
-            String message;
-            Subject from = new Subject();
-            from.setFirstname(_from.substring(0,  _from.indexOf('<') - 1));
-            from.setEmail(_from.substring(_from.indexOf('<') + 1,  _from.indexOf('>')));
+            String body;
+            String txt;
             try {
                 title = VelocityHelper.getRendererMessage(template.getTitle(), values);
-                message = VelocityHelper.getRendererMessage(template.getBody(), values);
-                valorRetorno = MailingHelper.sendHtmlEmail(host, port, username, password, smtpAuth, 
-                        tlsEnable, subject, from, title, message, message, false);
+                body = VelocityHelper.getRendererMessage(template.getBody(), values);
+                txt = VelocityHelper.getRendererMessage(template.getBody(), values);
+                Notification notification = notificationService.createInstance();
+                Message message = messageService.createInstance();
+                message.setSubject(title);
+                message.setHtml(body);
+                message.setText(txt);
+                messageService.save(message);
+                
+                notification.setFfrom(_from);
+                notification.setTto(subject.getEmailAddress());
+                notification.setMessageId(message.getId());
+                
+                notificationService.save(notification);
+                
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
             }
         }
         return valorRetorno;
     }
+
 }
