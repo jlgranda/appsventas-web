@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="Card ShadowEffect ui-fluid">
                         <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                         <h:outputLabel for="menu" value="Location:" />
-                        <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.selectedGroups}"  label="Grupos"
+                        <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.gruposSeleccionados}"  label="Grupos"
                                               filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                             <f:selectItems var="group" itemLabel="#{group.name}" value="#{securityGroupUserHome.grupos}" />
                         </p:selectCheckboxMenu>
