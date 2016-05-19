@@ -20,14 +20,12 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -46,7 +44,6 @@ import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.GroupHome;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.SubjectHome;
-import org.jlgranda.fede.controller.security.SecurityGroupService;
 import org.jlgranda.fede.ui.model.LazySubjectDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -72,6 +69,8 @@ import org.slf4j.LoggerFactory;
 @Named(value = "subjectAdminHome")
 @ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
+
+    private static final long serialVersionUID = 2914718473249636007L;
 
     Logger logger = LoggerFactory.getLogger(SubjectAdminHome.class);
 
