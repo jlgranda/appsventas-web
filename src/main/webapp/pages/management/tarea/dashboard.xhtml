@@ -150,7 +150,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaEnviada.createdOn}</span>
                                                 </div>
                                                 <div class="Container40">
-                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/tarea/tarea.jsf" style="width:75%"/>
+                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
                                                     <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" 
                                                               outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaEnviada.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaEnviada.persistent}"/>

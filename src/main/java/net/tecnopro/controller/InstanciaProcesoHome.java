@@ -136,7 +136,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("procesos");
 
-        setInstanciaProceso( instanciaProcesoService.createInstance());
+        setInstanciaProceso(instanciaProcesoService.createInstance());
         setTarea(tareaService.createInstance()); //Siempre listo para recibir la respuesta del proceso
         setDocumento(documentoService.createInstance());
         //TODO Establecer temporalmente la organización por defecto
@@ -152,7 +152,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     }
 
     public InstanciaProceso getInstanciaProceso() {
-        if (this.instanciaProcesoId != null && this.instanciaProceso == null) {
+        if (this.instanciaProcesoId != null && !this.instanciaProceso.isPersistent()) {
             this.instanciaProceso = instanciaProcesoService.find(instanciaProcesoId);
         }
         return instanciaProceso;
@@ -221,9 +221,15 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
                 //Crear dos tareas iniciales para el nuevo proceso
                 //1. Tarea recepción documentos, se realiza al momento de crear el proceso
-                Tarea recepcionDocumentos = buildTarea(settingHome.getValue("fede.documents.task.first.name", "Recepción de documentos"), "", subject, subject, EstadoTipo.RESUELTO);
-                tareaService.save(recepcionDocumentos.getId(), recepcionDocumentos);
+                Tarea recepcionDocumentos = buildTarea(settingHome.getValue("fede.documents.task.first.name", "Recepción de documentos"), 
+                        settingHome.getValue("fede.documents.task.first.name", "Se reciben los docuementos"), subject, subject, EstadoTipo.RESUELTO);
+                getTarea().getDocumentos().stream().forEach((doc) -> {
+                    recepcionDocumentos.addDocumento(doc);
+                });
                 procesarDocumentos(recepcionDocumentos);
+                tareaService.save(recepcionDocumentos.getId(), recepcionDocumentos);
+                
+                
                 
                 //2. Siguiente tarea
                 Tarea _tarea = buildTarea(getTarea().getName(), tarea.getDescription(), subject, getDestinatario(), EstadoTipo.ESPERA);
@@ -399,9 +405,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
                 activeIndex = "";
             } else {
                 List<Integer> indexs = new ArrayList<>();
-                for (int i = 0; i < getInstanciaProceso().getTareas().size(); i++) {
-                    if (EstadoTipo.ESPERA.equals(getInstanciaProceso().getTareas().get(i).getEstadoTipo())) {
-                        indexs.add(i);
+                int i = 0;
+                for (Tarea t : getInstanciaProceso().getTareas()) {
+                    if (EstadoTipo.ESPERA.equals(t.getEstadoTipo())) {
+                        indexs.add(i++);
                     }
                 }
                 activeIndex = Lists.toString(indexs).trim();

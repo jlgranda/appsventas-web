@@ -35,6 +35,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jlgranda.fede.database.SetupService;
+import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.picketlink.idm.IdentityManagementException;
@@ -142,14 +143,17 @@ public class SetupController implements Serializable {
                 grantRole(relationshipManager, user, superuser);
                 log.info("Se agregó el usuario " + user);
                 
-                //Establecer el uuid del usuario admin
-                Subject subject = subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", user.getLoginName());
-                subject.setUuid(user.getId());
-                subjectService.save(subject.getId(), subject);
-                log.info("Se enlazó el usuario admin appsventas, con el sistema de autenticación picketlink " + user);
-                
                 this.userTransaction.commit();
                 
+                //Establecer el uuid del usuario admin
+                Subject subject = subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", user.getLoginName());
+                if (subject == null){
+                    subject = createAdministrator();
+                }
+                
+                subject.setUuid(user.getId());
+                subjectService.save(subject.getId(), subject);
+                log.info("Se enlazó el usuario admin appsventas {} - {}, con el sistema de autenticación picketlink {}", subject.getId(), subject.getUsername(), user.getId());
                 
                 
             } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
@@ -160,6 +164,20 @@ public class SetupController implements Serializable {
                 throw new RuntimeException("Could not create default security entities.", e);
             }
         }
+    }
+    
+    private Subject createAdministrator() {
+        Subject singleResult = new Subject();
+        singleResult.setEmail("admin@fede.com");
+        singleResult.setUsername("admin");
+        singleResult.setPassword((new org.apache.commons.codec.digest.Crypt().crypt("fede")));
+        singleResult.setUsernameConfirmed(true);
+        singleResult.setCreatedOn(Dates.now());
+        singleResult.setLastUpdate(Dates.now());
+        singleResult.setCodeType(CodeType.NONE);
+        singleResult.setSubjectType(Subject.Type.SYSTEM);
+
+        return singleResult;
     }
 }
 
