@@ -19,6 +19,7 @@ package net.tecnopro.controller;
 import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.SerialService;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,6 +47,7 @@ import net.tecnopro.document.ejb.TareaService;
 import net.tecnopro.document.model.Documento;
 import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.InstanciaProceso;
+import net.tecnopro.document.model.ProcesoTipo;
 import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
@@ -134,6 +136,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setOutcome("procesos");
 
+        setInstanciaProceso( instanciaProcesoService.createInstance());
         setTarea(tareaService.createInstance()); //Siempre listo para recibir la respuesta del proceso
         setDocumento(documentoService.createInstance());
         //TODO Establecer temporalmente la organización por defecto
@@ -198,6 +201,60 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         this.destinatario = destinatario;
     }
 
+    /**
+     * Persistencia de la instancia de proceso
+     */
+    public void save() {
+        if (getDestinatario() == null || getSolicitante() == null){
+            addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("error.task.persons"));
+            return;
+        }
+        try {
+            if (!tarea.isPersistent()) {//Comando nulo, es tarea nueva
+                //Crear proceso y asignar a tarea
+                this.instanciaProceso.setCode(SerialService.getGenerator().next()); //Crear un generador de Process ID
+                this.instanciaProceso.setAuthor(subject);
+                this.instanciaProceso.setProcesoTipo(ProcesoTipo.NEGOCIO);
+                this.instanciaProceso.setOwner(getSolicitante()); //El solicitante del proceso o tramite
+
+                instanciaProcesoService.save(this.instanciaProceso.getId(), this.instanciaProceso);
+
+                //Crear dos tareas iniciales para el nuevo proceso
+                //1. Tarea recepción documentos, se realiza al momento de crear el proceso
+                Tarea recepcionDocumentos = buildTarea(settingHome.getValue("fede.documents.task.first.name", "Recepción de documentos"), "", subject, subject, EstadoTipo.RESUELTO);
+                tareaService.save(recepcionDocumentos.getId(), recepcionDocumentos);
+                procesarDocumentos(recepcionDocumentos);
+                
+                //2. Siguiente tarea
+                Tarea _tarea = buildTarea(getTarea().getName(), tarea.getDescription(), subject, getDestinatario(), EstadoTipo.ESPERA);
+                tareaService.save(_tarea.getId(), _tarea);
+                
+                //Enviar notificación de inicio de proceso
+                tareaHome.sendNotification(this.instanciaProceso, "app.mail.template.process.start", false);
+                //Enviar notificación de tarea por realizar
+                tareaHome.sendNotification(_tarea, "app.mail.template.task.assign", false);
+            } else {
+                
+                //Actualizar destinatario si hay cambios.
+                //TODO  notificar al destinatario anterior y nuevo
+                Subject temp = null;
+                if (!getTarea().getOwner().equals(getDestinatario())){
+                    temp = getTarea().getOwner();
+                    getTarea().setOwner(getDestinatario());
+                }
+                tareaService.save(getTarea().getId(), getTarea());
+                procesarDocumentos(getTarea());
+                eliminarDocumentos();
+                
+                //Enviar notificación de modificación de tarea
+                tareaHome.sendNotification(getTarea(), "app.mail.template.task.assign", false);
+            }
+            this.addDefaultSuccessMessage();
+        } catch (Exception e) {
+            addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
+        }
+    }
+    
     public void send(Tarea todo) {
         try {
             //1. Obtener tarea pendiente, para actualizar descripción y estado
@@ -473,7 +530,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/management/tarea/instancia_proceso.jsf?instanciaProcesoId=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);

@@ -8,7 +8,7 @@ package net.tecnopro.controller;
 import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
-import com.jlgranda.fede.ejb.OrganizationService;
+import com.jlgranda.fede.ejb.SerialService;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,7 +57,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
-import org.jlgranda.fede.controller.SubjectHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.util.Dates;
 import org.primefaces.model.UploadedFile;
@@ -89,12 +88,6 @@ public class TareaHome extends FedeController implements Serializable {
     @Inject
     private SettingHome settingHome;
     
-    @Inject
-    private SubjectHome subjectHome;
-
-    @EJB
-    private OrganizationService organizationService;
-
     @EJB
     private InstanciaProcesoService procesoService;
 
@@ -108,6 +101,9 @@ public class TareaHome extends FedeController implements Serializable {
     private List<Tarea> misUltimasTareasEnviadas = new ArrayList<>();
     private List<Tarea> misUltimasTareasRecibidas = new ArrayList<>();
     private List<Documento> documentosRemovidos = new ArrayList<>();
+    /**
+     * Entidad para edición
+     */
     private Tarea tarea;
     private InstanciaProceso proceso;
     private Tarea siguienteTarea;
@@ -250,9 +246,7 @@ public class TareaHome extends FedeController implements Serializable {
             if (!tarea.isPersistent()) {//Comando nulo, es tarea nueva
                 //Crear proceso y asignar a tarea
                 this.proceso = procesoService.createInstance();
-                this.proceso.setCode(java.util.UUID.randomUUID().toString()); //Crear un generador de Process ID
-                this.proceso.setName(getTarea().getName());
-                this.proceso.setDescription(getTarea().getDescription());
+                this.proceso.setCode(SerialService.getGenerator().next()); //Crear un generador de Process ID
                 this.proceso.setAuthor(subject);
                 this.proceso.setProcesoTipo(ProcesoTipo.NEGOCIO);
                 this.proceso.setOwner(getSolicitante()); //El solicitante del proceso o tramite
@@ -261,7 +255,7 @@ public class TareaHome extends FedeController implements Serializable {
 
                 //Crear dos tareas iniciales para el nuevo proceso
                 //1. Tarea recepción documentos, se realiza al momento de crear el proceso
-                prepareTarea(getTarea(), settingHome.getValue("fede.documents.task.first.name", "Recibir documentación inicial"), getTarea().getDescription(), subject, subject, EstadoTipo.RESUELTO);
+                prepareTarea(getTarea(), settingHome.getValue("fede.documents.task.first.name", "Recepción de documentos"), getTarea().getDescription(), subject, subject, EstadoTipo.RESUELTO);
                 tareaService.save(getTarea().getId(), getTarea());
                 procesarDocumentos(getTarea());
                 
@@ -295,11 +289,16 @@ public class TareaHome extends FedeController implements Serializable {
         }
     }
     
-    private Tarea prepareTarea(Tarea _tarea, String name, String description, Subject author, Subject owner, EstadoTipo estado) {
+    
+    public Tarea prepareTarea(Tarea _tarea, String name, String description, Subject author, Subject owner, EstadoTipo estado) {
+        return prepareTarea(this.proceso, _tarea, name, description, author, owner, estado);
+    }
+    
+    public Tarea prepareTarea(InstanciaProceso instanciaProceso, Tarea _tarea, String name, String description, Subject author, Subject owner, EstadoTipo estado) {
         //2. Siguiente tarea
         _tarea.setName(name);
         _tarea.setDescription(description);
-        _tarea.setInstanciaProceso(this.proceso);
+        _tarea.setInstanciaProceso(instanciaProceso);
         //Es temporral hasta que se pueda seleccionar una organización
         _tarea.setDepartamento("temporal");
         _tarea.setAuthor(author); //usuario logeado

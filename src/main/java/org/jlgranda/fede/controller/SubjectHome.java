@@ -25,10 +25,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.NoResultException;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -44,13 +42,11 @@ import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
-import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.basic.BasicModel;
 import static org.picketlink.idm.model.basic.BasicModel.addToGroup;
 import static org.picketlink.idm.model.basic.BasicModel.grantGroupRole;
@@ -197,6 +193,7 @@ public class SubjectHome extends FedeController implements Serializable {
                 _signup.setSubjectType(Subject.Type.NATURAL);
                 _signup.setOwner(owner);
                 _signup.setConfirmed(false);
+                _signup.setActive(false);
                 
                 subjectService.save(_signup);
 

@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 public class LazySubjectDataModel extends LazyDataModel<Subject> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
+    private static final long serialVersionUID = -7690992762128327866L;
     Logger logger = LoggerFactory.getLogger(LazySubjectDataModel.class);
     private SubjectService service;
     private List<Subject> resultList;

@@ -29,9 +29,9 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jorge
  */
-@Named(value = "subjectAdminHome")
+@ManagedBean
 @ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
 
@@ -75,9 +75,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     Logger logger = LoggerFactory.getLogger(SubjectAdminHome.class);
 
     private Long subjectId;
+    
     @Inject
     @LoggedIn
     private Subject subject;
+    
     private Subject subjectEdit;
 
     @Inject
@@ -181,6 +183,14 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public void setSubjectId(Long subjectId) {
         this.subjectId = subjectId;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 
     public void onRowSelect(SelectEvent event) {

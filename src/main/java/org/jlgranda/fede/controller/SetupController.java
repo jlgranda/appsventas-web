@@ -17,6 +17,7 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -34,6 +35,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jlgranda.fede.database.SetupService;
+import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
@@ -65,6 +67,9 @@ public class SetupController implements Serializable {
 
     @EJB
     private SetupService service;
+    
+    @EJB
+    private SubjectService subjectService;
 
     @Inject
     private PartitionManager partitionManager;
@@ -135,8 +140,18 @@ public class SetupController implements Serializable {
                 grantGroupRole(relationshipManager, user, superuser, group);
                 // Grant the "superuser" application role to jane
                 grantRole(relationshipManager, user, superuser);
-                log.info("Se ageró el usuario " + user);
+                log.info("Se agregó el usuario " + user);
+                
+                //Establecer el uuid del usuario admin
+                Subject subject = subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", user.getLoginName());
+                subject.setUuid(user.getId());
+                subjectService.save(subject.getId(), subject);
+                log.info("Se enlazó el usuario admin appsventas, con el sistema de autenticación picketlink " + user);
+                
                 this.userTransaction.commit();
+                
+                
+                
             } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
                 try {
                     this.userTransaction.rollback();

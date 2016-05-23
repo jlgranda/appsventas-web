@@ -9,13 +9,14 @@ import com.jlgranda.fede.ejb.SubjectService;
 import javax.ejb.EJB;
 import org.picketlink.annotations.PicketLink;
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import org.jlgranda.fede.cdi.LoggedIn;
 import org.jpapi.model.profile.Subject;
 import org.picketlink.Identity;
+import org.picketlink.config.http.annotations.Logout;
 import org.picketlink.idm.model.Account;
 
 /**
