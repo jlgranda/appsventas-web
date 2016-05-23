@@ -136,69 +136,114 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Container100">
                         <div class="Container90 TexAlLeft">
                             <span class="Fs20 BoldGray">#{i18n['panel.Group']}</span>
+            <h:form id="form"  >
+                <div class="Container100 Responsive100">
+                    <div class="Card ShadowEffect">
+                        <div class="Container50 Responsive100">
+                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                                            value="#{securityGroupUserHome.subject.code}" validator="ciValidator"
+                                            required="#{!securityGroupUserHome.subject.persistent}" placeholder="true" execute="@this save" render="code"
+                                            mode="read"/>
+                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
+                                            value="#{securityGroupUserHome.subject.firstname}" required="#{!securityGroupUserHome.subject.persistent}" 
+                                            inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"
+                                            mode="read"/>
+                            <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
+                                            value="#{securityGroupUserHome.subject.surname}" required="#{!securityGroupUserHome.subject.persistent}"
+                                            inlinehelp="#{messages['lastname.inlinehelp']}" 
+                                            execute="@this save" render="lstn"
+                                            mode="read"/>
+                            <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
+                                            value="#{securityGroupUserHome.subject.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                            execute="@this save" render="bio" mode="read"/>
                         </div>
-                        <div class="Container10 TexAlRight">
-                            <p:commandButton onclick="PF('dlgSeleccionarGrupo').show();"
-                                             disabled="false" immediate="true"
-                                             icon="fa fa-plus Fs14" styleClass="RedButton" type="submit"/>
+                        <div class="Container50 Responsive100">
+                            <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
+                                            value="#{securityGroupUserHome.subject.description}" required="false" 
+                                            inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"
+                                            mode="read"/>
+
+                            <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                                            value="#{securityGroupUserHome.subject.email}" validator="emailValidator"
+                                            required="#{!securityGroupUserHome.subject.persistent}" placeholder="true" 
+                                            execute="@this save" render="email" mode="read"/>
                         </div>
+                        <div class="Separator"></div>
+                        <div class="Container100">
+                            <div class="Container90 TexAlLeft">
+                                <span class="Fs20 BoldGray">Grupos</span>
+                            </div>
+                            <div class="Container10 TexAlRight">
+                                <p:commandButton onclick="PF('dlgSeleccionarGrupo').show();"
+                                                 disabled="false" immediate="true"
+                                                 icon="fa fa-plus Fs14" styleClass="RedButton" type="submit"/>
+                            </div>
+                        </div>
+                        <div class="EmptyBox5"></div>
+                        <p:dataTable var="group" 
+                                     value="#{securityGroupUserHome.lazyDataModel}" 
+                                     paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                     reflow="true" selection="#{securityGroupHome.selectedGroups}"
+                                     rowKey="#{group.id}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+
+                            <!--<p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
+                            <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
+                            <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>-->
+                            <!--<p:column selectionMode="multiple" style="width:32px;text-align:center"/>-->
+                            <p:column headerText="#{i18n['security.group.name']}" sortBy="#{group.name}">
+                                <h:outputText value="#{group.name}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['security.group.path']}" sortBy="#{group.path}">
+                                <h:outputText value="#{group.path}" />
+                            </p:column> 
+                            <p:column headerText="#{i18n['user.member.group.eliminar']}" >
+                                <p:commandButton  onclick="if (!confirm('#{i18n['subject.removeGroup.confirm']}'))
+                                            return false;" update="@form:dataTable" actionListener="#{securityGroupUserHome.removerUserFromGroup(group)}"  disabled="false" immediate="true"
+                                                  icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                            </p:column> 
+                        </p:dataTable>
                     </div>
-                    <div class="EmptyBox5"></div>
-                    <p:dataTable var="group" 
-                                 value="#{securityGroupUserHome.lazyDataModel}" 
-                                 paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                 reflow="true" selection="#{securityGroupHome.selectedGroups}"
-                                 rowKey="#{group.id}" 
-                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                 id="dataTable" widgetVar="dataTable_wv" lazy="true">
-
-                        <!--<p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
-                        <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
-                        <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>-->
-                        <!--<p:column selectionMode="multiple" style="width:32px;text-align:center"/>-->
-                        <p:column headerText="#{i18n['security.group.name']}" sortBy="#{group.name}">
-                            <h:outputText value="#{group.name}" />
-                        </p:column>
-                        <p:column headerText="#{i18n['security.group.path']}" sortBy="#{group.path}">
-                            <h:outputText value="#{group.path}" />
-                        </p:column> 
-                        <p:column headerText="#{i18n['user.member.group.eliminar']}" >
-                            <p:commandButton  onclick="if (!confirm('#{i18n['subject.removeGroup.confirm']}'))
-                                        return false;" update="@form:dataTable" actionListener="#{securityGroupUserHome.removerUserFromGroup(group)}"  disabled="false" immediate="true"
-                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
-                        </p:column> 
-                    </p:dataTable>
                 </div>
-            </div>
-            <p:dialog id="dlgSeleccionarGrupo" width="400"  widgetVar="dlgSeleccionarGrupo" 
-                      header="#{i18n['subject.asignargrupos']}" 
-                      modal="true" draggable="true" position="center" closable="false" >
-                <div class="Container100">
-                    <div class="ContainerIndent">
-
-
-                        <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.selectedGroups}"  label="#{i18n['user.member.group.selectCheckbox']}"
+                <p:dialog id="dlgSeleccionarGrupo" width="400"  widgetVar="dlgSeleccionarGrupo" 
+                          header="#{i18n['subject.asignargrupos']}" 
+                          modal="true" draggable="true" position="center" closable="false" >
+                    <div class="Container100">
+                        <div class="ContainerIndent">
+                            <!--<p:autoComplete multiple="true" value="#{securityGroupUserHome.gruposSeleccionados}" 
+                                            completeMethod="#{securityGroupUserHome.completeGroup}"
+                                            var="grupo" itemLabel="#{grupo.name}" itemValue="#{grupo}" 
+                                            converter="org.jlgranda.fede.ui.converter.GroupConverter" forceSelection="true">
+                                
+                                <p:column style="width:10%">
+                                    <h:outputText value="#{grupo.name}" />
+                                </p:column>
+                            </p:autoComplete>-->
+                            <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.gruposSeleccionados}"  label="#{i18n['user.member.group.selectCheckbox']}"
                                               converter="org.jlgranda.fede.ui.converter.GroupConverter"   filter="true" 
                                               filterMatchMode="startsWith" scrollHeight="100">
                             <f:selectItems var="group" itemValue="#{group.name}" itemLabel="#{group.name}" value="#{securityGroupUserHome.grupos}" />
                         </p:selectCheckboxMenu>
-                        <div class="EmptyBox10"></div>
-                        <p:toolbar>
-                            <f:facet name="left">
-                                <p:commandButton ajax="false" actionListener="#{securityGroupUserHome.asignarGruposUsuarios()}"  
-                                                 icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" styleClass="BlueButton" />
-                            </f:facet>
-                            <f:facet name="right">
-                                <p:commandButton ajax="false" onclick="PF('dlgSeleccionarGrupo').show()" 
-                                                 value="#{i18n['Cancel']}"
-                                                 icon="fa fa-arrow-left Fs14 Black" styleClass="RedButton" />
-                            </f:facet>
-                        </p:toolbar>
 
+                            <div class="EmptyBox10"></div>
+                            <p:toolbar>
+                                <f:facet name="left">
+                                    <p:commandButton  actionListener="#{securityGroupUserHome.asignarGruposUsuarios()}"  
+                                                      icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" styleClass="BlueButton" />
+                                </f:facet>
+                                <f:facet name="right">
+                                    <p:commandButton onclick="PF('dlgSeleccionarGrupo').hide()" 
+                                                     value="#{i18n['Cancel']}" type="submit"
+                                                     icon="fa fa-arrow-left Fs14 Black" styleClass="RedButton" />
+                                </f:facet>
+                            </p:toolbar>
+
+                        </div>
                     </div>
-                </div>
-            </p:dialog>
+                </p:dialog>
+            </h:form>
         </ui:define>
         <ui:define name="script">
             <style>
@@ -206,7 +251,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 .ui-paginator {
                     display: none;
                 }
-                
+
                 .ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
                     text-align: justify;
                     padding: 8px 10px !important;
