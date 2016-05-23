@@ -21,11 +21,8 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SubjectService;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -41,7 +38,6 @@ import javax.transaction.UserTransaction;
 import org.apache.commons.collections.ListUtils;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
-import org.jlgranda.fede.ui.model.LazyGroupDataModel;
 import org.jlgranda.fede.ui.model.LazyUserMemberGroupDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.profile.Subject;
@@ -55,7 +51,6 @@ import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
 import org.picketlink.idm.model.basic.GroupMembership;
 import org.picketlink.idm.model.basic.User;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -81,7 +76,7 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     @EJB
     private GroupService groupService;
     private List<BussinesEntity> selectedSubjects;
-    private Group[] selectedGroups;
+    private Group[] gruposSeleccionados;
     private List<Group> grupos;
     private Subject subject;
 
@@ -102,12 +97,8 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     }
 
     public void asignarGruposUsuarios() {
-
-        identityManager = partitionManager.createIdentityManager();
-        relationshipManager = partitionManager.createRelationshipManager();
         User user = BasicModel.getUser(identityManager, this.subject.getUsername());
-
-        for (Group g : selectedGroups) {
+        for (Group g : gruposSeleccionados) {
             try {
                 if (!BasicModel.isMember(relationshipManager, user, g)) {
                     this.userTransaction.begin();
@@ -163,30 +154,40 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
         this.selectedSubjects = selectedSubjects;
     }
 
-    public Group[] getSelectedGroups() {
-        return selectedGroups;
-    }
-
-    public void setSelectedGroups(Group[] selectedGroups) {
-        this.selectedGroups = selectedGroups;
-    }
-
-    public List<Group> getGrupos() {
-        try {
-
-            List<Group> gruposAll = securityGroupService.find();
-            User user = BasicModel.getUser(identityManager, getSubject().getUsername());
-            List<Group> groupsUser = securityGroupService.find(user);
-            this.grupos = new ArrayList<>();
-            gruposAll.stream().filter((group) -> (!groupsUser.contains(group))).forEach((group) -> {
-                this.grupos.add(group);
-            });
-        } catch (IdentityManagementException e) {
-            java.util.logging.Logger.getLogger(SecurityGroupUserHome.class.getName()).log(Level.SEVERE, null, e);
+    public Group[] getGruposSeleccionados() {
+        List<Group> gruposAll = securityGroupService.find();
+        User user = BasicModel.getUser(identityManager, getSubject().getUsername());
+        List<Group> groupsUser = securityGroupService.find(user);
+        List<Group> result=ListUtils.intersection(groupsUser, gruposAll);
+        this.gruposSeleccionados=new Group[result.size()];
+        for (int i = 0; i < this.gruposSeleccionados.length; i++){
+            gruposSeleccionados[i]=result.get(i);
         }
-
-        return grupos;
+//        this.gruposSeleccionados.addAll(ListUtils.intersection(groupsUser, gruposAll));
+        return gruposSeleccionados;
     }
+
+    public void setGruposSeleccionados(Group[] gruposSeleccionados) {
+        this.gruposSeleccionados = gruposSeleccionados;
+    }
+
+//    public List<Group> completeGroup(String query) {
+//        List<Group> gruposAll = securityGroupService.find();
+//        User user = BasicModel.getUser(identityManager, getSubject().getUsername());
+//        List<Group> groupsUser = securityGroupService.find(user);
+//        List<Group> grupos = new ArrayList<>();
+//
+//        gruposAll.stream().filter((group) -> (!groupsUser.contains(group))).forEach((group) -> {
+//            grupos.add(group);
+//        });
+//
+//        List<Group> filteredGroup = new ArrayList<>();
+//        grupos.stream().filter((g) -> (g.getName().toLowerCase().startsWith(query))).forEach((g) -> {
+//            filteredGroup.add(g);
+//        });
+//
+//        return filteredGroup;
+//    }
 
     public boolean mostrarFormularioAsignarGruposUsuario() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("profileSummary", getSubject());
@@ -194,10 +195,6 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
         String height = settingHome.getValue(SettingNames.POPUP_SMALL_HEIGHT, "240");
         super.openDialog(SettingNames.POPUP_SELECCIONAR_GRUPOS_USUARIO, width, height, true);
         return true;
-    }
-
-    public void setGrupos(List<Group> grupos) {
-        this.grupos = grupos;
     }
 
     public Subject getSubject() {
@@ -238,4 +235,22 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     public void setLazyDataModel(LazyUserMemberGroupDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
+
+    public List<Group> getGrupos() {
+//        List<Group> gruposAll = securityGroupService.find();
+//        User user = BasicModel.getUser(identityManager, getSubject().getUsername());
+//        List<Group> groupsUser = securityGroupService.find(user);
+//        this.grupos = new ArrayList<>();
+//
+//        gruposAll.stream().filter((group) -> (!groupsUser.contains(group))).forEach((group) -> {
+//            grupos.add(group);
+//        });
+        this.grupos=securityGroupService.find();
+        return grupos;
+    }
+
+    public void setGrupos(List<Group> grupos) {
+        this.grupos = grupos;
+    }
+
 }
