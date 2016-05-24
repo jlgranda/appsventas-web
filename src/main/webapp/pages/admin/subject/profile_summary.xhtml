@@ -196,7 +196,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:toolbar>
                                 <f:facet name="left">
                                     <p:commandButton  actionListener="#{securityGroupUserHome.asignarGruposUsuarios()}"  
-                                                      icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" styleClass="BlueButton" />
+                                                      ajax="false" icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" onclick="PF('dlgSeleccionarGrupo').hide()"  styleClass="BlueButton" />
                                 </f:facet>
                                 <f:facet name="right">
                                     <p:commandButton onclick="PF('dlgSeleccionarGrupo').hide()" 
