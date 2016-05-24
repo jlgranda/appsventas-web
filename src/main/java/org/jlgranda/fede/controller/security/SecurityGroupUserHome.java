@@ -77,6 +77,7 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     private GroupService groupService;
     private List<BussinesEntity> selectedSubjects;
     private Group[] gruposSeleccionados;
+    private List<Group> selectedGroups=new ArrayList<Group>();
     private List<Group> grupos;
     private Subject subject;
 
@@ -93,12 +94,13 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
         relationshipManager = partitionManager.createRelationshipManager();
         securityGroupService.setIdentityManager(identityManager);
         securityGroupService.setRelationshipManager(relationshipManager);
+//        this.selectedGroups = new ArrayList<>();
 
     }
 
     public void asignarGruposUsuarios() {
         User user = BasicModel.getUser(identityManager, this.subject.getUsername());
-        for (Group g : gruposSeleccionados) {
+        this.selectedGroups.stream().forEach((g) -> {
             try {
                 if (!BasicModel.isMember(relationshipManager, user, g)) {
                     this.userTransaction.begin();
@@ -110,7 +112,7 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
                     HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException | RollbackException e) {
                 java.util.logging.Logger.getLogger(SecurityGroupUserHome.class.getName()).log(Level.SEVERE, null, e);
             }
-        }
+        });
     }
 
     public void removerUserFromGroup(Group g) {
@@ -153,15 +155,17 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     public void setSelectedSubjects(List<BussinesEntity> selectedSubjects) {
         this.selectedSubjects = selectedSubjects;
     }
-
+public void onItemSelect(SelectEvent event) {
+       getSelectedGroups().add((Group) event.getObject());
+    }
     public Group[] getGruposSeleccionados() {
         List<Group> gruposAll = securityGroupService.find();
         User user = BasicModel.getUser(identityManager, getSubject().getUsername());
         List<Group> groupsUser = securityGroupService.find(user);
-        List<Group> result=ListUtils.intersection(groupsUser, gruposAll);
-        this.gruposSeleccionados=new Group[result.size()];
-        for (int i = 0; i < this.gruposSeleccionados.length; i++){
-            gruposSeleccionados[i]=result.get(i);
+        List<Group> result = ListUtils.intersection(groupsUser, gruposAll);
+        this.gruposSeleccionados = new Group[result.size()];
+        for (int i = 0; i < this.gruposSeleccionados.length; i++) {
+            gruposSeleccionados[i] = result.get(i);
         }
 //        this.gruposSeleccionados.addAll(ListUtils.intersection(groupsUser, gruposAll));
         return gruposSeleccionados;
@@ -171,23 +175,23 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
         this.gruposSeleccionados = gruposSeleccionados;
     }
 
-//    public List<Group> completeGroup(String query) {
-//        List<Group> gruposAll = securityGroupService.find();
-//        User user = BasicModel.getUser(identityManager, getSubject().getUsername());
-//        List<Group> groupsUser = securityGroupService.find(user);
-//        List<Group> grupos = new ArrayList<>();
-//
-//        gruposAll.stream().filter((group) -> (!groupsUser.contains(group))).forEach((group) -> {
-//            grupos.add(group);
-//        });
-//
-//        List<Group> filteredGroup = new ArrayList<>();
-//        grupos.stream().filter((g) -> (g.getName().toLowerCase().startsWith(query))).forEach((g) -> {
-//            filteredGroup.add(g);
-//        });
-//
-//        return filteredGroup;
-//    }
+    public List<Group> completeGroup(String query) {
+        List<Group> gruposAll = securityGroupService.find();
+        User user = BasicModel.getUser(identityManager, getSubject().getUsername());
+        List<Group> groupsUser = securityGroupService.find(user);
+        List<Group> groupsSelected = new ArrayList<>();
+
+        gruposAll.stream().filter((group) -> (!groupsUser.contains(group))).forEach((group) -> {
+            groupsSelected.add(group);
+        });
+
+        List<Group> filteredGroup = new ArrayList<>();
+        groupsSelected.stream().filter((g) -> (g.getName().toLowerCase().startsWith(query))).forEach((g) -> {
+            filteredGroup.add(g);
+        });
+
+        return filteredGroup;
+    }
 
     public boolean mostrarFormularioAsignarGruposUsuario() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("profileSummary", getSubject());
@@ -240,17 +244,29 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
 //        List<Group> gruposAll = securityGroupService.find();
 //        User user = BasicModel.getUser(identityManager, getSubject().getUsername());
 //        List<Group> groupsUser = securityGroupService.find(user);
-//        this.grupos = new ArrayList<>();
+//        this.groupsSelected = new ArrayList<>();
 //
 //        gruposAll.stream().filter((group) -> (!groupsUser.contains(group))).forEach((group) -> {
-//            grupos.add(group);
+//            groupsSelected.add(group);
 //        });
-        this.grupos=securityGroupService.find();
+        this.grupos = securityGroupService.find();
         return grupos;
     }
 
     public void setGrupos(List<Group> grupos) {
         this.grupos = grupos;
+    }
+
+    public List<Group> getSelectedGroups() {
+        if (selectedGroups.isEmpty() && subject.isPersistent()) {
+            User user = BasicModel.getUser(identityManager, getSubject().getUsername());
+            selectedGroups=(securityGroupService.find(user));
+        }
+        return selectedGroups;
+    }
+
+    public void setSelectedGroups(List<Group> selectedGroups) {
+        this.selectedGroups = selectedGroups;
     }
 
 }

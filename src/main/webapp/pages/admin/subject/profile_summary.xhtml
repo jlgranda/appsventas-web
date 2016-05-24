@@ -177,30 +177,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           modal="true" draggable="true" position="center" closable="false" >
                     <div class="Container100">
                         <div class="ContainerIndent">
-                            <!--<p:autoComplete multiple="true" value="#{securityGroupUserHome.gruposSeleccionados}" 
+                            <p:autoComplete id="menu" multiple="true" value="#{securityGroupUserHome.selectedGroups}" 
                                             completeMethod="#{securityGroupUserHome.completeGroup}"
                                             var="grupo" itemLabel="#{grupo.name}" itemValue="#{grupo}" 
                                             converter="org.jlgranda.fede.ui.converter.GroupConverter" forceSelection="true">
-                                
+                                <p:ajax event="itemSelect" listener="#{securityGroupUserHome.onItemSelect}" update="@form" />
                                 <p:column style="width:10%">
                                     <h:outputText value="#{grupo.name}" />
                                 </p:column>
-                            </p:autoComplete>-->
-                            <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.gruposSeleccionados}"  label="#{i18n['user.member.group.selectCheckbox']}"
+                            </p:autoComplete>
+                            <!--<p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.gruposSeleccionados}"  label="#{i18n['user.member.group.selectCheckbox']}"
                                               converter="org.jlgranda.fede.ui.converter.GroupConverter"   filter="true" 
                                               filterMatchMode="startsWith" scrollHeight="100">
                             <f:selectItems var="group" itemValue="#{group.name}" itemLabel="#{group.name}" value="#{securityGroupUserHome.grupos}" />
-                        </p:selectCheckboxMenu>
+                        </p:selectCheckboxMenu>-->
 
                             <div class="EmptyBox10"></div>
                             <p:toolbar>
                                 <f:facet name="left">
-                                    <p:commandButton  actionListener="#{securityGroupUserHome.asignarGruposUsuarios()}"  
-                                                      ajax="false" icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" onclick="PF('dlgSeleccionarGrupo').hide()"  styleClass="BlueButton" />
+                                    <p:commandButton  action="#{securityGroupUserHome.asignarGruposUsuarios()}"  
+                                                      update="@form"
+                                                       icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" onclick="PF('dlgSeleccionarGrupo').hide()"  styleClass="BlueButton" />
                                 </f:facet>
                                 <f:facet name="right">
                                     <p:commandButton onclick="PF('dlgSeleccionarGrupo').hide()" 
-                                                     value="#{i18n['Cancel']}" type="submit"
+                                                     value="#{i18n['Cancel']}" type="submit"  immediate="true"
                                                      icon="fa fa-arrow-left Fs14 Black" styleClass="RedButton" />
                                 </f:facet>
                             </p:toolbar>
