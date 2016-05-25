@@ -63,7 +63,7 @@ public class SettingHome extends FedeController implements Serializable {
     private List<Setting> settings = new ArrayList<>();
 
     private List<Setting> overwritableSettings = new ArrayList<>();
-    
+
     private Map<String, String> cache = new HashMap<>();
 
     @PostConstruct
@@ -82,18 +82,18 @@ public class SettingHome extends FedeController implements Serializable {
 
     public String getValue(String name, String defaultValue) {
         //Buscar en cache
-        if (cache.containsKey(name)){
+        if (cache.containsKey(name)) {
             //logger.info("La propiedad {} se recupera desde cache.", name);
             return cache.get(name);
         }
-        
+
         Setting s = settingService.findByName(name, subject);
         if (s == null) { //No existe configuración de usuario, tomar la configuración global, sino el valor por defecto
             String value = getGlobalValue(name, defaultValue);
             cache.put(name, value);
             return value;
         }
-        
+
         cache.put(name, s.getValue());
         return s.getValue();
     }
@@ -101,6 +101,7 @@ public class SettingHome extends FedeController implements Serializable {
     /**
      * Obtener todas las configuraciones del sistema que son suceptibles de ser
      * sobreescritar para el usuario actual
+     *
      * @return la lista de propiedades sobreescribibles
      */
     protected List<Setting> findSettingsForOverwrite() {
@@ -120,7 +121,7 @@ public class SettingHome extends FedeController implements Serializable {
         try {
             settingService.save(getSetting().getId(), getSetting());
             addDefaultSuccessMessage();
-            
+
             //Actualizar el cache
             this.cache.put(getSetting().getName(), getSetting().getValue());
             //vaciar objeto en edición
@@ -162,13 +163,10 @@ public class SettingHome extends FedeController implements Serializable {
     public Setting getSetting() {
         if (!Strings.isNullOrEmpty(settingName) && this.setting == null) {
             //Cargar objeto setting por nombre
-            List<Setting> settingsByNameAndOwner = settingService.findByNamedQuery("Setting.findByNameAndOwner", this.settingName, subject);
+            List<Setting> settingsByNameAndOwner = settingService.findByNamedQuery("Setting.findByName", this.settingName);
             if (!settingsByNameAndOwner.isEmpty()) {
                 //El objeto configuración de usuario
                 this.setting = settingsByNameAndOwner.get(0);
-            } else {
-                //Crear el objeto configuración nuevo, como una copia del objeto del sistema
-                this.setting = buildSettingFrom((Setting) settingService.findByNamedQuery("Setting.findByName", this.settingName).get(0));
             }
         } else if (settingId != null && this.setting == null) {
             //Cargar objeto setting por id, carga el objeto directamente.
@@ -209,7 +207,7 @@ public class SettingHome extends FedeController implements Serializable {
     }
 
     public void setSettingName(String settingName) {
-        if (!settingName.equalsIgnoreCase(this.settingName)){
+        if (!settingName.equalsIgnoreCase(this.settingName)) {
             setSetting(null);
         }
         this.settingName = settingName;
