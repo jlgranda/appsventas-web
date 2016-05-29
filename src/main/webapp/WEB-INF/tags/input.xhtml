@@ -25,6 +25,7 @@ limitations under the License.
     <c:set var="id" value="#{not empty id ? id : (not empty name ? name : action)}" />
     <c:set var="required" value="#{not empty required and required}" />
     <c:set var="validator" value="#{not empty validator ? validator : 'safeTextUTF8Validator'}" />
+     <c:set var="rendered" value="#{not empty rendered ? rendered : false}" />
     <c:set var="converter" value="#{not empty converter ? converter : omnifaces.SelectItemsConverter}" />    
     <c:set var="disabled" value="#{not empty disabled ? disabled : 'false'}" />
     <c:set var="placeholder" value="#{not empty placeholder ? placeholder : 'false'}" />  
@@ -57,7 +58,7 @@ limitations under the License.
                 <c:when test="#{type == 'password'}">
                     <p:password id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
                                 required="#{required}" disabled="#{disabled}" autocomplete="off"
-                                class="#{class}" redisplay="true">
+                                class="#{class}" rendered="#{rendered}" redisplay="true">
                         <f:validator validatorId="#{validator}"/>
                         <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
                     </p:password>
@@ -131,7 +132,7 @@ limitations under the License.
                         </c:when>
                         <c:when test="#{type == 'password'}">
                             <p:password id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                        required="#{required}" disabled="#{disabled}" autocomplete="off"
+                                        required="#{required}"  disabled="#{disabled}" autocomplete="off"
                                         class="#{class}" redisplay="true">
                                 <f:validator validatorId="#{validator}"/>
                                 <p:ajax event="blur" update="#{render}" partialSubmit="true"/>

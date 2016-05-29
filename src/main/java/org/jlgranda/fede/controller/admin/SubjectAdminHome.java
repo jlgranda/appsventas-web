@@ -75,11 +75,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     Logger logger = LoggerFactory.getLogger(SubjectAdminHome.class);
 
     private Long subjectId;
-    
+
     @Inject
     @LoggedIn
     private Subject subject;
-    
+
     private Subject subjectEdit;
 
     @Inject
@@ -197,7 +197,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                
+
                 //TODO leer desde configuración el url destino
                 //redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
                 redirectTo("/pages/admin/subject/profile_summary.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
@@ -216,16 +216,31 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return this.defaultGroup;
     }
 
-    public void save() {
+    public String save() {
         //Realizar signup
-        if (!subjectEdit.isPersistent()) {
-            subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
-            addDefaultSuccessMessage();
-        } else {
-            //Solo actualizar
-            subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
-            addDefaultSuccessMessage();
+        try {
+            if (!StringValidations.isPassword(clave)) {
+                addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
+                return "";
+            }
+            if (!this.clave.equals(this.confirmarClave)) {
+                addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
+                return "    ";
+            }
+            getSubjectEdit().setPassword(this.clave);
+            if (!subjectEdit.isPersistent()) {
+                subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
+                addDefaultSuccessMessage();
+            } else {
+                //Solo actualizar
+                subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+                addDefaultSuccessMessage();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
+
+        return getOutcome();
     }
 
     public void confirm(boolean force) {
@@ -321,8 +336,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
         return new Group("null", "null");
     }
-
-    
 
     public void mostrarAsignarGruposUsuarios() {
         try {

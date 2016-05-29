@@ -60,8 +60,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
                                             execute="@this save" render="email"/>
 
-
-
+                            <p:panel rendered="#{!subjectAdminHome.subjectEdit.persistent}">
+                            <jlgranda:input id="clave" name="clave" type="password" label="#{i18n['common.password']}" 
+                                                value="#{subjectAdminHome.clave}"  placeholder="true"
+                                                
+                                                execute="@this save" render="clave">
+                                </jlgranda:input>
+                                <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['common.confirmPassword']}" 
+                                                value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="true"
+                                                execute="@this save" render="confirmar-clave"/>
+                            </p:panel>
                             <div class="EmptyBox10"></div>
 
                             <p:toolbar>
@@ -69,7 +77,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:commandButton value="#{i18n['Save']}" ajax="false" 
                                                      actionListener="#{subjectAdminHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
-                                                     action="#{subjectAdminHome.getOutcome()}" type="submit"/>
+                                                      type="submit"/>
                                 </f:facet>
 
                                 <f:facet name="right">
@@ -77,7 +85,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                     <p:menuButton value="#{i18n['common.options']}">
-                                        <p:menuitem value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
+                                        <p:menuitem rendered="#{subjectAdminHome.subjectEdit.persistent}" value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
                                         <p:menuitem value="#{i18n['Send']} #{i18n['common.message']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(false)}" icon="fa fa-magic" 
                                                     immediate="true" rendered="#{!subjectAdminHome.subjectEdit.confirmed}"/>
                                         <p:menuitem value="#{i18n['common.force']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(true)}" icon="fa fa-magic" 
@@ -99,19 +107,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:messages id="messagesDlg" showDetail="true" autoUpdate="true" closable="true" />
                         <div class="ContainerIndent">
                             <div class="Card ShadowEffect ui-fluid">
-                                <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
+                              <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
                                                 value="#{subjectAdminHome.clave}"  placeholder="true"
                                                 
                                                 execute="@this save" render="password">
                                 </jlgranda:input>
                                 <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['password']}" 
-                                                value="#{subjectAdminHome.confirmarClave}" placeholder="true"
-                                               
+                                                value="#{subjectAdminHome.confirmarClave}"  placeholder="true"
                                                 execute="@this save" render="confirmar-password"/>
                                 <div class="EmptyBox10"></div>
                                 <div class="Wid50 Fleft Responsive">
                                     <p:commandButton value="#{i18n['Save']}"  icon="fa fa-save Fs14"
-                                                     update="@form:messagesDlg,@form:password,@form:confirmar-password"
+                                                     update="@form:messages,@form:password,@form:confirmar-password"
                                                      action="#{subjectAdminHome.changePassword()}"
                                                      onsuccess="PF('dlgCambiarClave').hide()"
                                                      style="width: auto !important;" >
