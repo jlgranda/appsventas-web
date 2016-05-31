@@ -30,6 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.transaction.HeuristicMixedException;
@@ -52,12 +53,12 @@ import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
 import org.jpapi.util.StringValidations;
-import org.omnifaces.cdi.ViewScoped;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.User;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,19 +70,19 @@ import org.slf4j.LoggerFactory;
 @ManagedBean
 @ViewScoped
 public class SubjectAdminHome extends FedeController implements Serializable {
-
+    
     private static final long serialVersionUID = 2914718473249636007L;
-
+    
     Logger logger = LoggerFactory.getLogger(SubjectAdminHome.class);
-
+    
     private Long subjectId;
-
+    
     @Inject
     @LoggedIn
     private Subject subject;
-
+    
     private Subject subjectEdit;
-
+    
     @Inject
     private SettingHome settingHome;
     @Inject
@@ -89,7 +90,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Inject
     private PartitionManager partitionManager;
     IdentityManager identityManager = null;
-
+    
     @Resource
     private UserTransaction userTransaction;
     @EJB
@@ -98,20 +99,21 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     SubjectService subjectService;
     @EJB
     SettingService settingService;
-    private List<org.jpapi.model.Group> groups;
-
+    private List<org.jpapi.model.Group> grupos;
+    
     private LazySubjectDataModel lazyDataModel;
-
+    
     @Inject
     private SubjectHome subjectHome;
     private String confirmarClave;
     private String clave;
     private boolean cambiarClave;
 
+    
     public SubjectAdminHome() {
-        this.groups = new ArrayList<>();
+        this.grupos = new ArrayList<>();
     }
-
+    
     @PostConstruct
     public void init() {
         int amount = 0;
@@ -128,21 +130,21 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         //TODO Establecer temporalmente la organización por defecto
         //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
-
+    
     @Override
     public List<org.jpapi.model.Group> getGroups() {
         if (groups.isEmpty()) {
             groups = groupService.findByOwnerAndModuleAndType(subject, "admin", org.jpapi.model.Group.Type.LABEL);
         }
-
+        
         return groups;
     }
-
+    
     @Override
     public void setGroups(List<org.jpapi.model.Group> groups) {
         this.groups = groups;
     }
-
+    
     public void filter() {
         if (lazyDataModel == null) {
             lazyDataModel = new LazySubjectDataModel(subjectService);
@@ -150,7 +152,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         lazyDataModel.setOwner(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
-
+        
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
@@ -162,37 +164,43 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             lazyDataModel.setFilterValue(getKeyword());
         }
     }
-
+    
     public LazySubjectDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
     }
-
+    
     public void mostrarFormularioCambiarClave() {
         this.cambiarClave = true;
 //        RequestContext.getCurrentInstance().execute("PF('dlgCambiarClave').show()");
     }
-
+    
+    public void handlePhotoUpload(FileUploadEvent event) {
+        this.subjectEdit.setPhoto(event.getFile().getContents());
+        addSuccessMessage(I18nUtil.getMessages("subject.upload.photo"), I18nUtil.getMessages("subject.upload.photo"));
+        
+    }
+    
     public void setLazyDataModel(LazySubjectDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-
+    
     public Long getSubjectId() {
         return subjectId;
     }
-
+    
     public void setSubjectId(Long subjectId) {
         this.subjectId = subjectId;
     }
-
+    
     public Subject getSubject() {
         return subject;
     }
-
+    
     public void setSubject(Subject subject) {
         this.subject = subject;
     }
-
+    
     public void onRowSelect(SelectEvent event) {
         try {
             //Redireccionar a RIDE de objeto seleccionado
@@ -206,29 +214,30 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             logger.error(ex.getMessage(), ex);
         }
     }
-
+    
     @Override
     public void handleReturn(SelectEvent event) {
     }
-
+    
     @Override
     public Group getDefaultGroup() {
         return this.defaultGroup;
     }
-
+    
     public String save() {
         //Realizar signup
         try {
-            if (!StringValidations.isPassword(clave)) {
-                addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
-                return "";
-            }
-            if (!this.clave.equals(this.confirmarClave)) {
-                addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
-                return "    ";
-            }
-            getSubjectEdit().setPassword(this.clave);
             if (!subjectEdit.isPersistent()) {
+                if (!StringValidations.isPassword(clave) && getSubjectEdit().isPersistent()) {
+                    addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
+                    return "";
+                }
+                if (!this.clave.equals(this.confirmarClave) && getSubjectEdit().isPersistent()) {
+                    addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
+                    return "";
+                }
+                
+                getSubjectEdit().setPassword(this.clave);
                 subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
                 addDefaultSuccessMessage();
             } else {
@@ -239,16 +248,16 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-
+        
         return getOutcome();
     }
-
+    
     public void confirm(boolean force) {
         if (force) {
             getSubjectEdit().setConfirmed(false);
             subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
         }
-
+        
         if (!getSubjectEdit().isConfirmed()) {
             subjectHome.sendConfirmation(getSubjectEdit());
         } else {
@@ -285,18 +294,18 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
         }
     }
-
+    
     public Subject getSubjectEdit() {
         if (subjectId != null && !this.subjectEdit.isPersistent()) {
             this.subjectEdit = subjectService.find(subjectId);
         }
         return subjectEdit;
     }
-
+    
     public void setSubjectEdit(Subject subjectEdit) {
         this.subjectEdit = subjectEdit;
     }
-
+    
     public void applySelectedGroups() {
         String status = "";
         Group group = null;
@@ -321,13 +330,12 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                     }
                 }
             }
-
             subjectService.save(fe.getId(), (Subject) fe);
         }
-
+        
         this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
     }
-
+    
     private Group findGroup(String key) {
         for (Group g : getGroups()) {
             if (key.equalsIgnoreCase(g.getCode())) {
@@ -336,43 +344,52 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
         return new Group("null", "null");
     }
-
+    
     public void mostrarAsignarGruposUsuarios() {
         try {
+            @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
             List<Subject> subjects = new ArrayList<>();
             getSelectedBussinesEntities().stream().map((entity) -> (Subject) entity).forEach((s) -> {
                 subjects.add(s);
             });
-
+            
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(I18nUtil.getMessages("subject.selected"), getSelectedBussinesEntities());
             redirectTo("/pages/admin/subject/subjects_group.jsf");
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
     }
-
+    
     public String getConfirmarClave() {
         return confirmarClave;
     }
-
+    
     public void setConfirmarClave(String confirmarClave) {
         this.confirmarClave = confirmarClave;
     }
-
+    
     public String getClave() {
         return clave;
     }
-
+    
     public void setClave(String clave) {
         this.clave = clave;
     }
-
+    
     public boolean isCambiarClave() {
         return cambiarClave;
     }
-
+    
     public void setCambiarClave(boolean cambiarClave) {
         this.cambiarClave = cambiarClave;
     }
-
+    
+    public List<Group> getGrupos() {
+        return grupos;
+    }
+    
+    public void setGrupos(List<Group> grupos) {
+        this.grupos = grupos;
+    }
+    
 }

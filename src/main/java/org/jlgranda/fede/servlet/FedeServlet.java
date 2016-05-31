@@ -16,13 +16,13 @@
  */
 package org.jlgranda.fede.servlet;
 
+import com.jlgranda.fede.ejb.SubjectService;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.tecnopro.document.ejb.DocumentoService;
 import net.tecnopro.document.model.Documento;
+import org.jpapi.model.profile.Subject;
 
 /**
  *
@@ -38,9 +39,11 @@ import net.tecnopro.document.model.Documento;
  */
 @WebServlet(name = "fedeServlet", urlPatterns = {"/fedeServlet/*"})
 public class FedeServlet extends HttpServlet {
-
+    
     @Inject
     private DocumentoService documentoService;
+    @Inject
+    private SubjectService subjectService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -80,12 +83,35 @@ public class FedeServlet extends HttpServlet {
                     response.getOutputStream().flush();
                     response.getOutputStream().close();
                     break;
+                case "subject":
+                    if (entityId == null) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+                    if (entityId.equalsIgnoreCase("")) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+                    Subject subject = subjectService.find(Long.parseLong(entityId));
+                    if (subject == null) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+                    if (subject.getPhoto() == null) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+                    response.reset();
+                    response.setContentType("/image/png");
+                    response.getOutputStream().write(subject.getPhoto());
+                    response.getOutputStream().close();
+                    break;
             }
         } catch (IOException e) {
             System.out.println(e);
         }
     }
-
+    
     public byte[] getContent(File file) {
         ByteArrayOutputStream ous = null;
         @SuppressWarnings("UnusedAssignment")
@@ -100,7 +126,7 @@ public class FedeServlet extends HttpServlet {
                 ous.write(buffer, 0, read);
             }
         } catch (FileNotFoundException ex) {
-
+            
         } catch (IOException ex) {
         }
         return ous.toByteArray();
