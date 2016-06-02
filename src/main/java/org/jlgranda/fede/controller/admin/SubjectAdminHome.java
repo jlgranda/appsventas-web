@@ -88,6 +88,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     GroupHome groupHome;
     @Inject
     private PartitionManager partitionManager;
+    
     IdentityManager identityManager = null;
 
     @Resource
@@ -246,13 +247,16 @@ public class SubjectAdminHome extends FedeController implements Serializable {
      * el cambio de clave.
      */
     public void changePassword() {
-        if (!StringValidations.isPassword(clave)) {
-            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
+        int length = Integer.valueOf(settingHome.getValue("app.password.length", "8"));
+        if (!StringValidations.isPassword(clave, length)) {
+            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "" + length));
             return;
         }
         if (this.clave.equals(this.confirmarClave)) {
             try {
                 identityManager = partitionManager.createIdentityManager();
+                logger.info("identityManager: {}", identityManager);
+                logger.info("getSubjectEdit().getUsername(): {}", getSubjectEdit().getUsername());
                 this.userTransaction.begin();
                 Password password = new Password(this.clave);
                 User user = BasicModel.getUser(identityManager, getSubjectEdit().getUsername());

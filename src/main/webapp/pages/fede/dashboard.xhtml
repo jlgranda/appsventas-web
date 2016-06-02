@@ -115,7 +115,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.recentlysales']}</div>
                                                 <div class="EmptyBox10"></div>
-                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.PRE_INVOICE, settingHome.getValue('fede.dashboard.timeline.length', '5'))}" var="entity">
+                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.PRE_INVOICE, settingHome.getValue('fede.dashboard.timeline.length', '5'), invoiceHome.start, invoiceHome.end)}" var="entity">
                                                     <div class="Container100">
                                                         <h:outputText value="#{entity.summary}" styleClass="Fs18 BoldGray FontRobotoLight">
                                                             <f:convertNumber type="currency"/>
@@ -164,7 +164,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.recentlyinvoice']}</div>
                                                 <div class="EmptyBox10"></div>
-                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.INVOICE, settingHome.getValue('fede.dashboard.timeline.length', '5'))}" var="entity">
+                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.INVOICE, settingHome.getValue('fede.dashboard.timeline.length', '5'), invoiceHome.start, invoiceHome.end)}" var="entity">
                                                     <div class="Container100">
                                                         <h:outputText value="#{entity.summary}" styleClass="Fs18 BoldGray FontRobotoLight">
                                                             <f:convertNumber type="currency"/>

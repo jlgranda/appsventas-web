@@ -44,6 +44,7 @@ and open the template in the editor.
                                         value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
                                         converter="omnifaces.SelectItemsConverter"
                                         required="true" inlinehelp="#{messages['common.type.inlinehelp']}" 
+                                        onchange="return;"
                                         execute="@this save" render="type"
                                         container="none"/>
                                     <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['initials']}" 

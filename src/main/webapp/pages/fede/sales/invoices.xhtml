@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
 
     <ui:define name="head">
@@ -99,6 +100,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:menuButton>
                         </f:facet>
                         <f:facet name="right">
+                            <label class="Gray">#{i18n['common.type']}&nbsp;</label>
+                            <p:selectOneMenu value="#{invoiceHome.documentType}" effect="fade"
+                                             required="#{false}" immediate="true"> 
+                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
+                                <p:ajax event="change" oncomplete="form.submit();"/>
+                            </p:selectOneMenu> 
                             <label class="Gray">#{i18n['Start']}&nbsp;</label>
                             <p:calendar value="#{invoiceHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
@@ -116,10 +124,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </f:facet>
                     </p:toolbar>
 
-
+                    <!--hidden buttons for trigger dialogReturn-->
+                    <!--http://stackoverflow.com/questions/20931384/primefaces-dialog-framework-dialogreturn-event-from-menuitem-->
                     <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
                             outcome="/pages/fede/dashboard.jsf?faces-redirect=true">
                     </h:link>
+                    <!--// Fin hidden buttons for trigger dialogReturn-->
                     <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
                                     showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
                                     my="left bottom" at="left bottom">
@@ -166,6 +176,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['ride.no']}" sortBy="#{entity.code}">
                                 <h:outputText value="#{entity.summary}" />
                             </p:column>
+                            <p:column headerText="#{i18n['common.type']}" sortBy="#{entity.documentType}">
+                                <h:outputText value="#{entity.documentType}" />
+                            </p:column>
                             <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{entity.total}"
                                       styleClass="text-right">
                                 <h:outputText value="#{entity.total}">
@@ -186,9 +199,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
     </ui:define>
     <ui:define name="script">
-        <script type="text/javascript">
-        </script>
-    </ui:define>
+            <style>
+                /*Ocultar el paginador de primefaces */
+                .ui-paginator {
+                    display: none;
+                }
+
+            </style>
+            <script>
+
+                $(document).ready(function () {
+
+                    $("#globalFilter").keyup(function () {
+                        //onkeyup="PF('dataTable_wv').filter()" 
+                        //var dataTable = $('#dataTable_wv').dataTable();
+                        //dataTable.fnFilter(this.value);
+                        var dataTable = PF('dataTable_wv');
+                        dataTable.filter();
+                    });
+
+                    $("#pagination-next").click(function () {
+                        var dataTable = PF('dataTable_wv');
+                        dataTable.getPaginator().nextLink.click();
+                        //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
+                    });
+
+                    $("#pagination-previous").click(function () {
+                        var dataTable = PF('dataTable_wv');
+                        dataTable.getPaginator().prevLink.click();
+                        //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
+                    });
+
+                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function (event) {
+                        //The event won't be propagated to the document NODE and 
+                        // therefore events delegated to document won't be fired
+                        event.stopPropagation();
+                    });
+                });
+
+                function triggerHiddenCommandLinkBack() {
+                    document.getElementById("form:hiddenCommandLinkBack").click();
+                }
+            </script>
+        </ui:define>
 
 </ui:composition>
 </html>
