@@ -344,9 +344,9 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     }
 
     public void procesarDocumentos(Tarea t) {
-        for (Documento doc : t.getDocumentos()) {
+        t.getDocumentos().stream().forEach((doc) -> {
             generaDocumento(new File(doc.getRuta()), doc.getContents());
-        };
+        });
     }
 
     public StreamedContent downloadDocument(Documento doc) {
