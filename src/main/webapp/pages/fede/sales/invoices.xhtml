@@ -106,7 +106,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
                                 <p:ajax event="change" oncomplete="form.submit();"/>
-                            </p:selectOneMenu> 
+                            </p:selectOneMenu>
                             <label class="Gray">#{i18n['Start']}&nbsp;</label>
                             <p:calendar value="#{invoiceHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
