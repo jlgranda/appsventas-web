@@ -25,16 +25,17 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
-import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
@@ -58,9 +59,11 @@ import org.primefaces.event.UnselectEvent;
  *
  * @author jlgranda
  */
-@Named
+@ManagedBean
 @ViewScoped
 public class InvoiceHome extends FedeController implements Serializable {
+
+    private static final long serialVersionUID = 115507468383355922L;
 
     Logger logger = LoggerFactory.getLogger(InvoiceHome.class);
 
@@ -92,6 +95,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private LazyInvoiceDataModel lazyDataModel; 
     
+    private DocumentType documentType;
+    
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
@@ -101,8 +106,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setInvoice(invoiceService.createInstance());
         int amount = 0;
         try {
-            //amount = Integer.valueOf(settingService.findByName(SettingNames.DASHBOARD_RANGE).getValue());
-            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
+            amount = Integer.valueOf(settingHome.getValue(SettingNames.MYLASTS_RANGE, "1"));
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
             amount = 30;
@@ -110,6 +114,8 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
+        setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
+        System.err.println("init finalizado!!!!");
     }
 
     public Long getInvoiceId() {
@@ -118,6 +124,15 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void setInvoiceId(Long invoiceId) {
         this.invoiceId = invoiceId;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        System.err.println(">>> documentType: " + documentType);
+        this.documentType = documentType;
     }
 
     public Invoice getInvoice() {
@@ -135,7 +150,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public Invoice getLastInvoice() {
         if (lastInvoice == null){
-            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE);
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE, getStart(), getEnd());
             lastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastInvoice;
@@ -147,7 +162,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public Invoice getLastPreInvoice() {
         if (lastPreInvoice == null){
-            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE);
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE, getStart(), getEnd());
             lastPreInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastPreInvoice;
@@ -170,7 +185,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public List<Invoice> getMyLastlastPreInvoices() {
         if (myLastlastPreInvoices.isEmpty()){
-            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0);
+            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0, getStart(), getEnd());
         }
         return myLastlastPreInvoices;
     }
@@ -181,7 +196,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public List<Invoice> getMyLastlastInvoices() {
         if (myLastlastInvoices.isEmpty()){
-            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE, 0);
+            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE, 0, getStart(), getEnd());
         }
         return myLastlastInvoices;
     }
@@ -209,13 +224,9 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        if (getInvoice().isPersistent()) {
-            getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
-            getInvoice().setSequencial("TODO:generar-secuencial");//Generar el secuencia legal de factura
-            save();
-        } else {
-            return "no-persistent";
-        }
+        getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
+        getInvoice().setSequencial("TODO:generar-secuencial");//Generar el secuencia legal de factura
+        save();
         return "success";
     }
 
@@ -223,7 +234,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         try {
             getInvoice().setAuthor(subject);
             getInvoice().setOrganization(null);
-            for (Detail d : getCandidateDetails()) {
+            getCandidateDetails().stream().forEach((d) -> {
                 if (d.isPersistent()) { //Actualizar la cantidad
                     getInvoice().replaceDetail(d);
                 } else {
@@ -238,7 +249,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
                     }
                 }
-            }
+            });
 
             invoiceService.save(getInvoice().getId(), getInvoice());
             this.addDefaultSuccessMessage();
@@ -277,10 +288,10 @@ public class InvoiceHome extends FedeController implements Serializable {
             lazyDataModel = new LazyInvoiceDataModel(invoiceService);
         }
 
-        //lazyDataModel.setOwner(subject);
         lazyDataModel.setAuthor(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
+        lazyDataModel.setDocumentType(getDocumentType());
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
@@ -301,7 +312,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -329,18 +340,18 @@ public class InvoiceHome extends FedeController implements Serializable {
                 this.candidateDetails.add(detail);
             }
         } else {
-            for (Detail d : this.invoice.getDetails()) {
+            this.invoice.getDetails().stream().forEach((d) -> {
                 this.candidateDetails.add(d);
-            }
+            });
         }
     }
     
     
-    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit){
+    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit, Date start, Date end){
         if (owner == null){ //retornar todas
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType);
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, start, end);
         } else {
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner);
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner, start, end);
         }
     }
 

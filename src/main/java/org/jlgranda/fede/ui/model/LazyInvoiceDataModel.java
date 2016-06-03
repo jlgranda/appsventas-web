@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Invoice_;
 import org.jpapi.model.BussinesEntity;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Serializable {
     
     private static final int MAX_RESULTS = 5;
+    private static final long serialVersionUID = 2581443761081001033L;
     Logger  logger = LoggerFactory.getLogger(LazyInvoiceDataModel.class);
 
     private InvoiceService bussinesEntityService;
@@ -45,6 +47,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     private Subject author;
     
     private Subject owner;
+    
     /**
      * Lista de etiquetas para filtrar facturas
      */
@@ -67,6 +70,8 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
     
     private String filterValue;
+    
+    private DocumentType documentType;
 
     public LazyInvoiceDataModel(InvoiceService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -139,6 +144,14 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         this.end = end;
     }
 
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
+    }
+
     public String getFilterValue() {
         return filterValue;
     }
@@ -167,7 +180,6 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     }
 
     public void setFirstResult(Integer firstResult) {
-        logger.info("set first result + firstResult");
         this.firstResult = firstResult;
         this.resultList = null;
     }
@@ -187,7 +199,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
 
     @Override
     public Object getRowKey(Invoice entity) {
-        return entity.getName();
+        return entity.getId();
     }
 
     @Override
@@ -212,6 +224,10 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         
         if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        
+        if (getDocumentType() != null){
+            _filters.put("documentType", getDocumentType()); //Filtro por tipos de documentos
         }
         
         _filters.putAll(filters);
