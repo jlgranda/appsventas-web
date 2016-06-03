@@ -99,7 +99,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </ul>
             </div>
         </ui:define>
-        
+
         <ui:define name="content">
             <h:form id="form"  >
                 <div class="Container100 Responsive100">
@@ -177,11 +177,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           modal="true" draggable="true" position="center" closable="false" >
                     <div class="Container100">
                         <div class="ContainerIndent">
-                            <p:autoComplete id="menu" multiple="true" value="#{securityGroupUserHome.selectedGroups}" 
+                            <p:autoComplete id="menu" value="#{securityGroupUserHome.selectedGroups}" 
                                             completeMethod="#{securityGroupUserHome.completeGroup}"
-                                            var="grupo" itemLabel="#{grupo.name}" itemValue="#{grupo}" 
-                                            converter="org.jlgranda.fede.ui.converter.GroupConverter" forceSelection="true">
-                                <p:ajax event="itemSelect" listener="#{securityGroupUserHome.onItemSelect}" update="@form" />
+                                            var="grupo" itemLabel="#{grupo.name}"
+                                            converter="org.jlgranda.fede.ui.converter.GroupConverter" multiple="true">
+                                <p:ajax event="itemSelect" listener="#{securityGroupUserHome.selectListener}" />
+                                <!--<p:ajax event="itemUnselect" />-->
+                                                   <!--<p:ajax event="itemSelect" listener="#{securityGroupUserHome.onItemSelect}"  />-->
                                 <p:column style="width:10%">
                                     <h:outputText value="#{grupo.name}" />
                                 </p:column>
@@ -195,9 +197,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox10"></div>
                             <p:toolbar>
                                 <f:facet name="left">
-                                    <p:commandButton  action="#{securityGroupUserHome.asignarGruposUsuarios()}"  
+                                    <p:commandButton  actionListener="#{securityGroupUserHome.asignarGruposUsuarios()}"  
                                                       update="@form"
-                                                       icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" onclick="PF('dlgSeleccionarGrupo').hide()"  styleClass="BlueButton" />
+                                                      icon="fa fa-group Fs14 " value="#{i18n['Aceptar']}" onclick="PF('dlgSeleccionarGrupo').hide()"
+                                                      immediate="true"
+                                                      styleClass="BlueButton" />
                                 </f:facet>
                                 <f:facet name="right">
                                     <p:commandButton onclick="PF('dlgSeleccionarGrupo').hide()" 
