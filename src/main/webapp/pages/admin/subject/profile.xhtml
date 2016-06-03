@@ -41,36 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <p:panel id="photoPanel">
-                                <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}" cache="false"  height="100" width="100" 
-                                                value="/FedeServlet?entity=#{i18n['servlet.subject']}&amp;#{i18n['servlet.id']}=#{subjectAdminHome.subjectEdit.id}"/>
-                                <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}">
-                                <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
-                                </p:panel>
-                                <p:toolbar>
-                                    <f:facet name="left">
-                                        <p:fileUpload fileUploadListener="#{subjectAdminHome.handlePhotoUpload}" mode="advanced" dragDropSupport="true" auto="true"
-                                                      process="@form"   update="photoPanel"   
-                                                      sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
-                                                      fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '34')}" 
-                                                      allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '')}"/>
-                                    </f:facet>
-                                </p:toolbar>
-                            </p:panel>
-                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
-                                            value="#{subjectAdminHome.subjectEdit.code}" validator="ciValidator"
-                                            required="#{!subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
-                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
-                                            value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
-                            <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
-                                            value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
-                                            inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
-                            <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
-                                            execute="@this save" render="bio"/>
-                            <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
-                                            value="#{subjectAdminHome.subjectEdit.description}" required="false" 
-                                            inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
                             <div class="Container90">
                                 <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
                                                 value="#{subjectAdminHome.subjectEdit.code}" validator="ciValidator"
