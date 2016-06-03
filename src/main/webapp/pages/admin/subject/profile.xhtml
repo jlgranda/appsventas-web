@@ -75,9 +75,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </div>
                             <div class="Container10">
                                 <div id="photoPanel">
-                                    <p:graphicImage id="photo" cache="false" height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
+                                    <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}" cache="false" height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
                                                     width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
                                                     value="/FedeServlet?entity=#{i18n['servlet.subject']}&amp;#{i18n['servlet.id']}=#{subjectAdminHome.subjectEdit.id}"/>
+                                    <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}"> 
+                                    <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
+                                    </p:panel>
                                     <p:fileUpload fileUploadListener="#{subjectAdminHome.handlePhotoUpload}" mode="advanced" dragDropSupport="true" auto="true"
                                                           process="@form" update="photo"   
                                                           sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 

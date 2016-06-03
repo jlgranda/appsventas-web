@@ -272,7 +272,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
      */
     public void changePassword() {
         int length = Integer.valueOf(settingHome.getValue("app.password.length", "8"));
-        if (!StringValidations.isPassword(clave, length)) {
+        if (!StringValidations.isPassword(clave)) {
             addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "" + length));
             return;
         }
