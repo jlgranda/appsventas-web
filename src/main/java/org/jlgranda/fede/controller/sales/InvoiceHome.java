@@ -334,7 +334,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     private void loadCandidateDetails(List<Detail> details) {
         if (details != null) {
-            logger.info("loadCandidateDetails {}", details);
             this.candidateDetails.clear();
             this.invoice.getDetails().stream().forEach((d) -> {
                 this.candidateDetails.add(d);
