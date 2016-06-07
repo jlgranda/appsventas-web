@@ -32,6 +32,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,14 +46,12 @@ import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jlgranda.fede.model.sales.Invoice;
-import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import org.omnifaces.cdi.ViewScoped;
 import org.primefaces.event.UnselectEvent;
 
 /**
@@ -81,6 +80,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Invoice lastPreInvoice;
 
     private Long invoiceId;
+    
+    private Detail candidateDetail;
 
     private List<Detail> candidateDetails = new ArrayList<>();
 
@@ -89,9 +90,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private DetailService detailService;
-
-    @EJB
-    private ProductService productService;
     
     private LazyInvoiceDataModel lazyDataModel; 
     
@@ -103,7 +101,9 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @PostConstruct
     private void init() {
+        
         setInvoice(invoiceService.createInstance());
+        setCandidateDetail(detailService.createInstance(1));
         int amount = 0;
         try {
             amount = Integer.valueOf(settingHome.getValue(SettingNames.MYLASTS_RANGE, "1"));
@@ -115,7 +115,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
-        System.err.println("init finalizado!!!!");
     }
 
     public Long getInvoiceId() {
@@ -131,7 +130,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public void setDocumentType(DocumentType documentType) {
-        System.err.println(">>> documentType: " + documentType);
         this.documentType = documentType;
     }
 
@@ -172,10 +170,15 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.lastPreInvoice = lastPreInvoice;
     }
 
+    public Detail getCandidateDetail() {
+        return candidateDetail;
+    }
+
+    public void setCandidateDetail(Detail candidateDetail) {
+        this.candidateDetail = candidateDetail;
+    }
+
     public List<Detail> getCandidateDetails() {
-        if (this.candidateDetails.isEmpty()) {
-            loadCandidateDetails(null);
-        }
         return this.candidateDetails;
     }
 
@@ -330,20 +333,29 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     private void loadCandidateDetails(List<Detail> details) {
-        this.candidateDetails.clear();
-        Detail detail = null;
-        if (details == null) {
-            for (Object obj : productService.findByNamedQuery("Product.findByOrganization")) {
-                detail = detailService.createInstance();
-                detail.setProduct((Product) obj);
-                detail.setAmount(0);
-                this.candidateDetails.add(detail);
-            }
-        } else {
+        if (details != null) {
+            logger.info("loadCandidateDetails {}", details);
+            this.candidateDetails.clear();
             this.invoice.getDetails().stream().forEach((d) -> {
                 this.candidateDetails.add(d);
             });
         }
+    }
+    
+    public boolean addCandidateDetail(){
+        this.invoice.addDetail(candidateDetail); //Marcar detail como parte del objeto invoice
+        boolean flag = false;
+        if (this.candidateDetails.contains(getCandidateDetail())) {
+            int index = this.candidateDetails.indexOf(getCandidateDetail());
+            float amount = this.candidateDetails.get(index).getAmount() + candidateDetail.getAmount();
+            this.candidateDetails.get(index).setAmount(amount);
+        } else {
+            flag = this.candidateDetails.add(getCandidateDetail());
+        }
+
+        //encerar para el siguiente producto
+        setCandidateDetail(detailService.createInstance(1));
+        return flag;
     }
     
     

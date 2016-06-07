@@ -41,7 +41,7 @@ public class SubjectConverter implements Converter, Serializable {
     private static final long serialVersionUID = -3057944404700510467L;
     
     @EJB
-    private SubjectService subjectService;
+    private SubjectService service;
 
     @PostConstruct
     public void setup() {
@@ -55,9 +55,9 @@ public class SubjectConverter implements Converter, Serializable {
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
 
 
-        if (value != null && !value.isEmpty() && subjectService != null) {
+        if (value != null && !value.isEmpty() && service != null) {
             try {
-                return subjectService.find(getKey(value));
+                return service.find(getKey(value));
             } catch (NoResultException e) {
                 return new Subject();
             }
@@ -68,9 +68,6 @@ public class SubjectConverter implements Converter, Serializable {
     }
 
     private Long getKey(String value) {
-        //get id value from string
-//        int start = value.indexOf("id=");
-//        int end = value.indexOf(",") == -1 ? value.indexOf("]") : value.indexOf(",");
         return Long.valueOf(value.trim());
     }
 

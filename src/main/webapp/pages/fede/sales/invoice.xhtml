@@ -43,25 +43,53 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="Card ShadowEffect">
                     <h2 class="BigTopic">#{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType).concat('.lead')]} </h2>
                     <div class="EmptyBox20"></div>
-                    <div class="EmptyBox20"></div>
-                    <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
-                        <div class="Container55">
-                            <div class="Container50 Responsive100">
-                                <div class="ContainerIndent">
-                                    <div class="Card SoftGrayBack TexAlCenter">
-                                        <i class="#{detail.product.icon} Fs40 BoldGray DispBlock"></i>
-                                        <div class="EmptyBox5"></div>
-                                        <span class="FontRobotoLight Fs18">#{detail.product.name}</span>
-                                        <div class="EmptyBox5"></div>
-                                        <span class="FontRobotoLight Fs18"><h:outputText value="#{detail.product.price}">
-                                                <f:convertNumber type="currency"/>
-                                            </h:outputText></span>
-                                        <div class="EmptyBox10"></div>
-                                        <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="">
-                                        </p:spinner>
-                                    </div>
-                                </div> 
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.detail.add']}</div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Card SoftGrayBack TexAlCenter">
+                                <div class="Container70 Responsive100">
+                                    <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" minQueryLength="2" completeMethod="#{inventoryHome.find}"
+                                                    var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="5" itemValue="#{entidad}" 
+                                                    converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
+                                                    placeholder="#{settingHome.getValue('app.sales.detail.placeholder', 'Buscar producto...')}">
+                                        <p:column>
+                                            <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
+                                        </p:column>
+                                        <p:ajax event="itemSelect" update="button-add-detail"></p:ajax>
+                                    </p:autoComplete>
+                                </div>
+                                <div class="Container20 Responsive100">
+                                    <p:spinner value="#{invoiceHome.candidateDetail.amount}" min="0" styleClass="">
+                                    </p:spinner>
+                                </div>
+                                <div class="Container10 Responsive100">
+                                    <p:commandButton id="button-add-detail" ajax="true" update="@form" immediate="true"
+                                                     actionListener="#{invoiceHome.addCandidateDetail()}" disabled="#{empty invoiceHome.candidateDetail.product}"
+                                                     icon="fa fa-gittip">
+                                    </p:commandButton>
+                                </div>
                             </div>
+                        </div> 
+
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.details']}</div>
+                    <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
+                        <div class="Container33 Responsive100">
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGrayBack TexAlCenter">
+                                    <i class="#{detail.product.icon} Fs40 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{detail.product.name}</span>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18"><h:outputText value="#{detail.product.price}">
+                                            <f:convertNumber type="currency"/>
+                                        </h:outputText></span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="">
+                                    </p:spinner>
+                                </div>
+                            </div> 
                         </div>
                     </ui:repeat>
                     <div class="EmptyBox20"></div>
