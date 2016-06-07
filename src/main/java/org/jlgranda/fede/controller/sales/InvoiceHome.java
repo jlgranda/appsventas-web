@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -36,10 +37,12 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import net.tecnopro.document.model.EstadoTipo;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
+import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.sales.Detail;
 import org.primefaces.event.SelectEvent;
@@ -148,7 +151,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public Invoice getLastInvoice() {
         if (lastInvoice == null){
-            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE, getStart(), getEnd());
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE, true, getStart(), getEnd());
             lastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastInvoice;
@@ -160,7 +163,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public Invoice getLastPreInvoice() {
         if (lastPreInvoice == null){
-            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE, getStart(), getEnd());
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE, true, getStart(), getEnd());
             lastPreInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastPreInvoice;
@@ -219,6 +222,21 @@ public class InvoiceHome extends FedeController implements Serializable {
         super.openDialog(settingHome.getValue("app.fede.sales.invoice.popup", "/pages/fede/sales/popup_invoice"), width, height, true);
         return true;
     }
+    
+    /**
+     * Guarda la entidad marcandola como INVOICE CANCELED
+     *
+     * @return outcome de exito o fracaso de la acción
+     */
+    public String cancel() {
+        getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Se convierte en pre factura
+        getInvoice().setEmissionType(EmissionType.CANCELED); //Se convierte en pre factura cancelada
+        getInvoice().setStatus(EmissionType.CANCELED.toString());
+        getInvoice().setActive(false);
+        getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
+        save();
+        return "success";
+    }
 
     /**
      * Guarda la entidad marcandola como INVOICE y generando un secuencial
@@ -236,6 +254,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String save() {
         try {
             getInvoice().setAuthor(subject);
+            getInvoice().setOwner(subject);
             getInvoice().setOrganization(null);
             getCandidateDetails().stream().forEach((d) -> {
                 if (d.isPersistent()) { //Actualizar la cantidad
@@ -360,9 +379,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit, Date start, Date end){
         if (owner == null){ //retornar todas
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, start, end);
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
         } else {
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner, start, end);
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner, true, start, end);
         }
     }
 

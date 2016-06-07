@@ -143,6 +143,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              action="home"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
+                            <p:menuButton value="#{i18n['common.options']}">
+                                <p:menuitem value="#{i18n['Cancel']}" 
+                                            actionListener="#{invoiceHome.cancel()}" action="preinvoices" icon="fa fa-check" 
+                                            immediate="true" rendered="#{invoiceHome.invoice.isPersistent()}"/>
+                            </p:menuButton>
                         </f:facet>
 
                     </p:toolbar>
