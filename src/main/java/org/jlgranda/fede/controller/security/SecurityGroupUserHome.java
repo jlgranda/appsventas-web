@@ -77,7 +77,7 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     private GroupService groupService;
     private List<BussinesEntity> selectedSubjects;
     private Group[] gruposSeleccionados;
-    private List<Group> selectedGroups=new ArrayList<Group>();
+    private List<Group> selectedGroups = new ArrayList<>();
     private List<Group> grupos;
     private Subject subject;
 
@@ -155,9 +155,11 @@ public class SecurityGroupUserHome extends FedeController implements Serializabl
     public void setSelectedSubjects(List<BussinesEntity> selectedSubjects) {
         this.selectedSubjects = selectedSubjects;
     }
-public void onItemSelect(SelectEvent event) {
-       getSelectedGroups().add((Group) event.getObject());
+
+    public void selectListener(SelectEvent event) {
+        System.out.println(event.getObject());
     }
+
     public Group[] getGruposSeleccionados() {
         List<Group> gruposAll = securityGroupService.find();
         User user = BasicModel.getUser(identityManager, getSubject().getUsername());
@@ -260,7 +262,7 @@ public void onItemSelect(SelectEvent event) {
     public List<Group> getSelectedGroups() {
         if (selectedGroups.isEmpty() && subject.isPersistent()) {
             User user = BasicModel.getUser(identityManager, getSubject().getUsername());
-            selectedGroups=(securityGroupService.find(user));
+            selectedGroups = (securityGroupService.find(user));
         }
         return selectedGroups;
     }

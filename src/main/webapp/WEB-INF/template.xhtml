@@ -6,13 +6,18 @@
       xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-         <style type="text/css">
+        <style type="text/css">
             .ui-widget {
                 font-size: 90%;
             }
             .ui-dialog {
                 width: auto !important;
                 height: auto!important
+            }
+            .circular {
+                border-radius: 150px;
+                -webkit-border-radius: 150px;
+                -moz-border-radius: 150px;
             }
         </style>
         <f:facet name="first">
@@ -22,7 +27,7 @@
             <meta name="apple-mobile-web-app-capable" content="yes" />
         </f:facet>
         <title>#{i18n['app.name']} #{i18n['app.version']}</title>
-        
+
         <h:outputScript name="js/ripple-effect.js" library="modena-layout" />
         <h:outputScript name="js/perfect-scrollbar.js" library="modena-layout" />
         <h:outputScript name="js/layout.js" library="modena-layout" />
@@ -31,9 +36,9 @@
     </h:head>
 
     <h:body class="GrayModena Geometry">
-        
+
         <ui:include src="topbar.xhtml" />
-        
+
         <div id="wrapper">
             <div id="wrapperIndent">
 
@@ -41,14 +46,21 @@
 
                 <div id="layout-portlets-cover">
                     <div class="Container96 Fnone MarAuto">
-                        
+
                         <!-- SUB TOPBAR START -->
                         <div class="Container100 UserLinks">
                             <div class="ContainerIndent TexAlRight">
                                 <a href="#" class="DispInlBlock Fright BoldGray HoverEffect"><i class="icon-shopping_cart Fs30"><span class="CartText White">2</span></i> </a>
-                                <a href="#" class="DispInlBlock Fright BoldGray MarRight10 HoverEffect"><span class="Fs22 FontRobotoLight">#{i18n['Hello']}#{', '}#{subject.fullName}</span>
-                                    <i class="icon-account_circle Fright Fs30"></i></a>
-                                    
+                                <p:panel style="background: transparent;border: 0" rendered="#{subject.photo!=null}"> 
+                                    <a href="#" class="DispInlBlock Fright BoldGray MarRight10 HoverEffect"><span class="Fs22 FontRobotoLight">#{i18n['Hello']}#{', '}#{subject.fullName}</span></a>
+                                    <p:graphicImage id="photo" styleClass="circular"  cache="false" height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
+                                                    width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
+                                                    value="/FedeServlet?entity=#{i18n['servlet.subject']}&amp;#{i18n['servlet.id']}=#{subject.id}"/>
+                                </p:panel>
+                                <p:panel style="background: transparent;border: 0" rendered="#{subject.photo==null}"> 
+                                    <a href="#" class="DispInlBlock Fright BoldGray MarRight10 HoverEffect"><span class="Fs22 FontRobotoLight">#{i18n['Hello']}#{', '}#{subject.fullName}</span>
+                                        <i class="icon-account_circle Fright Fs30"></i></a>
+                                </p:panel>
                             </div>   
 
                             <div class="EmptyBox10"></div>
@@ -62,7 +74,7 @@
                             <div class="EmptyBox5"></div>
                         </div>
                         <!-- SUB TOPBAR END -->
-                        
+
                         <ui:insert name="content">
                             Template
                         </ui:insert>
@@ -73,10 +85,10 @@
                                 <p class="text-muted"><i class="fa fa-copyright"></i>#{' '}#{i18n['PoweredBy']}#{' '}<a href="#{i18n['PoweredBy.url']}">#{i18n['PoweredBy.brand']}</a></p>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
-                
+
                 <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
                     <f:facet name="start">
                         <p:graphicImage name="images/preloader.gif" library="modena-layout"/>
