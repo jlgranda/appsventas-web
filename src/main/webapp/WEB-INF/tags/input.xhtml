@@ -20,8 +20,7 @@ limitations under the License.
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:pe="http://primefaces.org/ui/extensions">
+    xmlns:p="http://primefaces.org/ui">
     <c:set var="id" value="#{not empty id ? id : (not empty name ? name : action)}" />
     <c:set var="required" value="#{not empty required and required}" />
     <c:set var="validator" value="#{not empty validator ? validator : 'safeTextUTF8Validator'}" />
@@ -99,12 +98,11 @@ limitations under the License.
                     </p:selectOneMenu>   
                 </c:when>
                 <c:when test="#{type == 'number'}">
-                    <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                 required="#{required}" disabled="#{disabled}"
-                                 class="#{class}" type="#{type}">
-                        <f:validator validatorId="#{validator}"/>
-                        <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
-                    </p:inputText>
+                    <p:inputNumber id="#{name}" value="#{value}" required="#{required}" disabled="#{disabled}"
+                                   styleClass="#{class}"
+                                 decimalSeparator="." thousandSeparator="," decimalPlaces="3">
+                        <p:ajax listener="#{listener}" update="#{render}"/>
+                    </p:inputNumber>
                 </c:when>
                 <c:otherwise>
                     <h:inputText value="#{value}" id="#{name}" required="#{required}" label="#{label}" class="#{class}">
@@ -174,12 +172,19 @@ limitations under the License.
                             </p:selectOneMenu>  
                         </c:when>
                         <c:when test="#{type == 'number'}">
-                            <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
+                            <!--p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
                                          required="#{required}" disabled="#{disabled}"
                                          class="#{class}" type="#{type}">
                                 <f:validator validatorId="#{validator}"/>
                                 <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
-                            </p:inputText>
+                            </p:inputText -->
+                            <p:inputNumber id="#{name}" value="#{value}" required="#{required}" disabled="#{disabled}"
+                                           styleClass="#{class}"
+                                           decimalSeparator="." thousandSeparator="," decimalPlaces="3">
+                                <c:if test="#{listener != 'none'}">
+                                    <p:ajax listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                                </c:if>
+                            </p:inputNumber>
                         </c:when>
                         <c:otherwise>
                             <h:inputText value="#{value}" id="#{name}" required="#{required}" label="#{label}" class="#{class}">

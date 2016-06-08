@@ -20,10 +20,12 @@ package org.jlgranda.fede.controller.sales;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
-import com.jlgranda.fede.ejb.sales.ProductService;
+import com.jlgranda.fede.ejb.sales.PaymentService;
+import com.sun.javafx.scene.SceneHelper;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,8 +38,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
-import net.tecnopro.document.model.EstadoTipo;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
@@ -49,6 +49,7 @@ import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jlgranda.fede.model.sales.Invoice;
+import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -87,12 +88,17 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Detail candidateDetail;
 
     private List<Detail> candidateDetails = new ArrayList<>();
+    
+    private Payment payment;
 
     @EJB
     private InvoiceService invoiceService;
 
     @EJB
     private DetailService detailService;
+    
+    @EJB
+    private PaymentService paymentService;
     
     private LazyInvoiceDataModel lazyDataModel; 
     
@@ -107,7 +113,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         setInvoice(invoiceService.createInstance());
         setCandidateDetail(detailService.createInstance(1));
-        int amount = 0;
+        setPayment(paymentService.createInstance());
+        int amount = 0; //Rango de fechas para visualiar lista de entidades
         try {
             amount = Integer.valueOf(settingHome.getValue(SettingNames.MYLASTS_RANGE, "1"));
         } catch (java.lang.NumberFormatException nfe) {
@@ -118,6 +125,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
+        setOutcome("preinvoices");
     }
 
     public Long getInvoiceId() {
@@ -189,6 +197,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.candidateDetails = candidateDetails;
     }
 
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
     public List<Invoice> getMyLastlastPreInvoices() {
         if (myLastlastPreInvoices.isEmpty()){
             myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0, getStart(), getEnd());
@@ -245,16 +261,32 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
-        getInvoice().setSequencial("TODO:generar-secuencial");//Generar el secuencia legal de factura
-        save();
-        return "success";
+        String outcome = "success";
+        calculeChange();
+        if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+            getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
+            getInvoice().setSequencial("TODO:generar-secuencial-sri");//Generar el secuencia legal de factura
+            //Agregar el pago
+            getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
+            getInvoice().addPayment(getPayment());
+            save();
+            setOutcome("preinvoices");
+        } else {
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+            setOutcome("");
+        }
+        return outcome;
     }
 
     public String save() {
+        if (candidateDetails.isEmpty()) {
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.invoice.incomplete"), I18nUtil.getMessages("app.fede.sales.invoice.incomplete.detail"));
+            setOutcome("");
+            return "";
+        }
         try {
             getInvoice().setAuthor(subject);
-            getInvoice().setOwner(subject);
+            getInvoice().setOwner(null); //Propietario de la factura, la persona que realiza la compra
             getInvoice().setOrganization(null);
             getCandidateDetails().stream().forEach((d) -> {
                 if (d.isPersistent()) { //Actualizar la cantidad
@@ -275,6 +307,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
             invoiceService.save(getInvoice().getId(), getInvoice());
             this.addDefaultSuccessMessage();
+            setOutcome("preinvoices");
             return "success";
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
@@ -294,6 +327,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
 
         return total;
+    }
+    
+    public void calculeChange() {
+        
+        //subtotal = total menos descuento
+        BigDecimal subtotal = getInvoice().getTotal().subtract(getPayment().getDiscount());
+        //lo que he recibido menos el subtotal
+        getPayment().setChange(getPayment().getCash().subtract(subtotal));
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {
@@ -361,6 +402,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public boolean addCandidateDetail(){
+        
+        candidateDetail.setPrice(candidateDetail.getProduct().getPrice());//Establecer el precio actual
         this.invoice.addDetail(candidateDetail); //Marcar detail como parte del objeto invoice
         boolean flag = false;
         if (this.candidateDetails.contains(getCandidateDetail())) {
@@ -371,17 +414,25 @@ public class InvoiceHome extends FedeController implements Serializable {
             flag = this.candidateDetails.add(getCandidateDetail());
         }
 
+        calculeChange();
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
         return flag;
     }
     
+    public boolean addAndSaveCandidateDetail(){
+        this.invoice.addDetail(candidateDetail); //Marcar detail como parte del objeto invoice
+        boolean flag = addCandidateDetail();
+        if (flag) save();
+        return flag;
+    }
     
-    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit, Date start, Date end){
-        if (owner == null){ //retornar todas
+    
+    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end){
+        if (author == null){ //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
         } else {
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner, true, start, end);
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndAuthor", limit, documentType, author, true, start, end);
         }
     }
 
