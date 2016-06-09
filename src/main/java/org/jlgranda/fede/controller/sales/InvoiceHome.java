@@ -18,14 +18,13 @@
 package org.jlgranda.fede.controller.sales;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
-import com.sun.javafx.scene.SceneHelper;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +73,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     @LoggedIn
     private Subject subject;
 
+    private Subject customer;
+    
     @Inject
     private SettingHome settingHome;
 
@@ -95,6 +96,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     private InvoiceService invoiceService;
 
     @EJB
+    private SubjectService subjectService;
+    
+    @EJB
     private DetailService detailService;
     
     @EJB
@@ -104,9 +108,13 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private DocumentType documentType;
     
+    private boolean useDefaultCustomer;
+    
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
+    
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
+    
 
     @PostConstruct
     private void init() {
@@ -126,6 +134,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
+        setUseDefaultCustomer(true); //Usar consumidor final por ahora
     }
 
     public Long getInvoiceId() {
@@ -149,6 +158,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         if (invoiceId != null && !this.invoice.isPersistent()) {
             this.invoice = invoiceService.find(invoiceId);
             loadCandidateDetails(this.invoice.getDetails());
+            setCustomer(this.invoice.getOwner());
         }
         return invoice;
     }
@@ -205,6 +215,25 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.payment = payment;
     }
 
+    public Subject getCustomer() {
+        if (customer == null && isUseDefaultCustomer()){
+            setCustomer(subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", "consumidorfinal"));
+        }
+        return customer;
+    }
+
+    public void setCustomer(Subject customer) {
+        this.customer = customer;
+    }
+
+    public boolean isUseDefaultCustomer() {
+        return useDefaultCustomer;
+    }
+
+    public void setUseDefaultCustomer(boolean useDefaultCustomer) {
+        this.useDefaultCustomer = useDefaultCustomer;
+    }
+
     public List<Invoice> getMyLastlastPreInvoices() {
         if (myLastlastPreInvoices.isEmpty()){
             myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0, getStart(), getEnd());
@@ -250,7 +279,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         getInvoice().setStatus(EmissionType.CANCELED.toString());
         getInvoice().setActive(false);
         getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
-        save();
+        save(true); //Guardar forzando
         return "success";
     }
 
@@ -278,15 +307,18 @@ public class InvoiceHome extends FedeController implements Serializable {
         return outcome;
     }
 
-    public String save() {
-        if (candidateDetails.isEmpty()) {
+    public String save(){
+        return save(false);
+    }
+    public String save(boolean force) {
+        if (candidateDetails.isEmpty() && ! force) {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.invoice.incomplete"), I18nUtil.getMessages("app.fede.sales.invoice.incomplete.detail"));
             setOutcome("");
             return "";
         }
         try {
             getInvoice().setAuthor(subject);
-            getInvoice().setOwner(null); //Propietario de la factura, la persona que realiza la compra
+            getInvoice().setOwner(getCustomer()); //Propietario de la factura, la persona que realiza la compra
             getInvoice().setOrganization(null);
             getCandidateDetails().stream().forEach((d) -> {
                 if (d.isPersistent()) { //Actualizar la cantidad

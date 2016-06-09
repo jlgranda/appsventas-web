@@ -42,7 +42,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ContainerIndent">
                 <div class="Card ShadowEffect">
                     <h2 class="BigTopic">#{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType).concat('.lead')]} </h2>
-                    <div class="EmptyBox20"></div>
+                    <div class="EmptyBox10"></div>
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.invoice.owner']}</div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Container90 Responsive50">
+                                <p:autoComplete value="#{invoiceHome.customer}" effect="fade" 
+                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
+                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}">
+                                    <p:column>
+                                        <h:outputText value="#{entidad.fullName}"/>
+                                    </p:column>
+                                </p:autoComplete>
+                            </div>
+                            <div class="Container10 Responsive50">
+                                <p:commandButton id="button-change-customer"
+                                                 icon="fa fa-user-plus Fs14 Black" styleClass="GrayButton"
+                                                 disabled="#{invoiceHome.useDefaultCustomer}">
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="EmptyBox10"></div>
                     <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.detail.add']}</div>
                     <div class="Container100 Responsive100">
                         <div class="ContainerIndent">
@@ -68,7 +92,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      actionListener="#{invoiceHome.addCandidateDetail()}" disabled="#{empty invoiceHome.candidateDetail.product}"
                                                      icon="fa fa-gittip" styleClass="CyanButton">
                                     </p:commandButton>
-                                    <p:commandButton id="button-add-save-detail" ajax="false" update="@form" immediate="false" action="preinvoices" 
+                                    <p:commandButton id="button-add-save-detail" ajax="false" update="@form" immediate="false" action="#{invoiceHome.redirect()}" 
                                                      actionListener="#{invoiceHome.addAndSaveCandidateDetail()}" disabled="#{empty invoiceHome.candidateDetail.product}"
                                                      icon="fa fa-save Fs14 Black" styleClass="GrayButton" type="submit">
                                     </p:commandButton>
@@ -78,7 +102,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                     </div>
                     <div class="EmptyBox10"></div>
-                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.details']} [<h:outputText value="#{invoiceHome.invoice.total}">
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.details']} [<h:outputText id="invoice-total" value="#{invoiceHome.invoice.total}">
                                             <f:convertNumber type="currency"/>
                                         </h:outputText>]</div>
                     <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
@@ -93,15 +117,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <f:convertNumber type="currency"/>
                                         </h:outputText></span>
                                     <div class="EmptyBox10"></div>
-                                    <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="">
+                                    <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="SoftGreenBack">
+                                        <p:ajax update="@form:invoice-total @form:payment-total" listener="#{invoiceHome.calculeChange()}"></p:ajax>
                                     </p:spinner>
                                 </div>
                             </div> 
                         </div>
                     </ui:repeat>
                     <div class="EmptyBox10"></div>
-                    <p:panel class="Container100 Responsive100" rendered="#{not empty invoiceHome.candidateDetails}">
-                        <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.payments']} [<h:outputText value="#{0 - invoiceHome.invoice.total}">
+                    <p:panel id="payment-panel" class="Container100 Responsive100" rendered="#{not empty invoiceHome.candidateDetails}">
+                        <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.payments']} [<h:outputText id="payment-total" value="#{0 - invoiceHome.invoice.total}">
                                             <f:convertNumber type="currency"/>
                                         </h:outputText>]</div>
                         <div class="ContainerIndent">
@@ -116,7 +141,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      <p:inputNumber id="amount" value="#{invoiceHome.payment.cash}" required="true" disabled="false"
                                                    styleClass=""
                                                    decimalSeparator="." thousandSeparator="," decimalPlaces="3">
-                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="change collect-button" partialSubmit="true"/>
+                                         <p:ajax listener="#{invoiceHome.calculeChange()}" update="change collect-button" partialSubmit="true"></p:ajax>
                                     </p:inputNumber>
                                 </div>
                             </div>
@@ -140,8 +165,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="EmptyBox20"></div>
                     <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
                         <f:facet name="left">
-                            <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                             actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" disabled="false" 
+                            <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 
+                                             actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" disabled="#{empty invoiceHome.candidateDetails}" 
                                              style="width: auto !important;"
                                              type="submit"/>
                             <span class="ui-separator">
