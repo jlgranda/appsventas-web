@@ -71,7 +71,7 @@ public class FedeAPI implements Serializable {
     
     public String summary(FacturaElectronica facturaElectronica){
         Factura f = readFactura(facturaElectronica);
-        if (f == null) return "-";
+        if (f == null) return facturaElectronica.getDescription();
         StringBuilder buffer = new StringBuilder();
         int index = 0;
         String str;

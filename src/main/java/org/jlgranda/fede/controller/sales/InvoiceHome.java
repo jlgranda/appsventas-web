@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +39,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
@@ -55,7 +57,15 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Strings;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.CategoryAxis;
+import org.primefaces.model.chart.ChartSeries;
+import org.primefaces.model.chart.HorizontalBarChartModel;
+import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
 
 /**
  *
@@ -115,6 +125,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
     
+    @Inject 
+    private FacturaElectronicaHome facturaElectronicaHome;
 
     @PostConstruct
     private void init() {
@@ -360,6 +372,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         return total;
     }
+
     
     public void calculeChange() {
         
@@ -471,5 +484,122 @@ public class InvoiceHome extends FedeController implements Serializable {
     @Override
     public List<Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /////////////////////////////////////////////////////////////////////////
+    // Chart data model
+    /////////////////////////////////////////////////////////////////////////
+    private HorizontalBarChartModel balanceHorizontalBarModel;
+    private LineChartModel balanceLineChartModel;
+
+    public HorizontalBarChartModel getBalanceHorizontalBarModel() {
+        if (balanceHorizontalBarModel == null){
+            setBalanceHorizontalBarModel(createHorizontalBarModel());
+        }
+        return balanceHorizontalBarModel;
+    }
+
+    public void setBalanceHorizontalBarModel(HorizontalBarChartModel balanceHorizontalBarModel) {
+        this.balanceHorizontalBarModel = balanceHorizontalBarModel;
+    }
+
+    public LineChartModel getBalanceLineChartModel() {
+        if (balanceLineChartModel == null){
+            setBalanceLineChartModel(createLineChartModel());
+        }
+        return balanceLineChartModel;
+    }
+
+    public void setBalanceLineChartModel(LineChartModel balanceLineChartModel) {
+        this.balanceLineChartModel = balanceLineChartModel;
+    }
+    
+    private HorizontalBarChartModel createHorizontalBarModel() {
+        HorizontalBarChartModel horizontalBarModel = new HorizontalBarChartModel();
+ 
+        ChartSeries sales = new ChartSeries();
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        Calendar calendar = Calendar.getInstance();
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(getStart(), getEnd()); i++){
+            calendar.setTime(getStart());
+            sales.set(calendar.get(Calendar.DAY_OF_WEEK), calculeTotal(getMyLastlastInvoices()));
+        }
+        
+ 
+        ChartSeries purchases = new ChartSeries();
+        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        facturaElectronicaHome.setStart(getStart());
+        facturaElectronicaHome.setEnd(getEnd());
+        facturaElectronicaHome.filter();
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(getStart(), getEnd()); i++){
+            calendar.setTime(getStart());
+            purchases.set(calendar.get(Calendar.DAY_OF_WEEK), facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getLazyDataModel().getResultList()));
+        }
+ 
+        horizontalBarModel.addSeries(sales);
+        horizontalBarModel.addSeries(purchases);
+         
+        horizontalBarModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
+        horizontalBarModel.setLegendPosition("e");
+        horizontalBarModel.setStacked(true);
+         
+        Axis xAxis = horizontalBarModel.getAxis(AxisType.X);
+        xAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        xAxis.setMin(0);
+        xAxis.setMax(200);
+         
+        Axis yAxis = horizontalBarModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.date.day.scale"));  
+        return horizontalBarModel;
+    }
+    
+    private LineChartModel createLineChartModel() {
+        LineChartModel areaModel = new LineChartModel();
+ 
+        LineChartSeries sales = new LineChartSeries();
+        sales.setFill(true);
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+        Date _start = Dates.addDays(getStart(), -1 * range);
+        Date _step = _start;
+        String label = "";
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
+            _step = Dates.addDays(_step, 1); //Siguiente día
+            label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+            sales.set(label, calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step))));
+            
+        }
+        
+ 
+        LineChartSeries purchases = new LineChartSeries();
+        purchases.setFill(true);
+        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        _step = _start;
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
+            _step = Dates.addDays(_step, 1); //Siguiente día
+            label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+            facturaElectronicaHome.setStart(Dates.minimumDate(_step));
+            facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
+            purchases.set(label, facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList()));
+            
+        }
+ 
+ 
+        areaModel.addSeries(sales);
+        areaModel.addSeries(purchases);
+         
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
+        areaModel.setLegendPosition("ne");
+        areaModel.setStacked(true);
+        areaModel.setShowPointLabels(true);
+         
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        areaModel.getAxes().put(AxisType.X, xAxis);
+        Axis yAxis = areaModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        yAxis.setMin(0);
+        yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
+        
+        return areaModel;
     }
 }
