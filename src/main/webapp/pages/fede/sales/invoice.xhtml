@@ -150,7 +150,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      <h2 class="BigTopic">#{i18n['app.fede.sales.payment.discount']}</h2>
                                      <p:inputNumber id="dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="false"
                                                    styleClass=""
-                                                   decimalSeparator="." thousandSeparator="," decimalPlaces="3">
+                                                   decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                   thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                   decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
                                         <p:ajax listener="#{invoiceHome.calculeChange()}" update="change" partialSubmit="true"/>
                                     </p:inputNumber>
                                 </div>

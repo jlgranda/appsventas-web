@@ -20,6 +20,8 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.ejb.SettingService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +114,19 @@ public class SettingHome extends FedeController implements Serializable {
         QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
+    
+    /**
+     * Obtener todas las configuraciones del usuario
+     *
+     * @return la lista de propiedades sobreescribibles
+     */
+    protected List<Setting> findMySettings() {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("owner", subject);
+        filters.put("codeType", CodeType.SUBJECT); ///propiedades del sistema
+        QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
+    }
 
     public void cancelar() {
         setSetting(null);
@@ -120,12 +135,15 @@ public class SettingHome extends FedeController implements Serializable {
     public void save() {
         try {
             settingService.save(getSetting().getId(), getSetting());
-            addDefaultSuccessMessage();
-
+            
             //Actualizar el cache
             this.cache.put(getSetting().getName(), getSetting().getValue());
+            
             //vaciar objeto en edición
             setSetting(null);
+            
+            addDefaultSuccessMessage();
+
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
@@ -163,16 +181,17 @@ public class SettingHome extends FedeController implements Serializable {
     public Setting getSetting() {
         if (!Strings.isNullOrEmpty(settingName) && this.setting == null) {
             //Cargar objeto setting por nombre
-            List<Setting> settingsByNameAndOwner = settingService.findByNamedQuery("Setting.findByName", this.settingName);
-            if (!settingsByNameAndOwner.isEmpty()) {
+            Setting settingsByNameAndOwner = settingService.findByName(settingName, subject);
+            if (settingsByNameAndOwner != null) {
                 //El objeto configuración de usuario
-                this.setting = settingsByNameAndOwner.get(0);
+                this.setting = settingsByNameAndOwner;
+            } else {
+                this.setting = settingService.findByName(settingName);
             }
         } else if (settingId != null && this.setting == null) {
             //Cargar objeto setting por id, carga el objeto directamente.
             this.setting = settingService.find(settingId);
         }
-
         return this.setting;
     }
 
@@ -215,13 +234,19 @@ public class SettingHome extends FedeController implements Serializable {
 
     public List<Setting> getOverwritableSettings() {
         if (overwritableSettings.isEmpty()) {
-            setOverwritableSettings(findSettingsForOverwrite());
+            addOverwritableSettings(findMySettings());
+            addOverwritableSettings(findSettingsForOverwrite());
+            Collections.sort(this.overwritableSettings);
         }
         return overwritableSettings;
     }
 
     public void setOverwritableSettings(List<Setting> overwritableSettings) {
         this.overwritableSettings = overwritableSettings;
+    }
+    
+    public void addOverwritableSettings(List<Setting> settings) {
+        this.overwritableSettings.addAll(settings);
     }
 
     //</editor-fold> 

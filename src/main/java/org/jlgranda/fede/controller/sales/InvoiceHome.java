@@ -127,7 +127,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     @Inject 
     private FacturaElectronicaHome facturaElectronicaHome;
-
+    
     @PostConstruct
     private void init() {
         
@@ -557,7 +557,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         LineChartModel areaModel = new LineChartModel();
  
         LineChartSeries sales = new LineChartSeries();
-        sales.setFill(true);
+        sales.setFill(false);
         sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
         int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
         Date _start = Dates.addDays(getStart(), -1 * range);
@@ -572,7 +572,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         
  
         LineChartSeries purchases = new LineChartSeries();
-        purchases.setFill(true);
+        purchases.setFill(false);
         purchases.setLabel(I18nUtil.getMessages("common.purchases"));
         _step = _start;
         for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
@@ -589,9 +589,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.addSeries(purchases);
          
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        areaModel.setLegendPosition("ne");
-        areaModel.setStacked(true);
+        areaModel.setLegendPosition("e");
+        areaModel.setExtender("skinChart");
+        areaModel.setAnimate(false);
         areaModel.setShowPointLabels(true);
+        
          
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
         areaModel.getAxes().put(AxisType.X, xAxis);
