@@ -186,7 +186,7 @@ public class SettingHome extends FedeController implements Serializable {
                 //El objeto configuración de usuario
                 this.setting = settingsByNameAndOwner;
             } else {
-                this.setting = settingService.findByName(settingName);
+                this.setting = buildSettingFrom(settingService.findByName(settingName));
             }
         } else if (settingId != null && this.setting == null) {
             //Cargar objeto setting por id, carga el objeto directamente.
