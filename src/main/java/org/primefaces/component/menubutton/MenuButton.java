@@ -21,22 +21,15 @@ package org.primefaces.component.menubutton;
 import org.primefaces.component.menu.AbstractMenu;
 import javax.faces.context.FacesContext;
 import javax.faces.component.UINamingContainer;
-import javax.el.ValueExpression;
-import javax.el.MethodExpression;
-import javax.faces.render.Renderer;
-import java.io.IOException;
-import javax.faces.component.UIComponent;
-import javax.faces.event.AbortProcessingException;
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
-import java.util.List;
-import java.util.ArrayList;
 
 @ResourceDependencies({
-	@ResourceDependency(library="primefaces", name="primefaces.css"),
+	@ResourceDependency(library="primefaces", name="components.css"),
 	@ResourceDependency(library="primefaces", name="jquery/jquery.js"),
 	@ResourceDependency(library="primefaces", name="jquery/jquery-plugins.js"),
-	@ResourceDependency(library="primefaces", name="primefaces.js")
+	@ResourceDependency(library="primefaces", name="core.js"),
+	@ResourceDependency(library="primefaces", name="components.js")
 })
 public class MenuButton extends AbstractMenu implements org.primefaces.component.api.Widget {
 
@@ -76,6 +69,7 @@ public class MenuButton extends AbstractMenu implements org.primefaces.component
 		setRendererType(DEFAULT_RENDERER);
 	}
 
+        @Override
 	public String getFamily() {
 		return COMPONENT_FAMILY;
 	}
@@ -160,6 +154,7 @@ public class MenuButton extends AbstractMenu implements org.primefaces.component
     public final static String CONTAINER_CLASS = "ui-menubutton";
 //    public final static String ICON_CLASS = "ui-icon-triangle-1-s";
     public final static String ICON_CLASS = " fa fa-angle-down";
+        @Override
 	public String resolveWidgetVar() {
 		FacesContext context = getFacesContext();
 		String userWidgetVar = (String) getAttributes().get("widgetVar");

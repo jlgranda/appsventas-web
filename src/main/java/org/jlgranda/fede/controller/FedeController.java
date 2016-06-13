@@ -92,6 +92,9 @@ public abstract class FedeController {
         this.selectedTriStateGroups = selectedTriStateGroups;
     }
 
+    public String redirect(){
+        return getOutcome();
+    }
     /**
      * Gets the http servlet request.
      *

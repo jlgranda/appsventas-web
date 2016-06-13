@@ -22,7 +22,9 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -34,6 +36,8 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.QueryData;
+import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +49,8 @@ import org.slf4j.LoggerFactory;
 @Named
 @RequestScoped
 public class InventoryHome extends FedeController implements Serializable {
+
+    private static final long serialVersionUID = -21640696368253046L;
     
     Logger logger = LoggerFactory.getLogger(InventoryHome.class);
     
@@ -149,5 +155,22 @@ public class InventoryHome extends FedeController implements Serializable {
         }
 
         return this.groups;
+    }
+    
+    /**
+     * Busca objetos <tt>Product</tt> para la clave de búsqueda en las columnas
+     * name y code
+     * @param keyword
+     * @return una lista de objetos <tt>Product</tt> que coinciden con la palabra clave dada.
+     */
+    public List<Product> find(String keyword) {
+        keyword = keyword.trim();
+        Map<String, Object> filters = new HashMap<>();
+        Map<String, String> columns = new HashMap<>();
+        columns.put("code", keyword);
+        columns.put("name", keyword);
+        filters.put("dummy", columns);
+        QueryData<Product> queryData = productService.find(-1, -1, "code, name", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
     }
 }

@@ -85,7 +85,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <h:form>
                             <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '20')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
-                            <p:tabView style="margin:-20px; border:none 0px;">
+                            <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
+                            <div class="SeparatorFull"></div>
+                            <div class="EmptyBox20"></div>
+
+                            <div class="Container100 Responsive100">
+                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
+                            </div>
+<!--                            <div class="Container40 Responsive50">
+                                <p:selectOneMenu id="console3" value="#{invoiceHome.outcome}" style="min-width:100px; width:120px; margin:10px 10px 5px 0px;" styleClass="WidAutoOnMobile">
+                                    <f:selectItem itemLabel="Select Period" itemValue="" />
+                                    <f:selectItem itemLabel="Daily" itemValue="Daily" />
+                                    <f:selectItem itemLabel="Weekly" itemValue="Weekly" />
+                                    <f:selectItem itemLabel="Monthly" itemValue="Monthly" />
+                                    <f:selectItem itemLabel="Annual" itemValue="Annual" />
+                                </p:selectOneMenu>
+                            </div>-->
+                            <div class="EmptyBox20"></div>
+                            <p:tabView style="margin: 0 -20px 0 -20px; border:none 0px;">
                                 <p:tab title="#{i18n['PreInvoiced']}">
                                     <div class="Container100">
                                         <div class="Container100 Responsive100">
@@ -291,65 +308,65 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </div>
 
             <!-- Section 2 -->
-<!--            <div class="Container100">
-                <div class="ContainerIndent">
-                    <div class="Card ShadowEffect HeiAutoOnMobile">
-                        <h:form>
-                            <h2 class="CardTopic TexAlCenter">#{i18n['app.fede.GetInvoices']}</h2>
-                            <div class="EmptyBox20"></div>
-
-                            <div class="Container50 Responsive50">
-                                <div class="ContainerIndent">
-                                    <div class="Card SoftGrayBack TexAlCenter">
-                                        <i class="fa fa-upload Fs50 BoldGray DispBlock"></i>
-                                        <div class="EmptyBox5"></div>
-                                        <span class="FontRobotoLight Fs18">#{i18n['FromFile']}</span>
-                                        <div class="EmptyBox10"></div>
-                                        <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
-                                    </div>
-                                </div> 
+            <!--            <div class="Container100">
+                            <div class="ContainerIndent">
+                                <div class="Card ShadowEffect HeiAutoOnMobile">
+                                    <h:form>
+                                        <h2 class="CardTopic TexAlCenter">#{i18n['app.fede.GetInvoices']}</h2>
+                                        <div class="EmptyBox20"></div>
+            
+                                        <div class="Container50 Responsive50">
+                                            <div class="ContainerIndent">
+                                                <div class="Card SoftGrayBack TexAlCenter">
+                                                    <i class="fa fa-upload Fs50 BoldGray DispBlock"></i>
+                                                    <div class="EmptyBox5"></div>
+                                                    <span class="FontRobotoLight Fs18">#{i18n['FromFile']}</span>
+                                                    <div class="EmptyBox10"></div>
+                                                    <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
+                                                </div>
+                                            </div> 
+                                        </div>
+            
+                                        <div class="Container50 Responsive50">
+                                            <div class="ContainerIndent">
+                                                <div class="Card SoftGrayBack TexAlCenter">
+                                                    <i class="fa fa-link Fs50 BoldGray DispBlock"></i>
+                                                    <div class="EmptyBox5"></div>
+                                                    <span class="FontRobotoLight Fs18">#{i18n['FromURL']}</span>
+                                                    <div class="EmptyBox10"></div>
+                                                    <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
+                                                </div>
+                                            </div> 
+                                        </div>
+            
+                                        <div class="Container50 Responsive50">
+                                            <div class="ContainerIndent">
+                                                <div class="Card SoftGrayBack TexAlCenter">
+                                                    <i class="fa fa-inbox Fs50 BoldGray DispBlock"></i>
+                                                    <div class="EmptyBox5"></div>
+                                                    <span class="FontRobotoLight Fs18">#{i18n['FromEmail']}</span>
+                                                    <div class="EmptyBox10"></div>
+                                                    <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </h:form>
+                                </div>
                             </div>
-
-                            <div class="Container50 Responsive50">
-                                <div class="ContainerIndent">
-                                    <div class="Card SoftGrayBack TexAlCenter">
-                                        <i class="fa fa-link Fs50 BoldGray DispBlock"></i>
-                                        <div class="EmptyBox5"></div>
-                                        <span class="FontRobotoLight Fs18">#{i18n['FromURL']}</span>
-                                        <div class="EmptyBox10"></div>
-                                        <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
-                                    </div>
-                                </div> 
-                            </div>
-
-                            <div class="Container50 Responsive50">
-                                <div class="ContainerIndent">
-                                    <div class="Card SoftGrayBack TexAlCenter">
-                                        <i class="fa fa-inbox Fs50 BoldGray DispBlock"></i>
-                                        <div class="EmptyBox5"></div>
-                                        <span class="FontRobotoLight Fs18">#{i18n['FromEmail']}</span>
-                                        <div class="EmptyBox10"></div>
-                                        <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
-                                    </div>
-                                </div> 
-                            </div>
-                        </h:form>
-                    </div>
-                </div>
-            </div>-->
+                        </div>-->
         </div>
 
 
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">
-                //<![CDATA[
-                function refresh(){
-                       location.reload(); // refresh page    
-                       
-                }
-                //]]>
-            </script>
+            //<![CDATA[
+            function refresh() {
+                location.reload(); // refresh page    
+
+            }
+            //]]>
+        </script>
     </ui:define>
 
 </ui:composition>

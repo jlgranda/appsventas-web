@@ -15,13 +15,128 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>TODO supply a title</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/templates/fede_template.xhtml">
+    <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="facturaElectronicaId" value="#{facturaElectronicaHome.facturaElectronicaId}" />
+        </f:metadata>
+    </ui:define>
+    <ui:define name="subheader">
+        #{facturaElectronicaHome.facturaElectronicaId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.purchase']}
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="Container100 ui-fluid">
+            <div class="ContainerIndent">
+                <div class="Card ShadowEffect">
+                    <h2 class="BigTopic">#{i18n['app.fede.purchase']} </h2>
+                    <div class="EmptyBox10"></div>
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.purchase.supplier']}</div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Container90 Responsive50">
+                                <p:autoComplete value="#{facturaElectronicaHome.supplier}" effect="fade" 
+                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
+                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                forceSelection="true" required="true" disabled="#{facturaElectronicaHome.useDefaultSupplier}">
+                                    <p:column>
+                                        <h:outputText value="#{entidad.fullName}"/>
+                                    </p:column>
+                                </p:autoComplete>
+                            </div>
+                            <div class="Container10 Responsive50">
+                                <p:commandButton id="button-change-customer"
+                                                 icon="fa fa-user-plus Fs14 Black" styleClass="GrayButton"
+                                                 disabled="#{facturaElectronicaHome.useDefaultSupplier}">
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="EmptyBox10"></div>
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.detail.add']}</div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Card SoftGrayBack">
+                                <jlgranda:input id="femss" name="femss" type="calendar" label="#{i18n['ride.infoFactura.fechaEmision']}" 
+                                                execute="none" render="femss" value="#{facturaElectronicaHome.facturaElectronica.fechaEmision}" required="true"
+                                                    container="none"/>
+                                <jlgranda:input id="impt" name="impt" type="number" label="#{i18n['ride.infoFactura.importeTotal']}" 
+                                                execute="none" render="impt" value="#{facturaElectronicaHome.facturaElectronica.importeTotal}" required="true"
+                                                    container="none"/>
+                                <jlgranda:input id="descuento" name="descuento" type="number" label="#{i18n['ride.infoFactura.totalDescuento']}" 
+                                                execute="none" render="descuento" value="#{facturaElectronicaHome.facturaElectronica.totalDescuento}" required="true"
+                                                    container="none"/>
+                                <jlgranda:input id="memo" name="memo" type="textarea" label="#{i18n['common.description']}" 
+                                                execute="none" render="memo" value="#{facturaElectronicaHome.facturaElectronica.description}" required="true"
+                                                    container="none"/>
+                                <!--jlgranda:input id="tsimp" name="tsimp" type="number" label="#{i18n['ride.infoFactura.totalSinImpuestos']}" 
+                                                execute="none" render="tsimp" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" required="true"
+                                                    container="none"/-->
+                            </div>
+                        </div> 
+
+                    </div>
+                    <div class="EmptyBox10"></div>
+                    
+                    <p:toolbar rendered="#{true}">
+                        <f:facet name="left">
+                            <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 
+                                             actionListener="#{facturaElectronicaHome.save()}" action="#{facturaElectronicaHome.redirect()}" 
+                                             disabled="#{false}" 
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                        </f:facet>
+
+                        <f:facet name="right">
+
+                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                                             actionListener="#{invoiceHome.closeDialog(null)}" 
+                                             action="home"
+                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                            <!--p:menuButton value="#{i18n['common.options']}">
+                                <p:menuitem value="#{i18n['Save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                            actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
+                                            immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
+                            </p:menuButton-->
+                        </f:facet>
+
+                    </p:toolbar>
+                    
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

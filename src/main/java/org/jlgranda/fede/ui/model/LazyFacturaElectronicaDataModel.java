@@ -89,8 +89,6 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     }
 
     public List<FacturaElectronica> getResultList() {
-        logger.info("load BussinesEntitys");
-
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }

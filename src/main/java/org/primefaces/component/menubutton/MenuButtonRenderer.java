@@ -30,12 +30,12 @@ import org.primefaces.model.menu.MenuElement;
 import org.primefaces.model.menu.MenuItem;
 import org.primefaces.model.menu.Separator;
 import org.primefaces.util.ComponentTraversalUtils;
-import org.primefaces.util.ComponentUtils;
 import org.primefaces.util.HTML;
 import org.primefaces.util.WidgetBuilder;
 
 public class MenuButtonRenderer extends BaseMenuRenderer {
 
+   @Override
    protected void encodeMarkup(FacesContext context, AbstractMenu abstractMenu) throws IOException {
 		ResponseWriter writer = context.getResponseWriter();
         MenuButton button = (MenuButton) abstractMenu;
@@ -135,6 +135,7 @@ public class MenuButtonRenderer extends BaseMenuRenderer {
         
     }
 
+   @Override
 	protected void encodeScript(FacesContext context, AbstractMenu abstractMenu) throws IOException {
         MenuButton button = (MenuButton) abstractMenu;
 		String clientId = button.getClientId(context);

@@ -14,7 +14,7 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <primefaces.version>5.3</primefaces.version>
+        <primefaces.version>6.0</primefaces.version>
         <primefaces.theme.version>1.0.10</primefaces.theme.version>
         <hibernate.version>5.0.7.Final</hibernate.version>
         <!-- WildFly dependency versions -->
@@ -278,7 +278,7 @@
         <dependency>  
             <groupId>org.primefaces</groupId>  
             <artifactId>primefaces</artifactId>  
-            <version>5.3</version>
+            <version>${primefaces.version}</version>
         </dependency> 
         <dependency>
             <groupId>org.primefaces.extensions</groupId>

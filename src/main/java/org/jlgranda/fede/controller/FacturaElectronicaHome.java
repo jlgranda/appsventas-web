@@ -52,6 +52,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
@@ -61,6 +62,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.SourceType;
@@ -114,6 +116,31 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private LazyFacturaElectronicaDataModel lazyDataModel;
 
     private FacturaElectronica ultimafacturaElectronica;
+    
+    /**
+     * Instancia de entidad <tt>FacturaElectronica</tt> para edición manual
+     */
+    private FacturaElectronica facturaElectronica;
+    
+    /**
+     * Instancia de entidad <tt>Factura</tt> para edición manual
+     */
+    private Factura factura;
+    
+    /**
+     * Id de la actura electrónica en edición
+     */
+    private Long facturaElectronicaId;
+    
+    /**
+     * Instancia <tt>Subject</tt> para registro de proveedor
+     */
+    private Subject supplier;
+    
+    /**
+     * Bandera de activación de uso de proveedor por defecto.
+     */
+    private boolean useDefaultSupplier;
 
     /**
      * Lista de facturas electrónicas a usar el dashboard y/o widgets
@@ -136,6 +163,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
+        
+        setFacturaElectronica(facturaElectronicaService.createInstance());
+        setSupplier(getDefaultSupplier());
+        setUseDefaultSupplier(false); //TODO desde configuraciones
+        setOutcome("fede-dashboard");
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -180,6 +212,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return sampleResultList;
     }
+    
+    public List<FacturaElectronica> getResultList() {
+        return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmision", 0, subject, getStart(), getEnd(), true);
+    }
+    
 
     public void setSampleResultList(List<FacturaElectronica> sampleResultList) {
         this.sampleResultList = sampleResultList;
@@ -196,6 +233,46 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void setUltimafacturaElectronica(FacturaElectronica ultimafacturaElectronica) {
         this.ultimafacturaElectronica = ultimafacturaElectronica;
+    }
+
+    public FacturaElectronica getFacturaElectronica() {
+        return facturaElectronica;
+    }
+
+    public void setFacturaElectronica(FacturaElectronica facturaElectronica) {
+        this.facturaElectronica = facturaElectronica;
+    }
+
+    public Factura getFactura() {
+        return factura;
+    }
+
+    public void setFactura(Factura factura) {
+        this.factura = factura;
+    }
+
+    public Long getFacturaElectronicaId() {
+        return facturaElectronicaId;
+    }
+
+    public void setFacturaElectronicaId(Long facturaElectronicaId) {
+        this.facturaElectronicaId = facturaElectronicaId;
+    }
+
+    public Subject getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Subject supplier) {
+        this.supplier = supplier;
+    }
+
+    public boolean isUseDefaultSupplier() {
+        return useDefaultSupplier;
+    }
+
+    public void setUseDefaultSupplier(boolean useDefaultSupplier) {
+        this.useDefaultSupplier = useDefaultSupplier;
     }
 
     public void addURL() {
@@ -431,6 +508,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             instancia.setNumeroAutorizacion(FacturaUtil.read(xml, tag));
 
             instancia.setSourceType(sourceType); //El tipo de importación realizado
+            facturaElectronica.setEmissionType(EmissionType.PURCHASE);
 
             Subject author = null;
             if ((author = subjectService.findUniqueByNamedQuery("BussinesEntity.findByCodeAndCodeType", factura.getInfoTributaria().getRuc(), CodeType.RUC)) == null) {
@@ -466,6 +544,27 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
 
         return instancia;
+    }
+    
+    public void save() {
+        facturaElectronica.setCode(UUID.randomUUID().toString());
+        facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
+        facturaElectronica.setFilename(null);
+        facturaElectronica.setContenido(null);
+        facturaElectronica.setTotalSinImpuestos(facturaElectronica.getImporteTotal());
+        facturaElectronica.setMoneda("DOLAR");
+
+        facturaElectronica.setClaveAcceso(null);
+        facturaElectronica.setFechaAutorizacion(null);
+        facturaElectronica.setNumeroAutorizacion(null);
+
+        facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
+        facturaElectronica.setEmissionType(EmissionType.PURCHASE);
+
+        facturaElectronica.setAuthor(getSupplier());
+        facturaElectronica.setOwner(subject);
+
+        facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
     }
 
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
@@ -612,6 +711,19 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
 
         return this.groups;
+    }
+
+    private Subject getDefaultSupplier() {
+        return subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", "proveedorsinfactura");
+    }
+    
+    public BigDecimal calculeTotal(List<FacturaElectronica> list) {
+        BigDecimal total = new BigDecimal(0);
+        for (FacturaElectronica i : list) {
+            total = total.add(i.getImporteTotal());
+        }
+
+        return total;
     }
 
 }

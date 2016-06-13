@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            #{i18n['Hello']} #{subject.firstname}&nbsp;&lt;#{subject.fedeEmail}
+            
         </ui:define>
         <ui:define name="content">
             <h:form>
@@ -49,16 +49,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             value="#{subject.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" execute="@this save" render="bio"/>
                             <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
                                             value="#{subject.description}" required="false" inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
-                            <div class="Wid50 Fleft Responsive50">
-                                <p:commandButton value="#{i18n['Save']}" ajax="true" 
-                                                 actionListener="#{subjectHome.save(subject)}" disabled="false" 
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                            </div>
-                            <div class="EmptyBox5 ShowOnMobile"></div>
-                            <div class="Wid50 Fleft Responsive50">
-                                <p:commandButton value="#{i18n['Cancel']}" ajax="true" action="home" disabled="false" 
-                                                 styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
-                            </div>
+                            
+                            <div class="EmptyBox10"></div>
+
+                            <p:toolbar rendered="#{subject != null}">
+                                <f:facet name="left">
+
+                                    <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                                                     actionListener="#{subjectHome.save(subject)}" disabled="false" 
+                                                     style="width: auto !important;"
+                                                     action="#{subjectHome.getOutcome()}" type="submit"/>
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+
+                                </f:facet>
+
+                                <f:facet name="right">
+
+                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                                     action="home" 
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                                </f:facet>
+
+                            </p:toolbar>
                         </div>
                     </div>
                 </div>

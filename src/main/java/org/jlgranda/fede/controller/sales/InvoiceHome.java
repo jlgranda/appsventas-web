@@ -18,42 +18,54 @@
 package org.jlgranda.fede.controller.sales;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
-import com.jlgranda.fede.ejb.sales.ProductService;
+import com.jlgranda.fede.ejb.sales.PaymentService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
+import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
+import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.sales.Detail;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jlgranda.fede.model.sales.Invoice;
-import org.jlgranda.fede.model.sales.Product;
+import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import org.omnifaces.cdi.ViewScoped;
+import org.jpapi.util.Strings;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.CategoryAxis;
+import org.primefaces.model.chart.ChartSeries;
+import org.primefaces.model.chart.HorizontalBarChartModel;
+import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
 
 /**
  *
@@ -71,6 +83,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     @LoggedIn
     private Subject subject;
 
+    private Subject customer;
+    
     @Inject
     private SettingHome settingHome;
 
@@ -81,30 +95,46 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Invoice lastPreInvoice;
 
     private Long invoiceId;
+    
+    private Detail candidateDetail;
 
     private List<Detail> candidateDetails = new ArrayList<>();
+    
+    private Payment payment;
 
     @EJB
     private InvoiceService invoiceService;
 
     @EJB
-    private DetailService detailService;
-
+    private SubjectService subjectService;
+    
     @EJB
-    private ProductService productService;
+    private DetailService detailService;
+    
+    @EJB
+    private PaymentService paymentService;
     
     private LazyInvoiceDataModel lazyDataModel; 
     
     private DocumentType documentType;
     
+    private boolean useDefaultCustomer;
+    
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
+    
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
-
+    
+    @Inject 
+    private FacturaElectronicaHome facturaElectronicaHome;
+    
     @PostConstruct
     private void init() {
+        
         setInvoice(invoiceService.createInstance());
-        int amount = 0;
+        setCandidateDetail(detailService.createInstance(1));
+        setPayment(paymentService.createInstance());
+        int amount = 0; //Rango de fechas para visualiar lista de entidades
         try {
             amount = Integer.valueOf(settingHome.getValue(SettingNames.MYLASTS_RANGE, "1"));
         } catch (java.lang.NumberFormatException nfe) {
@@ -115,7 +145,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
-        System.err.println("init finalizado!!!!");
+        setOutcome("preinvoices");
+        setUseDefaultCustomer(true); //Usar consumidor final por ahora
     }
 
     public Long getInvoiceId() {
@@ -131,7 +162,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public void setDocumentType(DocumentType documentType) {
-        System.err.println(">>> documentType: " + documentType);
         this.documentType = documentType;
     }
 
@@ -140,6 +170,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         if (invoiceId != null && !this.invoice.isPersistent()) {
             this.invoice = invoiceService.find(invoiceId);
             loadCandidateDetails(this.invoice.getDetails());
+            setCustomer(this.invoice.getOwner());
         }
         return invoice;
     }
@@ -150,7 +181,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public Invoice getLastInvoice() {
         if (lastInvoice == null){
-            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE, getStart(), getEnd());
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE, true, getStart(), getEnd());
             lastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastInvoice;
@@ -162,7 +193,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public Invoice getLastPreInvoice() {
         if (lastPreInvoice == null){
-            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE, getStart(), getEnd());
+            List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE, true, getStart(), getEnd());
             lastPreInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastPreInvoice;
@@ -172,15 +203,47 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.lastPreInvoice = lastPreInvoice;
     }
 
+    public Detail getCandidateDetail() {
+        return candidateDetail;
+    }
+
+    public void setCandidateDetail(Detail candidateDetail) {
+        this.candidateDetail = candidateDetail;
+    }
+
     public List<Detail> getCandidateDetails() {
-        if (this.candidateDetails.isEmpty()) {
-            loadCandidateDetails(null);
-        }
         return this.candidateDetails;
     }
 
     public void setCandidateDetails(List<Detail> candidateDetails) {
         this.candidateDetails = candidateDetails;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public Subject getCustomer() {
+        if (customer == null && isUseDefaultCustomer()){
+            setCustomer(subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", "consumidorfinal"));
+        }
+        return customer;
+    }
+
+    public void setCustomer(Subject customer) {
+        this.customer = customer;
+    }
+
+    public boolean isUseDefaultCustomer() {
+        return useDefaultCustomer;
+    }
+
+    public void setUseDefaultCustomer(boolean useDefaultCustomer) {
+        this.useDefaultCustomer = useDefaultCustomer;
     }
 
     public List<Invoice> getMyLastlastPreInvoices() {
@@ -216,6 +279,21 @@ public class InvoiceHome extends FedeController implements Serializable {
         super.openDialog(settingHome.getValue("app.fede.sales.invoice.popup", "/pages/fede/sales/popup_invoice"), width, height, true);
         return true;
     }
+    
+    /**
+     * Guarda la entidad marcandola como INVOICE CANCELED
+     *
+     * @return outcome de exito o fracaso de la acción
+     */
+    public String cancel() {
+        getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Se convierte en pre factura
+        getInvoice().setEmissionType(EmissionType.CANCELED); //Se convierte en pre factura cancelada
+        getInvoice().setStatus(EmissionType.CANCELED.toString());
+        getInvoice().setActive(false);
+        getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
+        save(true); //Guardar forzando
+        return "success";
+    }
 
     /**
      * Guarda la entidad marcandola como INVOICE y generando un secuencial
@@ -224,15 +302,35 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
-        getInvoice().setSequencial("TODO:generar-secuencial");//Generar el secuencia legal de factura
-        save();
-        return "success";
+        String outcome = "success";
+        calculeChange();
+        if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+            getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
+            getInvoice().setSequencial("TODO:generar-secuencial-sri");//Generar el secuencia legal de factura
+            //Agregar el pago
+            getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
+            getInvoice().addPayment(getPayment());
+            save();
+            setOutcome("preinvoices");
+        } else {
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+            setOutcome("");
+        }
+        return outcome;
     }
 
-    public String save() {
+    public String save(){
+        return save(false);
+    }
+    public String save(boolean force) {
+        if (candidateDetails.isEmpty() && ! force) {
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.invoice.incomplete"), I18nUtil.getMessages("app.fede.sales.invoice.incomplete.detail"));
+            setOutcome("");
+            return "";
+        }
         try {
             getInvoice().setAuthor(subject);
+            getInvoice().setOwner(getCustomer()); //Propietario de la factura, la persona que realiza la compra
             getInvoice().setOrganization(null);
             getCandidateDetails().stream().forEach((d) -> {
                 if (d.isPersistent()) { //Actualizar la cantidad
@@ -253,6 +351,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
             invoiceService.save(getInvoice().getId(), getInvoice());
             this.addDefaultSuccessMessage();
+            setOutcome("preinvoices");
             return "success";
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
@@ -272,6 +371,15 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
 
         return total;
+    }
+
+    
+    public void calculeChange() {
+        
+        //subtotal = total menos descuento
+        BigDecimal subtotal = getInvoice().getTotal().subtract(getPayment().getDiscount());
+        //lo que he recibido menos el subtotal
+        getPayment().setChange(getPayment().getCash().subtract(subtotal));
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {
@@ -330,33 +438,170 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     private void loadCandidateDetails(List<Detail> details) {
-        this.candidateDetails.clear();
-        Detail detail = null;
-        if (details == null) {
-            for (Object obj : productService.findByNamedQuery("Product.findByOrganization")) {
-                detail = detailService.createInstance();
-                detail.setProduct((Product) obj);
-                detail.setAmount(0);
-                this.candidateDetails.add(detail);
-            }
-        } else {
+        if (details != null) {
+            this.candidateDetails.clear();
             this.invoice.getDetails().stream().forEach((d) -> {
                 this.candidateDetails.add(d);
             });
         }
     }
     
-    
-    public List<Invoice> findInvoices(Subject owner, DocumentType documentType, int limit, Date start, Date end){
-        if (owner == null){ //retornar todas
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, start, end);
+    public boolean addCandidateDetail(){
+        
+        candidateDetail.setPrice(candidateDetail.getProduct().getPrice());//Establecer el precio actual
+        this.invoice.addDetail(candidateDetail); //Marcar detail como parte del objeto invoice
+        boolean flag = false;
+        if (this.candidateDetails.contains(getCandidateDetail())) {
+            int index = this.candidateDetails.indexOf(getCandidateDetail());
+            float amount = this.candidateDetails.get(index).getAmount() + candidateDetail.getAmount();
+            this.candidateDetails.get(index).setAmount(amount);
         } else {
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOwner", limit, documentType, owner, start, end);
+            flag = this.candidateDetails.add(getCandidateDetail());
+        }
+
+        calculeChange();
+        //encerar para el siguiente producto
+        setCandidateDetail(detailService.createInstance(1));
+        return flag;
+    }
+    
+    public boolean addAndSaveCandidateDetail(){
+        this.invoice.addDetail(candidateDetail); //Marcar detail como parte del objeto invoice
+        boolean flag = addCandidateDetail();
+        if (flag) save();
+        return flag;
+    }
+    
+    
+    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end){
+        if (author == null){ //retornar todas
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
+        } else {
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndAuthor", limit, documentType, author, true, start, end);
         }
     }
 
     @Override
     public List<Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /////////////////////////////////////////////////////////////////////////
+    // Chart data model
+    /////////////////////////////////////////////////////////////////////////
+    private HorizontalBarChartModel balanceHorizontalBarModel;
+    private LineChartModel balanceLineChartModel;
+
+    public HorizontalBarChartModel getBalanceHorizontalBarModel() {
+        if (balanceHorizontalBarModel == null){
+            setBalanceHorizontalBarModel(createHorizontalBarModel());
+        }
+        return balanceHorizontalBarModel;
+    }
+
+    public void setBalanceHorizontalBarModel(HorizontalBarChartModel balanceHorizontalBarModel) {
+        this.balanceHorizontalBarModel = balanceHorizontalBarModel;
+    }
+
+    public LineChartModel getBalanceLineChartModel() {
+        if (balanceLineChartModel == null){
+            setBalanceLineChartModel(createLineChartModel());
+        }
+        return balanceLineChartModel;
+    }
+
+    public void setBalanceLineChartModel(LineChartModel balanceLineChartModel) {
+        this.balanceLineChartModel = balanceLineChartModel;
+    }
+    
+    private HorizontalBarChartModel createHorizontalBarModel() {
+        HorizontalBarChartModel horizontalBarModel = new HorizontalBarChartModel();
+ 
+        ChartSeries sales = new ChartSeries();
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        Calendar calendar = Calendar.getInstance();
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(getStart(), getEnd()); i++){
+            calendar.setTime(getStart());
+            sales.set(calendar.get(Calendar.DAY_OF_WEEK), calculeTotal(getMyLastlastInvoices()));
+        }
+        
+ 
+        ChartSeries purchases = new ChartSeries();
+        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        facturaElectronicaHome.setStart(getStart());
+        facturaElectronicaHome.setEnd(getEnd());
+        facturaElectronicaHome.filter();
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(getStart(), getEnd()); i++){
+            calendar.setTime(getStart());
+            purchases.set(calendar.get(Calendar.DAY_OF_WEEK), facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getLazyDataModel().getResultList()));
+        }
+ 
+        horizontalBarModel.addSeries(sales);
+        horizontalBarModel.addSeries(purchases);
+         
+        horizontalBarModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
+        horizontalBarModel.setLegendPosition("e");
+        horizontalBarModel.setStacked(true);
+         
+        Axis xAxis = horizontalBarModel.getAxis(AxisType.X);
+        xAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        xAxis.setMin(0);
+        xAxis.setMax(200);
+         
+        Axis yAxis = horizontalBarModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.date.day.scale"));  
+        return horizontalBarModel;
+    }
+    
+    private LineChartModel createLineChartModel() {
+        LineChartModel areaModel = new LineChartModel();
+ 
+        LineChartSeries sales = new LineChartSeries();
+        sales.setFill(false);
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+        Date _start = Dates.addDays(getStart(), -1 * range);
+        Date _step = _start;
+        String label = "";
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
+            _step = Dates.addDays(_step, 1); //Siguiente día
+            label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+            sales.set(label, calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step))));
+            
+        }
+        
+ 
+        LineChartSeries purchases = new LineChartSeries();
+        purchases.setFill(false);
+        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        _step = _start;
+        for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
+            _step = Dates.addDays(_step, 1); //Siguiente día
+            label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+            facturaElectronicaHome.setStart(Dates.minimumDate(_step));
+            facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
+            purchases.set(label, facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList()));
+            
+        }
+ 
+ 
+        areaModel.addSeries(sales);
+        areaModel.addSeries(purchases);
+         
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
+        areaModel.setLegendPosition("e");
+        areaModel.setExtender("skinChart");
+        areaModel.setAnimate(false);
+        areaModel.setShowPointLabels(true);
+        
+         
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        areaModel.getAxes().put(AxisType.X, xAxis);
+        Axis yAxis = areaModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        yAxis.setMin(0);
+        yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
+        
+        return areaModel;
     }
 }
