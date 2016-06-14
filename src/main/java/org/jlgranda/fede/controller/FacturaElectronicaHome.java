@@ -50,6 +50,7 @@ import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -214,7 +215,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
     
     public List<FacturaElectronica> getResultList() {
-        return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmision", 0, subject, getStart(), getEnd(), true);
+        return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmisionAndEmissionType", 0, subject, getStart(), getEnd(), EmissionType.PURCHASE_CASH, true);
     }
     
 
@@ -313,11 +314,13 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     /**
      * TODO !IMPLEMENTACION TEMPORAL
      *
+     * @param tag
      * @return
      */
     public BigDecimal calcularImporteTotal(String tag) {
         BigDecimal total = new BigDecimal(0);
-        for (FacturaElectronica fe : facturaElectronicaService.listarFacturasElectronicas(tag, subject, getStart(), getEnd())) {
+        for (Iterator<Object> it = facturaElectronicaService.findByNamedQueryWithLimit("findBussinesEntityByTagAndOwnerAndEmision", 0, tag, subject, getStart(), getEnd()).iterator(); it.hasNext();) {
+            FacturaElectronica fe = (FacturaElectronica) it.next();
             total = total.add(fe.getImporteTotal());
         }
         return total;
@@ -508,7 +511,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             instancia.setNumeroAutorizacion(FacturaUtil.read(xml, tag));
 
             instancia.setSourceType(sourceType); //El tipo de importación realizado
-            facturaElectronica.setEmissionType(EmissionType.PURCHASE);
+            instancia.setEmissionType(EmissionType.PURCHASE_CASH);
 
             Subject author = null;
             if ((author = subjectService.findUniqueByNamedQuery("BussinesEntity.findByCodeAndCodeType", factura.getInfoTributaria().getRuc(), CodeType.RUC)) == null) {
@@ -547,7 +550,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
     
     public void save() {
-        facturaElectronica.setCode(UUID.randomUUID().toString());
+        
         facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
         facturaElectronica.setFilename(null);
         facturaElectronica.setContenido(null);
@@ -559,10 +562,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         facturaElectronica.setNumeroAutorizacion(null);
 
         facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
-        facturaElectronica.setEmissionType(EmissionType.PURCHASE);
-
+    
         facturaElectronica.setAuthor(getSupplier());
         facturaElectronica.setOwner(subject);
+        
+        //Establecer un codigo por defecto
+        if (Strings.isNullOrEmpty(facturaElectronica.getCode())){
+            facturaElectronica.setCode(UUID.randomUUID().toString());
+        }
 
         facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
     }

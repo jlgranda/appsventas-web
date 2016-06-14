@@ -215,6 +215,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author.initials}">
                                 <h:outputText value="#{facturaElectronica.author.initials}" />
                             </p:column>
+                            <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}" sortBy="#{facturaElectronica.author.initials}">
+                                <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
+                            </p:column>
                             <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{facturaElectronica.importeTotal}"
                                       styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.importeTotal}">
@@ -225,6 +228,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                        styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
                                     <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['ride.infoFactura.emissionType']}" sortBy="#{facturaElectronica.emissionType}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{facturaElectronica.emissionType}">
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>

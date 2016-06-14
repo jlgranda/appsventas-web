@@ -40,42 +40,42 @@ public class MorrisChartHelper {
 
     public String printLine(String tag, Subject owner, Date start, Date end){
         List<FacturaElectronica> datas = new ArrayList<>();
-        datas = facturaElectronicaService.listarFacturasElectronicas(tag, owner, start, end);
-        StringBuilder morrisChart = new StringBuilder();
-        morrisChart.append("new Morris.Line({\n")
-                .append("element: 'dashboard-chart-" + tag + "',\n")
-                .append("data: [");
-        //Agregar datos aquí
-        for (FacturaElectronica s : datas){
-             morrisChart.append("{date: '" + s.getFechaEmision() + "', value: " + s.getImporteTotal() + "},\n");
-        }
-        morrisChart.append("],\n")
-                .append("xkey: 'date',\n")
-                .append("ykeys: ['value'],\n")
-                .append("labels: ['Importe total']\n")
-                .append("});");
-        
-        //Sample print
-//        return "new Morris.Line({\n" +
-//"                        // ID of the element in which to draw the chart.\n" +
-//"                        element: 'dashboard-chart-#{tag.code}',\n" +
-//"                        // Chart data records -- each entry in this array corresponds to a point on\n" +
-//"                        // the chart.\n" +
-//"                        data: [\n" +
-//"                            {year: '2008', value: 20},\n" +
-//"                            {year: '2009', value: 10},\n" +
-//"                            {year: '2010', value: 5},\n" +
-//"                            {year: '2011', value: 5},\n" +
-//"                            {year: '2012', value: 20}\n" +
-//"                        ],\n" +
-//"                        // The name of the data record attribute that contains x-values.\n" +
-//"                        xkey: 'year',\n" +
-//"                        // A list of names of data record attributes that contain y-values.\n" +
-//"                        ykeys: ['value'],\n" +
-//"                        // Labels for the ykeys -- will be displayed when you hover over the\n" +
-//"                        // chart.\n" +
-//"                        labels: ['Value']\n" +
-//"                    });";
-        return morrisChart.toString();
+//        datas = facturaElectronicaService.listarFacturasElectronicas(tag, owner, start, end);
+//        StringBuilder morrisChart = new StringBuilder();
+//        morrisChart.append("new Morris.Line({\n")
+//                .append("element: 'dashboard-chart-" + tag + "',\n")
+//                .append("data: [");
+//        //Agregar datos aquí
+//        for (FacturaElectronica s : datas){
+//             morrisChart.append("{date: '" + s.getFechaEmision() + "', value: " + s.getImporteTotal() + "},\n");
+//        }
+//        morrisChart.append("],\n")
+//                .append("xkey: 'date',\n")
+//                .append("ykeys: ['value'],\n")
+//                .append("labels: ['Importe total']\n")
+//                .append("});");
+//        
+//        //Sample print
+////        return "new Morris.Line({\n" +
+////"                        // ID of the element in which to draw the chart.\n" +
+////"                        element: 'dashboard-chart-#{tag.code}',\n" +
+////"                        // Chart data records -- each entry in this array corresponds to a point on\n" +
+////"                        // the chart.\n" +
+////"                        data: [\n" +
+////"                            {year: '2008', value: 20},\n" +
+////"                            {year: '2009', value: 10},\n" +
+////"                            {year: '2010', value: 5},\n" +
+////"                            {year: '2011', value: 5},\n" +
+////"                            {year: '2012', value: 20}\n" +
+////"                        ],\n" +
+////"                        // The name of the data record attribute that contains x-values.\n" +
+////"                        xkey: 'year',\n" +
+////"                        // A list of names of data record attributes that contain y-values.\n" +
+////"                        ykeys: ['value'],\n" +
+////"                        // Labels for the ykeys -- will be displayed when you hover over the\n" +
+////"                        // chart.\n" +
+////"                        labels: ['Value']\n" +
+////"                    });";
+        return "";
     }
 }

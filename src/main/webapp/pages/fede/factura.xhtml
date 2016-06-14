@@ -70,6 +70,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="Container100 Responsive100">
                         <div class="ContainerIndent">
                             <div class="Card SoftGrayBack">
+                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['ride.no']}" 
+                                                execute="none" render="code" value="#{facturaElectronicaHome.facturaElectronica.code}" required="false"
+                                                    container="none"/>
                                 <jlgranda:input id="femss" name="femss" type="calendar" label="#{i18n['ride.infoFactura.fechaEmision']}" 
                                                 execute="none" render="femss" value="#{facturaElectronicaHome.facturaElectronica.fechaEmision}" required="true"
                                                     container="none"/>
@@ -82,9 +85,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <jlgranda:input id="memo" name="memo" type="textarea" label="#{i18n['common.description']}" 
                                                 execute="none" render="memo" value="#{facturaElectronicaHome.facturaElectronica.description}" required="true"
                                                     container="none"/>
-                                <!--jlgranda:input id="tsimp" name="tsimp" type="number" label="#{i18n['ride.infoFactura.totalSinImpuestos']}" 
-                                                execute="none" render="tsimp" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" required="true"
-                                                    container="none"/-->
+                                <div>
+                                    <div class="ContainerIndent">
+                                        <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
+                                        <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}" effect="fade"
+                                                         required="#{false}" immediate="true"> 
+                                            <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                            <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
                             </div>
                         </div> 
 

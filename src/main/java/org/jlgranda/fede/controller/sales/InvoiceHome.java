@@ -22,9 +22,11 @@ import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
+import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Payment;
+import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -114,6 +117,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     @EJB
     private PaymentService paymentService;
     
+    @EJB
+    private ProductService productService;
+    
     private LazyInvoiceDataModel lazyDataModel; 
     
     private DocumentType documentType;
@@ -142,7 +148,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             amount = 30;
         }
 
-        setEnd(Dates.now());
+        setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.addDays(getEnd(), -1 * amount));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
@@ -375,11 +381,18 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     
     public void calculeChange() {
+
         
         //subtotal = total menos descuento
-        BigDecimal subtotal = getInvoice().getTotal().subtract(getPayment().getDiscount());
-        //lo que he recibido menos el subtotal
+        BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
+        
+        //Preestablecer el dinero a recibir
+        if (BigDecimal.ZERO.equals(getPayment().getCash()))
+            getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
+        
+        //CAMBIO > lo que he recibido menos el subtotal
         getPayment().setChange(getPayment().getCash().subtract(subtotal));
+        
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {
@@ -448,21 +461,34 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public boolean addCandidateDetail(){
         
-        candidateDetail.setPrice(candidateDetail.getProduct().getPrice());//Establecer el precio actual
-        this.invoice.addDetail(candidateDetail); //Marcar detail como parte del objeto invoice
-        boolean flag = false;
+        return touch(candidateDetail.getProduct());
+    }
+    
+    public boolean touch(Product product){
+        setCandidateDetail(detailService.createInstance(1));
+        getCandidateDetail().setProduct(product);
+        getCandidateDetail().setPrice(candidateDetail.getProduct().getPrice());//Establecer el precio actual
+        getCandidateDetail().setInvoice(getInvoice());
         if (this.candidateDetails.contains(getCandidateDetail())) {
             int index = this.candidateDetails.indexOf(getCandidateDetail());
             float amount = this.candidateDetails.get(index).getAmount() + candidateDetail.getAmount();
             this.candidateDetails.get(index).setAmount(amount);
         } else {
-            flag = this.candidateDetails.add(getCandidateDetail());
+            this.candidateDetails.add(getCandidateDetail());
         }
 
         calculeChange();
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
-        return flag;
+        
+        return true;
+    }
+    
+    public boolean macro(String command){
+        for (String id : command.split(",")){
+            touch(productService.find(Long.valueOf(id)));
+        }
+        return true;
     }
     
     public boolean addAndSaveCandidateDetail(){
@@ -559,40 +585,47 @@ public class InvoiceHome extends FedeController implements Serializable {
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(false);
         sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        
+        LineChartSeries purchases = new LineChartSeries();
+        purchases.setFill(false);
+        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        
+        LineChartSeries profits = new LineChartSeries();
+        profits.setFill(false);
+        profits.setLabel(I18nUtil.getMessages("common.profits.gross"));
+        
         int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
         Date _start = Dates.addDays(getStart(), -1 * range);
         Date _step = _start;
         String label = "";
+        BigDecimal salesTotal;
+        BigDecimal purchasesTotal;
         for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
             _step = Dates.addDays(_step, 1); //Siguiente día
             label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
-            sales.set(label, calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step))));
+            salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step)));
+            sales.set(label, salesTotal);
             
-        }
-        
- 
-        LineChartSeries purchases = new LineChartSeries();
-        purchases.setFill(false);
-        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
-        _step = _start;
-        for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
-            _step = Dates.addDays(_step, 1); //Siguiente día
-            label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
             facturaElectronicaHome.setStart(Dates.minimumDate(_step));
             facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
-            purchases.set(label, facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList()));
+            purchasesTotal = facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList());
+            purchases.set(label, purchasesTotal);
             
+            profits.set(label, salesTotal.subtract(purchasesTotal)); //Utilidad bruta
         }
- 
- 
+
         areaModel.addSeries(sales);
+        areaModel.addSeries(profits);
         areaModel.addSeries(purchases);
+        
          
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        areaModel.setLegendPosition("e");
-        areaModel.setExtender("skinChart");
+        areaModel.setLegendPosition("ne");
+        //areaModel.setExtender("skinChart");
+        areaModel.setSeriesColors("8E24A0,FF0000,C6FF00");
+        areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
-        areaModel.setShowPointLabels(true);
+        areaModel.setShowPointLabels(false);
         
          
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
@@ -603,5 +636,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
         
         return areaModel;
+    }
+    
+    
+    public BigDecimal calculeCandidateDetailTotal() {
+        BigDecimal total = new BigDecimal(BigInteger.ZERO);
+        for (Detail d : getCandidateDetails()){
+            total = total.add(d.getPrice().multiply(BigDecimal.valueOf(d.getAmount())));
+        }
+        return total;
     }
 }

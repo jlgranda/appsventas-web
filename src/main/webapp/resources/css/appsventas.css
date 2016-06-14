@@ -61,3 +61,169 @@ and open the template in the editor.
     min-height: 16px;
     padding: 0.5em 0.5em 0.5em 2.2em;
 }
+
+
+/**Icons*/
+.flaticon-cafe {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/food-1.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-cafe-grande {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/hot-coffee-rounded-cup-on-a-plate-from-side-view.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-capuchino {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/cup.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-cake {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/birthday-cake-piece.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-cup {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/cup.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-chocolate {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/cup-1.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-pizza {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/food.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-pasty {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/cheese.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-pasty-cebolla {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/food-6.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-colada {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/drink.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-aromatica {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/food-4.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-empanada-cafe{
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/taco.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-empanada-chocolate {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/coffee.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-pizza-cafe{
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/pizza.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-pizza-chocolate {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/food-11.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-deditos {
+    background-color: transparent;
+    background-image: url('/appsventas/resources/images/flaticon/png/food-7.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
