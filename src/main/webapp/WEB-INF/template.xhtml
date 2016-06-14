@@ -53,6 +53,7 @@
                                 <a href="#" class="DispInlBlock Fright BoldGray HoverEffect"><i class="icon-shopping_cart Fs30"><span class="CartText White">2</span></i> </a>
                                 <p:panel style="background: transparent;border: 0" rendered="#{subject.photo!=null}"> 
                                     <a href="#" class="DispInlBlock Fright BoldGray MarRight10 HoverEffect"><span class="Fs22 FontRobotoLight">#{i18n['Hello']}#{', '}#{subject.fullName}</span></a>
+                                    
                                     <p:graphicImage id="photo" styleClass="circular"  cache="false" height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
                                                     width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
                                                     value="/FedeServlet?entity=#{i18n['servlet.subject']}&amp;#{i18n['servlet.id']}=#{subject.id}"/>
