@@ -515,19 +515,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     /////////////////////////////////////////////////////////////////////////
     // Chart data model
     /////////////////////////////////////////////////////////////////////////
-    private HorizontalBarChartModel balanceHorizontalBarModel;
     private LineChartModel balanceLineChartModel;
-
-    public HorizontalBarChartModel getBalanceHorizontalBarModel() {
-        if (balanceHorizontalBarModel == null){
-            setBalanceHorizontalBarModel(createHorizontalBarModel());
-        }
-        return balanceHorizontalBarModel;
-    }
-
-    public void setBalanceHorizontalBarModel(HorizontalBarChartModel balanceHorizontalBarModel) {
-        this.balanceHorizontalBarModel = balanceHorizontalBarModel;
-    }
 
     public LineChartModel getBalanceLineChartModel() {
         if (balanceLineChartModel == null){
@@ -538,45 +526,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void setBalanceLineChartModel(LineChartModel balanceLineChartModel) {
         this.balanceLineChartModel = balanceLineChartModel;
-    }
-    
-    private HorizontalBarChartModel createHorizontalBarModel() {
-        HorizontalBarChartModel horizontalBarModel = new HorizontalBarChartModel();
- 
-        ChartSeries sales = new ChartSeries();
-        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
-        Calendar calendar = Calendar.getInstance();
-        for (int i =0; i < Dates.calculateNumberOfDaysBetween(getStart(), getEnd()); i++){
-            calendar.setTime(getStart());
-            sales.set(calendar.get(Calendar.DAY_OF_WEEK), calculeTotal(getMyLastlastInvoices()));
-        }
-        
- 
-        ChartSeries purchases = new ChartSeries();
-        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
-        facturaElectronicaHome.setStart(getStart());
-        facturaElectronicaHome.setEnd(getEnd());
-        facturaElectronicaHome.filter();
-        for (int i =0; i < Dates.calculateNumberOfDaysBetween(getStart(), getEnd()); i++){
-            calendar.setTime(getStart());
-            purchases.set(calendar.get(Calendar.DAY_OF_WEEK), facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getLazyDataModel().getResultList()));
-        }
- 
-        horizontalBarModel.addSeries(sales);
-        horizontalBarModel.addSeries(purchases);
-         
-        horizontalBarModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        horizontalBarModel.setLegendPosition("e");
-        horizontalBarModel.setStacked(true);
-         
-        Axis xAxis = horizontalBarModel.getAxis(AxisType.X);
-        xAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        xAxis.setMin(0);
-        xAxis.setMax(200);
-         
-        Axis yAxis = horizontalBarModel.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.date.day.scale"));  
-        return horizontalBarModel;
     }
     
     private LineChartModel createLineChartModel() {
@@ -622,7 +571,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
         areaModel.setExtender("skinChart");
-        areaModel.setSeriesColors("8E24A0,FF0000,C6FF00");
         //areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);

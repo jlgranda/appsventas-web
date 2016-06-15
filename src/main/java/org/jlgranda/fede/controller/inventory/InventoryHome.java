@@ -36,9 +36,14 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.BarChartModel;
+import org.primefaces.model.chart.ChartSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,5 +193,57 @@ public class InventoryHome extends FedeController implements Serializable {
             result.addAll((productService.find(-1, -1, null, QuerySortOrder.ASC, filters).getResult()));
         });
         return result;
+    }
+    
+    ////////////////////////////////////////////////////////////////////////////
+    //Charts
+    ////////////////////////////////////////////////////////////////////////////
+    private BarChartModel topBarChartModel;
+
+    public BarChartModel getTopBarChartModel() {
+        if (topBarChartModel == null){
+            setTopBarChartModel(createBarModel());
+        }
+        return topBarChartModel;
+    }
+
+    public void setTopBarChartModel(BarChartModel topBarChartModel) {
+        this.topBarChartModel = topBarChartModel;
+    }
+    
+    
+    
+    private BarChartModel createBarModel() {
+        BarChartModel barModel = initBarModel();
+         
+        barModel.setTitle(settingHome.getValue("app.fede.chart.top.products", "Lo más vendido"));
+        barModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
+        barModel.setExtender("skinBarChart");
+        barModel.setAnimate(false);
+        barModel.setShowPointLabels(false);
+         
+        Axis xAxis = barModel.getAxis(AxisType.X);
+        xAxis.setLabel(settingHome.getValue("app.fede.chart.top.products.xaxis.label", "Productos"));
+         
+        Axis yAxis = barModel.getAxis(AxisType.Y);
+        yAxis.setLabel(settingHome.getValue("app.fede.chart.top.products.yaxis.label", "Cantidad"));
+        yAxis.setMin(0);
+        yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
+        return barModel;
+    }
+    
+    private BarChartModel initBarModel() {
+        BarChartModel model = new BarChartModel();
+ 
+        ChartSeries products = new ChartSeries();
+        products.setLabel(settingHome.getValue("app.fede.chart.top.units", "Cantidad"));
+        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductNames", top);
+        objects.stream().forEach((object) -> {
+            products.set(object[0], (Number) object[1]);
+        });
+        model.addSeries(products);
+         
+        return model;
     }
 }

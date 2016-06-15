@@ -87,11 +87,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '20')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
                             <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
                             <div class="SeparatorFull"></div>
-                            <div class="EmptyBox20"></div>
-
+                            <div class="EmptyBox10"></div>
                             <div class="Container100 Responsive100">
-                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true" seriesColors="00FF00, FFFF00, FF0000"/>
+                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
                             </div>
+<!--                            <div class="EmptyBox10"></div>
+                            <div class="Container100 Responsive100">
+                                <p:chart type="bar" model="#{inventoryHome.topBarChartModel}" style="height:300px" responsive="true"/>
+                            </div>-->
 <!--                            <div class="Container40 Responsive50">
                                 <p:selectOneMenu id="console3" value="#{invoiceHome.outcome}" style="min-width:100px; width:120px; margin:10px 10px 5px 0px;" styleClass="WidAutoOnMobile">
                                     <f:selectItem itemLabel="Select Period" itemValue="" />
@@ -371,7 +374,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             function skinChart() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
-                this.cfg.seriesColors = ['#8E24AA', '#C6FF00', , '#C0C0C0'];
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00', '#C0C0C0'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
+            
+            function skinBarChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00', '#C0C0C0'];
                 this.cfg.grid = {
                     background: '#ffffff',
                     borderColor: '#ffffff',
