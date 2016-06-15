@@ -620,10 +620,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         
          
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        areaModel.setLegendPosition("ne");
-        //areaModel.setExtender("skinChart");
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
+        areaModel.setExtender("skinChart");
         areaModel.setSeriesColors("8E24A0,FF0000,C6FF00");
-        areaModel.setExtender("chartExtender");
+        //areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
         

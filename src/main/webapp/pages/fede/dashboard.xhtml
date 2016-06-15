@@ -90,7 +90,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox20"></div>
 
                             <div class="Container100 Responsive100">
-                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
+                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true" seriesColors="00FF00, FFFF00, FF0000"/>
                             </div>
 <!--                            <div class="Container40 Responsive50">
                                 <p:selectOneMenu id="console3" value="#{invoiceHome.outcome}" style="min-width:100px; width:120px; margin:10px 10px 5px 0px;" styleClass="WidAutoOnMobile">
@@ -367,11 +367,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 location.reload(); // refresh page    
 
             }
-            function chartExtender() {        
-                         // this = chart widget instance        
-                         // this.cfg = options      
-                         this.cfg.seriesDefaults.rendererOptions.varyBarColor = true;
-                        }
+            
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00', , '#C0C0C0'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
             //]]>
             
         </script>
