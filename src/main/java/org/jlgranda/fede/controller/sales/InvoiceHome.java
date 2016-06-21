@@ -500,6 +500,12 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     
     public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end){
+                    System.err.println(">>> author: " +  author);
+                    System.err.println(">>> documentType: " +  documentType);
+                    System.err.println(">>> limit: " +  limit);
+            System.err.println(">>> start: " +  start);
+            System.err.println(">>> end: " +  end);
+            
         if (author == null){ //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
         } else {
