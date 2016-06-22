@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,6 +45,7 @@ import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -64,6 +66,7 @@ import org.jpapi.util.Strings;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.CategoryAxis;
 import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.HorizontalBarChartModel;
@@ -371,12 +374,17 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public BigDecimal calculeTotal(List<Invoice> list) {
-        BigDecimal total = new BigDecimal(0);
+        BigDecimal subtotal = new BigDecimal(0);
+        BigDecimal discount = new BigDecimal(0);
+        Payment payment = null;
         for (Invoice i : list) {
-            total = total.add(i.getTotal());
+            subtotal = subtotal.add(i.getTotal());
+            payment = i.getPayments().isEmpty() ? null : i.getPayments().get(0);
+            if (payment != null )
+                discount = discount.add(payment.getDiscount());
         }
 
-        return total;
+        return subtotal.subtract(discount, MathContext.UNLIMITED);
     }
 
     
@@ -499,13 +507,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     
-    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end){
-                    System.err.println(">>> author: " +  author);
-                    System.err.println(">>> documentType: " +  documentType);
-                    System.err.println(">>> limit: " +  limit);
-            System.err.println(">>> start: " +  start);
-            System.err.println(">>> end: " +  end);
-            
+    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end){   
         if (author == null){ //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
         } else {
@@ -529,6 +531,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return balanceLineChartModel;
     }
+    
+    public void cleanChartModels(){
+        setBalanceLineChartModel(null);
+    }
 
     public void setBalanceLineChartModel(LineChartModel balanceLineChartModel) {
         this.balanceLineChartModel = balanceLineChartModel;
@@ -549,14 +555,16 @@ public class InvoiceHome extends FedeController implements Serializable {
         profits.setFill(false);
         profits.setLabel(I18nUtil.getMessages("common.profits.gross"));
         
-        int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
-        Date _start = Dates.addDays(getStart(), -1 * range);
+        Date _start = getStart();
+        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) == 1){
+            int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+            _start = Dates.addDays(getStart(), -1 * range);
+        }
         Date _step = _start;
         String label = "";
         BigDecimal salesTotal;
         BigDecimal purchasesTotal;
-        for (int i =0; i < Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
-            _step = Dates.addDays(_step, 1); //Siguiente día
+        for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
             label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
             salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step)));
             sales.set(label, salesTotal);
@@ -567,6 +575,8 @@ public class InvoiceHome extends FedeController implements Serializable {
             purchases.set(label, purchasesTotal);
             
             profits.set(label, salesTotal.subtract(purchasesTotal)); //Utilidad bruta
+            
+            _step = Dates.addDays(_step, 1); //Siguiente día
         }
 
         areaModel.addSeries(sales);
@@ -599,5 +609,13 @@ public class InvoiceHome extends FedeController implements Serializable {
             total = total.add(d.getPrice().multiply(BigDecimal.valueOf(d.getAmount())));
         }
         return total;
+    }
+    
+    @Inject
+    private InventoryHome inventoryHome;
+    public BarChartModel buildTopBarChartModel() {
+        inventoryHome.setStart(Dates.minimumDate(getStart()));
+        inventoryHome.setEnd(Dates.maximumDate(getEnd()));
+        return inventoryHome.getTopBarChartModel();
     }
 }

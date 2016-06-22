@@ -228,7 +228,7 @@ public class InventoryHome extends FedeController implements Serializable {
         Axis yAxis = barModel.getAxis(AxisType.Y);
         yAxis.setLabel(settingHome.getValue("app.fede.chart.top.products.yaxis.label", "Cantidad"));
         yAxis.setMin(0);
-        yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
+        //yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
         return barModel;
     }
     
@@ -238,7 +238,7 @@ public class InventoryHome extends FedeController implements Serializable {
         ChartSeries products = new ChartSeries();
         products.setLabel(settingHome.getValue("app.fede.chart.top.units", "Cantidad"));
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductNames", top);
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductNames", top, getStart(), getEnd());
         objects.stream().forEach((object) -> {
             products.set(object[0], (Number) object[1]);
         });

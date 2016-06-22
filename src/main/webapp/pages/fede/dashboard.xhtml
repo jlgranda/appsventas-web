@@ -87,14 +87,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '20')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
                             <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
                             <div class="SeparatorFull"></div>
+                            <div class="Card HeiAutoOnMobile">
+                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
+                                </p:calendar>
+                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
+                                </p:calendar>
+                            </div>
                             <div class="EmptyBox10"></div>
+                            <h3 class="CardTopic">#{i18n['app.fede.chart.salesvspurchases']}</h3>
                             <div class="Container100 Responsive100">
                                 <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
                             </div>
                             <div class="EmptyBox10"></div>
-<!--                            <div class="Container60 Responsive50">
-                                <p:chart type="bar" model="#{inventoryHome.topBarChartModel}" style="height:300px" responsive="true"/>
-                            </div>
+                            <h3 class="CardTopic">#{i18n['app.fede.chart.products']}</h3>
+                            <div class="Container100 Responsive100">
+                                <p:chart type="bar" model="#{invoiceHome.buildTopBarChartModel()}" style="height:300px" responsive="true"/>
+                            </div><!--
                             <div class="Container40 Responsive50">
                                 <p:selectOneMenu id="console3" value="#{invoiceHome.frequency}" style="min-width:100px; width:120px; margin:10px 10px 5px 0px;" styleClass="WidAutoOnMobile">
                                     <f:selectItem itemLabel="Select Period" itemValue="" />
@@ -104,7 +116,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:selectItem itemLabel="Annual" itemValue="Annual" />
                                 </p:selectOneMenu>
                             </div>-->
-                            <div class="EmptyBox20"></div>
+<!--                            <div class="EmptyBox20"></div>
                             <p:tabView style="margin: 0 -20px 0 -20px; border:none 0px;">
                                 <p:tab title="#{i18n['PreInvoiced']}">
                                     <div class="Container100">
@@ -260,7 +272,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </div>
                                     </div>
                                 </p:tab>
-                            </p:tabView>
+                            </p:tabView>-->
                         </h:form>
                     </div>
                 </div>
@@ -292,6 +304,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </p:ajax>
                                         </p:commandButton>-->
                                         <p:button value="#{i18n['common.create']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
+                                    </div>
+                                </div> 
+                            </div>
+                            
+                            <div class="Container50 Responsive50">
+                                <div class="ContainerIndent">
+                                    <div class="Card SoftGrayBack TexAlCenter">
+                                        <i class="icon-paper Fs50 BoldGray DispBlock"></i>
+                                        <div class="EmptyBox5"></div>
+                                        <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                                        <div class="EmptyBox10"></div>
+                                        <p:button value="#{i18n['common.create']}" styleClass="RedButton" outcome="/pages/fede/factura.jsf"/>
                                     </div>
                                 </div> 
                             </div>
