@@ -21,7 +21,10 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,17 +36,24 @@ import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.sales.Product;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.jpapi.util.Strings;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
+import org.primefaces.model.chart.CategoryAxis;
 import org.primefaces.model.chart.ChartSeries;
+import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,6 +205,16 @@ public class InventoryHome extends FedeController implements Serializable {
         return result;
     }
     
+    private Double countProduct(Long id, Date minimumDate, Date maximumDate) {
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProduct", 0, id, minimumDate, maximumDate);
+        Double result = Double.valueOf(0);
+        for (Object[] object : objects){
+            result = (Double) object[1];
+        }
+                
+        return result;
+    }
+    
     ////////////////////////////////////////////////////////////////////////////
     //Charts
     ////////////////////////////////////////////////////////////////////////////
@@ -246,4 +266,58 @@ public class InventoryHome extends FedeController implements Serializable {
          
         return model;
     }
+
+    public LineChartModel buildLineBarChartModel(List<BussinesEntity> selectedBussinesEntities) {
+        return createLineChartModel(selectedBussinesEntities);
+    }
+    
+    private LineChartModel createLineChartModel(List<BussinesEntity> selectedBussinesEntities) {
+        LineChartModel areaModel = new LineChartModel();
+        
+        if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
+            return  areaModel;
+        }
+ 
+        LineChartSeries product = null;
+        Date _start = getStart();
+        Date _step = null;
+        String label = "";
+        Double total;
+        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
+            int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+            _start = Dates.addDays(getStart(), -1 * range);
+        }
+        
+        for (BussinesEntity entity: selectedBussinesEntities){
+            product = new LineChartSeries();
+            product.setFill(false);
+            product.setLabel(entity.getName());
+            _step = _start;
+            for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
+                label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+                product.set(label, total);
+                _step = Dates.addDays(_step, 1); //Siguiente día
+            }
+
+            areaModel.addSeries(product);
+
+        }
+
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.products.history"));
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
+        areaModel.setExtender("skinChart");
+        areaModel.setAnimate(false);
+        areaModel.setShowPointLabels(false);
+        
+         
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        areaModel.getAxes().put(AxisType.X, xAxis);
+        Axis yAxis = areaModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        yAxis.setMin(0);
+        
+        return areaModel;
+    }
+
 }

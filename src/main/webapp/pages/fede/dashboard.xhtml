@@ -105,8 +105,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox10"></div>
                             <h3 class="CardTopic">#{i18n['app.fede.chart.products']}</h3>
                             <div class="Container100 Responsive100">
-                                <p:chart type="bar" model="#{invoiceHome.buildTopBarChartModel()}" style="height:300px" responsive="true"/>
-                            </div><!--
+                                <p:chart type="bar" model="#{invoiceHome.buildProductTopBarChartModel()}" style="height:300px" responsive="true"/>
+                            </div>
+                            <h3 class="CardTopic">#{i18n['app.fede.chart.products.history']}</h3>
+                            <div class="Container100 Responsive100">
+                                <p:selectManyCheckbox id="grid2" value="#{invoiceHome.selectedBussinesEntities}" layout="responsive" columns="3"
+                                                       converter="org.jlgranda.fede.ui.converter.ProductConverter" >
+                                    <f:selectItems value="#{inventoryHome.findTop()}" var="product" itemLabel="#{product.name}" itemValue="#{product}"/>
+                                    <p:ajax oncomplete="form.submit()"></p:ajax>
+                                </p:selectManyCheckbox>
+                                <p:chart type="line" model="#{invoiceHome.buildProductLineBarChartModel()}" style="height:300px" responsive="true"/>
+                            </div>
+                            <!--
                             <div class="Container40 Responsive50">
                                 <p:selectOneMenu id="console3" value="#{invoiceHome.frequency}" style="min-width:100px; width:120px; margin:10px 10px 5px 0px;" styleClass="WidAutoOnMobile">
                                     <f:selectItem itemLabel="Select Period" itemValue="" />
@@ -303,7 +313,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     listener="#{invoiceHome.handleReturn}">
                                             </p:ajax>
                                         </p:commandButton>-->
-                                        <p:button value="#{i18n['common.create']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
+                                        <p:button styleClass="RedButton" icon="fa fa-edit" outcome="/pages/fede/sales/invoice.jsf"/>
+                                        <p:button styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/fede/sales/invoices.jsf"/>
                                     </div>
                                 </div> 
                             </div>
@@ -315,7 +327,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="EmptyBox5"></div>
                                         <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
                                         <div class="EmptyBox10"></div>
-                                        <p:button value="#{i18n['common.create']}" styleClass="RedButton" outcome="/pages/fede/factura.jsf"/>
+                                        <p:button icon="fa fa-edit" styleClass="RedButton" outcome="/pages/fede/factura.jsf"/>
+                                        <p:button styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/fede/inbox.jsf"/>
                                     </div>
                                 </div> 
                             </div>
@@ -398,7 +412,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             function skinChart() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
-                this.cfg.seriesColors = ['#8E24AA', '#C6FF00', '#C0C0C0'];
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00', '#C0C0C0', '#8E2400', '#C6FFDD', '#C0C0FF'];
                 this.cfg.grid = {
                     background: '#ffffff',
                     borderColor: '#ffffff',

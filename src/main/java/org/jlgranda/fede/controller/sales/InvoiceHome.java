@@ -156,6 +156,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora
+        List<BussinesEntity> defaultProducts = new ArrayList<>();
+        defaultProducts.add(productService.find(101L));
+        setSelectedBussinesEntities(defaultProducts);
     }
 
     public Long getInvoiceId() {
@@ -556,7 +559,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         profits.setLabel(I18nUtil.getMessages("common.profits.gross"));
         
         Date _start = getStart();
-        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) == 1){
+        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1){
             int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
@@ -613,9 +616,14 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     @Inject
     private InventoryHome inventoryHome;
-    public BarChartModel buildTopBarChartModel() {
+    public BarChartModel buildProductTopBarChartModel() {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
         inventoryHome.setEnd(Dates.maximumDate(getEnd()));
         return inventoryHome.getTopBarChartModel();
+    }
+    public LineChartModel buildProductLineBarChartModel() {
+        inventoryHome.setStart(Dates.minimumDate(getStart()));
+        inventoryHome.setEnd(Dates.maximumDate(getEnd()));
+        return inventoryHome.buildLineBarChartModel(getSelectedBussinesEntities());
     }
 }
