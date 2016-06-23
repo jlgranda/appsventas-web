@@ -18,6 +18,7 @@
 package org.jlgranda.fede.controller.sales;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
@@ -68,8 +69,6 @@ import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.CategoryAxis;
-import org.primefaces.model.chart.ChartSeries;
-import org.primefaces.model.chart.HorizontalBarChartModel;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
@@ -107,6 +106,10 @@ public class InvoiceHome extends FedeController implements Serializable {
     private List<Detail> candidateDetails = new ArrayList<>();
     
     private Payment payment;
+    
+    @EJB
+    private GroupService groupService;
+
 
     @EJB
     private InvoiceService invoiceService;
@@ -520,7 +523,12 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @Override
     public List<Group> getGroups() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.groups.isEmpty()) {
+            //Todos los grupos para el modulo actual
+            setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "invoice", "invoice"), Group.Type.LABEL));
+        }
+
+        return this.groups;
     }
     
     /////////////////////////////////////////////////////////////////////////
