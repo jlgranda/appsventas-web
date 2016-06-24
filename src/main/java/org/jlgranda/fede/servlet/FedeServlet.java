@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,7 +40,7 @@ import org.jpapi.model.profile.Subject;
  */
 @WebServlet(name = "fedeServlet", urlPatterns = {"/fedeServlet/*"})
 public class FedeServlet extends HttpServlet {
-    
+
     @Inject
     private DocumentoService documentoService;
     @Inject
@@ -84,26 +85,28 @@ public class FedeServlet extends HttpServlet {
                     response.getOutputStream().close();
                     break;
                 case "subject":
-                    if (entityId == null) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-                    if (entityId.equalsIgnoreCase("")) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-                    Subject subject = subjectService.find(Long.parseLong(entityId));
-                    if (subject == null) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-                    if (subject.getPhoto() == null) {
+//                    if (entityId == null) {
+//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+//                        return;
+//                    }
+//                    if (entityId.equalsIgnoreCase("")) {
+//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+//                        return;
+//                    }
+//                    Subject subject = subjectService.find(Long.parseLong(entityId));
+//                    if (subject == null) {
+//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+//                        return;
+//                    }
+                    byte[] photo = (byte[]) request.getSession().getAttribute("photoUser");
+
+                    if (photo == null) {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
                         return;
                     }
                     response.reset();
                     response.setContentType("/image/png");
-                    response.getOutputStream().write(subject.getPhoto());
+                    response.getOutputStream().write(photo);
                     response.getOutputStream().close();
                     break;
             }
@@ -111,7 +114,7 @@ public class FedeServlet extends HttpServlet {
             System.out.println(e);
         }
     }
-    
+
     public byte[] getContent(File file) {
         ByteArrayOutputStream ous = null;
         @SuppressWarnings("UnusedAssignment")
@@ -126,7 +129,7 @@ public class FedeServlet extends HttpServlet {
                 ous.write(buffer, 0, read);
             }
         } catch (FileNotFoundException ex) {
-            
+
         } catch (IOException ex) {
         }
         return ous.toByteArray();

@@ -75,9 +75,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </div>
                             <div class="Container10">
                                 <div id="photoPanel">
-                                    <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}" cache="false" height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
+                                    <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}"  
+                                                    height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
                                                     width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
-                                                    value="/FedeServlet?entity=#{i18n['servlet.subject']}&amp;#{i18n['servlet.id']}=#{subjectAdminHome.subjectEdit.id}"/>
+                                                     value="/FedeServlet?entity=#{i18n['servlet.subject']}" cache="false"/>
                                     <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}"> 
                                     <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
                                     </p:panel>
@@ -85,7 +86,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                           process="@form" update="photo"   
                                                           sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
                                                           fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
-                                                          allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '')}"/>
+                                                          allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/>
                                 </div>
                             </div>
 
