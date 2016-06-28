@@ -52,8 +52,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </span>
         </div>
         <a id="show-top-menu" class="ShowOnMobile ripplelink"><i class="icon-more_vert" id="active"></i><i class="icon-close DispNone" id="passive"></i> </a>
-        <ul id="top-menu">
-            <!--<li>
+        <div id="top-menu">
+            <ui:insert name="mobilesetting"></ui:insert>
+            <!--<ul>
+            <li>
                 <a class="ripplelink"><i class="icon-search"></i> <span class="ShowOnMobile">#{i18n['Search']}</span></a>
                 <ul>
                     <li>
@@ -78,26 +80,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <li class="TexAlCenter"><i class="icon-keyboard_control Gray Fs30"></i></li>
                                 <li><a href="#"><span class="Red"><i class="icon-alarm_add Fs20 Fleft"></i> Set New Reminder</span></a></li>
                             </ul>
-                        </li>-->
+                        </li>
             <li>
                 <a class="ripplelink"><i class="icon-cog"></i> <span class="ShowOnMobile">#{i18n['Settings']}</span></a>
                 <ul>
                     <li><a href="#{facesContext.externalContext.requestContextPath}/pages/profile/profile.jsf"><i class="icon-people"></i> #{i18n['Profile']}</a></li>
                     <li><a href="#{facesContext.externalContext.requestContextPath}/pages/profile/card.jsf"><i class="icon-tag"></i> #{i18n['FedeCard']}</a></li>
                     <li><a href="#{facesContext.externalContext.requestContextPath}/pages/profile/setting.jsf"><i class="icon-settings"></i> #{i18n['common.user.settings']}</a></li>
-                    <!--                    <li><a href="#"><i class="icon-verified_user"></i> Security Settings</a></li>
-                                        <li><a href="#"><i class="icon-assignment_ind"></i> Users Settings</a></li>-->
+                                        <li><a href="#"><i class="icon-verified_user"></i> Security Settings</a></li>
+                                        <li><a href="#"><i class="icon-assignment_ind"></i> Users Settings</a></li>
                 </ul>
             </li>
             <li>
                 <a class="ripplelink"><i class="icon-power"></i> <span class="ShowOnMobile">#{i18n['System']}</span></a>
                 <ul>
-                    <!--                    <li><a href="#"><span class="Blue"><i class="icon-airline_seat_individual_suite Fs30 DispBlock"></i> Sleep Mode</span></a></li>
-                                        <li><a href="#"><span class="Orange"><i class="icon-track_changes Fs30 DispBlock"></i> Restart System</span></a></li>-->
+                                        <li><a href="#"><span class="Blue"><i class="icon-airline_seat_individual_suite Fs30 DispBlock"></i> Sleep Mode</span></a></li>
+                                        <li><a href="#"><span class="Orange"><i class="icon-track_changes Fs30 DispBlock"></i> Restart System</span></a></li>
                     <li><a href="#{facesContext.externalContext.requestContextPath}/logout"><span class="Red"><i class="icon-vpn_key Fs30 DispBlock"></i> #{i18n['Logout']}</span></a></li>
                 </ul>
             </li>
-        </ul>
+        </ul>-->
+        </div>
     </div>
     <!-- TOPBAR END -->
 

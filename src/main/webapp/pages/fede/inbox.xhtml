@@ -38,8 +38,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['Documents']}" icon="fa fa-paper-plane-o" 
-                            url="/pages/management/tarea/dashboard.jsf?faces-redirect=true"
+                <p:menuitem value="#{i18n['app.fede.sales']}" icon="fa fa-usd" 
+                            url="/pages/fede/sales/invoices.jsf?faces-redirect=true"
+                            disabled="#{false}">
+                </p:menuitem>
+                <p:menuitem value="#{i18n['Dashboard']}" icon="fa fa-dashboard" 
+                            url="/pages/fede/dashboard.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
             </p:menuButton>
@@ -178,6 +182,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </ui:define>
         <!--./toolbar-->
         <ui:define name="sidebar">
+            <div class="Container100 Responsive100 TexAlCenter">
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
+            </div>
+            <div class="EmptyBox10"></div>
             <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
                 <li class="" role="menuitem">
                     <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf" 

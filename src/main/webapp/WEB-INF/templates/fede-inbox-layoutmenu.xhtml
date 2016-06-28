@@ -15,16 +15,7 @@
         </pm:menu>
         <div class="EmptyBox5"></div>
         <ul class="layout-menu modena-menu ShowOnMobile" id="side-menu">
-            <li class="" role="menuitem">
-                <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf" 
-                   class="menulink ripplelink #{facturaElectronicaHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
-            </li>
-            <ui:repeat var="tag" value="#{facturaElectronicaHome.groups}">
-                <li class="" role="menuitem">
-                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf?tags=#{tag.code}" 
-                       class="menulink ripplelink #{facturaElectronicaHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
-                </li>
-            </ui:repeat>
+            <ui:insert name="mobilesidebar"></ui:insert>
         </ul>
     </div>
 
