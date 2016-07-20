@@ -186,6 +186,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             this.invoice = invoiceService.find(invoiceId);
             loadCandidateDetails(this.invoice.getDetails());
             setCustomer(this.invoice.getOwner());
+            calculeChange();//Prellenar formulario de pago
         }
         return invoice;
     }
@@ -317,7 +318,7 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        String outcome = "success";
+        String outcome = "preinvoices";
         calculeChange();
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
@@ -334,6 +335,17 @@ public class InvoiceHome extends FedeController implements Serializable {
         return outcome;
     }
 
+    /**
+     * Registra el pago de forma directa
+     * @param invoiceId
+     * @return la regla de navegación 
+     */
+    public String record(Long invoiceId){
+        this.setInvoiceId(invoiceId);
+        //load invoice
+        this.getInvoice();
+        return this.collect();
+    }
     public String save(){
         return save(false);
     }
@@ -399,11 +411,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         //subtotal = total menos descuento
         BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
-        
         //Preestablecer el dinero a recibir
-        if (BigDecimal.ZERO.equals(getPayment().getCash()))
+        if (BigDecimal.ZERO.compareTo(getPayment().getCash()) == 0){
             getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
-        
+        }
         //CAMBIO > lo que he recibido menos el subtotal
         getPayment().setChange(getPayment().getCash().subtract(subtotal));
         
@@ -616,9 +627,11 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public BigDecimal calculeCandidateDetailTotal() {
         BigDecimal total = new BigDecimal(BigInteger.ZERO);
+        System.out.println("---> getCandidateDetails: " + getCandidateDetails());
         for (Detail d : getCandidateDetails()){
             total = total.add(d.getPrice().multiply(BigDecimal.valueOf(d.getAmount())));
         }
+        System.out.println("---> total: " + total);
         return total;
     }
     

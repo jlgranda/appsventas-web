@@ -14,7 +14,7 @@
             <meta name="apple-mobile-web-app-capable" content="yes" />
         </f:facet>
         <title>#{i18n['app.name']} #{i18n['app.version']}</title>
-        
+
         <h:outputScript name="js/ripple-effect.js" library="modena-layout" />
         <h:outputScript name="js/perfect-scrollbar.js" library="modena-layout" />
         <h:outputScript name="js/layout.js" library="modena-layout" />
@@ -24,9 +24,9 @@
     <ui:insert name="params">
     </ui:insert>
     <h:body class="GrayModena Geometry">
-        
+
         <ui:include src="fede_topbar.xhtml" />
-        
+
         <div id="wrapper">
             <div id="wrapperIndent">
 
@@ -34,7 +34,7 @@
 
                 <div id="layout-portlets-cover">
                     <div class="Container96 Fnone MarAuto">
-                        
+
                         <!-- SUB TOPBAR START -->
                         <div class="Container100 UserLinks">
                             <div class="ContainerIndent TexAlRight">
@@ -49,7 +49,7 @@
                             <div class="ContainerIndent">
                                 <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop"><i class="icon-arrow-right"></i> <ui:insert name="subheader" /></span>
 
-<!--                                <a href="#" class="BoldGray Fs16 FontRobotoLight Fright HoverEffect"><i class="icon-paper"></i> Notes</a>
+                                <!--                                <a href="#" class="BoldGray Fs16 FontRobotoLight Fright HoverEffect"><i class="icon-paper"></i> Notes</a>
                                 -->
 <!--                                <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/sales/preinvoices.jsf" class="BoldGray Fs16 FontRobotoLight Fright MarRight20 HoverEffect"><i class="icon-layers2"></i> #{i18n['app.fede.allmysales']}</a>
                                 <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" class="BoldGray Fs16 FontRobotoLight Fright MarRight20 HoverEffect"><i class="icon-layers"></i> #{i18n['app.fede.allsales']}</a>
@@ -65,16 +65,23 @@
                                 Template
                             </ui:insert>
                         </h:form>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <h:form>
+                                <p:commandButton value="#{i18n['common.yes']}" type="button" styleClass="ui-confirmdialog-yes GreenButton" icon="ui-icon-check fa fa-check Fs14 White" ajax="true"/>
+                                <p:commandButton value="#{i18n['common.no']}" type="button" styleClass="ui-confirmdialog-no RedButton" icon="ui-icon-close fa fa-close Fs14 White" />
+                            </h:form>
+
+                        </p:confirmDialog>
                         <!-- footer -->
                         <div class="Container100">
                             <div class="ContainerIndent TexAlCenter Fs14 BoldGray">
                                 <p class="text-muted"><i class="fa fa-copyright"></i>#{' '}#{i18n['PoweredBy']}#{' '}<a href="#{i18n['PoweredBy.url']}">#{i18n['PoweredBy.brand']}</a></p>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
-                
+
                 <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
                     <f:facet name="start">
                         <p:graphicImage name="images/preloader.gif" library="modena-layout"/>
@@ -94,9 +101,9 @@
         <h:outputStylesheet name="css/perfect-scrollbar.css" library="modena-layout" />
         <h:outputStylesheet name="css/font-awesome.css" library="modena-layout" />
         <h:outputStylesheet name="css/modena-layout.css" library="modena-layout" />
-        
+
         <h:outputStylesheet name="/css/appsventas.css" />
-        
+
         <ui:insert name="script"></ui:insert>
     </h:body>
 

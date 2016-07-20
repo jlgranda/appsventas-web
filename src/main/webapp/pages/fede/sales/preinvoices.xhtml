@@ -117,13 +117,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{entity.createdOn}</span>
                                             </div>
                                             <div class="Container40">
-                                                <p:button value="#{i18n['common.edit']}" 
-                                                          styleClass="GrayButton Fright" style="width:75%"
+                                                <p:commandButton title="#{i18n['common.record']}" 
+                                                          icon="fa fa-dot-circle-o"
+                                                          styleClass="GrayButton Fright"
+                                                          action="#{invoiceHome.record(entity.id)}"
+                                                          ajax="false">
+                                                </p:commandButton>
+                                                <p:button title="#{i18n['app.fede.collect']}" 
+                                                          icon="fa fa-dollar"
+                                                          styleClass="RedButton Fright"
                                                           outcome="invoice.jsf?invoiceId=#{entity.id}"/>
-                                                <div class="EmptyBox10"></div>
-                                                <p:button value="#{i18n['app.fede.collect']}" 
-                                                          styleClass="CyanButton Fright" style="width:75%"
-                                                          outcome="invoice.jsf?invoiceId=#{entity.id}"/>
+<!--                                                <p:button title="#{i18n['common.edit']}" 
+                                                          icon="fa fa-edit"
+                                                          styleClass="GrayButton Fright"
+                                                          outcome="invoice.jsf?invoiceId=#{entity.id}"/>-->
                                             </div>
                                             <div class="EmptyBox10"></div>
                                             <div class="Separator"></div>

@@ -71,6 +71,22 @@
                         
                         <div class="Container33 Responsive100">
                             <div class="ContainerIndent">
+                                <div class="Card SoftGreenBack TexAlCenter">
+                                    <i class="icon-layers Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{facturaElectronicaHome.countRowsByTag("own")}</span>
+                                    <span class="FontRobotoRegular Fs18">#{i18n['Invoices']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button icon="fa fa-dashboard" title="#{i18n['Dashboard']}" styleClass="CyanButton" outcome="pages/fede/dashboard.jsf"/>
+                                    <p:button icon="fa fa-compress" title="#{i18n['app.fede.allmysales']}" styleClass="CyanButton" outcome="pages/fede/sales/preinvoices.jsf"/>
+                                    <p:button icon="fa fa-usd" title="#{i18n['PreInvoice']}" styleClass="BlueButton" outcome="/pages/fede/sales/invoice.jsf"/>
+                                    <p:button icon="fa fa-apple" title="#{i18n['common.purchase']}" styleClass="GrayButton" outcome="/pages/fede/factura.jsf"/>
+                                </div>
+                            </div> 
+                        </div>
+                        
+                        <div class="Container33 Responsive100">
+                            <div class="ContainerIndent">
                                 <div class="Card RedBack SoftRed TexAlCenter">
                                     <i class="fa fa-gears Fs50 DispBlock"></i>
                                     <div class="EmptyBox5"></div>
@@ -108,19 +124,6 @@
                             </div>
                         </div>
 
-                        <div class="Container33 Responsive100">
-                            <div class="ContainerIndent">
-                                <div class="Card SoftGreenBack TexAlCenter">
-                                    <i class="icon-layers Fs50 BoldGray DispBlock"></i>
-                                    <div class="EmptyBox5"></div>
-                                    <span class="FontRobotoLight Fs18">#{facturaElectronicaHome.countRowsByTag("own")}</span>
-                                    <span class="FontRobotoRegular Fs18">#{i18n['Invoices']}</span>
-                                    <div class="EmptyBox10"></div>
-                                    <p:button value="#{i18n['common.go']}" styleClass="GreenButton" outcome="pages/fede/dashboard.jsf"/>
-                                </div>
-                            </div> 
-                        </div>
-                        
                         <div class="Container33 Responsive100">
                             <div class="ContainerIndent">
                                 <div class="Card SoftOrangeBack TexAlCenter">
