@@ -83,11 +83,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Card ShadowEffect HeiAutoOnMobile">
                         <label class="Gray">#{i18n['Start']}&nbsp;</label>
                         <p:calendar value="#{invoiceHome.start}" class="input-sm">
-                            <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                            <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
                         <label class="Gray">#{i18n['End']}&nbsp;</label>
                         <p:calendar value="#{invoiceHome.end}" class="input-sm">
-                            <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                            <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
                         <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf"/>
                     </div>
@@ -97,11 +97,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <!-- overrides title on tab-->
                                 <f:facet name="title">
                                     <h:outputText value="#{i18n['app.fede.allmysales']}"/>
-                                    #{' ('}
+                                    <!--#{' ('}
                                     <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastPreInvoices)}">
                                         <f:convertNumber type="currency"/>
                                     </h:outputText>
-                                    #{')'}
+                                    #{')'}-->
                                 </f:facet>
                                 <div class="Container100 Responsive100">
                                     <div class="ContainerIndent">
@@ -154,12 +154,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:tab>
                             <p:tab title="#{i18n['Invoices']}">
                                 <f:facet name="title">
-                                    <h:outputText value="#{i18n['app.fede.allmyinvoices']}"/>
-                                    #{' ('}
-                                    <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices)}">
-                                        <f:convertNumber type="currency"/>
-                                    </h:outputText>
-                                    #{')'}
+                                    <h:outputText value="#{i18n['app.fede.allmyinvoices']} #{ui.calculeEmoticon(invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices), 100)}" escape="false"/> 
                                 </f:facet>
                                 <div class="Container100">
                                     <div class="Container100 Responsive100">

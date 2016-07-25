@@ -17,15 +17,13 @@
  */
 package org.jlgranda.fede.ui.util;
 
-import com.jlgranda.fede.ejb.BussinesEntityService;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
-import javax.inject.Inject;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.management.Organization;
@@ -140,4 +138,24 @@ public class UI {
 
         return cleaned;
     }
+    
+    /**
+     * Imprime emoticons para ocultar la cantidad factor
+     * @param total
+     * @return 
+     */
+    public String calculeEmoticon(BigDecimal total, int gap){
+        String emoticon = "<i class=\"fa fa-circle-thin\"></i>";
+        if (total.compareTo(BigDecimal.valueOf(gap)) > 0){
+            int factor;
+            factor = total.intValue() / gap;
+            emoticon = "";
+            for (int i=0; i < factor; i++){
+                emoticon = emoticon + "<i class=\"fa fa-smile-o\"></i>";
+            }
+        }
+        
+        return emoticon;
+    }
+
 }

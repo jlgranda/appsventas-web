@@ -682,7 +682,13 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
+                FacturaElectronica fe = (FacturaElectronica) event.getObject();
+                if (SourceType.MANUAL.equals(fe.getSourceType())){
+                    redirectTo("/pages/fede/pseudoride.jsf?key=" + fe.getId());
+                } else {
+                    redirectTo("/pages/fede/ride.jsf?key=" + fe.getId());
+                }
+                
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);

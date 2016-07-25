@@ -389,6 +389,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void clear() {
         this.lastInvoice = null;
         this.lastPreInvoice = null;
+        this.myLastlastInvoices.clear();
+        this.myLastlastPreInvoices.clear();
     }
 
     public BigDecimal calculeTotal(List<Invoice> list) {
@@ -405,7 +407,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         return subtotal.subtract(discount, MathContext.UNLIMITED);
     }
 
-    
     public void calculeChange() {
 
         
@@ -627,11 +628,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public BigDecimal calculeCandidateDetailTotal() {
         BigDecimal total = new BigDecimal(BigInteger.ZERO);
-        System.out.println("---> getCandidateDetails: " + getCandidateDetails());
         for (Detail d : getCandidateDetails()){
             total = total.add(d.getPrice().multiply(BigDecimal.valueOf(d.getAmount())));
         }
-        System.out.println("---> total: " + total);
         return total;
     }
     
