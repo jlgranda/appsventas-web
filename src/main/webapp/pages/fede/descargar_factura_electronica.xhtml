@@ -23,8 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <f:metadata>
+        <f:viewParam name="key" value="#{facturaElectronicaHome.keys}" />
+    </f:metadata>
     <h:head>
-        <title>#{i18n['Download']} #{i18n['Invoice']}</title>
+        <title>#{i18n['Download']} #{i18n['Invoice']} #{facturaElectronicaHome.keys}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <!-- Bootstrap -->
         <h:outputStylesheet name="/startbootstrap-sb-admin-2-1.0.7/bower_components/bootstrap/dist/css/bootstrap.min.css" />

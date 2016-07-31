@@ -40,26 +40,24 @@
                                               buttonStyleClass="ToolbarButton Fs14" 
                                               iconStyleClass="Gray"
                                               menuStyleClass="Gray">
-                                    <p:menuitem value="#{i18n['FromEmail']}"  icon="fa fa-inbox Fs15" 
-                                                actionListener="#{facturaElectronicaHome.importarDesdeInbox()}"/>
-                                    <p:menuitem value="#{i18n['FromFile']}" icon="fa fa-upload Fs15"
-                                                onclick="triggerHiddenEventAddFromFile(); return false;"/>
-                                    <p:menuitem value="#{i18n['FromURL']}" icon="fa fa-link Fs15" 
-                                                onclick="triggerHiddenEventAddFromURL(); return false;"/>
+                                    <p:menuitem value="#{i18n['common.update']} #{i18n['FromFile']}" icon="fa fa-upload Fs15"
+                                                onclick="triggerHiddenEventUpdateFromFile(); return false;"/>
+                                    <p:menuitem value="#{i18n['common.update']} #{i18n['FromURL']}" icon="fa fa-link Fs15" 
+                                                onclick="triggerHiddenEventUpdateFromURL(); return false;"/>
                                 </p:menuButton>
                             </f:facet>
                         </p:toolbar>
 
                         <!--hidden buttons for trigger dialogReturn-->
                         <!--http://stackoverflow.com/questions/20931384/primefaces-dialog-framework-dialogreturn-event-from-menuitem-->
-                        <p:commandButton id="hiddenCommandAddFromFile" styleClass="button" style="display:none"
-                                         actionListener="#{facturaElectronicaHome.mostrarFormularioCargaFacturaElectronica()}">
+                        <p:commandButton id="hiddenCommandUpdateFromFile" styleClass="button" style="display:none"
+                                         actionListener="#{facturaElectronicaHome.mostrarFormularioActualizacionFacturaElectronica('file')}">
                             <p:ajax event="dialogReturn" update="@form"
                                     listener="#{facturaElectronicaHome.handleReturn}">
                             </p:ajax>
                         </p:commandButton>
-                        <p:commandButton id="hiddenCommandAddFromURL" styleClass="button" style="display:none"
-                                         actionListener="#{facturaElectronicaHome.mostrarFormularioDescargaFacturaElectronica()}">
+                        <p:commandButton id="hiddenCommandUpdateFromURL" styleClass="button" style="display:none"
+                                         actionListener="#{facturaElectronicaHome.mostrarFormularioActualizacionFacturaElectronica('url')}">
                             <p:ajax event="dialogReturn" update="@form"
                                     listener="#{facturaElectronicaHome.handleReturn}">
                             </p:ajax>
@@ -185,11 +183,11 @@
         </ui:define>
         <ui:define name="script">
             <script>
-                function triggerHiddenEventAddFromFile() {
-                    document.getElementById("form:hiddenCommandAddFromFile").click();
+                function triggerHiddenEventUpdateFromFile() {
+                    document.getElementById("form:hiddenCommandUpdateFromFile").click();
                 }
-                function triggerHiddenEventAddFromURL() {
-                    document.getElementById("form:hiddenCommandAddFromURL").click();
+                function triggerHiddenEventUpdateFromURL() {
+                    document.getElementById("form:hiddenCommandUpdateFromURL").click();
                 }
                 function triggerHiddenCommandLinkBack() {
                     document.getElementById("form:hiddenCommandLinkBack").click();

@@ -243,7 +243,20 @@ public abstract class FedeController {
      * @param modal indica si la ventana emergente debe ser modal o no
      */
     protected void openDialog(String name, int width, int height, boolean modal) {
-        Map<String, Object> options = new HashMap<String, Object>();
+        openDialog(name, width, height, modal, null);
+    }
+    
+    /**
+     * Abre la ventana emergente indicada por popupName con el ancho y alto
+     * especificado
+     *
+     * @param name nombre de la ventana emergente
+     * @param width ancho de la ventana emergente
+     * @param height alto de la ventana emergente
+     * @param modal indica si la ventana emergente debe ser modal o no
+     */
+    protected void openDialog(String name, int width, int height, boolean modal, Map<String, List<String>> params) {
+        Map<String, Object> options = new HashMap<>();
         options.put("modal", modal);
         options.put("draggable", false);
         options.put("resizable", true);
@@ -256,8 +269,8 @@ public abstract class FedeController {
 //        List<String> values = new ArrayList<String>();
 //        values.add(bookName);
 //        params.put("bookName", values);
-        RequestContext.getCurrentInstance().openDialog(name, options, null);
-        logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
+        RequestContext.getCurrentInstance().openDialog(name, options, params);
+        //logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
     }
 
     /**
@@ -268,9 +281,10 @@ public abstract class FedeController {
      * @param width ancho de la ventana emergente
      * @param height alto de la ventana emergente
      * @param modal indica si la ventana emergente debe ser modal o no
+     * @param params
      */
-    protected void openDialog(String name, String width, String height, boolean modal) {
-        Map<String, Object> options = new HashMap<String, Object>();
+    protected void openDialog(String name, String width, String height, boolean modal, Map<String, List<String>> params) {
+        Map<String, Object> options = new HashMap<>();
         options.put("modal", modal);
         options.put("draggable", false);
         options.put("resizable", true);
@@ -279,12 +293,21 @@ public abstract class FedeController {
         options.put("closable", true);
         //options.put("includeViewParams", false);
 
-//        Map<String, List<String>> params = new HashMap<String, List<String>>();
-//        List<String> values = new ArrayList<String>();
-//        values.add(bookName);
-//        params.put("bookName", values);
-        RequestContext.getCurrentInstance().openDialog(name, options, null);
+        RequestContext.getCurrentInstance().openDialog(name, options, params);
         //logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
+    }
+    
+    /**
+     * Abre la ventana emergente indicada por popupName con el ancho y alto
+     * especificado
+     *
+     * @param name nombre de la ventana emergente
+     * @param width ancho de la ventana emergente
+     * @param height alto de la ventana emergente
+     * @param modal indica si la ventana emergente debe ser modal o no
+     */
+    protected void openDialog(String name, String width, String height, boolean modal) {
+        openDialog(name, width, height, modal, null);
     }
 
     public void closeDialog(Object data) {

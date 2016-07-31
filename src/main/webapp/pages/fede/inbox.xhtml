@@ -129,7 +129,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </h:link>
                     <!--// Fin hidden buttons for trigger dialogReturn-->
                     <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
-                                    showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
+                                    showCloseIcon="true" transient="true"  dynamic="true" dismissable="true"
                                     my="left bottom" at="left bottom">
                         <pe:triStateManyCheckbox id="labelTriBasic"  
                                                  value="#{facturaElectronicaHome.selectedTriStateGroups}"  
@@ -139,9 +139,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  stateTwoTitle=""  
                                                  stateThreeTitle=""
                                                  stateTwoIcon="ui-icon-check"  
-                                                 stateThreeIcon="ui-icon-minus" 
+                                                 stateThreeIcon="fa fa-minus" 
                                                  rendered="#{not empty facturaElectronicaHome.selectedBussinesEntities}">  
-                            <!--                            <f:converter converterId="triStateManyCheckboxConverter"/>  -->
                             <f:selectItems value="#{facturaElectronicaHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
                         </pe:triStateManyCheckbox> 
                         <ul>
@@ -158,7 +157,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </li>
                             <li>
                                 <h:link rendered="#{empty facturaElectronicaHome.selectedBussinesEntities}"
-                                        outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" ajax="false" 
+                                        outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" 
                                         styleClass=""
                                         disabled="#{empty facturaElectronicaHome.selectedBussinesEntities}">
                                     <i class="fa fa-tags"></i>&nbsp;#{i18n['Manage']}&nbsp;#{i18n['Labels']}
