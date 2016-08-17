@@ -30,6 +30,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>fede-inbox</from-outcome>
+            <to-view-id>/pages/fede/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>preinvoices</from-outcome>
             <to-view-id>/pages/fede/sales/preinvoices.jsf</to-view-id>
             <redirect />

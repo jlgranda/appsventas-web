@@ -30,7 +30,6 @@ import org.jlgranda.fede.model.document.FacturaElectronica_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.model.profile.Subject_;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;

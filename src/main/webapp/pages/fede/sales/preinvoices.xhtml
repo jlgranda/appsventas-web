@@ -164,7 +164,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Fs20 DispBlock">
                                                         #{entity.summary}
                                                     </span>
-                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{entity.total}">
+                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </span>

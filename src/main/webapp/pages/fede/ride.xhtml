@@ -6,8 +6,10 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:o="http://omnifaces.org/ui">
     <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
+        <o:importConstants type="org.jpapi.model.SourceType" />
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
         <ui:param name="title" value="#{i18n['RIDE']}" />
         <ui:define name="params">
@@ -80,6 +82,8 @@
                 <div class="ContainerIndent Card ShadowEffect">
                     <!-- Impresion de RIDE -->
                     <ui:repeat var="facturaElectronica" value="#{facturaElectronicaHome.listarFacturasElectronicasPorIds()}">
+                        <!--//RIDE SRI -->
+                        <c:if test="#{facturaElectronica.sourceType != SourceType.MANUAL}">
                         <div class="Container100 Responsive100">
                             <div class="Container100 Responsive100">
                                 <div class="Container100 Responsive100">
@@ -156,10 +160,10 @@
                                     </p:dataTable>
                                 </div>
                                 <div class="Container100 Responsive100">
-                                    <div class="Container80 Responsive100">
+                                    <div class="Container70 Responsive100">
                                         <div class="EmptyBox5"></div>
                                     </div>
-                                    <div class="Container20 Responsive100">
+                                    <div class="Container30 Responsive100">
                                         <div class="EmptyBox10"></div>
                                         <div class="Container100 Responsive100">
                                             <ui:repeat var="totalImpuesto" value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.totalConImpuestos.totalImpuesto}">
@@ -174,20 +178,20 @@
                                             </ui:repeat>
                                         </div>
                                         <div class="Container100 Responsive100">
-                                            <div class="Container80 Responsive100">
+                                            <div class="Container70 Responsive100">
                                                 <h:outputText value="#{i18n['ride.infoFactura.totalSinImpuestos']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
-                                            <div class="Container20 Responsive100 TexAlRight">
+                                            <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.totalSinImpuestos}" class="text-primary">
                                                     <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
                                                 </h:outputText>
                                             </div>
                                         </div>
                                         <div class="Container100 Responsive100">
-                                            <div class="Container80 Responsive100">
+                                            <div class="Container70 Responsive100">
                                                 <h:outputText value="#{i18n['ride.infoFactura.totalDescuento']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
-                                            <div class="Container20 Responsive100 TexAlRight">
+                                            <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.totalDescuento}" class="text-primary">
                                                     <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
                                                 </h:outputText>
@@ -195,20 +199,20 @@
                                         </div>
                                         <div class="EmptyBox10"></div>
                                         <div class="Container100 Responsive100">
-                                            <div class="Container80 Responsive100">
+                                            <div class="Container70 Responsive100">
                                                 <h:outputText value="#{i18n['ride.infoFactura.propina']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
-                                            <div class="Container20 Responsive100 TexAlRight">
+                                            <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.propina}" class="text-primary">
                                                     <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
                                                 </h:outputText>
                                             </div>
                                         </div>
                                         <div class="Container100 Responsive100 Bold">
-                                            <div class="Container80 Responsive100">
+                                            <div class="Container70 Responsive100">
                                                 <h:outputText value="#{i18n['ride.infoFactura.importeTotal']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
-                                            <div class="Container20 Responsive100 TexAlRight">
+                                            <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.importeTotal}" class="text-primary">
                                                     <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
                                                 </h:outputText>
@@ -218,7 +222,105 @@
                                 </div>
                             </div>
                         </div>
-
+                        </c:if>
+                        <!-- ./Fin RIDE -->
+                        <!-- RIDE Pseudo -->
+                        <c:if test="#{facturaElectronica.sourceType == SourceType.MANUAL}">
+                        <div class="Container100 Responsive100">
+                            <div class="Container100 Responsive100">
+                                <div class="Container100 Responsive100">
+                                    <div class="Container50 Responsive100">
+                                        <div class="Container100 Responsive100">
+                                            <span class="text-center"><h1>#{facturaElectronica.author.initials}</h1></span>
+                                        </div>
+                                        <div class="Container100 Responsive100">
+                                            <div class="Container100 Responsive100"><h3>#{facturaElectronica.author.initials}</h3></div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoTributaria.dirMatriz']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.dirEstablecimiento']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.contribuyenteEspecial']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.obligadoContabilidad']}" escape="false" styleClass="text-uppercase"/>&nbsp;</div>
+                                        </div>
+                                    </div>
+                                    <div class="Container50 Responsive100">
+                                        <div class="Container100 Responsive100">#{i18n['ride.ruc']}&nbsp;#{facturaElectronica.author.code}
+                                        </div>
+                                        <div class="Container100 Responsive100"><strong>#{i18n['ride.invoice']}</strong>
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.no']}&nbsp;#{facturaElectronica.code}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.authorization']}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{facturaElectronica.numeroAutorizacion}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.authorizationDate']}&nbsp;#{facturaElectronica.fechaAutorizacion}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.environment']}&nbsp;
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.emission']}&nbsp;
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="EmptyBox10"></div>
+                                <div class="Container100 Responsive100">
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.razonSocialComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.firstname}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.identificacionComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.code}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.fechaEmision']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.fechaEmision}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.guiaRemision']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                </div>
+                                <div class="EmptyBox10"></div>
+                                <div class="Container100 Responsive100">
+                                    <div class="Container60 Fs50 FontRobotoLight Gray">
+                                        <span class="DispBlock">
+                                            #{facturaElectronica.description}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="Container100 Responsive100">
+                                    <div class="Container70 Responsive100">
+                                        <div class="EmptyBox5"></div>
+                                    </div>
+                                    <div class="Container30 Responsive100">
+                                        <div class="EmptyBox10"></div>
+                                        <div class="Container100 Responsive100">
+                                            
+                                        </div>
+                                        <div class="Container100 Responsive100">
+                                            <div class="Container70 Responsive100">
+                                                <h:outputText value="#{i18n['ride.infoFactura.totalSinImpuestos']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                            </div>
+                                            <div class="Container30 Responsive100 TexAlRight">
+                                                <h:outputText value="#{facturaElectronica.totalSinImpuestos}" class="text-primary">
+                                                    <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                        <div class="Container100 Responsive100">
+                                            <div class="Container70 Responsive100">
+                                                <h:outputText value="#{i18n['ride.infoFactura.totalDescuento']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                            </div>
+                                            <div class="Container30 Responsive100 TexAlRight">
+                                                <h:outputText value="#{facturaElectronica.totalDescuento}" class="text-primary">
+                                                    <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                        <div class="EmptyBox10"></div>
+                                        <div class="Container100 Responsive100 Bold">
+                                            <div class="Container70 Responsive100">
+                                                <h:outputText value="#{i18n['ride.infoFactura.importeTotal']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                            </div>
+                                            <div class="Container30 Responsive100 TexAlRight">
+                                                <h:outputText value="#{facturaElectronica.importeTotal}" class="text-primary">
+                                                    <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </c:if>
+                        <!-- ./Fin RIDE Pseudo -->
                         <div class="EmptyBox20"></div>
                         <div class="Separator"></div>
                         <!-- ./Impresion de RIDE -->

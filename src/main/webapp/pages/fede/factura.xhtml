@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/templates/fede_template.xhtml">
-    <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+    
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="facturaElectronicaId" value="#{facturaElectronicaHome.facturaElectronicaId}" />
@@ -36,7 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </ui:define>
 
     <ui:define name="content">
-
+        <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+        <o:importConstants type="org.jlgranda.fede.model.document.EmissionType" />
         <div class="Container100 ui-fluid">
             <div class="ContainerIndent">
                 <div class="Card ShadowEffect">
@@ -66,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </div>
                     <div class="EmptyBox10"></div>
-                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.detail.add']}</div>
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['Details']}</div>
                     <div class="Container100 Responsive100">
                         <div class="ContainerIndent">
                             <div class="Card SoftGrayBack">
@@ -91,16 +92,66 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}" effect="fade"
                                                          required="#{false}" immediate="true"> 
                                             <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
-                                            <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
+                                            <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                            <p:ajax update="@form" />
                                         </p:selectOneMenu>
                                     </div>
                                 </div>
                             </div>
                         </div> 
-
                     </div>
                     <div class="EmptyBox10"></div>
-                    
+                    <!-- Lista de pagos para facturas a crédito -->
+                    <p:panel id="payment-tracking" styleClass="Container100 Responsive100" 
+                             rendered="#{facturaElectronicaHome.facturaElectronica.emissionType == EmissionType.PURCHASE_CREDIT}">
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.payments.tracking']}</div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Card SoftGrayBack">
+                                
+                                <div class="Container100 Responsive100">
+                                    <p:panelGrid columns="5" layout="grid" style="border:0px !important; background:none;" styleClass="ui-panelgrid-blank">
+                                        <p:inputText value="#{facturaElectronicaHome.payment.amount}" placeholder="#{i18n['app.fede.sales.payment.amount']}"></p:inputText>
+                                        <p:inputText value="#{facturaElectronicaHome.payment.discount}" placeholder="#{i18n['app.fede.sales.payment.discount']}"></p:inputText>
+                                        <p:inputText value="#{facturaElectronicaHome.payment.cash}" placeholder="#{i18n['app.fede.sales.payment.cash']}"></p:inputText>
+                                        <p:inputText value="#{facturaElectronicaHome.payment.change}" placeholder="#{i18n['app.fede.sales.payment.change']}"></p:inputText>
+                                        <p:commandButton id="add-payment" value="#{i18n['Add']}" ajax="true" 
+                                                         actionListener="#{facturaElectronicaHome.addPayment()}" immediate="true"
+                                                         update="paymentsDataTable"
+                                             disabled="#{false}" 
+                                             style="width: auto !important;"/>
+                                    </p:panelGrid>
+                                </div>
+                                <div class="dataTable_wrapper">
+                                    <p:dataTable var="payment" 
+                                                 value="#{facturaElectronicaHome.facturaElectronica.payments}"
+                                                 paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                                 reflow="true" 
+                                                 rowKey="#{payment.id}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                                 id="paymentsDataTable" widgetVar="dataTable_wv" lazy="false" paginatorAlwaysVisible="false">
+
+                                        <p:column headerText="#{i18n['app.fede.sales.payment.amount']}">
+                                            <h:outputText value="#{payment.amount}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['app.fede.sales.payment.discount']}">
+                                            <h:outputText value="#{payment.discount}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}">
+                                            <h:outputText value="#{payment.cash}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['app.fede.sales.payment.change']}">
+                                            <h:outputText value="#{payment.change}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </p:panel>
+                    <!-- .//Lista de pagos para facturas a crédito -->
+                    <div class="EmptyBox10"></div>
                     <p:toolbar rendered="#{true}">
                         <f:facet name="left">
                             <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 

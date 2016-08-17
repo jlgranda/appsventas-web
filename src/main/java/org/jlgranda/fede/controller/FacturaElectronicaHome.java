@@ -46,6 +46,7 @@ import org.jpapi.util.Dates;
 import org.primefaces.event.FileUploadEvent;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.sales.PaymentService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
@@ -66,6 +67,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.SourceType;
@@ -104,6 +106,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     @EJB
     private OrganizationService organizacionService;
+    
+    @EJB
+    private PaymentService paymentService;
 
     @EJB
     private SubjectService subjectService;
@@ -149,6 +154,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * Lista de facturas electrónicas a usar el dashboard y/o widgets
      */
     private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<FacturaElectronica>());
+    
+    private Payment payment; //Para editar pagos
 
     public FacturaElectronicaHome() {
     }
@@ -170,7 +177,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setFacturaElectronica(facturaElectronicaService.createInstance());
         setSupplier(getDefaultSupplier());
         setUseDefaultSupplier(false); //TODO desde configuraciones
-        setOutcome("fede-dashboard");
+        
+        setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
+        setOutcome("fede-inbox");
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -239,6 +248,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public FacturaElectronica getFacturaElectronica() {
+        if (this.facturaElectronicaId != null && !this.facturaElectronica.isPersistent()) {
+            this.facturaElectronica = facturaElectronicaService.find(facturaElectronicaId);
+        }
         return facturaElectronica;
     }
 
@@ -276,6 +288,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void setUseDefaultSupplier(boolean useDefaultSupplier) {
         this.useDefaultSupplier = useDefaultSupplier;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 
     public void addURL() {
@@ -724,6 +744,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return _keys;
     }
+    
+    public Long getFacturaElectronicaIdFromSelectedKeys() {
+        Long id = 0L;
+        if (getSelectedBussinesEntities() != null && !getSelectedBussinesEntities().isEmpty()) {
+            id = getSelectedBussinesEntities().get(0).getId(); //Tomar el primero de los seleccionados
+        }
+        return id;
+    }
 
     public List<String> getGroupNames() {
         List<String> names = new ArrayList<>();
@@ -813,12 +841,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 FacturaElectronica fe = (FacturaElectronica) event.getObject();
-                if (SourceType.MANUAL.equals(fe.getSourceType())){
-                    redirectTo("/pages/fede/pseudoride.jsf?key=" + fe.getId());
-                } else {
-                    redirectTo("/pages/fede/ride.jsf?key=" + fe.getId());
-                }
-                
+                redirectTo("/pages/fede/ride.jsf?key=" + fe.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
@@ -867,6 +890,26 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
 
         return total;
+    }
+    
+    /**
+     * Agrega o actualiza el pago de la factura.
+     */
+    public void addPayment(){
+        
+        System.out.println(">>> 1. getPayment: " + getPayment());
+        
+        this.getPayment().setCash(getPayment().getAmount());
+        
+        Payment p = paymentService.createInstance();
+        p.setAmount(getPayment().getAmount());
+        p.setCash(getPayment().getAmount());
+        p.setDiscount(getPayment().getDiscount());
+        this.getFacturaElectronica().addPayment(p);
+        System.out.println(">>> p: " + p);
+        
+        setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
+        System.out.println(">>> 2. getPayment: " + getPayment());
     }
 
 }
