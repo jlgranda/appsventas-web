@@ -46,23 +46,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.invoice.owner']}</div>
                     <div class="Container100 Responsive100">
                         <div class="ContainerIndent">
-                            <div class="Container90 Responsive50">
-                                <p:autoComplete value="#{invoiceHome.customer}" effect="fade" 
-                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
-                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}">
-                                    <p:column>
-                                        <h:outputText value="#{entidad.fullName}"/>
-                                    </p:column>
-                                </p:autoComplete>
+                            <div class="Container100 Responsive100">
+                                <div class="Container90 Responsive50">
+                                    <p:autoComplete value="#{invoiceHome.customer}" effect="fade" 
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                                    var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                    forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}">
+                                        <p:column>
+                                            <h:outputText value="#{entidad.fullName}"/>
+                                        </p:column>
+                                    </p:autoComplete>
+                                </div>
+                                <div class="Container10 Responsive50">
+                                    <p:commandButton id="button-change-customer"
+                                                     icon="fa fa-user-plus Fs14 Black" styleClass="GrayButton"
+                                                     disabled="#{invoiceHome.useDefaultCustomer}">
+                                    </p:commandButton>
+                                </div>
                             </div>
-                            <div class="Container10 Responsive50">
-                                <p:commandButton id="button-change-customer"
-                                                 icon="fa fa-user-plus Fs14 Black" styleClass="GrayButton"
-                                                 disabled="#{invoiceHome.useDefaultCustomer}">
-                                </p:commandButton>
+                            <div class="Container100 Responsive100">
+                                <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
+                                                execute="none" render="board_number" value="#{invoiceHome.invoice.boardNumber}" required="false"
+                                                    container="none"/>
                             </div>
                         </div>
                     </div>
