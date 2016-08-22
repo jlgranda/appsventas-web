@@ -88,7 +88,7 @@ and open the template in the editor.
 
 .flaticon-capuchino {
     background-color: transparent;
-    background-image: url('/appsventas-web/resources/images/flaticon/png/cup.png') !important;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/coffee-with-cream.png') !important;
     background-repeat: repeat;
     background-attachment: scroll;
     background-position: 0px 0px;
@@ -119,7 +119,7 @@ and open the template in the editor.
 }
 .flaticon-chocolate {
     background-color: transparent;
-    background-image: url('/appsventas-web/resources/images/flaticon/png/cup-1.png') !important;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/mug.png') !important;
     background-repeat: repeat;
     background-attachment: scroll;
     background-position: 0px 0px;
@@ -179,7 +179,7 @@ and open the template in the editor.
 }
 .flaticon-empanada-cafe{
     background-color: transparent;
-    background-image: url('/appsventas-web/resources/images/flaticon/png/taco.png') !important;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/pasty.png') !important;
     background-repeat: repeat;
     background-attachment: scroll;
     background-position: 0px 0px;
@@ -209,7 +209,7 @@ and open the template in the editor.
 }
 .flaticon-pizza-chocolate {
     background-color: transparent;
-    background-image: url('/appsventas-web/resources/images/flaticon/png/food-11.png') !important;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/pizza-with-mushrooms.png') !important;
     background-repeat: repeat;
     background-attachment: scroll;
     background-position: 0px 0px;
@@ -220,6 +220,95 @@ and open the template in the editor.
 .flaticon-deditos {
     background-color: transparent;
     background-image: url('/appsventas-web/resources/images/flaticon/png/food-7.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-horchata {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/drink-4.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+
+.flaticon-chocolate-para-llevar {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/coffee-cup.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-jugo-frutas {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/fruit.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-empanada-verde {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/food-5.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-cafe-molido {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/food-9.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-waricha {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/drink-1.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-tamal {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/tamales.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-humitas {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/maize.png') !important;
     background-repeat: repeat;
     background-attachment: scroll;
     background-position: 0px 0px;

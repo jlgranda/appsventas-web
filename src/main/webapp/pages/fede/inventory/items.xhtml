@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:param name="title" value="#{i18n['fede']}" />
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="tags" value="#{facturaElectronicaHome.tags}" />
+                <f:viewParam name="tags" value="#{inventoryHome.tags}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
@@ -65,18 +65,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             disabled="#{empty facturaElectronicaHome.selectedBussinesEntities}">
                                 </p:menuitem>
                             </p:menuButton>
-                            <p:menuButton value="#{i18n['Import']}" iconPos="right" 
-                                          styleClass="MarRight10"
-                                          buttonStyleClass="ToolbarButton Fs14" 
-                                          iconStyleClass="Gray"
-                                          menuStyleClass="Gray">
-                                <p:menuitem value="#{i18n['FromEmail']}"  icon="fa fa-inbox Fs15" 
-                                            actionListener="#{facturaElectronicaHome.importarDesdeInbox()}"/>
-                                <p:menuitem value="#{i18n['FromFile']}" icon="fa fa-upload Fs15"
-                                            onclick="triggerHiddenEventAddFromFile(); return false;"/>
-                                <p:menuitem value="#{i18n['FromURL']}" icon="fa fa-link Fs15" 
-                                            onclick="triggerHiddenEventAddFromURL(); return false;"/>
-                            </p:menuButton>
                             <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
                                           styleClass="MarRight10"
                                           buttonStyleClass="ToolbarButton Fs14" 
@@ -85,6 +73,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:menuButton>
                         </f:facet>
                         <f:facet name="right">
+                            <label class="Gray">#{i18n['common.type']}&nbsp;</label>
+                            <p:selectOneMenu value="#{inventoryHome.productType}" effect="fade"
+                                             required="#{false}" immediate="true"> 
+                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
+                                <p:ajax event="change" oncomplete="form.submit();"/>
+                            </p:selectOneMenu>
                             <label class="Gray">#{i18n['Start']}&nbsp;</label>
                             <p:calendar value="#{inventoryHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
@@ -178,6 +173,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </ui:define>
         <!--./toolbar-->
         <ui:define name="sidebar">
+            <div class="Container100 Responsive100 TexAlCenter">
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/inventory/product.jsf"/>
+            </div>
+            <div class="EmptyBox10"></div>
             <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
                 <li class="" role="menuitem">
                     <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inventory/items.jsf" 
@@ -185,7 +184,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </li>
                 <ui:repeat var="tag" value="#{inventoryHome.groups}">
                     <li class="" role="menuitem">
-                        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf?tags=#{tag.code}" 
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/items.jsf?tags=#{tag.code}" 
                            class="menulink ripplelink #{inventoryHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
                     </li>
                 </ui:repeat>
@@ -200,7 +199,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      value="#{inventoryHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                      sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{facturaElectronicaHome.selectedBussinesEntities}" 
+                                     reflow="true" selection="#{inventoryHome.selectedBussinesEntities}" 
                                      rowKey="#{product.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
@@ -209,21 +208,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE :form:labelsOverlayPanel"/>
                             <p:ajax event="rowSelect" listener="#{inventoryHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                            <p:column headerText="#{i18n['ride.no']}" sortBy="#{product.code}">
-                                <h:outputText value="#{product.code}" />
+                            <p:column headerText="#{i18n['name']}" sortBy="#{product.name}">
+                                <h:outputText value="#{product.name}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{product.author.initials}">
-                                <h:outputText value="#{product.author.initials}" />
-                            </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{product.price}"
+                            <p:column headerText="#{i18n['ride.Factura.Detalles.precioUnitario']}" sortBy="#{product.price}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.price}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{product.createOn}"
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{product.createdOn}"
                                        styleClass="text-right">
-                                <h:outputText value="#{product.createOn}">
+                                <h:outputText value="#{product.createdOn}">
                                     <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>

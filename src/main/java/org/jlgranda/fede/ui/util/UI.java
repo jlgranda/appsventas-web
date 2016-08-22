@@ -27,6 +27,7 @@ import javax.faces.model.SelectItem;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.management.Organization;
+import org.jlgranda.fede.model.sales.ProductType;
 import org.jpapi.util.I18nUtil;
 
 /**
@@ -50,6 +51,11 @@ public class UI {
         return DocumentType.values();
     }
     
+    public ProductType[] getProductTypes() {
+        return ProductType.values();
+    }
+    
+    
     public EmissionType[] getEmissionTypes() {
         return EmissionType.values();
     }
@@ -58,6 +64,16 @@ public class UI {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         for (DocumentType t : getDocumentTypes()) {
+            item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+            items.add(item);
+        }
+        return items;
+    }
+    
+    public List<SelectItem> getProductTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (ProductType t : getProductTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
             items.add(item);
         }

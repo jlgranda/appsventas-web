@@ -20,6 +20,7 @@ package org.jlgranda.fede.controller.inventory;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.sales.ProductService;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,18 +32,23 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
+import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.sales.Product;
+import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.ui.model.LazyProductDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Lists;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
@@ -62,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * @author jlgranda
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class InventoryHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -21640696368253046L;
@@ -81,7 +87,12 @@ public class InventoryHome extends FedeController implements Serializable {
     
     private Product product;
     
+    private ProductType productType;
+    
     private List<Product> lastProducts = new ArrayList<>();
+    
+    private LazyProductDataModel lazyDataModel;
+
     
     @EJB
     private ProductService productService; 
@@ -93,6 +104,8 @@ public class InventoryHome extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
         setProduct(productService.createInstance());
+        setProductType(ProductType.PRODUCT);
+        setOutcome("inventory-inbox");
     }
 
     public Long getProductId() {
@@ -101,6 +114,14 @@ public class InventoryHome extends FedeController implements Serializable {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
     }
     
     public Product getLastProduct() {
@@ -116,6 +137,9 @@ public class InventoryHome extends FedeController implements Serializable {
     }
 
     public Product getProduct() {
+        if (this.productId != null && !this.product.isPersistent()) {
+            this.product = productService.find(productId);
+        }
         return product;
     }
 
@@ -133,6 +157,14 @@ public class InventoryHome extends FedeController implements Serializable {
             lastProducts = productService.findByNamedQuery("Product.findLastProducts", limit);
         return lastProducts;
     }
+    
+    public String getSelectedKeys() {
+        String _keys = "";
+        if (getSelectedBussinesEntities() != null && !getSelectedBussinesEntities().isEmpty()) {
+            _keys = Lists.toString(getSelectedBussinesEntities());
+        }
+        return _keys;
+    }
 
     public boolean mostrarFormularioProducto() {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
@@ -147,15 +179,18 @@ public class InventoryHome extends FedeController implements Serializable {
     }
     
     public void save(){
-        productService.save(getProduct().getId(), getProduct());
-        this.addDefaultSuccessMessage();
-        
-        this.closeDialog(getProduct());
+        if (product.isPersistent()){
+            product.setLastUpdate(Dates.now());
+        } else {
+            product.setAuthor(this.subject);
+            product.setOwner(this.subject);
+        }
+        productService.save(product.getId(), product);
     }
 
     @Override
     public Group getDefaultGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.defaultGroup;
     }
 
     /**
@@ -170,6 +205,15 @@ public class InventoryHome extends FedeController implements Serializable {
         }
 
         return this.groups;
+    }
+
+    public LazyProductDataModel getLazyDataModel() {
+        filter();
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyProductDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
     }
     
     /**
@@ -320,4 +364,35 @@ public class InventoryHome extends FedeController implements Serializable {
         return areaModel;
     }
 
+    private void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyProductDataModel(productService);
+        }
+
+        lazyDataModel.setOwner(subject);
+        lazyDataModel.setProductType(getProductType());
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                Product p = (Product) event.getObject();
+                redirectTo("/pages/fede/inventory/product.jsf?productId=" + p.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+        }
+    }
 }

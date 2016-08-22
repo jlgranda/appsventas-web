@@ -34,6 +34,8 @@ limitations under the License.
     <c:set var="defaultrender" value="#{not empty render ? ''.concat(render) : (not empty id ? ''.concat(id) : ''.concat(mame))}" />
     <c:set var="render" value="#{not empty render ? 'panel-group-'.concat(render) : (not empty id ? 'panel-group-'.concat(id) : 'panel-group-'.concat(mame))}" />
     <c:set var="mode" value="#{not empty mode ? mode : 'write'}" />   
+    <c:set var="decimalPlaces" value="#{not empty decimalPlaces ? decimalPlaces : '3'}" />   
+    <c:set var="requiredMessage" value="#{not empty requiredMessage ? requiredMessage : 'Ingrese un valor'}" />   
 
     <c:if test="#{mode == 'read'}">
         <div class="Container100 Responsive100">
@@ -99,8 +101,8 @@ limitations under the License.
                 </c:when>
                 <c:when test="#{type == 'number'}">
                     <p:inputNumber id="#{name}" value="#{value}" required="#{required}" disabled="#{disabled}"
-                                   styleClass="#{class}"
-                                 decimalSeparator="." thousandSeparator="," decimalPlaces="3">
+                                   styleClass="#{class}" requiredMessage="#{requiredMessage}"
+                                 decimalSeparator="." thousandSeparator="," decimalPlaces="#{decimalPlaces}">
                         <p:ajax listener="#{listener}" update="#{render}"/>
                     </p:inputNumber>
                 </c:when>
@@ -179,8 +181,8 @@ limitations under the License.
                                 <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
                             </p:inputText -->
                             <p:inputNumber id="#{name}" value="#{value}" required="#{required}" disabled="#{disabled}"
-                                           styleClass="#{class}"
-                                           decimalSeparator="." thousandSeparator="," decimalPlaces="3">
+                                           styleClass="#{class}" requiredMessage="#{requiredMessage}"
+                                           decimalSeparator="." thousandSeparator="," decimalPlaces="#{decimalPlaces}">
                                 <c:if test="#{listener != 'none'}">
                                     <p:ajax listener="#{listener}" update="#{render}" partialSubmit="true"/>
                                 </c:if>

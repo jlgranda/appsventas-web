@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.sales.Product;
+import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.sales.Product_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
@@ -42,7 +43,9 @@ import org.slf4j.LoggerFactory;
  * @author jlgranda
  */
 public class LazyProductDataModel  extends LazyDataModel<Product> implements Serializable {
+    
     private static final int MAX_RESULTS = 5;
+    private static final long serialVersionUID = -3989947588787365293L;
     
     Logger  logger = LoggerFactory.getLogger(LazyProductDataModel.class);
 
@@ -68,6 +71,10 @@ public class LazyProductDataModel  extends LazyDataModel<Product> implements Ser
      * Fin del rango de fecha
      */
     private Date end;
+    
+    /**
+     */
+    private ProductType productType;
     
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
@@ -138,6 +145,14 @@ public class LazyProductDataModel  extends LazyDataModel<Product> implements Ser
         this.end = end;
     }
 
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
+    }
+
     public String getFilterValue() {
         return filterValue;
     }
@@ -186,8 +201,7 @@ public class LazyProductDataModel  extends LazyDataModel<Product> implements Ser
 
     @Override
     public Object getRowKey(Product entity) {
-        System.err.println("//--> getRowKey:entity" + entity);
-        return entity.getName();
+        return entity.getId();
     }
 
     @Override
@@ -217,6 +231,10 @@ public class LazyProductDataModel  extends LazyDataModel<Product> implements Ser
         
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
+        if (getProductType() != null){
+            _filters.put("productType", getProductType()); //Filtro de tipo de producto
         }
         
         if (getFilterValue() != null && !getFilterValue().isEmpty()){
