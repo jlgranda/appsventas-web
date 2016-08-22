@@ -228,6 +228,7 @@ public class InventoryHome extends FedeController implements Serializable {
         Map<String, String> columns = new HashMap<>();
         columns.put("code", keyword);
         columns.put("name", keyword);
+        filters.put("productType", getProductType());
         filters.put("dummy", columns);
         QueryData<Product> queryData = productService.find(-1, -1, "code, name", QuerySortOrder.ASC, filters);
         return queryData.getResult();
