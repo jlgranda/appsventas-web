@@ -103,7 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:commandButton>
                         </div>
                         <div class="Container100 Responsive100">
-                            <div class="Container80 Responsive100">
+                            <div class="Container100 Responsive100">
                                 <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" minQueryLength="2" completeMethod="#{inventoryHome.find}"
                                                 var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="5" itemValue="#{entidad}" 
                                                 converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
@@ -111,19 +111,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:column>
                                         <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
                                     </p:column>
-                                    <p:ajax event="itemSelect" update="button-add-detail"></p:ajax>
+                                    <p:ajax event="itemSelect" update="@form" listener="#{invoiceHome.addCandidateDetail()}"></p:ajax>
                                 </p:autoComplete>
-                            </div>
-                            <div class="Container10 Responsive100">
-                                <p:spinner id="spinner01" value="#{invoiceHome.candidateDetail.amount}" min="0" styleClass="">
-                                    <p:ajax process="@this"/>
-                                </p:spinner>
-                            </div>
-                            <div class="Container10 Responsive100">
-                                <p:commandButton id="button-add-detail" ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.addCandidateDetail()}" disabled="#{empty invoiceHome.candidateDetail.product}"
-                                                 icon="fa fa-gittip" styleClass="CyanButton">
-                                </p:commandButton>
                             </div>
                         </div>
                     </div>
@@ -144,7 +133,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </h:outputText></span>
                                     <div class="EmptyBox10"></div>
                                     <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="SoftGreenBack">
-                                        <p:ajax update="@form:invoice-total @form:payment-total" listener="#{invoiceHome.calculeChange()}"></p:ajax>
+                                        <p:ajax update="@form:invoice-total @form:payment-panel" listener="#{invoiceHome.calculeChange()}"></p:ajax>
                                     </p:spinner>
                                 </div>
                             </div> 

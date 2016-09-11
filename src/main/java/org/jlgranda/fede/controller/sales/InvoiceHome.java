@@ -155,7 +155,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
 
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.addDays(getEnd(), -1 * amount));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * amount)));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora
@@ -264,7 +264,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public List<Invoice> getMyLastlastPreInvoices() {
         if (myLastlastPreInvoices.isEmpty()){
-            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0, getStart(), getEnd());
+            myLastlastPreInvoices = findInvoices(subject, DocumentType.PRE_INVOICE, 0, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()));
         }
         return myLastlastPreInvoices;
     }
@@ -275,7 +275,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public List<Invoice> getMyLastlastInvoices() {
         if (myLastlastInvoices.isEmpty()){
-            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE, 0, getStart(), getEnd());
+            myLastlastInvoices = findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()));
         }
         return myLastlastInvoices;
     }
@@ -376,6 +376,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 }
             });
 
+            getInvoice().setLastUpdate(Dates.now()); //Forzar pues no se realiza ningun cambio en el objeto maestro
             invoiceService.save(getInvoice().getId(), getInvoice());
             this.addDefaultSuccessMessage();
             setOutcome("preinvoices");
@@ -412,11 +413,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         //subtotal = total menos descuento
         BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
-        //Preestablecer el dinero a recibir
-        if (BigDecimal.ZERO.compareTo(getPayment().getCash()) == 0){
-            getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
-        }
-        //CAMBIO > lo que he recibido menos el subtotal
+        getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
         getPayment().setChange(getPayment().getCash().subtract(subtotal));
         
     }
