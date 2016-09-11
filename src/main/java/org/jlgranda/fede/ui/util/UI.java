@@ -162,20 +162,20 @@ public class UI {
      * @return 
      */
     public String calculeEmoticon(BigDecimal total, int gap){
-        String emoticon = "<i class=\"fa fa-circle-thin\"></i>";
+        String emoticon = "<i class=\"fa fa-flag-checkered\"></i>";
+        
         if (total.compareTo(BigDecimal.valueOf(gap)) > 0){
             int factor;
             factor = total.intValue() / gap;
             emoticon = "";
             for (int i=0; i < factor; i++){
-                emoticon = emoticon + "<i class=\"fa fa-sun-o\"></i>";
+                emoticon = emoticon + "<i class=\"fa fa-flag\"></i>";
             }
-        } else if(total.compareTo(BigDecimal.valueOf((int) gap / 2)) > 0){
-            int factor;
-            factor = total.intValue() / gap;
-            emoticon = "";
-            for (int i=0; i < factor; i++){
-                emoticon = emoticon + "<i class=\"fa fa-smile-o\"></i>";
+            
+            BigDecimal excedente = total.subtract(new BigDecimal(factor * gap));
+            gap = gap / 2;
+            if (excedente.compareTo(BigDecimal.valueOf(gap)) > 0){
+                emoticon = emoticon + "<i class=\"fa fa-flag-checkered\"></i>";
             }
         } 
         
