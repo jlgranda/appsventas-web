@@ -162,8 +162,8 @@ public class UI {
      * @return 
      */
     public String calculeEmoticon(BigDecimal total, int gap){
-        String emoticon = "<i class=\"fa fa-flag-checkered\"></i>";
-        
+        String emoticon = "<i class=\"fa  fa-flag-o\"></i>";
+        int half_gap = gap / 2;
         if (total.compareTo(BigDecimal.valueOf(gap)) > 0){
             int factor;
             factor = total.intValue() / gap;
@@ -173,12 +173,14 @@ public class UI {
             }
             
             BigDecimal excedente = total.subtract(new BigDecimal(factor * gap));
-            gap = gap / 2;
-            if (excedente.compareTo(BigDecimal.valueOf(gap)) > 0){
+            if (excedente.compareTo(BigDecimal.valueOf(half_gap)) > 0){
                 emoticon = emoticon + "<i class=\"fa fa-flag-checkered\"></i>";
+            } else {
+                emoticon = emoticon + "<i class=\"fa fa-flag-o\"></i>";
             }
+        } else if (total.compareTo(BigDecimal.valueOf(half_gap)) > 0){
+            emoticon = "<i class=\"fa fa-flag-checkered\"></i>";
         } 
-        
         return emoticon;
     }
 
