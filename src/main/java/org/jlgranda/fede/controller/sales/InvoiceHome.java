@@ -155,7 +155,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
 
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * amount)));
+        setStart(Dates.minimumDate(Dates.now()));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora

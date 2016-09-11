@@ -158,6 +158,7 @@ public class UI {
     /**
      * Imprime emoticons para ocultar la cantidad factor
      * @param total
+     * @param gap
      * @return 
      */
     public String calculeEmoticon(BigDecimal total, int gap){
@@ -167,9 +168,16 @@ public class UI {
             factor = total.intValue() / gap;
             emoticon = "";
             for (int i=0; i < factor; i++){
+                emoticon = emoticon + "<i class=\"fa fa-sun-o\"></i>";
+            }
+        } else if(total.compareTo(BigDecimal.valueOf((int) gap / 2)) > 0){
+            int factor;
+            factor = total.intValue() / gap;
+            emoticon = "";
+            for (int i=0; i < factor; i++){
                 emoticon = emoticon + "<i class=\"fa fa-smile-o\"></i>";
             }
-        }
+        } 
         
         return emoticon;
     }
