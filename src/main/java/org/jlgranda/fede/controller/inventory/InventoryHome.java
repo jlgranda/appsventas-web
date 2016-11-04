@@ -56,6 +56,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
+import org.primefaces.model.chart.BarChartSeries;
 import org.primefaces.model.chart.CategoryAxis;
 import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.LineChartModel;
@@ -312,11 +313,15 @@ public class InventoryHome extends FedeController implements Serializable {
         return model;
     }
 
-    public LineChartModel buildLineBarChartModel(List<BussinesEntity> selectedBussinesEntities) {
-        return createLineChartModel(selectedBussinesEntities);
+    public LineChartModel buildLineBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
+        return createLineChartModel(selectedBussinesEntities, skinChart);
     }
     
-    private LineChartModel createLineChartModel(List<BussinesEntity> selectedBussinesEntities) {
+    public BarChartModel buildBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
+        return createBarChartModel(selectedBussinesEntities, skinChart);
+    }
+    
+    private LineChartModel createLineChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
         LineChartModel areaModel = new LineChartModel();
         
         if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
@@ -351,7 +356,55 @@ public class InventoryHome extends FedeController implements Serializable {
 
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.products.history"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
-        areaModel.setExtender("skinChart");
+        areaModel.setExtender(skinChart);
+        areaModel.setAnimate(false);
+        areaModel.setShowPointLabels(false);
+        
+         
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        areaModel.getAxes().put(AxisType.X, xAxis);
+        Axis yAxis = areaModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        yAxis.setMin(0);
+        
+        return areaModel;
+    }
+    private BarChartModel createBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
+        BarChartModel areaModel = new BarChartModel();
+        
+        if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
+            return  areaModel;
+        }
+ 
+        BarChartSeries product = null;
+        Date _start = getStart();
+        Date _step = null;
+        String label = "";
+        Double total;
+        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
+            int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+            _start = Dates.addDays(getStart(), -1 * range);
+        }
+        
+        for (BussinesEntity entity: selectedBussinesEntities){
+            product = new BarChartSeries();
+            //product.setFill(false);
+            product.setLabel(entity.getName());
+            _step = _start;
+            for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
+                label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+                product.set(label, total);
+                _step = Dates.addDays(_step, 1); //Siguiente día
+            }
+
+            areaModel.addSeries(product);
+
+        }
+
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.products.history"));
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
+        areaModel.setExtender(skinChart);
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
         

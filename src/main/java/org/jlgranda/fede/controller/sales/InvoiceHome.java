@@ -160,7 +160,12 @@ public class InvoiceHome extends FedeController implements Serializable {
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora
         List<BussinesEntity> defaultProducts = new ArrayList<>();
+        defaultProducts.add(productService.find(80L));
+        defaultProducts.add(productService.find(81L));
+        defaultProducts.add(productService.find(370L));
+        defaultProducts.add(productService.find(87L));
         defaultProducts.add(productService.find(101L));
+        defaultProducts.add(productService.find(78L));
         setSelectedBussinesEntities(defaultProducts);
     }
 
@@ -413,7 +418,12 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         //subtotal = total menos descuento
         BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
-        getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
+        //Preestablecer el dinero a recibir
+        //if (BigDecimal.ZERO.compareTo(getPayment().getCash()) == 0 || subtotal.compareTo(subtotal)){
+        if (subtotal.compareTo(getPayment().getCash()) > 0) {
+            getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
+        }
+        //CAMBIO > lo que he recibido menos el subtotal
         getPayment().setChange(getPayment().getCash().subtract(subtotal));
         
     }
@@ -641,6 +651,12 @@ public class InvoiceHome extends FedeController implements Serializable {
     public LineChartModel buildProductLineBarChartModel() {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
         inventoryHome.setEnd(Dates.maximumDate(getEnd()));
-        return inventoryHome.buildLineBarChartModel(getSelectedBussinesEntities());
+        return inventoryHome.buildLineBarChartModel(getSelectedBussinesEntities(), "skinChart");
+    }
+    
+    public BarChartModel buildProductBarChartModel() {
+        inventoryHome.setStart(Dates.minimumDate(getStart()));
+        inventoryHome.setEnd(Dates.maximumDate(getEnd()));
+        return inventoryHome.buildBarChartModel(getSelectedBussinesEntities(), "skinBarChart");
     }
 }
