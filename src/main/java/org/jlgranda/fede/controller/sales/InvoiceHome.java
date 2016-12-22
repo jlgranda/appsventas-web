@@ -32,7 +32,9 @@ import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
@@ -42,10 +44,12 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import net.tecnopro.document.model.InstanciaProceso;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
@@ -58,6 +62,7 @@ import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
+import org.jlgranda.fede.ui.util.UI;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -139,6 +144,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     @Inject 
     private FacturaElectronicaHome facturaElectronicaHome;
+    
+    @Inject
+    private TemplateHome templateHome;
     
     @PostConstruct
     private void init() {
@@ -313,7 +321,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         getInvoice().setActive(false);
         getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
         save(true); //Guardar forzando
-        return "success";
+        return "preinvoices";
     }
 
     /**
@@ -333,6 +341,18 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().addPayment(getPayment());
             save();
             setOutcome("preinvoices");
+            //Notificar si se completa o sobrepasa bandera
+            logger.info("Antes de Construyendo notificación!!!!");
+            BigDecimal total = this.calculeTotal(this.myLastlastInvoices);
+            if (UI.isOver(total, Integer.valueOf(settingHome.getValue(SettingNames.INVOICE_NOTIFY_GAP, "100")))){
+                logger.info("Construyendo notificación!!!!");
+                Map<String, Object> values = new HashMap<>();
+                values.put("subject", subject);
+                values.put("total", total);
+                values.put("url", "http://jlgranda.com:8080/appsventas-web/");
+                values.put("url_title", "Appsventas Panel de Control");
+                sendNotification(templateHome, settingHome, subject, values, "app.mail.template.invoice.notify.gap", false);
+            }
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
             setOutcome("");
@@ -659,4 +679,5 @@ public class InvoiceHome extends FedeController implements Serializable {
         inventoryHome.setEnd(Dates.maximumDate(getEnd()));
         return inventoryHome.buildBarChartModel(getSelectedBussinesEntities(), "skinBarChart");
     }
+    
 }

@@ -32,8 +32,11 @@ import javax.faces.convert.Converter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.jlgranda.fede.controller.admin.TemplateHome;
+import org.jlgranda.fede.model.sales.Invoice;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
+import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -412,5 +415,14 @@ public abstract class FedeController {
         return builder.toString();
     }
     
-    
+    public void sendNotification(TemplateHome templateHome, SettingHome settingHome, Subject subject, Map<String, Object> values, String templateName, boolean displayMessage) {
+        if (templateHome != null) {
+
+            if (templateHome.sendEmail(subject, settingHome.getValue(templateName, templateName), values)){
+                if (displayMessage) addDefaultSuccessMessage();
+            } else {
+                if (displayMessage) addDefaultErrorMessage();
+            }
+        }
+    }
 }

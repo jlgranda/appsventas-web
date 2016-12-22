@@ -183,5 +183,26 @@ public class UI {
         } 
         return emoticon;
     }
+    /**Verifica que se haya cumplido con el salto dado para notificación de cumplimiento de totales
+     * @param total
+     * @param gap
+     * @return true si se ha completa la mitad y/o el total, falso en caso contrario
+     */
+    public static boolean isOver(BigDecimal total, int gap){
+        boolean isOver = false;
+        int half_gap = gap / 2;
+        if (total.compareTo(BigDecimal.valueOf(gap)) > 0){
+            int factor;
+            factor = total.intValue() / gap;
+            isOver = factor > 0;
+        } else if (total.compareTo(BigDecimal.valueOf(half_gap)) > 0){
+            isOver = true;
+        } 
+        return isOver;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(new org.apache.commons.codec.digest.Crypt().crypt("f3d3"));
+    }
 
 }
