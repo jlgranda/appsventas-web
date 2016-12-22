@@ -435,7 +435,8 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void calculeChange() {
 
-        
+        long t1 = System.currentTimeMillis();
+        logger.info("Inicia calculo de cambio {}", t1);
         //subtotal = total menos descuento
         BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
         //Preestablecer el dinero a recibir
@@ -445,7 +446,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         //CAMBIO > lo que he recibido menos el subtotal
         getPayment().setChange(getPayment().getCash().subtract(subtotal));
-        
+        long t2 = System.currentTimeMillis();
+        logger.info("Tiempo total {}", t2 - t1);
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {
