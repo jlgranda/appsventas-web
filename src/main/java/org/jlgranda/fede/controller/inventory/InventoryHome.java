@@ -22,7 +22,6 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,15 +30,12 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
-import org.jlgranda.fede.model.document.DocumentType;
-import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.ui.model.LazyProductDataModel;
@@ -104,6 +100,16 @@ public class InventoryHome extends FedeController implements Serializable {
 
     @PostConstruct
     private void init() {
+        int range = 0; //Rango de fechas para visualiar lista de entidades
+        try {
+            range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "8"));
+        } catch (java.lang.NumberFormatException nfe) {
+            nfe.printStackTrace();
+            range = 8;
+        }
+        setEnd(Dates.maximumDate(Dates.now()));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        
         setProduct(productService.createInstance());
         setProductType(ProductType.PRODUCT);
         setOutcome("inventory-inbox");
@@ -241,7 +247,7 @@ public class InventoryHome extends FedeController implements Serializable {
      */
     public List<Product> findTop() {
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIds", top);
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
         Map<String, Object> filters = new HashMap<>();
         List<Product> result = new ArrayList<>();
         objects.stream().forEach((object) -> {
