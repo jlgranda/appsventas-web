@@ -193,10 +193,10 @@ public class UI {
         int half_gap = gap / 2;
         if (total.compareTo(BigDecimal.valueOf(gap)) > 0){
             int factor;
-            factor = total.intValue() % gap;
-            isOver = factor == 0;
+            factor = total.intValue() / gap;
+            isOver = factor > 0;
         } else if (total.compareTo(BigDecimal.valueOf(half_gap)) > 0){
-            isOver = true;
+            isOver = false;
         } 
         return isOver;
     }

@@ -44,7 +44,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import net.tecnopro.document.model.InstanciaProceso;
+
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
@@ -154,19 +154,20 @@ public class InvoiceHome extends FedeController implements Serializable {
         setInvoice(invoiceService.createInstance());
         setCandidateDetail(detailService.createInstance(1));
         setPayment(paymentService.createInstance());
-        int amount = 0; //Rango de fechas para visualiar lista de entidades
-        try {
-            amount = Integer.valueOf(settingHome.getValue(SettingNames.MYLASTS_RANGE, "1"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            amount = 30;
-        }
+//        int range = 0; //Rango de fechas para visualiar lista de entidades
+//        try {
+//            range = Integer.valueOf(settingHome.getValue(SettingNames.MYLASTS_RANGE, "1"));
+//        } catch (java.lang.NumberFormatException nfe) {
+//            nfe.printStackTrace();
+//            range = 30;
+//        }
 
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.now()));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora
+        
         List<BussinesEntity> defaultProducts = new ArrayList<>();
         defaultProducts.add(productService.find(80L));
         defaultProducts.add(productService.find(81L));
@@ -174,7 +175,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         defaultProducts.add(productService.find(87L));
         defaultProducts.add(productService.find(101L));
         defaultProducts.add(productService.find(78L));
+        defaultProducts.add(productService.find(8005L));
         setSelectedBussinesEntities(defaultProducts);
+        
     }
 
     public Long getInvoiceId() {
@@ -348,7 +351,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 values.put("subject", subject);
                 values.put("total", total);
                 values.put("url", "http://jlgranda.com:8080/appsventas-web/");
-                values.put("url_title", "Appsventas Panel de Control");
+                values.put("url_title", "Appsventas");
                 sendNotification(templateHome, settingHome, subject, values, "app.mail.template.invoice.notify.gap", false);
             }
         } else {

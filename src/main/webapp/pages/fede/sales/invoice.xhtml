@@ -94,12 +94,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              icon="flaticon-empanada-chocolate" styleClass="RedButton" title="Empanada + Chocolate">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('80,78')}" disabled="#{false}"
+                                             icon="flaticon-capuchino" styleClass="RedButton" title="Empanada + Capuchino">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,101')}" disabled="#{false}"
                                              icon="flaticon-pizza-cafe" styleClass="RedButton" title="EMPAPizza + Café">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,87')}" disabled="#{false}"
                                              icon="flaticon-pizza-chocolate" styleClass="RedButton" title="EMPAPizza + Chocolate">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('370,78')}" disabled="#{false}"
+                                             icon="flaticon-capuchino" styleClass="RedButton" title="EMPAPizza + Capuchino">
                             </p:commandButton>
                         </div>
                         <div class="Container100 Responsive100">

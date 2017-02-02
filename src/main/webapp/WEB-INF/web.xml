@@ -56,16 +56,6 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.jsf</url-pattern>
     </servlet-mapping>
-    <!-- This is an optional parameter, but it makes troubleshooting errors much easier.  -->
-    <!-- You may want to delete it before final deployment -->
-<!--    <context-param>
-        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-        <param-value>server</param-value>
-    </context-param>-->
-    <context-param>
-        <param-name>facelets.DEVELOPMENT</param-name>
-        <param-value>false</param-value>
-    </context-param>
     
     <welcome-file-list>
         <welcome-file>faces/index.xhtml</welcome-file>
