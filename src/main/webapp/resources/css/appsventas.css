@@ -350,3 +350,34 @@ and open the template in the editor.
     background-size: auto auto;
 }
 
+.flaticon-latte {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/cup-1.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
+.flaticon-galleta {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/food-18.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-prensado {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/food-18.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
