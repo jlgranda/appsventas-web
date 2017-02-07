@@ -21,6 +21,7 @@ import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.jpapi.util.Strings;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -227,14 +228,17 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         range.put("start", getStart());
         range.put("end", getEnd());
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-        _filters.put(Invoice_.boardNumber.getName(), getBoardNumber()); //Filtro de número de mesa
+        if (!Strings.isNullOrEmpty(getBoardNumber())){
+            _filters.put(Invoice_.boardNumber.getName(), getBoardNumber()); //Filtro de número de mesa
+        }
+        
         _filters.put(Invoice_.author.getName(), getAuthor()); //Filtro por defecto
         _filters.put(Invoice_.createdOn.getName(), range); //Filtro de fecha inicial
-        if (getTags() != null && !getTags().isEmpty()){
+        if (!Strings.isNullOrEmpty(getTags())){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
         
-        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+        if (!Strings.isNullOrEmpty(getFilterValue())){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
         
