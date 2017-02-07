@@ -14,16 +14,17 @@
                     <p:menuitem id="rm_dashboard" value="#{i18n['Dashboard']}" icon="icon-dvr" url="/pages/fede/dashboard.jsf"/>
                     <p:menuitem id="rm_inventory" value="#{i18n['app.fede.inventory']}" icon="fa fa-cubes " url="/pages/fede/inventory/dashboard.jsf"/>
                     <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="icon-paper" url="/pages/fede/sales/preinvoices.jsf" />
+                    <p:menuitem id="rm_sales" value="#{i18n['app.fede.sales']}" icon="fa fa-dollar" url="/pages/fede/sales/invoices.jsf"/>
                     <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-table" url="/pages/fede/inbox.jsf" /> 
                 </p:submenu>
-                <p:submenu id="colors" label="Color Variations" icon="icon-color_lens">
+                <p:submenu id="colors" label="Color Variations" icon="icon-color_lens" rendered="false">
                     <p:menuitem id="gray_geometric" value="Gray" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('GrayModena Geometry');"/>
                     <p:menuitem id="blue_geometric" value="Blue" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('BlueModena Geometry');"/>
                     <p:menuitem id="indigo_geometric" value="Indigo" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('IndigoModena Geometry');"/>
                     <p:menuitem id="cyan_geometric" value="Cyan" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('CyanModena Geometry');"/>
                     <p:menuitem id="red_geometric" value="Red" icon="icon-colorize" url="#" onclick="$('body').attr('class','').addClass('RedModena Geometry');"/>
                 </p:submenu>
-                <p:submenu id="rm_theme" label="Modena Theme" icon="icon-format_color_fill">
+                <p:submenu id="rm_theme" label="Modena Theme" icon="icon-format_color_fill" rendered="false">
                     <p:menuitem id="rm_sample" value="Sample Page" icon="fa fa-columns" outcome="/sample" />
                     <p:menuitem id="rm_forms" value="Form Elements" icon="icon-paper" outcome="/forms" />
                     <p:menuitem id="rm_data" value="Data Components" icon="icon-subtitles" outcome="/data" />
@@ -35,14 +36,14 @@
                     <p:menuitem id="rm_fileupload" value="FileUpload" icon="icon-cast" outcome="/file" />
                     <p:menuitem id="rm_misc" value="Misc" icon="icon-developer_board" outcome="/misc" />
                 </p:submenu>
-                <p:submenu id="rm_default" label="Default Pages" icon="icon-library_books">
+                <p:submenu id="rm_default" label="Default Pages" icon="icon-library_books" rendered="false">
                     <p:menuitem id="rm_empty" value="Empty Page" icon="icon-settings_overscan" outcome="/empty-page" />
                     <p:menuitem id="rm_login" value="Login Page" icon="icon-assignment_ind" outcome="/login" />
                     <p:menuitem id="rm_error" value="Error Page" icon="icon-warning" outcome="/error" />
                     <p:menuitem id="rm_404" value="404 Page" icon="icon-warning" outcome="/404" />
                     <p:menuitem id="rm_access" value="Access Denied Page" icon="icon-visibility_off" outcome="/access-denied" />
                 </p:submenu>
-                <p:submenu id="rm_hierarchy" label="Menu Hierarchy" icon="icon-device_hub">
+                <p:submenu id="rm_hierarchy" label="Menu Hierarchy" icon="icon-device_hub" rendered="false">
                     <p:submenu id="rm_sm1" label="Submenu 1" icon="icon-folder_open">
                         <p:submenu id="rm_sm11" label="Submenu 1.1" icon="icon-folder_open">
                             <p:submenu id="rm_sm111" label="Submenu 1.1.1" icon="icon-folder_open">
@@ -62,7 +63,7 @@
                         </p:submenu>
                     </p:submenu>
                 </p:submenu>
-                <p:menuitem id="rm_icons" value="Font Icons" icon="icon-stars" outcome="/font-icons" />
+                <p:menuitem id="rm_icons" value="Font Icons" icon="icon-stars" outcome="/font-icons" rendered="false"/>
 
 <!--                <p:submenu id="rm_docs" label="Documentation" icon="icon-card_membership">
                     <p:submenu id="rm_docs_core" label="Core CSS Docs" icon="fa fa-code">
