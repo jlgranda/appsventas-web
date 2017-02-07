@@ -230,7 +230,7 @@ and open the template in the editor.
 
 .flaticon-horchata {
     background-color: transparent;
-    background-image: url('/appsventas-web/resources/images/flaticon/png/drink-4.png') !important;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/drink-5.png') !important;
     background-repeat: repeat;
     background-attachment: scroll;
     background-position: 0px 0px;
@@ -294,6 +294,18 @@ and open the template in the editor.
     background-origin: padding-box;
     background-size: auto auto;
 }
+
+.flaticon-club {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/icon-67723.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+
 
 .flaticon-tamal {
     background-color: transparent;
@@ -374,6 +386,16 @@ and open the template in the editor.
 .flaticon-prensado {
     background-color: transparent;
     background-image: url('/appsventas-web/resources/images/flaticon/png/food-19.png') !important;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: 0px 0px;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+}
+.flaticon-conoheladosoft {
+    background-color: transparent;
+    background-image: url('/appsventas-web/resources/images/flaticon/png/food-15.png') !important;
     background-repeat: repeat;
     background-attachment: scroll;
     background-position: 0px 0px;

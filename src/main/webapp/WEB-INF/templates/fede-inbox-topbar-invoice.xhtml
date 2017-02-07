@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+
+    <!-- TOPBAR START -->
+    <div id="layout-topbar">
+        <a id="mobile-menu-button">
+            <span class="ButtonLine" id="ButtonLine1"></span>
+            <span class="ButtonLine" id="ButtonLine2"></span>
+            <span class="ButtonLine" id="ButtonLine3"></span>
+        </a>
+        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" class="OvHidden BigTopic Fs20 White Container10 ShowOnDesktop">
+            #{invoiceHome.tags eq null ? i18n['app.name'] : invoiceHome.tags}
+        </a>
+        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" class="OvHidden BigTopic Fs20 White Container60 ShowOnMobile">
+            #{invoiceHome.tags eq null ? i18n['app.name'] : invoiceHome.tags}
+        </a>
+        <div class="ui-toolbar-group-left ShowOnDesktop">
+            <p:inputText id="globalFilter" value="#{invoiceHome.keyword}" placeholder="#{i18n['Search']}"
+                             required="false" disabled="false">
+            </p:inputText>
+            <p:defaultCommand target="filter-button"/>
+            <span class="ui-inputfield ui-button ui-widget GrayButton Fs18 ">
+                <p:commandLink id="filter-button" actionListener="#{invoiceHome.filter}" ajax="false"
+                                styleClass="GrayButton">
+                    <i class="icon-search"></i>
+                </p:commandLink>
+            </span>
+        </div>
+    </div>
+    <!-- TOPBAR END -->
+
+</ui:composition>

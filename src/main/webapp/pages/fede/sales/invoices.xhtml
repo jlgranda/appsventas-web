@@ -25,51 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
-    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
+    <ui:composition template="/WEB-INF/templates/fede-inbox-template-invoice.xhtml">
 
         <ui:define name="head">
-            <script type="text/javascript">
-                function skinChart() {
-                    this.cfg.shadow = false;
-                    this.cfg.title = '';
-                    this.cfg.seriesColors = ['#8E24AA', '#C6FF00'];
-                    this.cfg.grid = {
-                        background: '#ffffff',
-                        borderColor: '#ffffff',
-                        gridLineColor: '#F5F5F5',
-                        shadow: false,
-                    };
-                    this.cfg.axesDefaults = {
-                        rendererOptions: {
-                            textColor: '#546E7A'
-                        }
-                    };
-                    this.cfg.seriesDefaults = {
-                        shadow: false,
-                        markerOptions: {
-                            shadow: false
-                        }
-                    }
-                }
-
-                function skinPie() {
-                    this.cfg.seriesColors = ['#dae8ef', '#27aae1', '#33ccff', '#9fadb5'];
-                    this.cfg.grid = {
-                        background: '#ffffff',
-                        borderColor: '#eaeaea',
-                        gridLineColor: '#e5ebf0',
-                        shadow: false,
-                        borderWidth: 0
-                    };
-                    this.cfg.seriesDefaults.shadow = false;
-                }
-            </script>
-            <style type="text/css">
-                .jqplot-target, .jqplot-axis {
-                    color: #546E7A;
-                }
-            </style>
-
         </ui:define>
 
         <ui:define name="subheader">
@@ -100,20 +58,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                        class="menulink ripplelink #{tareaHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
                         </li>
                     </ui:repeat>
-        </ui:define>
-        <ui:define name="mobilesetting">
-                <p:selectOneMenu value="#{invoiceHome.documentType}" effect="fade"
-                                 required="#{false}" immediate="true"> 
-                    <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
-                    <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
-                    <p:ajax event="change" oncomplete="form.submit();"/>
-                </p:selectOneMenu>
-                <p:calendar value="#{invoiceHome.start}" class="input-sm">
-                    <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                </p:calendar>
-                <p:calendar value="#{invoiceHome.end}" class="input-sm">
-                    <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                </p:calendar>
         </ui:define>
         <ui:define name="toolbar">
             <!-- SUB TOPBAR START -->
@@ -235,6 +179,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                             <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
                                 <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
                                 <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                                <p:column headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{entity.code}">
+                                    <h:outputText value="#{entity.boardNumber}" />
+                                </p:column>
                                 <p:column headerText="#{i18n['ride.no']}" sortBy="#{entity.code}">
                                     <h:outputText value="#{entity.summary}" />
                                 </p:column>

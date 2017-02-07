@@ -44,6 +44,8 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     
     private BussinesEntityType type;
     
+    private String boardNumber;
+    
     private Subject author;
     
     private Subject owner;
@@ -103,6 +105,15 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     public Integer getFirstResult() {
         return firstResult;
     }
+    
+    public String getBoardNumber() {
+        return boardNumber;
+    }
+
+    public void setBoardNumber(String boardNumber) {
+        this.boardNumber = boardNumber;
+    }
+
 
     public Subject getOwner() {
         return owner;
@@ -216,6 +227,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         range.put("start", getStart());
         range.put("end", getEnd());
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+        _filters.put(Invoice_.boardNumber.getName(), getBoardNumber()); //Filtro de número de mesa
         _filters.put(Invoice_.author.getName(), getAuthor()); //Filtro por defecto
         _filters.put(Invoice_.createdOn.getName(), range); //Filtro de fecha inicial
         if (getTags() != null && !getTags().isEmpty()){

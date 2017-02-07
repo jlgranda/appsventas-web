@@ -251,6 +251,7 @@ public class SubjectHome extends FedeController implements Serializable {
         Map<String, Object> filters = new HashMap<>();
         Map<String, String> columns = new HashMap<>();
         columns.put("username", keyword);
+        columns.put("code", keyword);
         columns.put("firstname", keyword);
         columns.put("surname", keyword);
         filters.put("dummy", columns);

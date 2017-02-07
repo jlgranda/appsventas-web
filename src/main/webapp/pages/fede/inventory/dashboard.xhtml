@@ -77,12 +77,9 @@
                                                 <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{inventoryHome.lastProduct.createdOn}</span>
                                             </div>
                                             <div class="Container40">
-                                                <p:commandButton value="#{i18n['New']}" actionListener="#{inventoryHome.mostrarFormularioProducto()}" ajax="true"
-                                                                 styleClass="RedButton Fright" style="width:75%">
-                                                    <p:ajax event="dialogReturn" update="@form"
-                                                            listener="#{inventoryHome.handleReturn}">
-                                                    </p:ajax>
-                                                </p:commandButton>
+                                                <p:button value="#{i18n['New']}" 
+                                                          outcome="/pages/fede/inventory/product.jsf"
+                                                          styleClass="RedButton Fright"/>
                                                 <!--                                                    <div class="EmptyBox5"></div>
                                                                                                     <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" style="width:75%"/>-->
                                             </div>

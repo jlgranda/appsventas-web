@@ -45,29 +45,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="EmptyBox10"></div>
                     <div class="Container100 Responsive100">
                         <div class="ContainerIndent">
-                            <div class="Container75 Responsive100">
+                            <div class="Container80 Responsive100">
                                 <div class="Container100 Responsive50">
                                     <h2 class="BigTopic">#{i18n['app.fede.sales.invoice.owner']}</h2>
-                                    <div class="Container90">
-                                        <p:autoComplete value="#{invoiceHome.customer}" effect="fade" 
-                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                    var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
-                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                    forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}">
-                                        <p:column>
-                                            <h:outputText value="#{entidad.fullName}"/>
-                                        </p:column>
-                                    </p:autoComplete>
+                                    <div class="Container80">
+                                        <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="fade" 
+                                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                                        var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
+                                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                        converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                        forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}">
+                                            <p:column>
+                                                <h:outputText value="#{entidad.code} #{entidad.fullName}"/>
+                                            </p:column>
+                                        </p:autoComplete>
                                     </div>
-                                    <div class="Container10">
-                                    <p:commandButton id="button-change-customer"
-                                                     icon="fa fa-user-plus Fs14 Black" styleClass="GrayButton"
-                                                     disabled="#{invoiceHome.useDefaultCustomer}">
-                                    </p:commandButton></div>
+                                    <div class="Container20">
+                                        <p:commandButton id="button-change-customer" icon="fa fa-user-plus Fs14 Black" 
+                                                         actionListener="#{invoiceHome.mostrarFormularioCustomer()}" ajax="true"
+                                                         immediate="true"
+                                                         styleClass="RedButton" style="width:75%">
+                                            <p:ajax event="dialogReturn" update="@form"
+                                                    listener="#{invoiceHome.handleReturn}">
+                                            </p:ajax>
+                                        </p:commandButton>
+                                        <h:outputText value="   Consumidor final: " />
+                                        <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultCustomer}">
+                                            <p:ajax update="customer" listener="#{invoiceHome.updateDefaultCustomer}" />
+                                        </p:selectBooleanCheckbox>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="Container25 Responsive100">
+                            <div class="Container20 Responsive100">
                                 <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
                                                 execute="none" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
                                                 required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
@@ -87,27 +96,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </ui:repeat>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('80,101')}" disabled="#{false}"
-                                             icon="flaticon-empanada-cafe" styleClass="RedButton" title="Empanada + Café">
+                                             icon="flaticon-empanada-cafe" styleClass="GreenButton" title="Empanada + Café">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('80,87')}" disabled="#{false}"
-                                             icon="flaticon-empanada-chocolate" styleClass="RedButton" title="Empanada + Chocolate">
+                                             icon="flaticon-empanada-chocolate" styleClass="GreenButton" title="Empanada + Chocolate">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('80,78')}" disabled="#{false}"
-                                             icon="flaticon-capuchino" styleClass="RedButton" title="Empanada + Capuchino">
+                                             icon="flaticon-capuchino" styleClass="GreenButton" title="Empanada + Capuchino">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,101')}" disabled="#{false}"
-                                             icon="flaticon-pizza-cafe" styleClass="RedButton" title="EMPAPizza + Café">
+                                             icon="flaticon-pizza-cafe" styleClass="GreenButton" title="EMPAPizza + Café">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,87')}" disabled="#{false}"
-                                             icon="flaticon-pizza-chocolate" styleClass="RedButton" title="EMPAPizza + Chocolate">
+                                             icon="flaticon-pizza-chocolate" styleClass="GreenButton" title="EMPAPizza + Chocolate">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,78')}" disabled="#{false}"
-                                             icon="flaticon-capuchino" styleClass="RedButton" title="EMPAPizza + Capuchino">
+                                             icon="flaticon-capuchino" styleClass="GreenButton" title="EMPAPizza + Capuchino">
                             </p:commandButton>
                         </div>
                         <div class="Container100 Responsive100">

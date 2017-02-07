@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>#{i18n['app.name']} #{i18n['app.version']}</title>
+
+        <h:outputScript name="js/ripple-effect.js" library="modena-layout" />
+        <h:outputScript name="js/perfect-scrollbar.js" library="modena-layout" />
+        <h:outputScript name="js/layout.js" library="modena-layout" />
+
+        <ui:insert name="head" />
+    </h:head>
+    <ui:insert name="params">
+    </ui:insert>
+    <h:body class="GrayModena Geometry">
+        <h:form id="form">
+            <ui:include src="fede-inbox-topbar-invoice.xhtml" />
+
+            <div id="wrapper">
+                <div id="wrapperIndent">
+
+                    <ui:include src="fede-inbox-layoutmenu.xhtml" />
+
+                    <div id="layout-portlets-cover">
+                        <div class="Container100 Fnone MarAuto">
+                            <div class="Container10 Responsive100 ShowOnDesktop">
+                                <ui:insert name="subheader"></ui:insert>
+                            </div>
+                            <div class="Container90 Responsive100 ShowOnDesktop">
+                                <ui:insert name="toolbar"></ui:insert>
+                            </div>
+                        </div>
+                        <div class="EmptyBox5"></div>
+                        <div class="Container100 Fnone MarAuto">
+                            <div class="Container10 Responsive100 ShowOnDesktop">
+                                <ui:insert name="sidebar"></ui:insert>
+                            </div>
+                            <div class="Container90 Responsive100">
+                                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                                <ui:insert name="content">
+                                    Template
+                                </ui:insert>
+                            </div>
+                        </div>
+                        <div class="EmptyBox5"></div>
+                        <!-- footer -->
+                        <div class="Container100">
+                            <div class="ContainerIndent TexAlCenter Fs14 BoldGray">
+                                <p class="text-muted"><i class="fa fa-copyright"></i>#{' '}#{i18n['PoweredBy']}#{' '}<a href="#{i18n['PoweredBy.url']}">#{i18n['PoweredBy.brand']}</a></p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
+                        <f:facet name="start">
+                            <p:graphicImage name="images/preloader.gif" library="modena-layout"/>
+                        </f:facet>
+
+                        <f:facet name="complete">
+                            <h:outputText value="" />
+                        </f:facet>
+                    </p:ajaxStatus>
+                </div>
+            </div>
+        </h:form>
+        <h:outputStylesheet name="css/core-layout.css" library="modena-layout" />
+        <h:outputStylesheet name="css/animate.css" library="modena-layout" />
+        <h:outputStylesheet name="css/modena-font.css" library="modena-layout" />
+        <h:outputStylesheet name="css/ripple-effect.css" library="modena-layout" />
+        <h:outputStylesheet name="css/perfect-scrollbar.css" library="modena-layout" />
+        <h:outputStylesheet name="css/font-awesome.css" library="modena-layout" />
+        <h:outputStylesheet name="css/modena-layout.css" library="modena-layout" />
+
+        <h:outputStylesheet name="/css/appsventas.css" />
+
+        <ui:insert name="script"></ui:insert>
+    </h:body>
+
+</html>
