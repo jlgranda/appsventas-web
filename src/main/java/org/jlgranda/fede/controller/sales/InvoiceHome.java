@@ -379,6 +379,22 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.getInvoice();
         return this.collect();
     }
+    
+    /**
+     * Reabrir la factura como PRE-INVOICE
+     * @param invoiceId
+     * @return 
+     */
+    public void reopen(Long invoiceId) throws IOException{
+        this.setInvoiceId(invoiceId);
+        //load invoice
+        this.getInvoice();
+        this.getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Marcar como no cobrado
+        this.save();
+        //setOutcome("" + this.getInvoice().getId());
+        redirectTo("/pages/fede/sales/invoice.jsf?invoiceId=" + this.getInvoice().getId());
+    }
+    
     public String save(){
         return save(false);
     }
