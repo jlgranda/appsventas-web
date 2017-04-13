@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                template="/WEB-INF/templates/fede_template.xhtml">
+    <ui:define name="head">
+        <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="subheader">
+        #{i18n['Invoices']}#{'/'}#{i18n['Dashboard']}
+    </ui:define>
+
+    <ui:define name="content">
+        <!-- Left Column -->
+        <div class="Container100 Responsive100">
+
+            <!-- Section 1 -->
+            <div class="Container100">
+                <div class="ContainerIndent">
+                    <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
+                        <h:form>
+                            <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '3600')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
+                            <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
+                            <div class="SeparatorFull"></div>
+                            <div class="Card HeiAutoOnMobile">
+                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
+                                </p:calendar>
+                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
+                                </p:calendar>
+                            </div>
+                            <div class="EmptyBox10"></div>
+                            <h3 class="CardTopic">#{i18n['app.fede.chart.salesvspurchases']}</h3>
+                            <div class="Container100 Responsive100">
+                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
+                            </div>
+                            <div class="SeparatorFull"></div>
+                            <div class="EmptyBox10"></div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+            function refresh() {
+                location.reload(); // refresh page    
+
+            }
+            
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
+            
+            function skinBarChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    renderer: $.jqplot.BarRenderer,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
+            //]]>
+            
+        </script>
+    </ui:define>
+
+</ui:composition>

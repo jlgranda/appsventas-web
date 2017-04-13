@@ -161,7 +161,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setStart(Dates.minimumDate(Dates.now()));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
-        setUseDefaultCustomer(true); //Usar consumidor final por ahora
+        setUseDefaultCustomer(false); //Usar consumidor final por ahora
         
         List<BussinesEntity> defaultProducts = new ArrayList<>();
         defaultProducts.add(productService.find(80L));
@@ -171,6 +171,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         defaultProducts.add(productService.find(101L));
         defaultProducts.add(productService.find(78L));
         defaultProducts.add(productService.find(8005L));
+        defaultProducts.add(productService.find(39527L));
         setSelectedBussinesEntities(defaultProducts);
         
     }
@@ -309,7 +310,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @Override
     public void handleReturn(SelectEvent event) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     public boolean showInvoiceForm() {
@@ -602,6 +603,25 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         return this.groups;
     }
+    
+    /**
+     * Mostrar el formulario para edición de clientes
+     * @param params
+     * @return 
+     */
+    public boolean mostrarFormularioProfile(Map<String, List<String>> params) {
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, true, params);
+        return true;
+    }
+    
+    public boolean mostrarFormularioProfile() {
+        return mostrarFormularioProfile(null);
+    }
+    
+    
+    
     
     /////////////////////////////////////////////////////////////////////////
     // Chart data model

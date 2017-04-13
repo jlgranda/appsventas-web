@@ -33,23 +33,17 @@
          Just temporary - should be removed once the javaee7-api
          will be released to the maven central repository
     -->    
-    <repositories>
+<!--    <repositories>
         <repository>
             <id>maven.java.net</id>
             <url>https://maven.java.net/content/groups/promoted/</url>
         </repository>
-        <repository>
-            <id>prime-repo</id>
-            <name>PrimeFaces Maven Repository</name>
-            <url>http://repository.primefaces.org</url>
-            <layout>default</layout>
-        </repository>
+
         <repository>
             <id>central</id>
             <url>http://repo.maven.apache.org/maven2/</url>
         </repository>
         
-
         <repository>
             <id>apache-snapshot-repository</id>
             <url>http://repository.apache.org/snapshots/</url>
@@ -60,19 +54,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-
-
-        <repository>
-            <id>picketlink snapshot</id>
-            <url>http://repository-picketlink.forge.cloudbees.com/snapshot/</url>
-        </repository>
-        <repository>
-            <url>http://repository.primefaces.org/</url>
-            <id>PrimeFaces-maven-lib</id>
-            <layout>default</layout>
-            <name>Repository for library PrimeFaces-maven-lib</name>
-        </repository>
-    </repositories>
+    </repositories>-->
 
     <dependencyManagement>
         <dependencies>
@@ -156,7 +138,7 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
-            <version>7.0-b72</version>
+            <version>7.0</version>
             <scope>compile</scope>
         </dependency>
 
@@ -361,9 +343,17 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>5.6.1</version>
+            <version>6.4.0</version>
             <scope>compile</scope>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.dynamicreports/dynamicreports-core -->
+        <dependency>
+            <groupId>net.sourceforge.dynamicreports</groupId>
+            <artifactId>dynamicreports-core</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

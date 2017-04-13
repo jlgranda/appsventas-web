@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <h:form>
-                            <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '30')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
+                            <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '3600')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
                             <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
                             <div class="SeparatorFull"></div>
                             <div class="Card HeiAutoOnMobile">
@@ -62,12 +62,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:calendar>
                             </div>
                             <div class="EmptyBox10"></div>
-                            <h3 class="CardTopic">#{i18n['app.fede.chart.salesvspurchases']}</h3>
-                            <div class="Container100 Responsive100">
-                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
-                            </div>
-                            <div class="SeparatorFull"></div>
-                            <div class="EmptyBox10"></div>
                             <h3 class="CardTopic">#{i18n['app.fede.chart.products.history']}</h3>
                             <div class="Container100 Responsive100">
                                 <p:selectManyCheckbox id="grid2" value="#{invoiceHome.selectedBussinesEntities}" layout="responsive" columns="3"
@@ -78,177 +72,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:chart type="bar" model="#{invoiceHome.buildProductBarChartModel()}" style="height:300px" responsive="true"/>
                             </div>
                             <div class="EmptyBox10"></div>
-<!--                            <h3 class="CardTopic">#{i18n['app.fede.chart.products']}</h3>
-                            <div class="Container100 Responsive100">
-                                <p:chart type="bar" model="#{invoiceHome.buildProductTopBarChartModel()}" style="height:300px" responsive="true"/>
-                            </div>-->
-                            <!--
-                            <div class="Container40 Responsive50">
-                                <p:selectOneMenu id="console3" value="#{invoiceHome.frequency}" style="min-width:100px; width:120px; margin:10px 10px 5px 0px;" styleClass="WidAutoOnMobile">
-                                    <f:selectItem itemLabel="Select Period" itemValue="" />
-                                    <f:selectItem itemLabel="Daily" itemValue="Daily" />
-                                    <f:selectItem itemLabel="Weekly" itemValue="Weekly" />
-                                    <f:selectItem itemLabel="Monthly" itemValue="Monthly" />
-                                    <f:selectItem itemLabel="Annual" itemValue="Annual" />
-                                </p:selectOneMenu>
-                            </div>-->
-<!--                            <div class="EmptyBox20"></div>
-                            <p:tabView style="margin: 0 -20px 0 -20px; border:none 0px;">
-                                <p:tab title="#{i18n['PreInvoiced']}">
-                                    <div class="Container100">
-                                        <div class="Container100 Responsive100">
-                                            <div class="ContainerIndent">
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.lastsale']}</div>
-                                                <div class="EmptyBox20"></div>
-                                                <div class="Container60 Fs50 FontRobotoLight Orange">
-                                                    <span class="DispBlock">
-                                                        #{invoiceHome.lastPreInvoice.summary}
-                                                    </span>
-                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{invoiceHome.lastPreInvoice.total}">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>
-                                                    </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{invoiceHome.lastPreInvoice.author.firstname}, #{invoiceHome.lastPreInvoice.author.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{invoiceHome.lastPreInvoice.createdOn}</span>
-                                                </div>
-                                                <div class="Container40">
-                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf" style="width:75%"/>
-                                                    <div class="EmptyBox5"></div>
-                                                    <p:button value="#{i18n['app.fede.collect']}" 
-                                                              styleClass="CyanButton Fright" style="width:75%"
-                                                              outcome="/pages/fede/sales/invoice.jsf?invoiceId=#{invoiceHome.lastPreInvoice.id}"/>
-                                                </div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Separator"></div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.recentlysales']}</div>
-                                                <div class="EmptyBox10"></div>
-                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.PRE_INVOICE, settingHome.getValue('fede.dashboard.timeline.length', '5'), invoiceHome.start, invoiceHome.end)}" var="entity">
-                                                    <div class="Container100">
-                                                        <h:outputText value="#{entity.summary}" styleClass="Fs18 BoldGray FontRobotoLight">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.total}" styleClass="Fs16 BoldGray FontRobotoLight">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.createdOn}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.author.firstname}, #{entity.author.surname}" styleClass="Fs10 BoldGray FontRobotoLight"></h:outputText>
-                                                    </div>
-                                                </ui:repeat>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Separator"></div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="TexAlCenter DispBlock">
-                                                    <p:button value="#{i18n['ShowAll']}" 
-                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
-                                                              outcome="/pages/fede/sales/invoices.jsf"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </p:tab>
-                                <p:tab title="#{i18n['Invoiced']}">
-                                    <div class="Container100">
-                                        <div class="Container100 Responsive100">
-                                            <div class="ContainerIndent">
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.lastinvoice']}</div>
-                                                <div class="EmptyBox20"></div>
-                                                <div class="Container60 Fs50 FontRobotoLight Orange">
-                                                    <span class="DispBlock">
-                                                        #{invoiceHome.lastInvoice.summary}
-                                                    </span>
-                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{invoiceHome.lastInvoice.total}">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>
-                                                    </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{invoiceHome.lastInvoice.author.firstname}, #{invoiceHome.lastInvoice.author.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.crationDate']} - #{invoiceHome.lastInvoice.createdOn}</span>
-                                                </div>
-                                                <div class="Container40">
-                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/sales/invoice.jsf" style="width:75%"/>
-                                                </div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Separator"></div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.recentlyinvoice']}</div>
-                                                <div class="EmptyBox10"></div>
-                                                <ui:repeat value="#{invoiceHome.findInvoices(null, DocumentType.INVOICE, settingHome.getValue('fede.dashboard.timeline.length', '5'), invoiceHome.start, invoiceHome.end)}" var="entity">
-                                                    <div class="Container100">
-                                                        <h:outputText value="#{entity.summary}" styleClass="Fs18 BoldGray FontRobotoLight">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.total}" styleClass="Fs16 BoldGray FontRobotoLight">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.createdOn}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.author.firstname}, #{entity.author.surname}" styleClass="Fs10 BoldGray FontRobotoLight"></h:outputText>
-                                                    </div>
-                                                </ui:repeat>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Separator"></div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="TexAlCenter DispBlock">
-                                                    <p:button value="#{i18n['ShowAll']}" 
-                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
-                                                              outcome="/pages/fede/sales/invoices.jsf"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </p:tab>
-                                <p:tab title="#{i18n['common.purchases']}">
-                                    <div class="Container100">
-                                        <div class="Container100 Responsive100">
-                                            <div class="ContainerIndent">
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.purchase.lasts']}</div>
-                                                <div class="EmptyBox20"></div>
-                                                <div class="Container60 Fs50 FontRobotoLight Orange">
-                                                    <span class="DispBlock">
-                                                        #{fedeAPI.summary(facturaElectronicaHome.ultimaFacturaElectronica)}
-                                                    </span>
-                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{facturaElectronicaHome.ultimaFacturaElectronica.importeTotal}">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>
-                                                    </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['ride.no']} - #{facturaElectronicaHome.ultimaFacturaElectronica.code}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.createby']} - #{facturaElectronicaHome.ultimaFacturaElectronica.author.fullName}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.emissionDate']} - #{facturaElectronicaHome.ultimaFacturaElectronica.fechaEmision}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.emissionType']} - #{settingHome.getValue('enum.emissionType'.concat(facturaElectronicaHome.ultimaFacturaElectronica.emissionType), facturaElectronicaHome.ultimaFacturaElectronica.emissionType)}</span>
-                                                </div>
-                                                <div class="Container40">
-                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/fede/factura.jsf" style="width:75%"/>
-                                                </div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Separator"></div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.purchase.lasts']}</div>
-                                                <div class="EmptyBox10"></div>
-                                                <ui:repeat value="#{facturaElectronicaHome.sampleResultList}" var="entity">
-                                                    <div class="Container100">
-                                                        <h:outputText value="#{fedeAPI.summary(entity)}" styleClass="Fs18 BoldGray FontRobotoLight">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.importeTotal}" styleClass="Fs16 BoldGray FontRobotoLight">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.fechaEmision}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
-                                                        <h:outputText value="#{settingHome.getValue('enum.emissionType'.concat(entityemissionType), entity.emissionType)}" styleClass="Fs12 BoldGray FontRobotoLight"></h:outputText>&nbsp;
-                                                        <h:outputText value="#{entity.author.fullName}" styleClass="Fs10 BoldGray FontRobotoLight"></h:outputText>
-                                                    </div>
-                                                </ui:repeat>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Separator"></div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="TexAlCenter DispBlock">
-                                                    <p:button value="#{i18n['ShowAll']}" 
-                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
-                                                              outcome="/pages/fede/inbox.jsf"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </p:tab>
-                            </p:tabView>-->
                         </h:form>
                     </div>
                 </div>

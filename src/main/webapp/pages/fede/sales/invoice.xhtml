@@ -50,19 +50,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <h2 class="BigTopic">#{i18n['app.fede.sales.invoice.owner']}</h2>
                                     <div class="Container80">
                                         <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="fade" 
-                                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                        var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
+                                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                        completeMethod="#{subjectHome.find}"
+                                                        var="entidad" itemValue="#{entidad}" 
+                                                        itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
                                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                                         converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
                                                         forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}">
                                             <p:column>
                                                 <h:outputText value="#{entidad.code} #{entidad.fullName}"/>
                                             </p:column>
+                                            <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
                                         </p:autoComplete>
                                     </div>
                                     <div class="Container20">
                                         <p:commandButton id="button-change-customer" icon="fa fa-user-plus Fs14 Black" 
-                                                         actionListener="#{invoiceHome.mostrarFormularioCustomer()}" ajax="true"
+                                                         actionListener="#{invoiceHome.mostrarFormularioProfile()}" ajax="true"
                                                          immediate="true"
                                                          styleClass="RedButton" style="width:75%">
                                             <p:ajax event="dialogReturn" update="@form"
@@ -242,6 +245,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                              style="width: auto !important;"
                                              type="submit"/>
+                            <p:commandButton id="collect-print-button" value="#{i18n['app.fede.collectandprint']}" ajax="true" 
+                                             styleClass="OrangeButton"
+                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
+                                             rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                             style="width: auto !important;"
+                                             type="submit"/>
                             <span class="ui-separator">
                                 <span class="fa fa-ellipsis-v SoftGray" />
                             </span>
@@ -255,7 +264,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                             <p:commandButton ajax="true" disabled="false" immediate="true"
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
-                                             action="home"
+                                             action="#{invoiceHome.redirect}"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                             <p:menuButton value="#{i18n['common.options']}">
