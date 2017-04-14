@@ -13,11 +13,11 @@
                 <p:submenu id="fede" label="#{i18n['app.name']}" icon="icon-loyalty">
                     <p:menuitem id="rm_dashboard" value="#{i18n['Dashboard']}" icon="icon-build" url="/pages/fede/dashboard.jsf"/>
                     <p:menuitem id="rm_inventory" value="#{i18n['app.fede.inventory']}" icon="fa fa-cubes " url="/pages/fede/inventory/dashboard.jsf"/>
+                    <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="icon-today" url="/pages/fede/inbox.jsf" /> 
                     <p:submenu id="rm_comprasventas" label="#{i18n['common.money']}" icon="fa fa-dollar">
                         <p:menuitem id="rm_comprasventas_dashboard" value="#{i18n['Dashboard']}" icon="icon-trending_up" url="/pages/fede/sales/dashboard.jsf"/>
                         <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="icon-play_for_work" url="/pages/fede/sales/preinvoices.jsf" />
                         <p:menuitem id="rm_sales" value="#{i18n['app.fede.sales']}" icon="icon-view_week" url="/pages/fede/sales/invoices.jsf"/>
-                        <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="icon-today" url="/pages/fede/inbox.jsf" /> 
                     </p:submenu>
                 </p:submenu>
                 <p:submenu id="colors" label="Color Variations" icon="icon-color_lens" rendered="false">

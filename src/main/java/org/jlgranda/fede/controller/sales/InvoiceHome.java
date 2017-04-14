@@ -645,6 +645,10 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private LineChartModel createLineChartModel() {
         LineChartModel areaModel = new LineChartModel();
+        
+        LineChartSeries fixedCosts = new LineChartSeries();
+        fixedCosts.setFill(true);
+        fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
  
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(false);
@@ -667,6 +671,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         String label = "";
         BigDecimal salesTotal;
         BigDecimal purchasesTotal;
+        BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "60"));
         for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
             label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
             salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step)));
@@ -675,13 +680,15 @@ public class InvoiceHome extends FedeController implements Serializable {
             facturaElectronicaHome.setStart(Dates.minimumDate(_step));
             facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
             purchasesTotal = facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList());
-            purchases.set(label, purchasesTotal);
             
-            profits.set(label, salesTotal.subtract(purchasesTotal)); //Utilidad bruta
+            fixedCosts.set(label, fixedCost);
+            purchases.set(label, purchasesTotal);
+            profits.set(label, salesTotal.subtract(purchasesTotal.add(fixedCost))); //Utilidad bruta
             
             _step = Dates.addDays(_step, 1); //Siguiente día
         }
 
+        areaModel.addSeries(fixedCosts);
         areaModel.addSeries(sales);
         areaModel.addSeries(profits);
         areaModel.addSeries(purchases);
