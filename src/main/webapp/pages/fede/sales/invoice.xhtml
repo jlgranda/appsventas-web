@@ -47,8 +47,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="ContainerIndent">
                             <div class="Container80 Responsive100">
                                 <div class="Container100 Responsive50">
-                                    <h2 class="BigTopic">#{i18n['app.fede.sales.invoice.owner']}</h2>
-                                    <div class="Container80">
+                                    <h2 class="BigTopic">#{i18n['app.fede.sales.invoice.header']}</h2>
+                                    
+                                    <div class="Container30">
+                                        <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['ride.no']}" 
+                                                        execute="none" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
+                                                required="true" requiredMessage="#{i18n['ride.no.required']}" 
+                                                placeholder="#{i18n['ride.no']}"
+                                                container="none"/>
+                                    </div>
+                                    <div class="Container50">
                                         <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="fade" 
                                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                         completeMethod="#{subjectHome.find}"
@@ -56,7 +64,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                         itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
                                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                                         converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                        forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}">
+                                                        forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}"
+                                                        placeholder="#{i18n['app.fede.sales.invoice.header']}">
                                             <p:column>
                                                 <h:outputText value="#{entidad.code} #{entidad.fullName}"/>
                                             </p:column>
@@ -247,7 +256,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              type="submit"/>
                             <p:commandButton id="collect-print-button" value="#{i18n['app.fede.collectandprint']}" ajax="true" 
                                              styleClass="OrangeButton"
-                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
+                                             actionListener="#{invoiceHome.print()}" action="#{invoiceHome.redirect}" 
                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                              style="width: auto !important;"
                                              type="submit"/>

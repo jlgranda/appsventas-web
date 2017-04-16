@@ -99,7 +99,7 @@ public class GroupHome extends FedeController implements Serializable {
             
             groupService.save(group);
             
-            logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
+            //logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
         }
     }
 

@@ -49,8 +49,10 @@ import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
+import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -150,6 +152,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     @Inject
     private TemplateHome templateHome;
     
+    @Inject
+    private SubjectAdminHome subjectAdminHome; //para administrar clientes en factura
+    
     @PostConstruct
     private void init() {
         
@@ -161,7 +166,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setStart(Dates.minimumDate(Dates.now()));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
-        setUseDefaultCustomer(false); //Usar consumidor final por ahora
+        setUseDefaultCustomer(true); //Usar consumidor final por ahora
         
         List<BussinesEntity> defaultProducts = new ArrayList<>();
         defaultProducts.add(productService.find(80L));
@@ -173,6 +178,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         defaultProducts.add(productService.find(8005L));
         defaultProducts.add(productService.find(39527L));
         setSelectedBussinesEntities(defaultProducts);
+        
+        getSubjectAdminHome().setOutcome("invoice");
         
     }
 
@@ -199,6 +206,10 @@ public class InvoiceHome extends FedeController implements Serializable {
             loadCandidateDetails(this.invoice.getDetails());
             setCustomer(this.invoice.getOwner());
             calculeChange();//Prellenar formulario de pago
+            setUseDefaultCustomer(this.invoice.getOwner() == null);
+        } else {
+            //Establecer nuevo número de sequencia SRI
+            this.invoice.setSequencial(settingHome.getValue("app.fede.sales.invoice.sequence", "001-001-0000"));
         }
         return invoice;
     }
@@ -310,7 +321,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @Override
     public void handleReturn(SelectEvent event) {
-        
+        setCustomer((Subject) event.getObject());
     }
 
     public boolean showInvoiceForm() {
@@ -318,6 +329,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
         super.openDialog(settingHome.getValue("app.fede.sales.invoice.popup", "/pages/fede/sales/popup_invoice"), width, height, true);
         return true;
+    }
+
+    public SubjectAdminHome getSubjectAdminHome() {
+        return subjectAdminHome;
+    }
+
+    public void setSubjectAdminHome(SubjectAdminHome subjectAdminHome) {
+        this.subjectAdminHome = subjectAdminHome;
     }
     
     /**
@@ -346,7 +365,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         calculeChange();
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
-            getInvoice().setSequencial("TODO:generar-secuencial-sri");//Generar el secuencia legal de factura
+            //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             //Agregar el pago
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().addPayment(getPayment());
@@ -367,6 +386,13 @@ public class InvoiceHome extends FedeController implements Serializable {
             setOutcome("");
         }
         return outcome;
+    }
+    
+    public String print(){
+        collect();
+        //Imprimir reporte
+        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice());
+        return this.getOutcome();
     }
 
     /**
@@ -399,6 +425,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String save(){
         return save(false);
     }
+    
     public String save(boolean force) {
         if (candidateDetails.isEmpty() && ! force) {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.invoice.incomplete"), I18nUtil.getMessages("app.fede.sales.invoice.incomplete.detail"));
@@ -436,7 +463,13 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return "failed";
     }
-
+    
+    public void saveCustomer(){
+        getSubjectAdminHome().save(); //Guardar profile
+        setCustomer(getSubjectAdminHome().getSubjectEdit());
+        closeDialog(getCustomer());
+    }
+    
     public void clear() {
         this.lastInvoice = null;
         this.lastPreInvoice = null;
@@ -610,9 +643,11 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return 
      */
     public boolean mostrarFormularioProfile(Map<String, List<String>> params) {
-        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
-        super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, true, params);
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
+        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
+        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, left, top, true, params);
         return true;
     }
     
@@ -646,21 +681,25 @@ public class InvoiceHome extends FedeController implements Serializable {
     private LineChartModel createLineChartModel() {
         LineChartModel areaModel = new LineChartModel();
         
+        boolean fillSeries = true;
+        
         LineChartSeries fixedCosts = new LineChartSeries();
-        fixedCosts.setFill(true);
+        fixedCosts.setFill(!fillSeries);
         fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
+        fixedCosts.setShowMarker(false);
+        fixedCosts.setSmoothLine(false);
  
         LineChartSeries sales = new LineChartSeries();
-        sales.setFill(false);
+        sales.setFill(fillSeries);
         sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
         
         LineChartSeries purchases = new LineChartSeries();
-        purchases.setFill(false);
+        purchases.setFill(fillSeries);
         purchases.setLabel(I18nUtil.getMessages("common.purchases"));
         
         LineChartSeries profits = new LineChartSeries();
-        profits.setFill(false);
-        profits.setLabel(I18nUtil.getMessages("common.profits.gross"));
+        profits.setFill(fillSeries);
+        profits.setLabel(I18nUtil.getMessages("common.profit"));
         
         Date _start = getStart();
         if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1){
@@ -687,27 +726,25 @@ public class InvoiceHome extends FedeController implements Serializable {
             
             _step = Dates.addDays(_step, 1); //Siguiente día
         }
-
-        areaModel.addSeries(fixedCosts);
-        areaModel.addSeries(sales);
-        areaModel.addSeries(profits);
-        areaModel.addSeries(purchases);
         
+        areaModel.addSeries(sales);
+        areaModel.addSeries(purchases);
+        areaModel.addSeries(profits);
+        areaModel.addSeries(fixedCosts);
          
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
         areaModel.setExtender("skinChart");
         //areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
         
-         
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
         yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        yAxis.setMin(0);
-        yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
+        yAxis.setMin(settingHome.getValue("app.fede.chart.sales.scale.min", "-500"));
+        yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "500"));
         
         return areaModel;
     }

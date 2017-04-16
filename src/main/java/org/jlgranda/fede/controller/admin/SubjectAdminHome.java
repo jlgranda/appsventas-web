@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -226,20 +227,38 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return this.defaultGroup;
     }
 
-    public String save() {
+    public String validateAndSave() {
         //Realizar signup
         try {
-            if (!subjectEdit.isPersistent()) {
-                if (!StringValidations.isPassword(clave) && getSubjectEdit().isPersistent()) {
+            if (!getSubjectEdit().isPersistent()) {
+                if (!StringValidations.isPassword(clave)) {
                     addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
                     return "";
                 }
-                if (!this.clave.equals(this.confirmarClave) && getSubjectEdit().isPersistent()) {
+                if (!this.clave.equals(this.confirmarClave)) {
                     addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
                     return "";
                 }
 
                 getSubjectEdit().setPassword(this.clave);
+                subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
+                addDefaultSuccessMessage();
+            } else {
+                //Solo actualizar
+                subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+                addDefaultSuccessMessage();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return getOutcome();
+    }
+    public String save() {
+        //Realizar signup
+        try {
+            if (!getSubjectEdit().isPersistent()) {
+                getSubjectEdit().setPassword(UUID.randomUUID().toString());
                 subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
                 addDefaultSuccessMessage();
             } else {

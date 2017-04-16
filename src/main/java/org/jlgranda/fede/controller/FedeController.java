@@ -284,20 +284,54 @@ public abstract class FedeController {
      * @param width ancho de la ventana emergente
      * @param height alto de la ventana emergente
      * @param modal indica si la ventana emergente debe ser modal o no
+     * @param draggable
+     * @param resizable
+     * @param closable
      * @param params
      */
-    protected void openDialog(String name, String width, String height, boolean modal, Map<String, List<String>> params) {
+    protected void openDialog(String name, String width, String height, String left, String top, boolean modal, boolean draggable, boolean resizable, boolean closable, Map<String, List<String>> params) {
         Map<String, Object> options = new HashMap<>();
         options.put("modal", modal);
-        options.put("draggable", false);
-        options.put("resizable", true);
+        options.put("draggable", draggable);
+        options.put("resizable", resizable);
+        options.put("left", left);
+        options.put("top", top);
         options.put("contentWidth", width);
         options.put("contentHeight", height);
-        options.put("closable", true);
+        options.put("closable", closable);
         //options.put("includeViewParams", false);
 
         RequestContext.getCurrentInstance().openDialog(name, options, params);
         //logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
+    }
+    
+    
+    /**
+     * Abre la ventana emergente indicada por popupName con el ancho y alto
+     * especificado
+     *
+     * @param name nombre de la ventana emergente
+     * @param width ancho de la ventana emergente
+     * @param height alto de la ventana emergente
+     * @param modal indica si la ventana emergente debe ser modal o no
+     * @param params
+     */
+    protected void openDialog(String name, String width, String height, String left, String top, boolean modal, Map<String, List<String>> params) {
+        openDialog(name, width, height, left, top, modal, true, true, true, null);
+    }
+    
+    /**
+     * Abre la ventana emergente indicada por popupName con el ancho y alto
+     * especificado
+     *
+     * @param name nombre de la ventana emergente
+     * @param width ancho de la ventana emergente
+     * @param height alto de la ventana emergente
+     * @param modal indica si la ventana emergente debe ser modal o no
+     * @param params
+     */
+    protected void openDialog(String name, String width, String height, boolean modal, Map<String, List<String>> params) {
+        openDialog(name, width, height, "0", "0", modal, true, true, true, null);
     }
     
     /**

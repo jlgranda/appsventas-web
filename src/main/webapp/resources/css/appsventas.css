@@ -403,3 +403,14 @@ and open the template in the editor.
     background-origin: padding-box;
     background-size: auto auto;
 }
+
+/*Dialog overwrite*/
+.ui-dialog {
+    top: 20% !important;
+}
+
+.ContainerIndent {
+    display: block;
+    margin: 0px auto;
+    padding: 0px 10px 10px 0px;
+}
