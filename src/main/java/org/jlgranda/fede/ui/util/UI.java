@@ -201,9 +201,23 @@ public class UI {
         } 
         return isOver;
     }
+
+
+    public static Integer calculePorcentaje(int pageWidth, int porcentaje) {
+        
+        double factor = (porcentaje / (double) 100);
+        int valor = (int) (pageWidth * factor);
+        System.out.println(">>> pageWidth: " + pageWidth + ", pocentaje:" + porcentaje + ", factor" + factor+ ", valor " + valor);
+        return valor;
+    }
     
     public static void main(String[] args) {
         System.out.println(new org.apache.commons.codec.digest.Crypt().crypt("f3d3"));
+        
+        UI.calculePorcentaje(297, 10);
+        UI.calculePorcentaje(297, 60);
+        UI.calculePorcentaje(297, 15);
+        UI.calculePorcentaje(297, 15);
     }
 
 }

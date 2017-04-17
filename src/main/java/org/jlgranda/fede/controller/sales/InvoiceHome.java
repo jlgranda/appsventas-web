@@ -208,8 +208,9 @@ public class InvoiceHome extends FedeController implements Serializable {
             calculeChange();//Prellenar formulario de pago
             setUseDefaultCustomer(this.invoice.getOwner() == null);
         } else {
-            //Establecer nuevo número de sequencia SRI
-            this.invoice.setSequencial(settingHome.getValue("app.fede.sales.invoice.sequence", "001-001-0000"));
+            if (Strings.isNullOrEmpty(this.invoice.getSequencial()))
+                //Establecer nuevo número de sequencia SRI
+                this.invoice.setSequencial(settingHome.getValue("app.fede.sales.invoice.sequence", "001-001-00000"));
         }
         return invoice;
     }
@@ -349,7 +350,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         getInvoice().setEmissionType(EmissionType.CANCELED); //Se convierte en pre factura cancelada
         getInvoice().setStatus(EmissionType.CANCELED.toString());
         getInvoice().setActive(false);
-        getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
+        //getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
         save(true); //Guardar forzando
         return "preinvoices";
     }
@@ -392,6 +393,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         collect();
         //Imprimir reporte
         AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice());
+        //capturar pdf y enviar al navegador para visualización e impresión
+        
         return this.getOutcome();
     }
 
@@ -710,7 +713,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         String label = "";
         BigDecimal salesTotal;
         BigDecimal purchasesTotal;
-        BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "60"));
+        BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "50"));
         for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
             label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
             salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step)));
@@ -743,8 +746,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
         yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        yAxis.setMin(settingHome.getValue("app.fede.chart.sales.scale.min", "-500"));
-        yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "500"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-500")));
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.max", "500")));
         
         return areaModel;
     }

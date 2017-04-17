@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.tecnopro.document.ejb.DocumentoService;
 import net.tecnopro.document.model.Documento;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Strings;
 
 /**
  *
@@ -60,18 +61,38 @@ public class FedeServlet extends HttpServlet {
         try {
             String entity = request.getParameter("entity");
             String entityId = request.getParameter("id");
+             File file;
+             byte[] contents;
             if (entity == null) {
                 return;
             }
             switch (entity) {
+                case "invoice":
+                    if (Strings.isNullOrEmpty(entityId)) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                        return;
+                    }
+                    file = new File("/tmp/" + entityId + ".pdf");
+                    contents = getContent(file);
+                    if (contents == null) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                        return;
+                    }
+                    response.setCharacterEncoding("ISO-8859-1");
+                    response.setContentType("application/pdf");
+                    response.setContentLength(contents.length);
+                    response.getOutputStream().write(contents);
+                    response.getOutputStream().flush();
+                    response.getOutputStream().close();
+                    break;
                 case "documento":
                     Documento documento = documentoService.find(Long.parseLong(entityId));
                     if (documento == null) {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
                         return;
                     }
-                    File file = new File(documento.getRuta());
-                    byte[] contents = getContent(file);
+                    file=  new File(documento.getRuta());
+                    contents = getContent(file);
                     documento.setContents(contents != null ? contents : null);
                     if (documento.getContents() == null) {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.

@@ -256,7 +256,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              type="submit"/>
                             <p:commandButton id="collect-print-button" value="#{i18n['app.fede.collectandprint']}" ajax="true" 
                                              styleClass="OrangeButton"
-                                             actionListener="#{invoiceHome.print()}" action="#{invoiceHome.redirect}" 
+                                             actionListener="#{invoiceHome.print()}" 
+                                             action="#{invoiceHome.redirect}"
                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                              style="width: auto !important;"
                                              type="submit"/>
