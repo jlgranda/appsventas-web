@@ -59,10 +59,12 @@ public class FedeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+            
             String entity = request.getParameter("entity");
             String entityId = request.getParameter("id");
-             File file;
-             byte[] contents;
+            System.err.println("entity: " + entity + ", id=" + entityId);
+            File file;
+            byte[] contents;
             if (entity == null) {
                 return;
             }
@@ -70,12 +72,14 @@ public class FedeServlet extends HttpServlet {
                 case "invoice":
                     if (Strings.isNullOrEmpty(entityId)) {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                        System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // 404.");
                         return;
                     }
                     file = new File("/tmp/" + entityId + ".pdf");
                     contents = getContent(file);
                     if (contents == null) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                        response.sendError(HttpServletResponse.SC_NO_CONTENT); // 404.
+                        System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // " + HttpServletResponse.SC_NO_CONTENT);
                         return;
                     }
                     response.setCharacterEncoding("ISO-8859-1");
@@ -150,8 +154,9 @@ public class FedeServlet extends HttpServlet {
                 ous.write(buffer, 0, read);
             }
         } catch (FileNotFoundException ex) {
-
+            System.err.println(ex.getMessage());
         } catch (IOException ex) {
+            System.err.println(ex.getMessage());
         }
         return ous.toByteArray();
     }
