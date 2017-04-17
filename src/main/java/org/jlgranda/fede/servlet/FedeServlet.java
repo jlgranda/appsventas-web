@@ -16,36 +16,29 @@
  */
 package org.jlgranda.fede.servlet;
 
-import com.jlgranda.fede.ejb.SubjectService;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.tecnopro.document.ejb.DocumentoService;
-import net.tecnopro.document.model.Documento;
-import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Strings;
 
 /**
  *
  * @author Jorge
  */
-@WebServlet(name = "fedeServlet", urlPatterns = {"/fedeServlet/*"})
+//@WebServlet(name = "fedeServlet", urlPatterns = {"/fedeServlet/*"})
 public class FedeServlet extends HttpServlet {
 
-    @Inject
-    private DocumentoService documentoService;
-    @Inject
-    private SubjectService subjectService;
+//    @Inject
+//    private DocumentoService documentoService;
+//    @Inject
+//    private SubjectService subjectService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -90,49 +83,49 @@ public class FedeServlet extends HttpServlet {
                     response.getOutputStream().close();
                     break;
                 case "documento":
-                    Documento documento = documentoService.find(Long.parseLong(entityId));
-                    if (documento == null) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
-                        return;
-                    }
-                    file=  new File(documento.getRuta());
-                    contents = getContent(file);
-                    documento.setContents(contents != null ? contents : null);
-                    if (documento.getContents() == null) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
-                        return;
-                    }
-                    response.setCharacterEncoding("ISO-8859-1");
-                    response.setContentType("application/pdf");
-                    response.setContentLength(documento.getContents().length);
-                    response.getOutputStream().write(documento.getContents());
-                    response.getOutputStream().flush();
-                    response.getOutputStream().close();
+//                    Documento documento = documentoService.find(Long.parseLong(entityId));
+//                    if (documento == null) {
+//                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+//                        return;
+//                    }
+//                    file=  new File(documento.getRuta());
+//                    contents = getContent(file);
+//                    documento.setContents(contents != null ? contents : null);
+//                    if (documento.getContents() == null) {
+//                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+//                        return;
+//                    }
+//                    response.setCharacterEncoding("ISO-8859-1");
+//                    response.setContentType("application/pdf");
+//                    response.setContentLength(documento.getContents().length);
+//                    response.getOutputStream().write(documento.getContents());
+//                    response.getOutputStream().flush();
+//                    response.getOutputStream().close();
                     break;
                 case "subject":
-//                    if (entityId == null) {
+////                    if (entityId == null) {
+////                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+////                        return;
+////                    }
+////                    if (entityId.equalsIgnoreCase("")) {
+////                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+////                        return;
+////                    }
+////                    Subject subject = subjectService.find(Long.parseLong(entityId));
+////                    if (subject == null) {
+////                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+////                        return;
+////                    }
+//                    byte[] photo = (byte[]) request.getSession().getAttribute("photoUser");
+//
+//                    if (photo == null) {
 //                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
 //                        return;
 //                    }
-//                    if (entityId.equalsIgnoreCase("")) {
-//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-//                        return;
-//                    }
-//                    Subject subject = subjectService.find(Long.parseLong(entityId));
-//                    if (subject == null) {
-//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-//                        return;
-//                    }
-                    byte[] photo = (byte[]) request.getSession().getAttribute("photoUser");
-
-                    if (photo == null) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-                    response.reset();
-                    response.setContentType("/image/png");
-                    response.getOutputStream().write(photo);
-                    response.getOutputStream().close();
+//                    response.reset();
+//                    response.setContentType("/image/png");
+//                    response.getOutputStream().write(photo);
+//                    response.getOutputStream().close();
                     break;
             }
         } catch (IOException e) {

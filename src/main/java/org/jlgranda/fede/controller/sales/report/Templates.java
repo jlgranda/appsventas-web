@@ -32,6 +32,7 @@ import net.sf.dynamicreports.report.builder.HyperLinkBuilder;
 import net.sf.dynamicreports.report.builder.ReportTemplateBuilder;
 import net.sf.dynamicreports.report.builder.component.ComponentBuilder;
 import net.sf.dynamicreports.report.builder.datatype.BigDecimalType;
+import net.sf.dynamicreports.report.builder.style.FontBuilder;
 import net.sf.dynamicreports.report.builder.style.SimpleStyleBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
 import net.sf.dynamicreports.report.builder.tableofcontents.TableOfContentsCustomizerBuilder;
@@ -57,6 +58,7 @@ public class Templates {
 	public static final StyleBuilder columnTitleStyle;
 	public static final StyleBuilder groupStyle;
 	public static final StyleBuilder subtotalStyle;
+	public static final StyleBuilder detailHeaderStyle;
         public static final SimpleStyleBuilder evenStyle;
         public static final SimpleStyleBuilder oddStyle;
 
@@ -67,7 +69,7 @@ public class Templates {
 	public static final ComponentBuilder<?, ?> footerComponent;
 
 	static {
-		rootStyle           = stl.style().setPadding(2);
+		rootStyle           = stl.style().setPadding(2).setFontName("BM receipt");
 		boldStyle           = stl.style(rootStyle).bold();
 		italicStyle         = stl.style(rootStyle).italic();
 		boldCenteredStyle   = stl.style(boldStyle)
@@ -85,6 +87,12 @@ public class Templates {
 		                         .setBorder(stl.pen1Point())
 		                         .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
 		                         .setBackgroundColor(Color.LIGHT_GRAY)
+		                         .bold();
+                detailHeaderStyle    = stl.style(columnStyle)
+		                         .setBorder(stl.pen1Point())
+		                         .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
+		                         .setBackgroundColor(Color.WHITE)
+                                         .setForegroundColor(Color.WHITE)
 		                         .bold();
 		groupStyle          = stl.style(boldStyle)
 		                         .setHorizontalTextAlignment(HorizontalTextAlignment.LEFT);
@@ -120,6 +128,7 @@ public class Templates {
 		                   .setCrosstabGrandTotalStyle(crosstabGrandTotalStyle)
 		                   .setCrosstabCellStyle(crosstabCellStyle)
 		                   .setTableOfContentsCustomizer(tableOfContentsCustomizer)
+                                   .setDetailHeaderStyle(detailHeaderStyle)
                                    .setDetailEvenRowStyle(evenStyle)
                                    .setDetailOddRowStyle(oddStyle);
 
@@ -163,20 +172,20 @@ public class Templates {
 	public static ComponentBuilder<?, ?> createInvoiceHeaderComponent(Invoice invoice) {
 		return cmp.horizontalList()
 		        .newRow()
-		        .add(cmp.verticalGap(110))
+		        .add(cmp.verticalGap(120))
                         .newRow()
-                        .add(cmp.gap(80, 13))
+                        .add(cmp.gap(85, 13))
                         .add(cmp.text(invoice.getCreatedOn()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
 		        .newRow()
-                        .add(cmp.gap(40, 13))
+                        .add(cmp.gap(45, 13))
                         .add(cmp.text(invoice.getOwner().getFullName()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
 		        .newRow()
                         .add(cmp.gap(60, 13))
                         .add(cmp.text(invoice.getOwner().getDescription()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
-                        .add(cmp.gap(45, 13))
+                        .add(cmp.gap(48, 13))
                         .add(cmp.text(invoice.getOwner().getCode()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT), 
-                                cmp.gap(60, 13), 
+                                cmp.gap(58, 13), 
                                 cmp.text(invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT));
 	}
 
