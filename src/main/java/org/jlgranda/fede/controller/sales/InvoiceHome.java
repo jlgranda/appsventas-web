@@ -32,10 +32,8 @@ import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -64,7 +62,6 @@ import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
-import org.jlgranda.fede.ui.util.UI;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -207,6 +204,8 @@ public class InvoiceHome extends FedeController implements Serializable {
             setCustomer(this.invoice.getOwner());
             calculeChange();//Prellenar formulario de pago
             setUseDefaultCustomer(this.invoice.getOwner() == null);
+            if (!this.invoice.getPayments().isEmpty())
+                setPayment(this.invoice.getPayments().get(0)); //Cargar el pago guardado
         } else {
             if (Strings.isNullOrEmpty(this.invoice.getSequencial()))
                 //Establecer nuevo número de sequencia SRI
@@ -354,7 +353,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         save(true); //Guardar forzando
         return "preinvoices";
     }
-
+    
     /**
      * Guarda la entidad marcandola como INVOICE y generando un secuencial
      * valido TODO debe generar también una factura electrónica
@@ -362,26 +361,28 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
+        collect("pago");
+        return getOutcome();
+    }
+
+    /**
+     * Guarda la entidad marcandola como INVOICE y generando un secuencial
+     * valido TODO debe generar también una factura electrónica
+     *
+     * @return outcome de exito o fracaso de la acción
+     */
+    public String collect(String status) {
         String outcome = "preinvoices";
-        calculeChange();
+        calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             getInvoice().setDocumentType(DocumentType.INVOICE); //Se convierte en factura
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             //Agregar el pago
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().addPayment(getPayment());
-            save();
+            getInvoice().setStatus(status);
+            save(true);
             setOutcome("preinvoices");
-            //Notificar si se completa o sobrepasa bandera
-            BigDecimal total = this.calculeTotal(this.myLastlastInvoices);
-            if (UI.isOver(total, Integer.valueOf(settingHome.getValue(SettingNames.INVOICE_NOTIFY_GAP, "100")))){
-                Map<String, Object> values = new HashMap<>();
-                values.put("subject", subject);
-                values.put("total", total);
-                values.put("url", "http://jlgranda.com:8080/appsventas-web/");
-                values.put("url_title", "Appsventas");
-                sendNotification(templateHome, settingHome, subject, values, "app.mail.template.invoice.notify.gap", false);
-            }
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
             setOutcome("");
@@ -390,11 +391,19 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public String print(){
-        collect();
-        //Imprimir reporte
-        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice());
-        //capturar pdf y enviar al navegador para visualización e impresión
-        
+        try {
+            collect("impreso");
+            //Forzar actualizar invoice para generación correcta del reporte
+            setInvoice(invoiceService.createInstance());
+            getInvoice(); //recargar
+            //Imprimir reporte
+            AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice());
+            //Invocar Servlet en nueva ventana del navegador
+            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
+            
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return this.getOutcome();
     }
 
@@ -407,7 +416,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.setInvoiceId(invoiceId);
         //load invoice
         this.getInvoice();
-        return this.collect();
+        return this.collect("pago-rapido");
     }
     
     /**
@@ -426,7 +435,18 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public String save(){
-        return save(false);
+        String outcome = "preinvoices";
+        calculeChange(); //Calcular el cambio sobre el objeto payment en edición
+        if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+            getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
+            getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
+            getInvoice().addPayment(getPayment());
+            outcome = save(false);
+        } else {
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+            setOutcome("");
+        }
+        return outcome;
     }
     
     public String save(boolean force) {
@@ -495,20 +515,13 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public void calculeChange() {
-
-//        long t1 = System.currentTimeMillis();
-//        logger.info("Inicia calculo de cambio {}", t1);
         //subtotal = total menos descuento
         BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
         //Preestablecer el dinero a recibir
-        //if (BigDecimal.ZERO.compareTo(getPayment().getCash()) == 0 || subtotal.compareTo(subtotal)){
         if (subtotal.compareTo(getPayment().getCash()) > 0) {
             getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
         }
-        //CAMBIO > lo que he recibido menos el subtotal
         getPayment().setChange(getPayment().getCash().subtract(subtotal));
-//        long t2 = System.currentTimeMillis();
-//        logger.info("Tiempo total {}", t2 - t1);
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {

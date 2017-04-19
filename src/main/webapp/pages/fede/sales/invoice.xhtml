@@ -254,10 +254,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                              style="width: auto !important;"
                                              type="submit"/>
-                            <p:commandButton id="collect-print-button" value="#{i18n['app.fede.collectandprint']}" ajax="true" 
+                            <p:commandButton id="print-button" value="#{i18n['common.print']}" ajax="true" 
                                              styleClass="OrangeButton"
                                              actionListener="#{invoiceHome.print()}" 
-                                             action="#{invoiceHome.redirect}"
                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                              style="width: auto !important;"
                                              type="submit"/>
@@ -272,10 +271,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                         <f:facet name="right">
 
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                            <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{not invoiceHome.invoice.persistent}"
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                              action="#{invoiceHome.redirect}"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                            <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{invoiceHome.invoice.persistent}"
+                                             actionListener="#{invoiceHome.closeDialog(null)}" 
+                                             action="#{invoiceHome.redirect}"
+                                             icon="fa fa-times Fs14 Black" styleClass="RedButton" type="submit"
                                              />
                             <p:menuButton value="#{i18n['common.options']}">
                                 <p:menuitem value="#{i18n['Cancel']}" 
@@ -306,6 +310,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             $('input[id*="number"]').focus(function () {
                 $(this).select();
             });
+            
+            function callServlet(sequence){
+                alert(sequence);
+                window.open(
+                  'http://localhost:8080//appsventas-web/fedeServlet/?entity=invoice&id=' + sequence + '&type=odt',
+                  '_appventas_odt' // <- This is what makes it open in a new window.
+                );
+            }
             //]]>
         </script>
     </ui:define>

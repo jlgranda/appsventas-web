@@ -56,7 +56,8 @@ public class FedeServlet extends HttpServlet {
             
             String entity = request.getParameter("entity");
             String entityId = request.getParameter("id");
-            System.err.println("entity: " + entity + ", id=" + entityId);
+            String type = request.getParameter("type");
+            //System.err.println("entity: " + entity + ", id=" + entityId + ", type: "+ type);
             File file;
             byte[] contents;
             if (entity == null) {
@@ -64,25 +65,90 @@ public class FedeServlet extends HttpServlet {
             }
             switch (entity) {
                 case "invoice":
-                    if (Strings.isNullOrEmpty(entityId)) {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
-                        System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // 404.");
-                        return;
+                    switch (type) {
+                        case "pdf":
+                            if (Strings.isNullOrEmpty(entityId)) {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // 404.");
+                                return;
+                            }
+                            file = new File("/tmp/" + entityId + ".pdf");
+                            contents = getContent(file);
+                            if (contents == null) {
+                                response.sendError(HttpServletResponse.SC_NO_CONTENT); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // " + HttpServletResponse.SC_NO_CONTENT);
+                                return;
+                            }
+                            response.setCharacterEncoding("ISO-8859-1");
+                            response.setContentType("application/pdf");
+                            response.setContentLength(contents.length);
+                            response.getOutputStream().write(contents);
+                            response.getOutputStream().flush();
+                            response.getOutputStream().close();
+                            break;
+                        case "html":
+                            if (Strings.isNullOrEmpty(entityId)) {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // 404.");
+                                return;
+                            }
+                            file = new File("/tmp/" + entityId + ".html");
+                            contents = getContent(file);
+                            if (contents == null) {
+                                response.sendError(HttpServletResponse.SC_NO_CONTENT); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // " + HttpServletResponse.SC_NO_CONTENT);
+                                return;
+                            }
+                            response.setCharacterEncoding("UTF-8");
+                            response.setContentType("text/html");
+                            response.setContentLength(contents.length);
+                            response.getOutputStream().write(contents);
+                            response.getOutputStream().flush();
+                            response.getOutputStream().close();
+                            break;
+                        case "text":
+                            if (Strings.isNullOrEmpty(entityId)) {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // 404.");
+                                return;
+                            }
+                            file = new File("/tmp/" + entityId + ".txt");
+                            contents = getContent(file);
+                            if (contents == null) {
+                                response.sendError(HttpServletResponse.SC_NO_CONTENT); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // " + HttpServletResponse.SC_NO_CONTENT);
+                                return;
+                            }
+                            response.setCharacterEncoding("UTF-8");
+                            response.setContentType("text/");
+                            response.setContentLength(contents.length);
+                            response.getOutputStream().write(contents);
+                            response.getOutputStream().flush();
+                            response.getOutputStream().close();
+                            break;
+                        case "odt":
+                            if (Strings.isNullOrEmpty(entityId)) {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // 404.");
+                                return;
+                            }
+                            file = new File("/tmp/" + entityId + ".odt");
+                            contents = getContent(file);
+                            if (contents == null) {
+                                response.sendError(HttpServletResponse.SC_NO_CONTENT); // 404.
+                                System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // " + HttpServletResponse.SC_NO_CONTENT);
+                                return;
+                            }
+                            response.setCharacterEncoding("UTF-8");
+                            response.setContentType("application/vnd.oasis.opendocument.text");
+                            response.setHeader("Content-disposition", "attachment; filename="+ entityId + ".odt");
+                            response.setContentLength(contents.length);
+                            response.getOutputStream().write(contents);
+                            response.getOutputStream().flush();
+                            response.getOutputStream().close();
+                            break;
+                            
                     }
-                    file = new File("/tmp/" + entityId + ".pdf");
-                    contents = getContent(file);
-                    if (contents == null) {
-                        response.sendError(HttpServletResponse.SC_NO_CONTENT); // 404.
-                        System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // " + HttpServletResponse.SC_NO_CONTENT);
-                        return;
-                    }
-                    response.setCharacterEncoding("ISO-8859-1");
-                    response.setContentType("application/pdf");
-                    response.setContentLength(contents.length);
-                    response.getOutputStream().write(contents);
-                    response.getOutputStream().flush();
-                    response.getOutputStream().close();
-                    break;
                 case "documento":
 //                    Documento documento = documentoService.find(Long.parseLong(entityId));
 //                    if (documento == null) {

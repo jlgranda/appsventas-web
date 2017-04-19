@@ -41,6 +41,7 @@ import net.sf.dynamicreports.report.constant.PageType;
 import net.sf.dynamicreports.report.constant.VerticalTextAlignment;
 import net.sf.dynamicreports.report.definition.ReportParameters;
 import org.jlgranda.fede.model.sales.Invoice;
+import org.omnifaces.el.functions.Dates;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
@@ -58,7 +59,6 @@ public class Templates {
 	public static final StyleBuilder columnTitleStyle;
 	public static final StyleBuilder groupStyle;
 	public static final StyleBuilder subtotalStyle;
-	public static final StyleBuilder detailHeaderStyle;
         public static final SimpleStyleBuilder evenStyle;
         public static final SimpleStyleBuilder oddStyle;
 
@@ -69,7 +69,7 @@ public class Templates {
 	public static final ComponentBuilder<?, ?> footerComponent;
 
 	static {
-		rootStyle           = stl.style().setPadding(2).setFontName("BM receipt");
+		rootStyle           = stl.style().setPadding(2);
 		boldStyle           = stl.style(rootStyle).bold();
 		italicStyle         = stl.style(rootStyle).italic();
 		boldCenteredStyle   = stl.style(boldStyle)
@@ -87,12 +87,6 @@ public class Templates {
 		                         .setBorder(stl.pen1Point())
 		                         .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
 		                         .setBackgroundColor(Color.LIGHT_GRAY)
-		                         .bold();
-                detailHeaderStyle    = stl.style(columnStyle)
-		                         .setBorder(stl.pen1Point())
-		                         .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
-		                         .setBackgroundColor(Color.WHITE)
-                                         .setForegroundColor(Color.WHITE)
 		                         .bold();
 		groupStyle          = stl.style(boldStyle)
 		                         .setHorizontalTextAlignment(HorizontalTextAlignment.LEFT);
@@ -128,7 +122,7 @@ public class Templates {
 		                   .setCrosstabGrandTotalStyle(crosstabGrandTotalStyle)
 		                   .setCrosstabCellStyle(crosstabCellStyle)
 		                   .setTableOfContentsCustomizer(tableOfContentsCustomizer)
-                                   .setDetailHeaderStyle(detailHeaderStyle)
+                                   .setShowColumnTitle(Boolean.FALSE)
                                    .setDetailEvenRowStyle(evenStyle)
                                    .setDetailOddRowStyle(oddStyle);
 
@@ -144,9 +138,13 @@ public class Templates {
 		jlgrandaComponent =
 		  cmp.horizontalList(
 		  	cmp.verticalList(
-		  		cmp.text("jlgranda.com, consigue más con la tecnología!").setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)));
+		  		cmp.text("jlgranda.com, consigue +!").setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)));
 
-		footerComponent = cmp.pageXofY()
+//		footerComponent = cmp.pageXofY()
+//		                     .setStyle(
+//		                     	stl.style(boldCenteredStyle)
+//		                     	   .setTopBorder(stl.pen1Point()));
+		footerComponent = cmp.gap(0, 10)
 		                     .setStyle(
 		                     	stl.style(boldCenteredStyle)
 		                     	   .setTopBorder(stl.pen1Point()));
@@ -171,22 +169,23 @@ public class Templates {
 	 */
 	public static ComponentBuilder<?, ?> createInvoiceHeaderComponent(Invoice invoice) {
 		return cmp.horizontalList()
-		        .newRow()
-		        .add(cmp.verticalGap(120))
+		        .add(cmp.verticalGap(110))
                         .newRow()
-                        .add(cmp.gap(85, 13))
-                        .add(cmp.text(invoice.getCreatedOn()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-		        .newRow()
-                        .add(cmp.gap(45, 13))
+                        .add(cmp.gap(68, 0))
+                        .add(cmp.text(Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm") + " | Mesa:" + invoice.getBoardNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .newRow()
+                        .add(cmp.gap(45, 0))
                         .add(cmp.text(invoice.getOwner().getFullName()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
 		        .newRow()
-                        .add(cmp.gap(60, 13))
+                        .add(cmp.gap(60, 0))
                         .add(cmp.text(invoice.getOwner().getDescription()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
-                        .add(cmp.gap(48, 13))
+                        .add(cmp.gap(48, 0))
                         .add(cmp.text(invoice.getOwner().getCode()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT), 
-                                cmp.gap(58, 13), 
-                                cmp.text(invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT));
+                                cmp.gap(10, 0), 
+                                cmp.text(invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                        .newRow()
+                        .add(cmp.verticalGap(10));
 	}
 
 	public static CurrencyValueFormatter createCurrencyValueFormatter(String label) {

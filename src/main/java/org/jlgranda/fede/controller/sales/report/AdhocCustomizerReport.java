@@ -22,6 +22,15 @@
 package org.jlgranda.fede.controller.sales.report;
 
 import java.math.BigDecimal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.HashPrintServiceAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.PrintServiceAttributeSet;
+import javax.print.attribute.standard.JobName;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.PrinterName;
 import static net.sf.dynamicreports.report.builder.DynamicReports.*;
 
 import net.sf.dynamicreports.adhoc.AdhocManager;
@@ -32,15 +41,29 @@ import net.sf.dynamicreports.adhoc.configuration.AdhocReport;
 import net.sf.dynamicreports.adhoc.configuration.AdhocSubtotal;
 import net.sf.dynamicreports.adhoc.configuration.AdhocSubtotalPosition;
 import net.sf.dynamicreports.adhoc.report.DefaultAdhocReportCustomizer;
+import net.sf.dynamicreports.jasper.base.export.JasperHtmlExporter;
+import net.sf.dynamicreports.jasper.base.export.JasperOdtExporter;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
+import net.sf.dynamicreports.jasper.builder.export.JasperHtmlExporterBuilder;
+import net.sf.dynamicreports.jasper.builder.export.JasperOdtExporterBuilder;
 import net.sf.dynamicreports.jasper.builder.export.JasperPdfExporterBuilder;
+import net.sf.dynamicreports.jasper.builder.export.JasperTextExporterBuilder;
 import net.sf.dynamicreports.report.builder.ReportBuilder;
+import net.sf.dynamicreports.report.constant.Orientation;
 import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.dynamicreports.report.definition.datatype.DRIDataType;
+import net.sf.dynamicreports.report.definition.expression.DRIExpression;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
+import net.sf.jasperreports.engine.export.JRTextExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 import org.jlgranda.fede.model.sales.Detail;
 import org.jlgranda.fede.model.sales.Invoice;
+import org.jlgranda.fede.model.sales.Payment;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
@@ -61,20 +84,21 @@ public class AdhocCustomizerReport {
         //columns
         AdhocColumn column = new AdhocColumn();
         column.setName("cantidad");
-        column.setWidth(calculePorcentaje(pageWidth, 14));
+        column.setWidth(calculePorcentaje(pageWidth, 12));
         report.addColumn(column);
         column = new AdhocColumn();
         column.setName("descripcion");
-        column.setWidth(calculePorcentaje(pageWidth, 42));
+        column.setWidth(calculePorcentaje(pageWidth, 58));
         report.addColumn(column);
         column = new AdhocColumn();
         column.setName("preciounitario");
-        column.setWidth(calculePorcentaje(pageWidth, 22));
+        column.setWidth(calculePorcentaje(pageWidth, 15));
         report.addColumn(column);
         column = new AdhocColumn();
         column.setName("subtotal");
-        column.setWidth(calculePorcentaje(pageWidth, 22));
+        column.setWidth(calculePorcentaje(pageWidth,15));
         report.addColumn(column);
+
 //		//groups
 //		AdhocGroup group = new AdhocGroup();
 //		group.setName("invoice");
@@ -96,20 +120,64 @@ public class AdhocCustomizerReport {
 
         try {
 
-            JasperPdfExporterBuilder pdfExporter = export.pdfExporter("/tmp/" + invoice.getSequencial() + ".pdf")
-                    .setEncrypted(false);
             JasperReportBuilder reportBuilder = AdhocManager.createReport(configuration.getReport(), new ReportCustomizer(invoice));
             reportBuilder.setDataSource(createDataSource(invoice));
-            reportBuilder.toPdf(pdfExporter);
+            
+            
+            
+            //PDF
+//            JasperPdfExporterBuilder pdfExporter = export.pdfExporter("/tmp/" + invoice.getSequencial() + ".pdf")
+//                    .setEncrypted(false);
+//            reportBuilder.toPdf(pdfExporter);
+            
+            //HTML 
+//            JasperHtmlExporterBuilder htmlExporter = export.htmlExporter("/tmp/" + invoice.getSequencial() + ".html");
+//            reportBuilder.toHtml(htmlExporter);
+            
+            //TXT JRTextExporter
+//            JasperTextExporterBuilder txtExporter = export.textExporter("/tmp/" + invoice.getSequencial() + ".txt").setPageWidthInChars(52);
+//            reportBuilder.toText(txtExporter);
+            
+            //ODT JRTextExporter
+            JasperOdtExporterBuilder odtExporter = export.odtExporter("/tmp/" + invoice.getSequencial() + ".odt");
+            reportBuilder.toOdt(odtExporter);
+            
+            //Directamente a la impresora
+//            PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();
+//            printRequestAttributeSet.add(MediaSizeName.ISO_A6);
+//            printRequestAttributeSet.add(new JobName(invoice.getSequencial(), null));
+    
+//            PrintServiceAttributeSet printServiceAttributeSet = new HashPrintServiceAttributeSet();
+//            //printServiceAttributeSet.add(new PrinterName("Epson Stylus 820 ESC/P 2", null));
+//            //printServiceAttributeSet.add(new PrinterName("hp LaserJet 1320 PCL 6", null));
+//            printServiceAttributeSet.add(new PrinterName("Cups-PDF", null));
+            
+
+//            JRPrintServiceExporter exporter = new JRPrintServiceExporter();
+//            exporter.setExporterInput(new SimpleExporterInput(reportBuilder.toJasperPrint()));
+//            SimplePrintServiceExporterConfiguration simplePrintServiceExporterConfiguration = new SimplePrintServiceExporterConfiguration();
+//            simplePrintServiceExporterConfiguration.setPrintRequestAttributeSet(printRequestAttributeSet);
+//            simplePrintServiceExporterConfiguration.setPrintServiceAttributeSet(printServiceAttributeSet);
+//            simplePrintServiceExporterConfiguration.setDisplayPageDialog(false);
+//            simplePrintServiceExporterConfiguration.setDisplayPrintDialog(false);
+//            exporter.setConfiguration(simplePrintServiceExporterConfiguration);
+//            exporter.exportReport();
         } catch (DRException e) {
             e.printStackTrace();
-        }
+        } /*catch (JRException ex) {
+            Logger.getLogger(AdhocCustomizerReport.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
     }
 
     private JRDataSource createDataSource(Invoice invoice) {
         DRDataSource dataSource = new DRDataSource("cantidad", "descripcion", "preciounitario", "subtotal");
         for (Detail detail : invoice.getDetails()) {
             dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount())));
+        }
+        //Agregar el descuento como item
+        if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){
+            BigDecimal discount = invoice.getPaymentsDiscount().multiply(BigDecimal.valueOf(-1));
+            dataSource.add(1.0f, "Descuento", discount, discount);
         }
         return dataSource;
     }
