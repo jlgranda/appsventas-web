@@ -403,6 +403,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
             settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "12"));
             settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "bold"));
+            
             new AdhocCustomizerReport(this.getInvoice(), settings);
             //Invocar Servlet en nueva ventana del navegador
             redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
