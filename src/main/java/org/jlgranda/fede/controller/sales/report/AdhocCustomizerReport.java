@@ -22,6 +22,8 @@
 package org.jlgranda.fede.controller.sales.report;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -70,12 +72,12 @@ import org.jlgranda.fede.model.sales.Payment;
  * @adaptedby José Luis Granda (jlgranda@gmail.com)
  */
 public class AdhocCustomizerReport {
-
-    public AdhocCustomizerReport(Invoice invoice) {
-        build(invoice);
+    
+    public AdhocCustomizerReport(Invoice invoice, Map<String, String> settings) {
+        build(invoice, settings);
     }
 
-    private void build(Invoice invoice) {
+    private void build(Invoice invoice, Map<String, String> settings) {
         AdhocConfiguration configuration = new AdhocConfiguration();
         AdhocReport report = new AdhocReport();
         configuration.setReport(report);
@@ -120,7 +122,7 @@ public class AdhocCustomizerReport {
 
         try {
 
-            JasperReportBuilder reportBuilder = AdhocManager.createReport(configuration.getReport(), new ReportCustomizer(invoice));
+            JasperReportBuilder reportBuilder = AdhocManager.createReport(configuration.getReport(), new ReportCustomizer(invoice, settings));
             reportBuilder.setDataSource(createDataSource(invoice));
             
             
@@ -183,7 +185,7 @@ public class AdhocCustomizerReport {
     }
 
     public static void main(String[] args) {
-        new AdhocCustomizerReport(new Invoice());
+        new AdhocCustomizerReport(new Invoice(), null);
     }
 
     public static Integer calculePorcentaje(int pageWidth, int porcentaje) {
@@ -196,9 +198,10 @@ public class AdhocCustomizerReport {
     private class ReportCustomizer extends DefaultAdhocReportCustomizer {
 
         Invoice invoice;
-
-        public ReportCustomizer(Invoice invoice) {
+        Map<String, String> settings = new HashMap<>();
+        public ReportCustomizer(Invoice invoice, Map<String, String> settings) {
             this.invoice = invoice;
+            this.settings = settings;
         }
 
         /**
@@ -214,7 +217,7 @@ public class AdhocCustomizerReport {
             //No title, the document is pre printed
             //report.title(Templates.createTitleComponent(invoice.getOwner().getFullName()));
             //Header
-            report.addPageHeader(Templates.createInvoiceHeaderComponent(this.invoice));
+            report.addPageHeader(Templates.createInvoiceHeaderComponent(this.invoice, this.settings));
             //a fixed page footer that user cannot change, this customization is not stored in the xml file
             report.pageFooter(Templates.jlgrandaComponent, Templates.footerComponent);
         }

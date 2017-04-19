@@ -26,6 +26,7 @@ import static net.sf.dynamicreports.report.builder.DynamicReports.*;
 
 import java.awt.Color;
 import java.util.Locale;
+import java.util.Map;
 
 import net.sf.dynamicreports.report.base.expression.AbstractValueFormatter;
 import net.sf.dynamicreports.report.builder.HyperLinkBuilder;
@@ -166,10 +167,13 @@ public class Templates {
         
 	/**
 	 * Creates custom component which is possible to add to any report band component
+     * @param settings
 	 */
-	public static ComponentBuilder<?, ?> createInvoiceHeaderComponent(Invoice invoice) {
+	public static ComponentBuilder<?, ?> createInvoiceHeaderComponent(Invoice invoice, Map<String, String> settings) {
+                if (settings.containsKey("app.fede.report.invoice.fontName"))
+                    rootStyle.setFontName(settings.get("app.fede.report.invoice.fontName"));
 		return cmp.horizontalList()
-		        .add(cmp.verticalGap(110))
+		        .add(cmp.verticalGap(Integer.valueOf(settings.get("app.fede.report.invoice.startLine"))))
                         .newRow()
                         .add(cmp.gap(68, 0))
                         .add(cmp.text(Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm") + " | Mesa:" + invoice.getBoardNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))

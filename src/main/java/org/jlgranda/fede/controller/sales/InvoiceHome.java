@@ -32,6 +32,7 @@ import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -397,7 +398,11 @@ public class InvoiceHome extends FedeController implements Serializable {
             setInvoice(invoiceService.createInstance());
             getInvoice(); //recargar
             //Imprimir reporte
-            AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice());
+            Map<String, String> settings = new HashMap<>();
+            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "110"));
+            //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson 1"));
+            settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "BM receipt"));
+            new AdhocCustomizerReport(this.getInvoice(), settings);
             //Invocar Servlet en nueva ventana del navegador
             redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
             
