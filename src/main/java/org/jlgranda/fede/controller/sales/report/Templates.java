@@ -172,6 +172,11 @@ public class Templates {
 	public static ComponentBuilder<?, ?> createInvoiceHeaderComponent(Invoice invoice, Map<String, String> settings) {
                 if (settings.containsKey("app.fede.report.invoice.fontName"))
                     rootStyle.setFontName(settings.get("app.fede.report.invoice.fontName"));
+                if (settings.containsKey("app.fede.report.invoice.fontSize"))
+                    rootStyle.setFontSize(Integer.valueOf(settings.get("app.fede.report.invoice.fontSize")));
+                if (settings.containsKey("app.fede.report.invoice.fontStyle") && "bold".equalsIgnoreCase(settings.get("app.fede.report.invoice.fontStyle")))
+                    rootStyle.bold();
+                
 		return cmp.horizontalList()
 		        .add(cmp.verticalGap(Integer.valueOf(settings.get("app.fede.report.invoice.startLine"))))
                         .newRow()
