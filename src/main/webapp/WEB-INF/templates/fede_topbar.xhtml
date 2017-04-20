@@ -22,7 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:ui="http://java.sun.com/jsf/facelets">
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:of="http://omnifaces.org/functions">
     
     
     <!-- TOPBAR START -->
@@ -35,10 +37,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/dashboard.jsf" id="logo">
             <h:graphicImage value="/resources/images/appsventas.png" styleClass="Fleft" title="#{i18n['app.name']} #{i18n['app.version']}"/>
         </a>
-        
         <a id="show-top-menu" class="ShowOnMobile ripplelink"><i class="icon-more_vert" id="active"></i><i class="icon-close DispNone" id="passive"></i> </a>
         
         <ul id="top-menu">
+            <li>
+                <p class="White TexAlLeft Bold">#{settingHome.getValue('app.messages.quote', 'Sonrie y se amable, esto realmente te beneficia.')} #{of:formatDate(now, 'yyyy-MM-dd HH:mm:ss z')}</p>
+            </li>
             <li>
                 <a class="ripplelink"><i class="icon-search"></i> <span class="ShowOnMobile">#{i18n['Search']}</span></a>
                 <ul>
@@ -69,10 +73,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <a class="ripplelink"><i class="icon-cog"></i> <span class="ShowOnMobile">#{i18n['Settings']}</span></a>
                 <ul>
                     <li><a href="#{facesContext.externalContext.requestContextPath}/pages/profile/profile.jsf"><i class="icon-people"></i> #{i18n['Profile']}</a></li>
-                    <li><a href="#{facesContext.externalContext.requestContextPath}/pages/profile/card.jsf"><i class="icon-tag"></i> #{i18n['FedeCard']}</a></li>
                     <li><a href="#{facesContext.externalContext.requestContextPath}/pages/profile/setting.jsf"><i class="icon-settings"></i> #{i18n['common.user.settings']}</a></li>
-<!--                    <li><a href="#"><i class="icon-verified_user"></i> Security Settings</a></li>
-                    <li><a href="#"><i class="icon-assignment_ind"></i> Users Settings</a></li>-->
                 </ul>
             </li>
             <li>

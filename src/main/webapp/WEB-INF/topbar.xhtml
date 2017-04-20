@@ -3,7 +3,9 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:ui="http://java.sun.com/jsf/facelets">
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:of="http://omnifaces.org/functions">
     
     
     <!-- TOPBAR START -->
@@ -18,8 +20,11 @@
         </a>
         
         <a id="show-top-menu" class="ShowOnMobile ripplelink"><i class="icon-more_vert" id="active"></i><i class="icon-close DispNone" id="passive"></i> </a>
-        
+         
         <ul id="top-menu">
+            <li>
+                <p class="White TexAlLeft Bold">#{settingHome.getValue('app.messages.quote', 'Sonrie y se amable, esto realmente te beneficia.')} #{of:formatDate(now, 'yyyy-MM-dd HH:mm:ss z')}</p>
+            </li>
             <li>
                 <a class="ripplelink"><i class="icon-search"></i> <span class="ShowOnMobile">#{i18n['Search']}</span></a>
                 <ul>

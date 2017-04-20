@@ -166,15 +166,19 @@ public class InvoiceHome extends FedeController implements Serializable {
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora
         
+        //Lista de productos a gráficar por defecto
         List<BussinesEntity> defaultProducts = new ArrayList<>();
         defaultProducts.add(productService.find(80L));
         defaultProducts.add(productService.find(81L));
         defaultProducts.add(productService.find(370L));
+        defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
+        defaultProducts.add(productService.find(47763L)); //Empapiiza de tocino
         defaultProducts.add(productService.find(87L));
         defaultProducts.add(productService.find(101L));
         defaultProducts.add(productService.find(78L));
-        defaultProducts.add(productService.find(8005L));
-        defaultProducts.add(productService.find(39527L));
+        defaultProducts.add(productService.find(39640L)); //Frapuchino
+        defaultProducts.add(productService.find(39527L)); //Helado
+        
         setSelectedBussinesEntities(defaultProducts);
         
         getSubjectAdminHome().setOutcome("invoice");
@@ -437,7 +441,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.getInvoice();
         this.getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Marcar como no cobrado
         this.save();
-        //setOutcome("" + this.getInvoice().getId());
         redirectTo("/pages/fede/sales/invoice.jsf?invoiceId=" + this.getInvoice().getId());
     }
     
