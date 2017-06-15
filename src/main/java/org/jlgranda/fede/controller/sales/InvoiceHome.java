@@ -168,15 +168,19 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         //Lista de productos a gráficar por defecto
         List<BussinesEntity> defaultProducts = new ArrayList<>();
-        defaultProducts.add(productService.find(80L));
-        defaultProducts.add(productService.find(81L));
-        defaultProducts.add(productService.find(370L));
+        defaultProducts.add(productService.find(80L)); //Queso
+        defaultProducts.add(productService.find(81L)); //Cebolla
+        defaultProducts.add(productService.find(370L)); //Empapizza
         defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
         defaultProducts.add(productService.find(47763L)); //Empapiiza de tocino
-        defaultProducts.add(productService.find(87L));
-        defaultProducts.add(productService.find(101L));
-        defaultProducts.add(productService.find(78L));
-        defaultProducts.add(productService.find(39640L)); //Frapuchino
+        defaultProducts.add(productService.find(4563L)); //Verde
+        defaultProducts.add(productService.find(6660L)); //Tamal
+        defaultProducts.add(productService.find(6846L)); //Humita
+        defaultProducts.add(productService.find(87L)); //Chocolate
+        defaultProducts.add(productService.find(101L)); //Cafe
+        defaultProducts.add(productService.find(78L)); //Capuchino
+        defaultProducts.add(productService.find(416L)); //Jugos
+        //defaultProducts.add(productService.find(39640L)); //Frapuchino
         defaultProducts.add(productService.find(39527L)); //Helado
         
         setSelectedBussinesEntities(defaultProducts);
@@ -708,12 +712,12 @@ public class InvoiceHome extends FedeController implements Serializable {
         LineChartModel areaModel = new LineChartModel();
         
         boolean fillSeries = true;
-        
-        LineChartSeries fixedCosts = new LineChartSeries();
-        fixedCosts.setFill(!fillSeries);
-        fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
-        fixedCosts.setShowMarker(false);
-        fixedCosts.setSmoothLine(false);
+//        
+//        LineChartSeries fixedCosts = new LineChartSeries();
+//        fixedCosts.setFill(!fillSeries);
+//        fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
+//        fixedCosts.setShowMarker(false);
+//        fixedCosts.setSmoothLine(false);
  
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(fillSeries);
@@ -736,7 +740,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         String label = "";
         BigDecimal salesTotal;
         BigDecimal purchasesTotal;
-        BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "50"));
+//        BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "50"));
         for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
             label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
             salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step)));
@@ -746,9 +750,9 @@ public class InvoiceHome extends FedeController implements Serializable {
             facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
             purchasesTotal = facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList());
             
-            fixedCosts.set(label, fixedCost);
+//            fixedCosts.set(label, fixedCost);
             purchases.set(label, purchasesTotal);
-            profits.set(label, salesTotal.subtract(purchasesTotal.add(fixedCost))); //Utilidad bruta
+            profits.set(label, salesTotal.subtract(purchasesTotal)); //Utilidad bruta
             
             _step = Dates.addDays(_step, 1); //Siguiente día
         }
@@ -756,7 +760,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.addSeries(sales);
         areaModel.addSeries(purchases);
         areaModel.addSeries(profits);
-        areaModel.addSeries(fixedCosts);
+//        areaModel.addSeries(fixedCosts);
          
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
