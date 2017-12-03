@@ -252,6 +252,7 @@ public class InventoryHome extends FedeController implements Serializable {
         List<Product> result = new ArrayList<>();
         objects.stream().forEach((object) -> {
             filters.put("id", (Long) object[0]);
+            filters.put("productType", ProductType.PRODUCT);
             result.addAll((productService.find(-1, -1, null, QuerySortOrder.ASC, filters).getResult()));
         });
         return result;
