@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                template="/WEB-INF/templates/fede_template.xhtml">
+    <ui:define name="head">
+        <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="subheader">
+        #{i18n['Invoices']}#{'/'}#{i18n['Dashboard']}
+    </ui:define>
+
+    <ui:define name="content">
+        <!-- Left Column -->
+        <div class="Container100 Responsive100">
+
+            <!-- Section 1 -->
+            <div class="Container100">
+                <div class="ContainerIndent">
+                    <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
+                        <h:form>
+                            <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '3600')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
+                            <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
+                            <div class="SeparatorFull"></div>
+                            <div class="Card HeiAutoOnMobile">
+                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.calculeSummary()}"/>
+                                </p:calendar>
+                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.calculeSummary()}"/>
+                                </p:calendar>
+                            </div>
+                            <div class="EmptyBox10"></div>
+                            <h3 class="CardTopic">#{i18n['app.fede.summary']}</h3>
+                            <div class="Container100 Responsive100">
+                                <div class="Card BlueBack TexAlCenter">
+                                    <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <span class="FontRobotoLight Fs18">#{invoiceHome.salesTotal}</span>
+                                </div>
+                            </div>
+                            <div class="Container100 Responsive100">
+                                <div class="Card GreenBack TexAlCenter">
+                                    <i class="fa fa-apple Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <span class="FontRobotoLight Fs18">#{invoiceHome.purchaseTotal}</span>
+                                </div>
+                            </div>
+                            <div class="Container100 Responsive100">
+                                <div class="Card RedBack TexAlCenter">
+                                    <i class="fa fa-bank Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['app.fede.costs.fixed']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <span class="FontRobotoLight Fs18">#{invoiceHome.costTotal}</span>
+                                </div>
+                            </div>
+                            <div class="Container100 Responsive100">
+                                <div class="Card YellowBack TexAlCenter">
+                                    <i class="fa fa-bell Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['common.profit']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <span class="FontRobotoLight Fs18">#{invoiceHome.profilTotal}</span>
+                                </div>
+                            </div>
+                            <div class="SeparatorFull"></div>
+                            <div class="EmptyBox10"></div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="script">
+        
+    </ui:define>
+
+</ui:composition>

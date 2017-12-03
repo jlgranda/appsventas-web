@@ -103,32 +103,52 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <ui:repeat value="#{inventoryHome.findTop()}" var="product">  
                                 <p:commandButton ajax="true" update="@form" immediate="true"
                                                  actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
-                                                 icon="#{product.icon}" styleClass="CyanButton" title="#{product.name}">
+                                                 icon="#{product.icon}" styleClass="GrayButton" title="#{product.name}">
                                 </p:commandButton>
                             </ui:repeat>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('80,101')}" disabled="#{false}"
-                                             icon="flaticon-empanada-cafe" styleClass="GreenButton" title="Empanada + Café">
+                                             icon="flaticon-empanada-cafe" styleClass="RedButton" title="Empanada + Café">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('80,87')}" disabled="#{false}"
-                                             icon="flaticon-empanada-chocolate" styleClass="GreenButton" title="Empanada + Chocolate">
+                                             icon="flaticon-empanada-chocolate" styleClass="RedButton" title="Empanada + Chocolate">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('80,78')}" disabled="#{false}"
-                                             icon="flaticon-capuchino" styleClass="GreenButton" title="Empanada + Capuchino">
+                                             icon="flaticon-capuchino" styleClass="RedButton" title="Empanada + Capuchino">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,101')}" disabled="#{false}"
-                                             icon="flaticon-pizza-cafe" styleClass="GreenButton" title="EMPAPizza + Café">
+                                             icon="flaticon-pizza-cafe" styleClass="RedButton" title="EMPAPizza + Café">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,87')}" disabled="#{false}"
-                                             icon="flaticon-pizza-chocolate" styleClass="GreenButton" title="EMPAPizza + Chocolate">
+                                             icon="flaticon-pizza-chocolate" styleClass="RedButton" title="EMPAPizza + Chocolate">
                             </p:commandButton>
                             <p:commandButton ajax="true" update="@form" immediate="true"
                                              actionListener="#{invoiceHome.macro('370,78')}" disabled="#{false}"
-                                             icon="flaticon-capuchino" styleClass="GreenButton" title="EMPAPizza + Capuchino">
+                                             icon="flaticon-capuchino" styleClass="RedButton" title="EMPAPizza + Capuchino">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('87663')}" disabled="#{false}"
+                                             icon="flaticon-conoheladosoft" styleClass="OrangeButton" title="Ron pasas bola helado + cono galleta">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('87664')}" disabled="#{false}"
+                                             icon="flaticon-conoheladosoft" styleClass="OrangeButton" title="Chicle bola de helado + cono">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('87665')}" disabled="#{false}"
+                                             icon="flaticon-conoheladosoft" styleClass="OrangeButton" title="Sundae Mora bola de helado">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('87666')}" disabled="#{false}"
+                                             icon="flaticon-conoheladosoft" styleClass="OrangeButton" title="Oreo bola de helado">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('87667')}" disabled="#{false}"
+                                             icon="flaticon-conoheladosoft" styleClass="OrangeButton" title="M&amp;M bola de helado">
                             </p:commandButton>
                         </div>
                         <div class="Container100 Responsive100">

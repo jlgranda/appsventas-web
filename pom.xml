@@ -358,11 +358,11 @@
             <artifactId>dynamicreports-adhoc</artifactId>
             <version>5.0.0</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.jlgranda</groupId>
             <artifactId>font-epson-extension</artifactId>
             <version>0.0.1</version>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 

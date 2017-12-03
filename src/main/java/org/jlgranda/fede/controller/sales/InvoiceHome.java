@@ -171,21 +171,23 @@ public class InvoiceHome extends FedeController implements Serializable {
         defaultProducts.add(productService.find(80L)); //Queso
         defaultProducts.add(productService.find(81L)); //Cebolla
         defaultProducts.add(productService.find(370L)); //Empapizza
-        defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
-        defaultProducts.add(productService.find(47763L)); //Empapiiza de tocino
-        defaultProducts.add(productService.find(4563L)); //Verde
-        defaultProducts.add(productService.find(6660L)); //Tamal
-        defaultProducts.add(productService.find(6846L)); //Humita
+        //defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
+        defaultProducts.add(productService.find(47763L)); //Empapizza de tocino
+        //defaultProducts.add(productService.find(4563L)); //Verde
+        //defaultProducts.add(productService.find(6660L)); //Tamal
+        //defaultProducts.add(productService.find(6846L)); //Humita
         defaultProducts.add(productService.find(87L)); //Chocolate
         defaultProducts.add(productService.find(101L)); //Cafe
         defaultProducts.add(productService.find(78L)); //Capuchino
-        defaultProducts.add(productService.find(416L)); //Jugos
+        //defaultProducts.add(productService.find(416L)); //Jugos
         //defaultProducts.add(productService.find(39640L)); //Frapuchino
-        defaultProducts.add(productService.find(39527L)); //Helado
+        //defaultProducts.add(productService.find(39527L)); //Helado
         
         setSelectedBussinesEntities(defaultProducts);
         
         getSubjectAdminHome().setOutcome("invoice");
+        
+        calculeSummary();
         
     }
 
@@ -807,4 +809,66 @@ public class InvoiceHome extends FedeController implements Serializable {
         return inventoryHome.buildBarChartModel(getSelectedBussinesEntities(), "skinBarChart");
     }
     
+    
+    //Calcular Resumen
+    private BigDecimal salesTotal;
+    private BigDecimal purchaseTotal;
+    private BigDecimal costTotal;
+    private BigDecimal profilTotal;
+
+    public BigDecimal getSalesTotal() {
+        return salesTotal;
+    }
+
+    public void setSalesTotal(BigDecimal salesTotal) {
+        this.salesTotal = salesTotal;
+    }
+
+    public BigDecimal getPurchaseTotal() {
+        return purchaseTotal;
+    }
+
+    public void setPurchaseTotal(BigDecimal purchaseTotal) {
+        this.purchaseTotal = purchaseTotal;
+    }
+
+    public BigDecimal getCostTotal() {
+        return costTotal;
+    }
+
+    public void setCostTotal(BigDecimal costTotal) {
+        this.costTotal = costTotal;
+    }
+
+    public BigDecimal getProfilTotal() {
+        return profilTotal;
+    }
+
+    public void setProfilTotal(BigDecimal profilTotal) {
+        this.profilTotal = profilTotal;
+    }
+    
+    public void  calculeSummary() {
+//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary");
+        Date _start = getStart();
+        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1){
+            int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+            _start = Dates.addDays(getStart(), -1 * range);
+        }
+//        long theNumberOfDaysBetween = Dates.calculateNumberOfDaysBetween(_start, getEnd());
+//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary theNumberOfDaysBetween: " + theNumberOfDaysBetween);
+//        this.costTotal = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "70")).multiply(BigDecimal.valueOf(theNumberOfDaysBetween));
+        this.costTotal = BigDecimal.ZERO;
+        this.salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_start), Dates.maximumDate(getEnd())));
+        facturaElectronicaHome.setStart(Dates.minimumDate(_start));
+        facturaElectronicaHome.setEnd(Dates.maximumDate(getEnd()));
+        this.purchaseTotal = facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList());
+        
+        this.profilTotal = salesTotal.subtract(purchaseTotal.add(costTotal));
+//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary salesTotal: " + salesTotal);
+//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary costTotal: " + costTotal);
+//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary purchaseTotal: " + purchaseTotal);
+//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary profilTotal: " + profilTotal);
+        
+    }
 }
