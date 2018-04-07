@@ -102,10 +102,10 @@ public class InventoryHome extends FedeController implements Serializable {
     private void init() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "8"));
+            range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "7"));
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
-            range = 8;
+            range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
@@ -248,12 +248,13 @@ public class InventoryHome extends FedeController implements Serializable {
     public List<Product> findTop() {
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
-        Map<String, Object> filters = new HashMap<>();
         List<Product> result = new ArrayList<>();
-        objects.stream().forEach((object) -> {
-            filters.put("id", (Long) object[0]);
-            filters.put("productType", ProductType.PRODUCT);
-            result.addAll((productService.find(-1, -1, null, QuerySortOrder.ASC, filters).getResult()));
+        objects.stream().forEach((Object[] object) -> {
+            Product _product = productService.find((Long) object[0]);
+            if (_product != null){
+                _product.getStatistics().setCount((Double) object[1]);
+                result.add(_product);
+            }
         });
         return result;
     }
