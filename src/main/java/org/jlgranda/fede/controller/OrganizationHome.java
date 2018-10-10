@@ -67,8 +67,6 @@ public class OrganizationHome extends FedeController implements Serializable {
     @Inject
     private SettingHome settingHome;
     
-    @Inject
-    @LoggedIn
     private Subject subject;
     
     private TreeNode organizationNode;
@@ -251,7 +249,7 @@ public class OrganizationHome extends FedeController implements Serializable {
                 redirectTo("/pages/admin/management/organization/organization.jsf?faces-redirect=true");
             }
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(org.picketlink.idm.model.basic.Group.class.getName()).log(Level.SEVERE, null, ex);
+            //java.util.logging.Logger.getLogger(org.picketlink.idm.model.basic.Group.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

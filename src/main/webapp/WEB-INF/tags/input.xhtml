@@ -40,6 +40,7 @@ limitations under the License.
 
     <c:if test="#{mode == 'read'}">
         <div class="Container100 Responsive100">
+            <!--<h:outputText value="#{label}" />-->
             <h2 class="BigTopic">#{label}</h2>
             #{value}
         </div>
@@ -123,6 +124,7 @@ limitations under the License.
                 <h:panelGroup id="panel-group-#{id}" layout="block" class="ContainerIndent">
                     <c:if test="#{placeholder == 'false'}">
                         <h2 class="BigTopic">#{label}</h2>
+                        <!--<h:outputText value="#{label}" />-->
                     </c:if>
                     <c:choose>
                         <c:when test="#{type == 'java.lang.String' or type == 'text'}">

@@ -30,8 +30,8 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.transaction.HeuristicMixedException;
@@ -41,7 +41,6 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jasypt.util.password.BasicPasswordEncryptor;
-import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.GroupHome;
 import org.jlgranda.fede.controller.SettingHome;
@@ -54,14 +53,8 @@ import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
 import org.jpapi.util.StringValidations;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.PartitionManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.basic.BasicModel;
-import org.picketlink.idm.model.basic.User;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +62,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jorge
  */
-@ManagedBean
 @ViewScoped
+@Named
 public class SubjectAdminHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = 2914718473249636007L;
@@ -79,8 +72,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     private Long subjectId;
 
-    @Inject
-    @LoggedIn
     private Subject subject;
 
     private Subject subjectEdit;
@@ -89,10 +80,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private SettingHome settingHome;
     @Inject
     GroupHome groupHome;
-    @Inject
-    private PartitionManager partitionManager;
-
-    IdentityManager identityManager = null;
 
     @Resource
     private UserTransaction userTransaction;
@@ -291,32 +278,32 @@ public class SubjectAdminHome extends FedeController implements Serializable {
      * el cambio de clave.
      */
     public void changePassword() {
-        int length = Integer.valueOf(settingHome.getValue("app.password.length", "8"));
-        if (!StringValidations.isPassword(clave)) {
-            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "" + length));
-            return;
-        }
-        if (this.clave.equals(this.confirmarClave)) {
-            try {
-                identityManager = partitionManager.createIdentityManager();
-                logger.info("identityManager: {}", identityManager);
-                logger.info("getSubjectEdit().getUsername(): {}", getSubjectEdit().getUsername());
-                this.userTransaction.begin();
-                Password password = new Password(this.clave);
-                User user = BasicModel.getUser(identityManager, getSubjectEdit().getUsername());
-                identityManager.update(user);
-                identityManager.updateCredential(user, password);
-                this.userTransaction.commit();
-                String password_ = new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
-                subjectEdit.setPassword(password_);
-                subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
-                addDefaultSuccessMessage();
-            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                logger.error(ex.getMessage(), ex);
-            }
-        } else {
-            addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
-        }
+//        int length = Integer.valueOf(settingHome.getValue("app.password.length", "8"));
+//        if (!StringValidations.isPassword(clave)) {
+//            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "" + length));
+//            return;
+//        }
+//        if (this.clave.equals(this.confirmarClave)) {
+//            try {
+//                identityManager = partitionManager.createIdentityManager();
+//                logger.info("identityManager: {}", identityManager);
+//                logger.info("getSubjectEdit().getUsername(): {}", getSubjectEdit().getUsername());
+//                this.userTransaction.begin();
+//                Password password = new Password(this.clave);
+//                User user = BasicModel.getUser(identityManager, getSubjectEdit().getUsername());
+//                identityManager.update(user);
+//                identityManager.updateCredential(user, password);
+//                this.userTransaction.commit();
+//                String password_ = new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
+//                subjectEdit.setPassword(password_);
+//                subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+//                addDefaultSuccessMessage();
+//            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+//                logger.error(ex.getMessage(), ex);
+//            }
+//        } else {
+//            addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
+//        }
     }
 
     public Subject getSubjectEdit() {

@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/templates/fede_template.xhtml">
+    <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="invoiceId" value="#{invoiceHome.invoiceId}" />
+        </f:metadata>
+    </ui:define>
+    <ui:define name="subheader">
+        #{invoiceHome.invoiceId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)]}
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="Container100 ui-fluid">
+            <div class="ContainerIndent">
+                <div class="Card ShadowEffect">
+                    <h2 class="BigTopic">#{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType).concat('.lead')]} </h2>
+                    <div class="EmptyBox10"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Container80 Responsive100">
+                                <div class="Container100 Responsive50">
+                                    <h2 class="BigTopic">#{i18n['app.fede.sales.invoice.header']}</h2>
+                                    
+                                    <div class="Container30">
+                                        <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['ride.no']}" 
+                                                        execute="none" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
+                                                required="true" requiredMessage="#{i18n['ride.no.required']}" 
+                                                placeholder="#{i18n['ride.no']}"
+                                                container="none"/>
+                                    </div>
+                                    <div class="Container50">
+                                        <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="fade" 
+                                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                        completeMethod="#{subjectHome.find}"
+                                                        var="entidad" itemValue="#{entidad}" 
+                                                        itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
+                                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                        converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                        forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}"
+                                                        placeholder="#{i18n['app.fede.sales.invoice.header']}">
+                                            <p:column>
+                                                <h:outputText value="#{entidad.code} #{entidad.fullName}"/>
+                                            </p:column>
+                                            <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
+                                        </p:autoComplete>
+                                    </div>
+                                    <div class="Container20">
+                                        <p:commandButton id="button-change-customer" icon="fa fa-user-plus Fs14 Black" 
+                                                         actionListener="#{invoiceHome.mostrarFormularioProfile()}" ajax="true"
+                                                         immediate="true"
+                                                         styleClass="RedButton" style="width:75%">
+                                            <p:ajax event="dialogReturn" update="@form"
+                                                    listener="#{invoiceHome.handleReturn}">
+                                            </p:ajax>
+                                        </p:commandButton>
+                                        <h:outputText value="   Consumidor final: " />
+                                        <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultCustomer}">
+                                            <p:ajax update="customer" listener="#{invoiceHome.updateDefaultCustomer}" />
+                                        </p:selectBooleanCheckbox>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="Container20 Responsive100">
+                                <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
+                                                execute="none" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
+                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
+                                                decimalPlaces="0" container="none"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="EmptyBox10"></div>
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.detail.add']}</div>
+                    <div class="Container100 Responsive100">
+                        <div class="Container100 Responsive100">
+                            <ui:repeat value="#{inventoryHome.findTop()}" var="product">  
+                                <p:commandButton ajax="true" update="@form" immediate="true"
+                                                 actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
+                                                 icon="#{product.icon}" styleClass="GrayButton" title="#{product.name} #{product.statistics.count}">
+                                </p:commandButton>
+                            </ui:repeat>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('80,101')}" disabled="#{false}"
+                                             icon="flaticon-empanada-cafe" styleClass="RedButton" title="Empanada + Café">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('80,87')}" disabled="#{false}"
+                                             icon="flaticon-empanada-chocolate" styleClass="RedButton" title="Empanada + Chocolate">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('80,78')}" disabled="#{false}"
+                                             icon="flaticon-capuchino" styleClass="RedButton" title="Empanada + Capuchino">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('370,101')}" disabled="#{false}"
+                                             icon="flaticon-pizza-cafe" styleClass="RedButton" title="EMPAPizza + Café">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('370,87')}" disabled="#{false}"
+                                             icon="flaticon-pizza-chocolate" styleClass="RedButton" title="EMPAPizza + Chocolate">
+                            </p:commandButton>
+                            <p:commandButton ajax="true" update="@form" immediate="true"
+                                             actionListener="#{invoiceHome.macro('370,78')}" disabled="#{false}"
+                                             icon="flaticon-capuchino" styleClass="RedButton" title="EMPAPizza + Capuchino">
+                            </p:commandButton>
+                        </div>
+                        <div class="Container100 Responsive100">
+                            <div class="Container100 Responsive100">
+                                <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" minQueryLength="2" completeMethod="#{inventoryHome.find}"
+                                                var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="5" itemValue="#{entidad}" 
+                                                converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
+                                                placeholder="#{settingHome.getValue('app.sales.detail.placeholder', 'Buscar producto...')}">
+                                    <p:column>
+                                        <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
+                                    </p:column>
+                                    <p:ajax event="itemSelect" update="@form" listener="#{invoiceHome.addCandidateDetail()}"></p:ajax>
+                                </p:autoComplete>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="EmptyBox10"></div>
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.details']} [<h:outputText id="invoice-total" value="#{invoiceHome.calculeCandidateDetailTotal()}">
+                            <f:convertNumber type="currency"/>
+                        </h:outputText>]</div>
+                    <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
+                        <div class="Container33 Responsive100">
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGreenBack TexAlCenter">
+                                    <i class="#{detail.product.icon} Fs40 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{detail.product.name}</span>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18"><h:outputText value="#{detail.product.price}">
+                                            <f:convertNumber type="currency"/>
+                                        </h:outputText></span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="SoftGreenBack">
+                                        <p:ajax update="@form:invoice-total @form:payment-panel" listener="#{invoiceHome.calculeChange()}"></p:ajax>
+                                    </p:spinner>
+                                </div>
+                            </div> 
+                        </div>
+                    </ui:repeat>
+                    <div class="EmptyBox10"></div>
+                    <p:panel id="payment-panel" class="Container100 Responsive100" rendered="#{not empty invoiceHome.candidateDetails}">
+                        <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.payments']} [<h:outputText id="payment-total" value="#{0 - invoiceHome.calculeCandidateDetailTotal()}">
+                                <f:convertNumber type="currency"/>
+                            </h:outputText>]</div>
+                        <div class="ContainerIndent">
+                            <div class="Container25 Responsive50">
+                            <jlgranda:input id="method" name="method" type="text" label="#{i18n['app.fede.sales.payment.method']}" 
+                                            disabled="true"
+                                            value="#{invoiceHome.payment.method}" required="true" 
+                                            inlinehelp="#{messages['app.fede.sales.payment.method.inlinehelp']}" 
+                                            execute="@this save" render="method"/>
+                            </div>
+                            <div class="Container25 Responsive50">
+                                <div class="ContainerIndent">
+                                    <h2 class="BigTopic">#{i18n['app.fede.sales.payment.cash']}</h2>
+                                    <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="false"
+                                                   styleClass=""
+                                                   decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                   thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                   decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change collect-button" partialSubmit="true"></p:ajax>
+                                    </p:inputNumber>
+                                </div>
+                            </div>
+                            <div class="Container25 Responsive50">
+                                <div class="ContainerIndent">
+                                    <h2 class="BigTopic">#{i18n['app.fede.sales.payment.discount']}</h2>
+                                    <p:inputNumber id="number_dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="false"
+                                                   styleClass=""
+                                                   decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                   thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                   decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change" partialSubmit="true"/>
+                                    </p:inputNumber>
+                                </div>
+                            </div>
+                            <div class="Container25 Responsive50">
+                                <div class="ContainerIndent">
+                                    <h2 class="BigTopic">#{i18n['app.fede.sales.payment.change']}</h2>
+                                    <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="false"
+                                                   styleClass=""
+                                                   decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                   thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                   decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                        <p:ajax partialSubmit="true"/>
+                                    </p:inputNumber>
+                                </div>
+                            </div>
+                        </div>
+                    </p:panel>
+                    <div class="EmptyBox20"></div>
+                    <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
+                        <f:facet name="left">
+                            <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 
+                                             actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" disabled="#{empty invoiceHome.candidateDetails}" 
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                        </f:facet>
+
+                        <f:facet name="right">
+
+                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                                             actionListener="#{invoiceHome.closeDialog(null)}" 
+                                             action="home"
+                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                            <p:menuButton value="#{i18n['common.options']}">
+                                <p:menuitem value="#{i18n['Save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                            actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
+                                            immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
+                            </p:menuButton>
+                        </f:facet>
+
+                    </p:toolbar>
+                    <p:toolbar rendered="#{invoiceHome.invoice.persistent}">
+                        <f:facet name="left">
+                            <p:commandButton id="collect-button" value="#{i18n['app.fede.collect']}" ajax="true" 
+                                             styleClass="CyanButton"
+                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
+                                             rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                            <p:commandButton id="print-button" value="#{i18n['common.print']}" ajax="true" 
+                                             styleClass="OrangeButton"
+                                             actionListener="#{invoiceHome.print()}" 
+                                             rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                            <p:commandButton icon="fa fa-save Fs14 Black" ajax="true" styleClass="GrayButton"
+                                             actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}" disabled="false" 
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                        </f:facet>
+
+                        <f:facet name="right">
+
+                            <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{not invoiceHome.invoice.persistent}"
+                                             actionListener="#{invoiceHome.closeDialog(null)}" 
+                                             action="#{invoiceHome.redirect}"
+                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                            <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{invoiceHome.invoice.persistent}"
+                                             actionListener="#{invoiceHome.closeDialog(null)}" 
+                                             action="#{invoiceHome.redirect}"
+                                             icon="fa fa-times Fs14 Black" styleClass="RedButton" type="submit"
+                                             />
+                            <p:menuButton value="#{i18n['common.options']}">
+                                <p:menuitem value="#{i18n['Cancel']}" 
+                                            actionListener="#{invoiceHome.cancel()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
+                                            immediate="true" rendered="#{invoiceHome.invoice.isPersistent()}"/>
+                            </p:menuButton>
+                        </f:facet>
+
+                    </p:toolbar>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            
+            $('input[id*="number"]').focus(function () {
+                $(this).select();
+            });
+            
+            function callServlet(sequence){
+                alert(sequence);
+                window.open(
+                  'http://localhost:8080//appsventas-web/fedeServlet/?entity=invoice&id=' + sequence + '&type=odt',
+                  '_appventas_odt' // <- This is what makes it open in a new window.
+                );
+            }
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

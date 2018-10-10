@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/templates/fede-inbox-template-invoice.xhtml">
+
+        <ui:define name="head">
+        </ui:define>
+
+        <ui:define name="subheader">
+            <p:menuButton value="#{i18n['app.fede.sales']}" iconPos="right"
+                          styleClass="MarRight10"
+                          buttonStyleClass="ToolbarButton Fs18" 
+                          iconStyleClass="Gray"
+                          menuStyleClass="Gray">
+                <p:menuitem value="#{i18n['common.purchases']}" icon="fa fa-apple" 
+                            url="/pages/fede/inbox.jsf?faces-redirect=true"
+                            disabled="#{false}">
+                </p:menuitem>
+                <p:menuitem value="#{i18n['Dashboard']}" icon="fa fa-dashboard" 
+                            url="/pages/fede/dashboard.jsf?faces-redirect=true"
+                            disabled="#{false}">
+                </p:menuitem>
+            </p:menuButton>
+        </ui:define>
+        <!--Controles para interacción de pantalla mobiles -->
+        <ui:define name="mobilesidebar">
+            <li class="" role="menuitem">
+                <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/sales/invoices.jsf" 
+                   class="menulink ripplelink #{invoiceHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
+            </li>
+            <ui:repeat var="tag" value="#{invoiceHome.groups}">
+                <li class="" role="menuitem">
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/sales/invoices.jsf?tags=#{tag.code}" 
+                       class="menulink ripplelink #{tareaHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                        </li>
+                    </ui:repeat>
+        </ui:define>
+        <ui:define name="toolbar">
+            <!-- SUB TOPBAR START -->
+            <div class="Container100 UserLinks">
+                <div class="Container100 UserLinks">
+                    <div class="ContainerIndent TexAlLeft">
+                        <p:toolbar id="toolbar">
+                            <f:facet name="left">
+                                <p:commandButton type="button" icon="fa fa-arrow-left" styleClass="ToolbarButton Fs14" 
+                                                 onclick="triggerHiddenCommandLinkBack();
+                                                     return false;" />
+                                <span class="ui-separator">
+                                    <span class="fa fa-ellipsis-v SoftGray" />
+                                </span>
+                                <p:menuButton value="#{i18n['More']}" iconPos="right"
+                                              styleClass="MarRight10"
+                                              buttonStyleClass="ToolbarButton Fs14" 
+                                              iconStyleClass="Gray"
+                                              menuStyleClass="Gray">
+                                </p:menuButton>
+                                <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
+                                              styleClass="MarRight10"
+                                              buttonStyleClass="ToolbarButton Fs14" 
+                                              iconStyleClass="Gray"
+                                              menuStyleClass="Gray">
+                                </p:menuButton>
+                            </f:facet>
+                            <f:facet name="right">
+                                <label class="Gray">#{i18n['common.type']}&nbsp;</label>
+                                <p:selectOneMenu value="#{invoiceHome.documentType}" effect="fade"
+                                                 required="#{false}" immediate="true"> 
+                                    <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                    <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
+                                    <p:ajax event="change" oncomplete="form.submit();"/>
+                                </p:selectOneMenu>
+                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                                </p:calendar>
+                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" oncomplete="form.submit();"/>
+                                </p:calendar>
+                                <span id="pagination-info" class=""></span>
+                                <div class="ui-inputfield ui-button ui-widget GrayButton">
+                                    <button id="pagination-previous" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-left"></i></button>
+                                    &nbsp;
+                                    <button id="pagination-next" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-right"></i></button>
+                                </div>
+                            </f:facet>
+                        </p:toolbar>
+
+                        <!--hidden buttons for trigger dialogReturn-->
+                        <!--http://stackoverflow.com/questions/20931384/primefaces-dialog-framework-dialogreturn-event-from-menuitem-->
+                        <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
+                                outcome="/pages/fede/dashboard.jsf?faces-redirect=true">
+                        </h:link>
+                        <!--// Fin hidden buttons for trigger dialogReturn-->
+                        <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
+                                        showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
+                                        my="left bottom" at="left bottom">
+                            <pe:triStateManyCheckbox id="labelTriBasic"  
+                                                     value="#{invoiceHome.selectedTriStateGroups}"  
+                                                     layout="pageDirection"  
+                                                     styleClass=""
+                                                     stateOneTitle=""  
+                                                     stateTwoTitle=""  
+                                                     stateThreeTitle=""
+                                                     stateTwoIcon="ui-icon-check"  
+                                                     stateThreeIcon="ui-icon-minus" 
+                                                     rendered="#{not empty invoiceHome.selectedBussinesEntities}">  
+                                <f:selectItems value="#{invoiceHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
+                            </pe:triStateManyCheckbox> 
+                        </p:overlayPanel>
+                    </div>
+                </div>
+                <div class="EmptyBox5"></div>
+            </div>
+            <!-- SUB TOPBAR END -->
+        </ui:define>
+        <ui:define name="sidebar">
+            <div class="Container100 Responsive100 TexAlCenter">
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
+            </div>
+            <div class="EmptyBox10"></div>
+            <div class="Container100 Responsive100">
+                <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
+                    <li class="" role="menuitem">
+                        <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/sales/invoices.jsf" 
+                           class="menulink ripplelink #{invoiceHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
+                    </li>
+                    <ui:repeat var="tag" value="#{invoiceHome.groups}">
+                        <li class="" role="menuitem">
+                            <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/sales/invoices.jsf?tags=#{tag.code}" 
+                               class="menulink ripplelink #{tareaHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </div>
+        </ui:define>
+        <ui:define name="content">
+            <!-- Left Column -->
+            <div class="Container100 Responsive100">
+
+                <!-- Section 1 -->
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
+                            <p:dataTable var="entity" 
+                                         value="#{invoiceHome.lazyDataModel}" 
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                         sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                         reflow="true" selection="#{invoiceHome.selectedBussinesEntities}" 
+                                         rowKey="#{invoice.id}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                         id="dataTable" widgetVar="dataTable_wv" lazy="true">
+
+                                <!--                            <p:ajax event="rowSelectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
+                                                            <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
+                                <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
+                                <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                                <p:column headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{entity.code}">
+                                    <h:outputText value="#{entity.boardNumber}" />
+                                </p:column>
+                                <p:column headerText="#{i18n['ride.no']}" sortBy="#{entity.code}">
+                                    <h:outputText value="#{entity.summary}" />
+                                </p:column>
+                                <p:column headerText="#{i18n['common.type']}" sortBy="#{entity.documentType}">
+                                    <h:outputText value="#{entity.documentType}" />
+                                </p:column>
+                                <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{entity.total}"
+                                          styleClass="text-right">
+                                    <h:outputText value="#{entity.total}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column  id="createdOn"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{entity.createdOn}"
+                                           styleClass="text-right">
+                                    <h:outputText value="#{entity.createdOn}">
+                                        <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </ui:define>
+        <ui:define name="script">
+            <style>
+                /*Ocultar el paginador de primefaces */
+                .ui-paginator {
+                    display: none;
+                }
+
+            </style>
+            <script>
+
+                $(document).ready(function () {
+
+                    $("#globalFilter").keyup(function () {
+                        //onkeyup="PF('dataTable_wv').filter()" 
+                        //var dataTable = $('#dataTable_wv').dataTable();
+                        //dataTable.fnFilter(this.value);
+                        var dataTable = PF('dataTable_wv');
+                        dataTable.filter();
+                    });
+
+                    $("#pagination-next").click(function () {
+                        var dataTable = PF('dataTable_wv');
+                        dataTable.getPaginator().nextLink.click();
+                        //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
+                    });
+
+                    $("#pagination-previous").click(function () {
+                        var dataTable = PF('dataTable_wv');
+                        dataTable.getPaginator().prevLink.click();
+                        //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
+                    });
+
+                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function (event) {
+                        //The event won't be propagated to the document NODE and 
+                        // therefore events delegated to document won't be fired
+                        event.stopPropagation();
+                    });
+                });
+
+                function triggerHiddenCommandLinkBack() {
+                    document.getElementById("form:hiddenCommandLinkBack").click();
+                }
+            </script>
+        </ui:define>
+
+    </ui:composition>
+</html>

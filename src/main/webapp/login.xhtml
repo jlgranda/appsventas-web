@@ -1,28 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-Copyright (C) 2015 jlgranda
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
--->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <f:facet name="first">
@@ -35,53 +16,37 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:insert name="head" />
     </h:head>
 
-    <h:body styleClass="GrayModena Geometry" style="height:auto;">
-        <h:form id="j_security_check" onsubmit="action='j_security_check';" prependId="false">
-            <div class="Wid90 DispBlock MarAuto MarTopPerc5 TexAlCenter">
-                <div class="Wid33 MarAuto WidAutoOnMobile">
-<!--                    <h:graphicImage name="images/logo-dark.svg" library="modena-layout" style="width:40%; max-width:200px;"/>-->
-                    <h:graphicImage value="resources/images/appsventas-dark.png" title="#{i18n['app.name']} #{i18n['app.version']}" style="width:40%; max-width:200px;"/>
-                    <div class="EmptyBox30"></div>
-                    <div class="Card ShadowEffect">
-                        <div class="EmptyBox20"></div>
-                        <div class="Wid100 OvHidden BigTopic Fs30"><i class="fa fa-umbrella Fs100 Red DispBlock"></i> #{i18n['common.signup']}</div>
-                        <div class="EmptyBox30"></div>
-                        <div class="Wid100"><p:inputText id="j_username" placeholder="#{i18n['common.email']}" styleClass="Wid80 TexAlCenter Fs18"/></div>
-                        <div class="EmptyBox10"></div>
-                        <div class="Wid100"><p:inputText id="j_password" type="password" placeholder="#{i18n['common.password']}" styleClass="Wid80 TexAlCenter Fs18"/></div>
-                        <div class="EmptyBox30"></div>
-                        <p:selectBooleanCheckbox value="accept" itemLabel="#{i18n['common.accepttermsandpolicies']}"/>
-                        <div class="EmptyBox30"></div>
-                        <div class="Wid50 Fleft Responsive50"><p:commandButton id="submit" ajax="false" value="#{i18n['Login']}" icon="fa fa-sign-in" styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile"/></div>
-                        <div class="EmptyBox5 ShowOnMobile"></div>
-<!--                        <div class="Wid50 Fleft Responsive50"><p:button value="Sign In / Sign Up" icon="fa fa-sign-in" styleClass=" Fs18 White RaisedButton Fright FloatNoneOnMobile" href="dashboard.xhtml"/></div>
-                        <div class="EmptyBox5 ShowOnMobile"></div>-->
-                        <div class="Wid50 Fleft Responsive50"><p:button value="#{i18n['signin.password.forget']}" icon="fa fa-lock" styleClass="RedButton Fs18 White RaisedButton Fleft FloatNoneOnMobile"/></div>
-                        <div class="EmptyBox20"></div>
-                        <div class="Wid100 Fleft Responsive100">
-                            <p>#{i18n['singup.question']}#{' '}<a href="#{facesContext.externalContext.requestContextPath}/signup.jsf">#{i18n['singup.link']}#{' '}&raquo;</a></p>
+    <h:body styleClass="login-body">
+        <div class="login-topbar">
+            <h:link outcome="dashboard" class="logo">
+                <h:graphicImage name="images/appsventas.png" library="appsventas" title="#{i18n['app.name']} #{i18n['app.version']}" style="width:40%; max-width:200px;"/>
+            </h:link>
+        </div>
+
+        <div class="login-image">
+            <div class="login-panel">
+                <h:form id="appsventas-login-form">
+                    <p:graphicImage name="images/appsventas-orange-logo.png" library="appsventas"/>
+                    <p:inputText id="j_username" placeholder="#{i18n['common.email']}" required="true"/>
+                    <p:inputText id="j_password" type="password" placeholder="#{i18n['common.password']}" required="true"/>
+                    <div class="checkbox-container">
+                        <div class="remember-me">
+                            <p:selectBooleanCheckbox id="rememberMe"/>
+                            <span>#{i18n['signin.rememberme']}</span>
                         </div>
-                        <div class="Separator"></div>
-<!--                        <div class="Wid100 OvHidden BigTopic Fs30">#{i18n['common.accesspermission']}</div>-->
-                        <div class="Wid100">
-                            <div class="Wid100"><p:inputText placeholder="Email" styleClass="Wid80 TexAlCenter Fs18"/></div>
-                            <div class="EmptyBox10"></div>
-                            <p:button value="#{i18n['common.sendaccessrequest']}" styleClass="PurpleButton Fs18 White RaisedButton"/>
-                        </div>
-                        <div class="EmptyBox20"></div>
+                        <p:commandButton value="#{i18n['Login']}" />
                     </div>
-                    <div class="Wid100 TexAlCenter MarTop20 Fs14 FontRobotoRegular Gray">
-                        <p class="text-muted"><i class="fa fa-copyright"></i>#{' '}#{i18n['PoweredBy']}#{' '}<a href="#{i18n['PoweredBy.url']}">#{i18n['PoweredBy.brand']}</a></p>
-                    </div>
-                </div>
+
+                    <div class="separator"></div>
+
+                    <a href="#" class="subinfo">
+                        <span>#{i18n['signin.password.forget']}</span>
+                    </a>
+                </h:form>
             </div>
-        </h:form>
-        <h:outputStylesheet name="css/core-layout.css" library="modena-layout" />
-        <h:outputStylesheet name="css/animate.css" library="modena-layout" />
-        <h:outputStylesheet name="css/modena-font.css" library="modena-layout" />
-        <h:outputStylesheet name="css/ripple-effect.css" library="modena-layout" />
-        <h:outputStylesheet name="css/font-awesome.css" library="modena-layout" />
-        <h:outputStylesheet name="css/modena-layout.css" library="modena-layout" />
+        </div>
+        <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="ecuador-layout" />
+
     </h:body>
 
 </html>

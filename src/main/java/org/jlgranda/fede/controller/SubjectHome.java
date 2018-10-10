@@ -22,38 +22,19 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
-import org.jpapi.util.Strings;
-import org.picketlink.idm.IdentityManagementException;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.PartitionManager;
-import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.basic.BasicModel;
-import static org.picketlink.idm.model.basic.BasicModel.addToGroup;
-import static org.picketlink.idm.model.basic.BasicModel.grantGroupRole;
-import static org.picketlink.idm.model.basic.BasicModel.grantRole;
-import org.picketlink.idm.model.basic.Group;
-import org.picketlink.idm.model.basic.Role;
-import org.picketlink.idm.model.basic.User;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,14 +64,9 @@ public class SubjectHome extends FedeController implements Serializable {
 
     @Inject
     GroupHome groupHome;
-    
-    @Inject
-    private PartitionManager partitionManager;
 
     @Resource
     private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
-
-    IdentityManager identityManager = null;
     
     @Inject
     private TemplateHome templateHome;
@@ -131,54 +107,54 @@ public class SubjectHome extends FedeController implements Serializable {
      */
     public void processSignup(Subject _signup, Subject owner) {
 
-        identityManager = partitionManager.createIdentityManager();
-
+//
         if (_signup != null) {
             //Crear la identidad para acceso al sistema
             try {
-
-                //Prepare password
-                Password password = new Password(_signup.getPassword());
                 
-                //separar nombres
-                if (Strings.isNullOrEmpty(_signup.getSurname())){
-                    List<String> names = Strings.splitNamesAt(_signup.getFirstname());
-
-                    if (names.size() > 1) {
-                        _signup.setFirstname(names.get(0));
-                        _signup.setSurname(names.get(1));
-                    }
-                }
-                
+//
+//                //Prepare password
+//                Password password = new Password(_signup.getPassword());
+//                
+//                //separar nombres
+//                if (Strings.isNullOrEmpty(_signup.getSurname())){
+//                    List<String> names = Strings.splitNamesAt(_signup.getFirstname());
+//
+//                    if (names.size() > 1) {
+//                        _signup.setFirstname(names.get(0));
+//                        _signup.setSurname(names.get(1));
+//                    }
+//                }
+//                
                 _signup.setUsername(_signup.getEmail());
-
-                this.userTransaction.begin();
-                User user = new User(_signup.getUsername());
-                user.setFirstName(_signup.getFirstname());
-                user.setLastName(_signup.getSurname());
-                user.setEmail(_signup.getEmail());
-                user.setCreatedDate(Dates.now());
-                identityManager.add(user);
-
-                identityManager.updateCredential(user, password);
-
-                // Create application role "superuser"
-                Role superuser = BasicModel.getRole(identityManager, "superuser");
-
-                Group group = BasicModel.getGroup(identityManager, "fede");
-
-                RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
-                // Make john a member of the "sales" group
-                addToGroup(relationshipManager, user, group);
-                // Make mary a manager of the "sales" group
-                grantGroupRole(relationshipManager, user, superuser, group);
-                // Grant the "superuser" application role to jane
-                grantRole(relationshipManager, user, superuser);
-
-                this.userTransaction.commit();
-
+//
+//                this.userTransaction.begin();
+//                User user = new User(_signup.getUsername());
+//                user.setFirstName(_signup.getFirstname());
+//                user.setLastName(_signup.getSurname());
+//                user.setEmail(_signup.getEmail());
+//                user.setCreatedDate(Dates.now());
+//                identityManager.add(user);
+//
+//                identityManager.updateCredential(user, password);
+//
+//                // Create application role "superuser"
+//                Role superuser = BasicModel.getRole(identityManager, "superuser");
+//
+//                Group group = BasicModel.getGroup(identityManager, "fede");
+//
+//                RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
+//                // Make john a member of the "sales" group
+//                addToGroup(relationshipManager, user, group);
+//                // Make mary a manager of the "sales" group
+//                grantGroupRole(relationshipManager, user, superuser, group);
+//                // Grant the "superuser" application role to jane
+//                grantRole(relationshipManager, user, superuser);
+//
+//                this.userTransaction.commit();
+//
                 //Conectar con el user auth
-                String passwrod_ = new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
+                String passwrod_ = "sin password";//new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
                 _signup.setUsername(_signup.getEmail());
                 _signup.setCodeType(CodeType.CEDULA);
                 _signup.setPassword(passwrod_);
@@ -187,24 +163,24 @@ public class SubjectHome extends FedeController implements Serializable {
                 //Set fede email
                 _signup.setFedeEmail(_signup.getCode().concat("@").concat(settingHome.getValue("mail.imap.host", "localhost")));
                 _signup.setFedeEmailPassword(passwrod_);
-
+//
                 //Finalmente crear en fede
-                _signup.setUuid(user.getId());
+                _signup.setUuid(UUID.randomUUID().toString());
                 _signup.setSubjectType(Subject.Type.NATURAL);
                 _signup.setOwner(owner);
                 _signup.setConfirmed(false);
                 _signup.setActive(false);
                 
                 subjectService.save(_signup);
-
-                //Crear grupos por defecto para el subject
-                groupHome.createDefaultGroups(_signup);
-
-            } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-                try {
-                    this.userTransaction.rollback();
-                } catch (SystemException ignore) {
-                }
+//
+//                //Crear grupos por defecto para el subject
+//                groupHome.createDefaultGroups(_signup);
+//
+            } catch (/*NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | */SecurityException | IllegalStateException e) {
+//                try {
+//                    this.userTransaction.rollback();
+//                } catch (SystemException ignore) {
+//                }
                 throw new RuntimeException("Could not create default security entities.", e);
             }
         }
@@ -225,7 +201,7 @@ public class SubjectHome extends FedeController implements Serializable {
     public void sendConfirmation(Subject _subject) {
         if (_subject.isPersistent() && !_subject.isConfirmed()) {
             //Notificar alta en appsventas
-            String confirm_url = settingHome.getValue("app.login.confirm.url", "http://localhost:8080/appsventas/confirm.jsf?uuid=");
+            String confirm_url = settingHome.getValue("app.login.confirm.url", "http://emporiolojano.com:8080/appsventas/confirm.jsf?uuid=");
             Map<String, Object> values = new HashMap<>();
             
             //TODO implementar una forma de definición de parametros desde coniguración
@@ -268,5 +244,4 @@ public class SubjectHome extends FedeController implements Serializable {
     public List<org.jpapi.model.Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="
+      http://java.sun.com/xml/ns/javaee
+      http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+
+    <application>
+        <locale-config>
+            <default-locale>es_EC</default-locale>
+        </locale-config>
+        <resource-bundle>
+            <base-name>MessageResources</base-name>
+            <var>i18n</var>
+        </resource-bundle>
+        <action-listener>org.primefaces.application.DialogActionListener</action-listener>
+        <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+        <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+    </application>
+    <navigation-rule>
+        <from-view-id>*</from-view-id>
+        <navigation-case>
+            <from-outcome>home</from-outcome>
+            <to-view-id>/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>fede-dashboard</from-outcome>
+            <to-view-id>/pages/fede/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>fede-inbox</from-outcome>
+            <to-view-id>/pages/fede/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>inventory-inbox</from-outcome>
+            <to-view-id>/pages/fede/inventory/items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>preinvoices</from-outcome>
+            <to-view-id>/pages/fede/sales/preinvoices.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>tareas</from-outcome>
+            <to-view-id>/pages/management/tarea/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>organizations</from-outcome>
+            <to-view-id>/pages/management/organization/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>procesos</from-outcome>
+            <to-view-id>/pages/management/tarea/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>admin-dashboard</from-outcome>
+            <to-view-id>/pages/admin/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>admin-subject</from-outcome>
+            <to-view-id>/pages/admin/subject/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>admin-group</from-outcome>
+            <to-view-id>/pages/admin/security/group/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>admin-template</from-outcome>
+            <to-view-id>/pages/admin/template/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+</faces-config>

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
-    <ui:composition template="/WEB-INF/popup_template.xhtml">
+    <ui:composition template="/WEB-INF/template_popup.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
         <ui:param name="title" value="#{i18n['Profile']}" />
         <ui:define name="params">
@@ -33,57 +33,59 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            #{invoiceHome.subjectAdminHome.subjectId == null ? i18n['New_a'].concat(' ').concat(i18n['Profile']).concat(': ') : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}
+
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.name']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/fede/sales/popup_profile.jsf">#{invoiceHome.subjectAdminHome.subjectId == null ? i18n['New'].concat(' ').concat(i18n['Profile']).concat(': ') : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
         </ui:define>
         <ui:define name="content">
-            <h:form id="form" enctype="multipart/form-data">
-                <div class="Container100">
-                        <div class="Card ui-fluid">
-                            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <div class="Container100">
-                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
-                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
-                                <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.firstname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
-                                <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.surname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}"
-                                                inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
-                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
-                                                execute="@this save" render="email"/>
-                                <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 
-                                                inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
-                                <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
-                                                execute="@this save" render="bio"/>
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="Container100">
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
+                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
+                        <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.firstname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                        <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.surname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}"
+                                        inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+                        <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        execute="@this save" render="email"/>
+                        <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                        inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
+                        <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                        execute="@this save" render="bio"/>
 
-                            </div>
-                            <div class="EmptyBox10"></div>
-
-                            <p:toolbar>
-                                <f:facet name="left">
-                                    <p:commandButton id="save" value="#{i18n['Save']}" 
-                                                     ajax="false" 
-                                                     actionListener="#{invoiceHome.saveCustomer()}" 
-                                                     action="#{invoiceHome.subjectAdminHome.getOutcome()}"
-                                                     style="width: auto !important;"
-                                                     type="submit"/>
-                                </f:facet>
-                                <f:facet name="right">
-
-                                    <p:commandButton ajax="true" disabled="false" immediate="true"
-                                                     actionListener="#{invoiceHome.closeDialog(null)}"
-                                                     action="#{invoiceHome.redirect}"
-                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
-                                                     />
-                                </f:facet>
-                            </p:toolbar>
                     </div>
+                    <div class="EmptyBox10"></div>
+
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:commandButton id="save" value="#{i18n['Save']}" 
+                                             ajax="false" 
+                                             actionListener="#{invoiceHome.saveCustomer()}" 
+                                             action="#{invoiceHome.subjectAdminHome.getOutcome()}"
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                        </f:facet>
+                        <f:facet name="right">
+
+                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                                             actionListener="#{invoiceHome.closeDialog(null)}"
+                                             action="#{invoiceHome.redirect}"
+                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                        </f:facet>
+                    </p:toolbar>
                 </div>
-            </h:form>
+            </div>
             <!--/.panel-body -->
 
         </ui:define>

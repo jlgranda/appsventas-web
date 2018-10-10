@@ -1,0 +1,53 @@
+body {
+    .layout-wrapper {
+        .layout-main {
+            padding-top: 60px;
+            @include transition(margin-left $transitionDuration);
+    
+            .route-bar {
+                @include clearfix();
+                min-height: 31px;
+                background-color: $routeBarBgColor;
+                @include shadow(0 1px 3px rgba(0, 0, 0, 0.12));
+    
+                .route-bar-breadcrumb {
+                    padding: 6px 12px;
+                    display: inline-block;
+    
+                    i {
+                        color: $routeBarMenuItemIconColor;
+                        font-size: 18px;
+                        margin-right: 8px;
+                    }
+
+                    span {
+                        font-size: 14px;
+                        color: $routeBarMenuItemTextColor;
+                    }
+
+                    li {
+                        list-style-type: none;
+                        display: inline-block;
+
+                        a {
+                            font-size: 14px;
+                            color: $routeBarMenuItemTextColor;
+                        }
+                    }
+                }
+            }
+
+            .layout-content {
+                padding: 14px;
+            }
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .layout-wrapper {
+            .layout-main {
+                margin-top: 60px;
+            }
+        }
+    }
+}

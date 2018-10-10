@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.management.Organization;
@@ -38,16 +38,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-@ManagedBean
 @ViewScoped
+@Named
 public class BalancedScoreCardHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(BalancedScoreCardHome.class);
     
     private Long organizationId;
     
-    @Inject
-    @LoggedIn
     private Subject subject;
     
 //    @Inject

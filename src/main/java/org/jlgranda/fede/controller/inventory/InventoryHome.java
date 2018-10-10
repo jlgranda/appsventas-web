@@ -30,15 +30,16 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.ui.model.LazyProductDataModel;
+import org.jlgranda.fede.ui.util.UI;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -89,14 +90,14 @@ public class InventoryHome extends FedeController implements Serializable {
     private List<Product> lastProducts = new ArrayList<>();
     
     private LazyProductDataModel lazyDataModel;
-
     
     @EJB
     private ProductService productService; 
     
     @Inject
-    @LoggedIn
     private Subject subject;
+    
+    private String mode;
 
     @PostConstruct
     private void init() {
@@ -111,7 +112,30 @@ public class InventoryHome extends FedeController implements Serializable {
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         
         setProduct(productService.createInstance());
+        getProduct().setProductType(ProductType.PRODUCT);
         setProductType(ProductType.PRODUCT);
+        
+        //Lista de productos a gráficar por defecto
+        List<BussinesEntity> defaultProducts = new ArrayList<>();
+        defaultProducts.add(productService.find(80L)); //Queso
+        defaultProducts.add(productService.find(81L)); //Cebolla
+        defaultProducts.add(productService.find(370L)); //Empapizza
+        //defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
+        //defaultProducts.add(productService.find(47763L)); //Empapizza de tocino
+        //defaultProducts.add(productService.find(4563L)); //Verde
+        //defaultProducts.add(productService.find(6660L)); //Tamal
+        //defaultProducts.add(productService.find(6846L)); //Humita
+        defaultProducts.add(productService.find(87L)); //Chocolate
+        defaultProducts.add(productService.find(101L)); //Cafe
+        defaultProducts.add(productService.find(78L)); //Capuchino
+        //defaultProducts.add(productService.find(416L)); //Jugos
+        //defaultProducts.add(productService.find(39640L)); //Frapuchino
+        //defaultProducts.add(productService.find(39527L)); //Helado
+        
+        setSelectedBussinesEntities(defaultProducts);
+        
+        setMode("app.fede.chart.gap.total");
+        
         setOutcome("inventory-inbox");
     }
 
@@ -246,7 +270,7 @@ public class InventoryHome extends FedeController implements Serializable {
      * @return 
      */
     public List<Product> findTop() {
-        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
+        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "20"));
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
         List<Product> result = new ArrayList<>();
         objects.stream().forEach((Object[] object) -> {
@@ -259,6 +283,15 @@ public class InventoryHome extends FedeController implements Serializable {
         return result;
     }
     
+    public List<Product> findLastProductsByType(String type) {
+        Map<String, Object> filters = new HashMap<>();
+        Map<String, String> columns = new HashMap<>();
+        filters.put("productType", ProductType.valueOf(type));
+        filters.put("dummy", columns);
+        QueryData<Product> queryData = productService.find(-1, -1, "name", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
+    }
+    
     private Double countProduct(Long id, Date minimumDate, Date maximumDate) {
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProduct", 0, id, minimumDate, maximumDate);
         Double result = Double.valueOf(0);
@@ -267,6 +300,14 @@ public class InventoryHome extends FedeController implements Serializable {
         }
                 
         return result;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
     }
     
     ////////////////////////////////////////////////////////////////////////////
@@ -284,8 +325,6 @@ public class InventoryHome extends FedeController implements Serializable {
     public void setTopBarChartModel(BarChartModel topBarChartModel) {
         this.topBarChartModel = topBarChartModel;
     }
-    
-    
     
     private BarChartModel createBarModel() {
         BarChartModel barModel = initBarModel();
@@ -377,7 +416,8 @@ public class InventoryHome extends FedeController implements Serializable {
         
         return areaModel;
     }
-    private BarChartModel createBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
+    
+    private BarChartModel createBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart, String mode) {
         BarChartModel areaModel = new BarChartModel();
         
         if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
@@ -389,8 +429,10 @@ public class InventoryHome extends FedeController implements Serializable {
         Date _step = null;
         String label = "";
         Double total;
+        int gap = Integer.parseInt(settingHome.getValue(getMode(), "7"));
+        
         if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
-            int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+            int range = Integer.parseInt(settingHome.getValue(getMode(), "7"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
         
@@ -403,7 +445,62 @@ public class InventoryHome extends FedeController implements Serializable {
                 label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
                 total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
                 product.set(label, total);
-                _step = Dates.addDays(_step, 1); //Siguiente día
+                _step = Dates.addDays(_step, gap); //Siguiente día
+            }
+
+            areaModel.addSeries(product);
+
+        }
+
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.products.history"));
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
+        areaModel.setExtender(skinChart);
+        areaModel.setAnimate(false);
+        areaModel.setShowPointLabels(false);
+        
+         
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        areaModel.getAxes().put(AxisType.X, xAxis);
+        Axis yAxis = areaModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        yAxis.setMin(0);
+        
+        return areaModel;
+    }
+    
+    private BarChartModel createBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
+        return createBarChartModel(selectedBussinesEntities, skinChart, "journal");
+    }
+    
+    private BarChartModel createProductBarChartModel(String skinChart) {
+        BarChartModel areaModel = new BarChartModel();
+        
+        if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
+            return  areaModel;
+        }
+ 
+        BarChartSeries product = null;
+        Date _start = getStart();
+        Date _step = null;
+        String label = "";
+        Double total;
+        int gap = Integer.parseInt(settingHome.getValue(getMode(), "7"));
+        
+        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
+            int range = Integer.parseInt(settingHome.getValue(getMode(), "7"));
+            _start = Dates.addDays(getStart(), -1 * range);
+        }
+        
+        for (BussinesEntity entity: selectedBussinesEntities){
+            product = new BarChartSeries();
+            //product.setFill(false);
+            product.setLabel(entity.getName());
+            _step = _start;
+            for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
+                label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+                product.set(label, total);
+                _step = Dates.addDays(_step, gap); //Siguiente día
             }
 
             areaModel.addSeries(product);
@@ -426,11 +523,13 @@ public class InventoryHome extends FedeController implements Serializable {
         return areaModel;
     }
 
+    /**
+     * Filtro que llena el Lazy Datamodel
+     */
     private void filter() {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyProductDataModel(productService);
         }
-
         lazyDataModel.setOwner(subject);
         lazyDataModel.setProductType(getProductType());
 
@@ -444,6 +543,7 @@ public class InventoryHome extends FedeController implements Serializable {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
         }
+        
     }
 
     public void onRowSelect(SelectEvent event) {
@@ -456,5 +556,26 @@ public class InventoryHome extends FedeController implements Serializable {
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
         }
+    }
+    
+    public void cleanChartModels(){
+        //dummy
+    }
+    
+    /**
+     * Limpiar para refrescar vista
+     */
+    public void clear(){
+        filter();
+    }
+    
+    public BarChartModel buildProductBarChartModel() {
+        setStart(Dates.minimumDate(getStart()));
+        setEnd(Dates.maximumDate(getEnd()));
+        return buildBarChartModel(getSelectedBussinesEntities(), "skinBarChart");
+    }
+    
+    public SelectItem[] getModesAsSelectItem(){
+        return UI.getSettingAsSelectItems(settingHome.findSettings("app.fede.chart.gap."), true);
     }
 }

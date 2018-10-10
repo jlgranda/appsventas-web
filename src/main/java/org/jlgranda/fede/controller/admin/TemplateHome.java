@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import net.tecnopro.document.ejb.TemplateService;
@@ -46,7 +47,6 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import org.omnifaces.cdi.ViewScoped;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.slf4j.Logger;
@@ -64,8 +64,6 @@ public class TemplateHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(TemplateHome.class);
 
-    @Inject
-    @LoggedIn
     private Subject subject;
 
     @EJB

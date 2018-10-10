@@ -24,10 +24,14 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
+import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
+import org.jpapi.model.Setting;
+import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 
 /**
@@ -38,6 +42,9 @@ import org.jpapi.util.I18nUtil;
 @ManagedBean(name = "ui")
 @RequestScoped
 public class UI {
+    
+    @Inject
+    private SettingHome settingHome;
 
     @PostConstruct
     public void init() {
@@ -104,11 +111,25 @@ public class UI {
         SelectItem[] items = new SelectItem[size];
         int i = 0;
         if (selectOne) {
-            items[0] = new SelectItem("", "---");
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
             i++;
         }
         for (Object x : entities) {
             items[i++] = new SelectItem(x, x.toString());
+        }
+        return items;
+    }
+     
+    public static SelectItem[] getSettingAsSelectItems(List<Setting> entities, boolean selectOne) {
+        int size = selectOne ? entities.size() + 1 : entities.size();
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        for (Setting x : entities) {
+            items[i++] = new SelectItem(x.getName(), x.getLabel());
         }
         return items;
     }
@@ -207,8 +228,19 @@ public class UI {
         
         double factor = (porcentaje / (double) 100);
         int valor = (int) (pageWidth * factor);
-        System.out.println(">>> pageWidth: " + pageWidth + ", pocentaje:" + porcentaje + ", factor" + factor+ ", valor " + valor);
+        //System.out.println(">>> pageWidth: " + pageWidth + ", pocentaje:" + porcentaje + ", factor" + factor+ ", valor " + valor);
         return valor;
+    }
+    
+//    public String renderer(String templete, BussinesEntity entity){
+//        //TODO Aplicar template via velocity
+//        return entity.getName() + ", " + entity.getCode() + ", " + entity.getDescription();
+//    }
+    
+    public String renderer(String template, Subject entity){
+        if (entity == null) return "";
+        //TODO Aplicar template via velocity
+        return entity.getFullName() + ", " + entity.getCode() + ", " + entity.getDescription();
     }
     
     public static void main(String[] args) {

@@ -17,7 +17,6 @@
  */
 package org.jlgranda.fede.security;
 
-import org.picketlink.common.util.StringUtil;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -76,7 +75,7 @@ public class TermsOfServiceFilter implements Filter {
         }
         String excludePatternsValue = filterConfig.getInitParameter("excludePatterns");
         if (excludePatternsValue != null && excludePatternsValue.isEmpty() == false) {
-            excludePatterns.addAll(StringUtil.tokenize(excludePatternsValue, ","));
+            //excludePatterns.addAll(StringUtil.tokenize(excludePatternsValue, ","));
         } else {
             excludePatterns.add("/images");
             excludePatterns.add("/css");

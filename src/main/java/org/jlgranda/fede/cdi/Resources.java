@@ -22,6 +22,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.faces.context.FacesContext;
+import org.jpapi.model.profile.Subject;
 
 /**
  * This class uses CDI to alias Java EE resources, such as the

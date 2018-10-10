@@ -29,7 +29,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.sri.jaxb.exception.FacturaXMLReadException;
@@ -38,7 +38,6 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -61,13 +60,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.sales.Payment;
+import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.SourceType;
@@ -80,8 +80,8 @@ import org.primefaces.event.UnselectEvent;
  * Controlador de aplicaciones de factura electrónica
  * @author jlgranda
  */
-@ManagedBean
 @ViewScoped
+@Named
 public class FacturaElectronicaHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(FacturaElectronicaHome.class);
@@ -89,7 +89,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private static final long serialVersionUID = -8639341517802129909L;
 
     @Inject
-    @LoggedIn
     private Subject subject;
 
     @Inject
@@ -119,7 +118,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     private List<String> urls = new ArrayList<>();
 
-    private List<UploadedFile> uploadedFiles = Collections.synchronizedList(new ArrayList<UploadedFile>());
+    private List<UploadedFile> uploadedFiles = Collections.synchronizedList(new ArrayList<>());
 
     private LazyFacturaElectronicaDataModel lazyDataModel;
 
@@ -775,7 +774,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return groupService.findByNamedQuery("BussinesEntity.findByCodesAndOwner", getTags(), subject);
     }
 
+    /**
+     * Filtro para llenar el Lazy Datamodel
+     */
     public void filter() {
+        
         if (lazyDataModel == null) {
             lazyDataModel = new LazyFacturaElectronicaDataModel(facturaElectronicaService);
         }
@@ -841,7 +844,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 FacturaElectronica fe = (FacturaElectronica) event.getObject();
-                redirectTo("/pages/fede/ride.jsf?key=" + fe.getId());
+//                redirectTo("/pages/fede/ride.jsf?key=" + fe.getId());
+                redirectTo("/pages/fede/factura.jsf?facturaElectronicaId=" + fe.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
@@ -911,5 +915,4 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         System.out.println(">>> 2. getPayment: " + getPayment());
     }
-
 }

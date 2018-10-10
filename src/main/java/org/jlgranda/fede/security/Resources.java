@@ -5,19 +5,16 @@
  */
 package org.jlgranda.fede.security;
 
+import com.google.common.cache.LoadingCache;
 import com.jlgranda.fede.ejb.SubjectService;
 import javax.ejb.EJB;
-import org.picketlink.annotations.PicketLink;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import org.jlgranda.fede.cdi.LoggedIn;
+import org.apache.shiro.SecurityUtils;
+import org.jlgranda.fede.cache.LoginSubjectCacheProvider;
 import org.jpapi.model.profile.Subject;
-import org.picketlink.Identity;
-import org.picketlink.config.http.annotations.Logout;
-import org.picketlink.idm.model.Account;
 
 /**
  * Recursos transversales del sistema
@@ -25,25 +22,30 @@ import org.picketlink.idm.model.Account;
  */
 public class Resources {
     
-    @EJB
-    SubjectService subjectService;
+    //@EJB
+    //SubjectService subjectService;
     
-    @SuppressWarnings("unused")
-    @Produces
-    @PicketLink
-    @PersistenceContext(unitName = "fede")
-    private static EntityManager picketLinkEntityManager;
+    @Inject
+    LoginSubjectCacheProvider loginSubjectCacheProvider;
     
-    
+        
     @Produces
     @Named("subject")
-    public Subject getLoggedIn(Identity identity) {
+    public Subject getLoggedIn() throws Exception {
+        
+        boolean isLoggedIn = true;
+        org.apache.shiro.subject.Subject subject = SecurityUtils.getSubject();
+
+        if (!subject.isAuthenticated()/* && hasAnnotation(c, m, RequiresAuthentication.class)*/) {
+            isLoggedIn = false;
+            //throw new UnauthenticatedException("Authentication required");
+        }
+
+        
         Subject loggedIn = null;
-        if (identity.isLoggedIn()) {
+        if (isLoggedIn) {
             try {
-                Account account = identity.getAccount();
-                
-                loggedIn = subjectService.findUniqueByNamedQuery("Subject.findUserByUUID", account.getId());
+                loggedIn = loginSubjectCacheProvider.getSubjectCache().get(subject.getPrincipal().toString());
                 
                 if (loggedIn != null) {
                     loggedIn.setLoggedIn(true);

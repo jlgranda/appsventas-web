@@ -18,12 +18,13 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.FacturaElectronicaService;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jpapi.model.profile.Subject;
 /**
@@ -31,9 +32,9 @@ import org.jpapi.model.profile.Subject;
  * @see http://morrisjs.github.io/morris.js/bars.html
  * @author jlgranda
  */
-@ManagedBean
 @SessionScoped
-public class MorrisChartHelper {
+@Named
+public class MorrisChartHelper implements Serializable {
     
     @EJB
     private FacturaElectronicaService facturaElectronicaService;

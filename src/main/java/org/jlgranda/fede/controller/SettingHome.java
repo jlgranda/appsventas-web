@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import org.jlgranda.fede.cdi.LoggedIn;
 import org.jpapi.model.CodeType;
@@ -44,12 +44,12 @@ import org.primefaces.event.SelectEvent;
  *
  * @author jlgranda
  */
-@ManagedBean
 @SessionScoped
+@Named
 public class SettingHome extends FedeController implements Serializable {
 
-    @Inject
-    @LoggedIn
+    private static final long serialVersionUID = 3482094772845122813L;
+
     private Subject subject;
 
     @EJB
@@ -123,6 +123,20 @@ public class SettingHome extends FedeController implements Serializable {
         Map<String, Object> filters = new HashMap<>();
         filters.put("owner", subject);
         filters.put("codeType", CodeType.SUBJECT); ///propiedades del sistema
+        QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
+    }
+    
+    /**
+     * Obtener todas las configuraciones del usuario con raíz
+     *
+     * @return la lista de propiedades sobreescribibles
+     */
+    public List<Setting> findSettings(String path) {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("name", path);
+        filters.put("owner", null);
+        filters.put("codeType", CodeType.SYSTEM); ///propiedades del sistema
         QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }

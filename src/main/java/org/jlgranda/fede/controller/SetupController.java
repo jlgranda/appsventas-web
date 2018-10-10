@@ -38,19 +38,6 @@ import org.jlgranda.fede.database.SetupService;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
-import org.picketlink.idm.IdentityManagementException;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.PartitionManager;
-import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.basic.BasicModel;
-import static org.picketlink.idm.model.basic.BasicModel.addToGroup;
-import static org.picketlink.idm.model.basic.BasicModel.grantGroupRole;
-import static org.picketlink.idm.model.basic.BasicModel.grantRole;
-import org.picketlink.idm.model.basic.Group;
-import org.picketlink.idm.model.basic.Realm;
-import org.picketlink.idm.model.basic.Role;
-import org.picketlink.idm.model.basic.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +59,6 @@ public class SetupController implements Serializable {
     @EJB
     private SubjectService subjectService;
 
-    @Inject
-    private PartitionManager partitionManager;
 
     @Resource
     private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
@@ -100,70 +85,70 @@ public class SetupController implements Serializable {
     private static final long serialVersionUID = -2202084526171728773L;
 
     private void validateAdminRole() {
-        IdentityManager identityManager = null;
-        List<Realm> realms = partitionManager.getPartitions(Realm.class);
-        if (realms.isEmpty()) {
-            Realm realm = new Realm(Realm.DEFAULT_REALM);
-            partitionManager.add(realm);
-            identityManager = partitionManager.createIdentityManager(realm);
-            log.info("### Partition removed?");
-        } else {
-            identityManager = partitionManager.createIdentityManager();
-        }
-        if (BasicModel.getUser(identityManager, "admin") == null) {
-            try {
-
-                this.userTransaction.begin();
-                User user = new User("admin");
-                user.setFirstName("Administrador");
-                user.setLastName("fede");
-                user.setEmail("admin@fede.com");
-                user.setCreatedDate(Dates.now());
-                identityManager.add(user);
-
-                identityManager.updateCredential(user, new Password("f3d3"));
-
-                // Create application role "superuser"
-                Role superuser = new Role("superuser");
-                identityManager.add(superuser);
-
-                Group group = new Group("fede");
-                identityManager.add(group);
-
-                Role admin = new Role("admin");
-
-                identityManager.add(admin);
-
-                RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
-                // Make john a member of the "sales" group
-                addToGroup(relationshipManager, user, group);
-                // Make mary a manager of the "sales" group
-                grantGroupRole(relationshipManager, user, superuser, group);
-                // Grant the "superuser" application role to jane
-                grantRole(relationshipManager, user, superuser);
-                log.info("Se agregó el usuario " + user);
-                
-                this.userTransaction.commit();
-                
-                //Establecer el uuid del usuario admin
-                Subject subject = subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", user.getLoginName());
-                if (subject == null){
-                    subject = createAdministrator();
-                }
-                
-                subject.setUuid(user.getId());
-                subjectService.save(subject.getId(), subject);
-                log.info("Se enlazó el usuario admin appsventas {} - {}, con el sistema de autenticación picketlink {}", subject.getId(), subject.getUsername(), user.getId());
-                
-                
-            } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
-                try {
-                    this.userTransaction.rollback();
-                } catch (SystemException ignore) {
-                }
-                throw new RuntimeException("Could not create default security entities.", e);
-            }
-        }
+//        IdentityManager identityManager = null;
+//        List<Realm> realms = partitionManager.getPartitions(Realm.class);
+//        if (realms.isEmpty()) {
+//            Realm realm = new Realm(Realm.DEFAULT_REALM);
+//            partitionManager.add(realm);
+//            identityManager = partitionManager.createIdentityManager(realm);
+//            log.info("### Partition removed?");
+//        } else {
+//            identityManager = partitionManager.createIdentityManager();
+//        }
+//        if (BasicModel.getUser(identityManager, "admin") == null) {
+//            try {
+//
+//                this.userTransaction.begin();
+//                User user = new User("admin");
+//                user.setFirstName("Administrador");
+//                user.setLastName("fede");
+//                user.setEmail("admin@fede.com");
+//                user.setCreatedDate(Dates.now());
+//                identityManager.add(user);
+//
+//                identityManager.updateCredential(user, new Password("f3d3"));
+//
+//                // Create application role "superuser"
+//                Role superuser = new Role("superuser");
+//                identityManager.add(superuser);
+//
+//                Group group = new Group("fede");
+//                identityManager.add(group);
+//
+//                Role admin = new Role("admin");
+//
+//                identityManager.add(admin);
+//
+//                RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
+//                // Make john a member of the "sales" group
+//                addToGroup(relationshipManager, user, group);
+//                // Make mary a manager of the "sales" group
+//                grantGroupRole(relationshipManager, user, superuser, group);
+//                // Grant the "superuser" application role to jane
+//                grantRole(relationshipManager, user, superuser);
+//                log.info("Se agregó el usuario " + user);
+//                
+//                this.userTransaction.commit();
+//                
+//                //Establecer el uuid del usuario admin
+//                Subject subject = subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", user.getLoginName());
+//                if (subject == null){
+//                    subject = createAdministrator();
+//                }
+//                
+//                subject.setUuid(user.getId());
+//                subjectService.save(subject.getId(), subject);
+//                log.info("Se enlazó el usuario admin appsventas {} - {}, con el sistema de autenticación picketlink {}", subject.getId(), subject.getUsername(), user.getId());
+//                
+//                
+//            } catch (NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException e) {
+//                try {
+//                    this.userTransaction.rollback();
+//                } catch (SystemException ignore) {
+//                }
+//                throw new RuntimeException("Could not create default security entities.", e);
+//            }
+//        }
     }
     
     private Subject createAdministrator() {

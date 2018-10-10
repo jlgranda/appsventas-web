@@ -16,7 +16,6 @@
  */
 package org.jlgranda.fede.controller.sales;
 
-import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -25,17 +24,15 @@ import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
-import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Payment;
-import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -47,8 +44,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-@ManagedBean
 @ViewScoped
+@Named
 public class SummaryHome  extends FedeController implements Serializable {
 
     private static final long serialVersionUID = 145155795064685887L;
@@ -56,7 +53,6 @@ public class SummaryHome  extends FedeController implements Serializable {
     Logger logger = LoggerFactory.getLogger(SummaryHome.class);
 
     @Inject
-    @LoggedIn
     private Subject subject;
 
     private Subject customer;
@@ -78,17 +74,31 @@ public class SummaryHome  extends FedeController implements Serializable {
     private BigDecimal costTotal;
     private BigDecimal profilTotal;
 
+    /**
+     * Selector de grupos de fechas
+     */
+    private Date grupoFechas;
     
     @PostConstruct
     private void init() {
 
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "7"));
+            //range = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD__SUMMARY_RANGE, "0"));
+            range = Integer.valueOf(settingHome.getValue("fede.dashboard.summary.range", "0"));
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
-            range = 7;
+            range = 1;
         }
+        
+        setGrossSalesTotal(BigDecimal.ZERO);
+        setDiscountTotal(BigDecimal.ZERO);
+        setSalesTotal(BigDecimal.ZERO);
+        setPurchaseTotal(BigDecimal.ZERO);
+        setCostTotal(BigDecimal.ZERO);
+        setProfilTotal(BigDecimal.ZERO);
+        
+        
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         
@@ -145,31 +155,49 @@ public class SummaryHome  extends FedeController implements Serializable {
     public void setProfilTotal(BigDecimal profilTotal) {
         this.profilTotal = profilTotal;
     }
+
+    public Date getGrupoFechas() {
+        return grupoFechas;
+    }
+
+    public void setGrupoFechas(Date grupoFechas) {
+        this.grupoFechas = grupoFechas;
+    }
     
     public void  calculeSummary() {
+        
 //        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary");
-        Date _start = getStart();
-        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1){
-            int range = Integer.parseInt(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "7"));
+        Date _start = Dates.minimumDate(getStart());
+        Date _end = Dates.maximumDate(getEnd());
+        if (Dates.calculateNumberOfDaysBetween(_start, _end) <= 0){
+//            int range = Integer.parseInt(settingHome.getValue(SettingNames.DASHBOARD__SUMMARY_RANGE, "1"));
+            int range = Integer.parseInt(settingHome.getValue("fede.dashboard.summary.range", "1"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
 //        long theNumberOfDaysBetween = Dates.calculateNumberOfDaysBetween(_start, getEnd());
 //        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary theNumberOfDaysBetween: " + theNumberOfDaysBetween);
 //        this.costTotal = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "70")).multiply(BigDecimal.valueOf(theNumberOfDaysBetween));
         this.costTotal = BigDecimal.ZERO;
-        //findTotalInvoiceSalesDiscountBetween
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", 0, this.subject, getStart(), getEnd());
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", 0, this.subject, _start, _end);
         objects.stream().forEach((Object[] object) -> {
             this.grossSalesTotal = (BigDecimal) object[0];
             this.discountTotal = (BigDecimal) object[1];
             this.salesTotal = (BigDecimal) object[2];
         });        
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalBetween", 0, this.subject, getStart(), getEnd());
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalBetween", 0, this.subject, _start, _end);
         objects.stream().forEach((Object object) -> {
             this.purchaseTotal = (BigDecimal) object;
         });  
         
-        this.profilTotal = salesTotal.subtract(purchaseTotal.add(costTotal));
+        if (this.salesTotal == null) {
+            this.salesTotal = BigDecimal.ZERO;
+        } 
+        
+        if (this.purchaseTotal == null) {
+            this.purchaseTotal = BigDecimal.ZERO;
+        }
+        
+        this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
         
     }
     
@@ -209,5 +237,32 @@ public class SummaryHome  extends FedeController implements Serializable {
     public List<Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+   
+    public void clear() {
+        setGrossSalesTotal(BigDecimal.ZERO);
+        setDiscountTotal(BigDecimal.ZERO);
+        setSalesTotal(BigDecimal.ZERO);
+        setPurchaseTotal(BigDecimal.ZERO);
+        setCostTotal(BigDecimal.ZERO);
+        setProfilTotal(BigDecimal.ZERO);
+    }
     
+    /**
+     * Refrescar la vista y calculos
+     */
+    public void refresh() {
+        clear();
+        calculeSummary();
+    }
+    
+    
+    /**
+     * Refrescar para un grupo de fechas
+     */
+    public void refreshPorGrupoFechas(){
+        clear();
+        setStart(grupoFechas);
+        setEnd(grupoFechas);
+        calculeSummary();
+    }
 }

@@ -25,8 +25,8 @@ import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import net.tecnopro.document.ejb.DocumentoService;
@@ -69,16 +69,14 @@ import org.primefaces.model.StreamedContent;
  *
  * @author Jorge
  */
-@ManagedBean(name = "tareaHome")
 @ViewScoped
+@Named("tareaHome")
 public class TareaHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = 439606517163781752L;
 
     Logger logger = LoggerFactory.getLogger(TareaHome.class);
 
-    @Inject
-    @LoggedIn
     private Subject subject;
 
     private Subject solicitante;

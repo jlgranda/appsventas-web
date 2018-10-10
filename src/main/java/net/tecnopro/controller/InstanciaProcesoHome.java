@@ -37,8 +37,8 @@ import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import net.tecnopro.document.ejb.DocumentoService;
@@ -74,16 +74,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-@ManagedBean
 @ViewScoped
+@Named
 public class InstanciaProcesoHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -2712214748501882991L;
 
     Logger logger = LoggerFactory.getLogger(InstanciaProcesoHome.class);
 
-    @Inject
-    @LoggedIn
     private Subject subject;
 
     private Long instanciaProcesoId;
