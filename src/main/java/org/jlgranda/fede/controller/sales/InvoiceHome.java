@@ -369,9 +369,9 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String cancel() {
-        getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Se convierte en pre factura
+        getInvoice().setDocumentType(DocumentType.CANCELED_INVOICE); //Se convierte en pre factura
         getInvoice().setEmissionType(EmissionType.CANCELED); //Se convierte en pre factura cancelada
-        getInvoice().setStatus(EmissionType.CANCELED.toString());
+        getInvoice().setStatus(StatusType.CLOSE.toString());
         getInvoice().setActive(false);
         //getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
         save(true); //Guardar forzando

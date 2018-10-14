@@ -44,14 +44,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="Container100">
-                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" rendered="false"
                                         value="#{invoiceHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
+                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.code}"
                                         required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
                         <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
                                         value="#{invoiceHome.subjectAdminHome.subjectEdit.firstname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
                         <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
                                         value="#{invoiceHome.subjectAdminHome.subjectEdit.surname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}"
                                         inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+                        <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['phone']}" 
+                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.mobileNumber}"
+                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        execute="@this save" render="phone"/>
                         <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
                                         value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                         required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
