@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Serializable {
     
-    private static final int MAX_RESULTS = 5;
+    private static final int MAX_RESULTS = 50;
     private static final long serialVersionUID = 2581443761081001033L;
     Logger  logger = LoggerFactory.getLogger(LazyInvoiceDataModel.class);
 
@@ -87,10 +87,9 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     }
 
     public List<Invoice> getResultList() {
-        logger.info("load BussinesEntitys");
 
-        if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
-            resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
+        if (resultList.isEmpty()) {
+            resultList = this.load(0, MAX_RESULTS, null, SortOrder.DESCENDING, buildFilters());
         }
         return resultList;
     }
@@ -223,6 +222,55 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         if (sortOrder == SortOrder.ASCENDING) {
             order = QuerySortOrder.ASC;
         }
+        Map<String, Object> _filters = buildFilters(); //Filtros desde atributos de clase
+        
+        _filters.putAll(filters);
+        
+        if (sortField == null){
+            sortField = Invoice_.lastUpdate.getName();
+        }
+
+        QueryData<Invoice> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        this.setRowCount(qData.getTotalResultCount().intValue());
+        return qData.getResult();
+    }
+    
+    public List<Invoice> load(String sortField, SortOrder sortOrder) {
+
+        int end = 0 + MAX_RESULTS;
+
+        QuerySortOrder order = QuerySortOrder.DESC;
+        if (sortOrder == SortOrder.ASCENDING) {
+            order = QuerySortOrder.ASC;
+        }
+        Map<String, Object> _filters = buildFilters(); //Filtros desde atributos de clase
+        
+        if (sortField == null){
+            sortField = Invoice_.lastUpdate.getName();
+        }
+
+        QueryData<Invoice> qData = bussinesEntityService.find(0, end, sortField, order, _filters);
+        this.setRowCount(qData.getTotalResultCount().intValue());
+        return qData.getResult();
+    }
+
+    public BussinesEntity[] getSelectedBussinesEntities() {
+        return selectedBussinesEntities;
+    }
+
+    public void setSelectedBussinesEntities(BussinesEntity[] selectedBussinesEntities) {
+        this.selectedBussinesEntities = selectedBussinesEntities;
+    }
+
+    public BussinesEntity getSelectedBussinesEntity() {
+        return selectedBussinesEntity;
+    }
+
+    public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
+        this.selectedBussinesEntity = selectedBussinesEntity;
+    }
+
+    private Map<String, Object> buildFilters() {
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
         range.put("start", getStart());
@@ -246,30 +294,6 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
             _filters.put("documentType", getDocumentType()); //Filtro por tipos de documentos
         }
         
-        _filters.putAll(filters);
-        
-        if (sortField == null){
-            sortField = Invoice_.createdOn.getName();
-        }
-
-        QueryData<Invoice> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
-        this.setRowCount(qData.getTotalResultCount().intValue());
-        return qData.getResult();
-    }
-
-    public BussinesEntity[] getSelectedBussinesEntities() {
-        return selectedBussinesEntities;
-    }
-
-    public void setSelectedBussinesEntities(BussinesEntity[] selectedBussinesEntities) {
-        this.selectedBussinesEntities = selectedBussinesEntities;
-    }
-
-    public BussinesEntity getSelectedBussinesEntity() {
-        return selectedBussinesEntity;
-    }
-
-    public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
-        this.selectedBussinesEntity = selectedBussinesEntity;
+        return _filters;
     }
 }

@@ -1260,5 +1260,15 @@ input[type="text"], input[type="password"], textarea{ -webkit-appearance: none; 
 /* Estilos para estados de mesas */
 
 .ATTEND {
-    background-color: #4b6cb7;
+    background-color: #4b6cb7 !important;
+    color: #fff !important;
+}
+.OPEN {
+    background-color: #e53935 !important;
+    color: #fff !important;
+}
+
+.ACTIVE {
+    background-color: #fff !important;
+    color: #000 !important;
 }

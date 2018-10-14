@@ -38,6 +38,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <div class="ui-g">
             <div class="ui-g-12">
                 <div class="card">
+                    <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                    <p:inputText value="#{invoiceHome.keyword}" class="input-sm">
+                    </p:inputText>
                     <label class="Gray">#{i18n['Start']}&nbsp;</label>
                     <p:calendar value="#{invoiceHome.start}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
@@ -46,6 +49,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:calendar value="#{invoiceHome.end}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
                     </p:calendar>
+                    <p:selectOneButton value="#{invoiceHome.sortOrder}" styleClass="help-btn raised-btn">
+                        <f:selectItem itemLabel="Ascendente" itemValue="ASCENDING" />
+                        <f:selectItem itemLabel="Descendente" itemValue="DESCENDING" />
+                    </p:selectOneButton>
+                    <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false">
+                    </p:commandButton>
                     <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
                 </div>
                 <div class="card">
@@ -91,10 +100,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <!--Botón de marcado como atendido-->
                                                 <p:commandButton title="#{i18n['common.attend']}" 
                                                                  icon="fa fa-thumbs-o-up"
-                                                                 styleClass="secondary-button Fright"
+                                                                 styleClass="secondary-button Fright #{entity.status}"
                                                                  action="#{invoiceHome.attend(entity.id)}"
                                                                  ajax="false"
-                                                                 rendered="#{not (invoiceHome.invoice.status eq StatusType.ATTEND)}">
+                                                                 rendered="true">
                                                 </p:commandButton>
                                             </div>
                                             <div class="EmptyBox10"></div>
@@ -187,17 +196,44 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Separator"></div>
                                             </ui:repeat>
-                                            <div class="Container100 Fs20 BoldGray FontRobotoRegular TexAlRight hide">
-                                            #{i18n['ride.infoFactura.Total']}:
-                                                <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices)}">
-                                                    <f:convertNumber type="currency"/>
-                                                </h:outputText>
-                                            </div>
-                                            <div class="ui">
-                                                <p:button value="#{i18n['ShowAll']}"  rendered="false"
-                                                          styleClass="danger-btn" class="danger-btn" icon="fa fa-table"
-                                                          outcome="/pages/fede/sales/invoices.jsf"/>
-                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="#{i18n['common.overdue']}">
+                            <f:facet name="title">
+                                <h:outputText value="#{i18n['app.fede.overdue']}"/>
+                            </f:facet>
+                            <div class="ui-g">
+                                <div class="Container100">
+                                    <div class="Container100 Responsive100">
+                                        <div class="ContainerIndent">
+                                            <ui:repeat value="#{invoiceHome.myOverduelastPreInvoices}" var="entity">
+                                                <div class="Container70 Fs50 FontRobotoLight Orange">
+                                                    <span class="Fs20 DispBlock">
+                                                    #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
+                                                    </span>
+                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>
+                                                    </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: <strong>#{entity.lastUpdate}</strong> | #{i18n['app.fede.sales.invoice.comandaNumber']}: #{entity.code}</span>
+                                                </div>
+                                                <div class="Container30">
+
+                                                    <p:button title="#{i18n['app.fede.collect']}" 
+                                                              icon="fa fa-dollar"
+                                                              styleClass="RedButton Fright"
+                                                              outcome="invoice.jsf?invoiceId=#{entity.id}"/>
+                                                </div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                            </ui:repeat>
                                         </div>
                                     </div>
                                 </div>

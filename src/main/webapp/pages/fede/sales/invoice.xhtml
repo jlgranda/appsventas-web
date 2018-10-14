@@ -100,7 +100,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="ui-g-12">
                                     <div class="ui-g-3">
                                         <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['ride.no']}" 
-                                                        execute="none" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
+                                                        execute="@this save-button" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
                                                         required="true" requiredMessage="#{i18n['ride.no.required']}" 
                                                         placeholder="#{i18n['ride.no']}"
                                                         container="none"/>
@@ -140,17 +140,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                         <div class="ui-g-12">
                             <div class="ui-g-6">
-                                <jlgranda:input id="comanda_number" name="comanda_number" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
-                                                execute="none" render="comanda_number" value="#{invoiceHome.invoice.code}" 
+                                <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                                execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
                                                 validator="comandaValidator"
                                                 required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
-                                                decimalPlaces="0" container="none"/>
+                                                decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
+                                <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                                execute="@this save-button" render="comanda_number_edit" value="#{invoiceHome.invoice.code}" 
+                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
+                                                decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
                             </div>
                             <div class="ui-g-6">
                                 <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
-                                                execute="none" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
+                                                execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
                                                 required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
-                                                decimalPlaces="0" container="none"/>
+                                                decimalPlaces="0" container="none" rendered="true"/>
                             </div>
                         </div>
                     </div>
@@ -345,6 +349,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton id="collect-button" value="#{i18n['app.fede.collect']}" ajax="true" 
                                                          styleClass="danger-btn"
                                                          actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
+                                                         rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                                         style="width: auto !important;"
+                                                         type="submit"/>
+                                        <p:commandButton id="overdue-button" value="#{i18n['common.overdue']}" ajax="true" 
+                                                         styleClass="help-btn"
+                                                         actionListener="#{invoiceHome.overdue()}" action="#{invoiceHome.redirect}"
                                                          rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                                          style="width: auto !important;"
                                                          type="submit"/>

@@ -46,7 +46,6 @@ public class ComandaValidator  implements Validator  {
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        
         String key = String.valueOf(value);
         if (Strings.isNullOrEmpty(key)){
             message = Interpolator.interpolate(
@@ -59,7 +58,7 @@ public class ComandaValidator  implements Validator  {
                 message = Interpolator.interpolate(
                         I18nUtil.getMessages("validation.comandaUniqueValue"),
                         new Object[0]);
-                throw new ValidatorException(new FacesMessage(message));
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de validación", message));
             } else {
 
             }
