@@ -329,7 +329,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public List<Invoice> getMyOverduelastPreInvoices() {
-        Date _end = Dates.addDays(getEnd(), -1);
+        Date _end = getEnd();
         Date _start = Dates.addDays(_end, -100); //100 días
         if (myOverduelastPreInvoices.isEmpty()){
             filter(subject, Dates.minimumDate(_start), Dates.maximumDate(_end), DocumentType.OVERDUE, getKeyword(), getTags());
