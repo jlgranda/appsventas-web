@@ -301,10 +301,13 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public List<Invoice> getMyLastlastInvoices() {
-        
+        System.out.println(">>>>>>>>>>>>>> 1");
         if (myLastlastInvoices.isEmpty()){
-            filter(subject, getStart(), getEnd(), DocumentType.INVOICE, getKeyword(), getTags());
+            System.out.println(">>>>>>>>>>>>>> 2");
+            filter(subject, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
             myLastlastInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
+            
+            System.out.println(">>>>>>>>>>>>>> 3");
         }
         return myLastlastInvoices;
     }
@@ -466,7 +469,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.setInvoiceId(invoiceId);
         //load invoice
         this.getInvoice();
-        return this.collect(StatusType.PAID_DIRECT.toString());
+        this.getInvoice().setDescription(settingHome.getValue("app.fede.status.pay_direct", StatusType.PAID_DIRECT.toString()));
+        return this.collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
     }
     
     /**

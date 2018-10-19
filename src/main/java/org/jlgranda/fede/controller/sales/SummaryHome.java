@@ -34,6 +34,7 @@ import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jpapi.model.Group;
+import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.primefaces.event.SelectEvent;
@@ -178,7 +179,7 @@ public class SummaryHome  extends FedeController implements Serializable {
 //        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary theNumberOfDaysBetween: " + theNumberOfDaysBetween);
 //        this.costTotal = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "70")).multiply(BigDecimal.valueOf(theNumberOfDaysBetween));
         this.costTotal = BigDecimal.ZERO;
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", 0, this.subject, _start, _end);
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", 0, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
         objects.stream().forEach((Object[] object) -> {
             this.grossSalesTotal = (BigDecimal) object[0];
             this.discountTotal = (BigDecimal) object[1];
