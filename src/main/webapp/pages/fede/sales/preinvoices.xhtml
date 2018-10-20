@@ -286,6 +286,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  style="width:48px; height: 48px;" type="submit">
                                                 </p:commandButton>
                                                 <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('370,101')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-pizza-cafe" styleClass="warning-btn" title="Empapizza + Café"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
                                                                  actionListener="#{invoiceHome.macro('114882')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                                  icon="flaticon-waricha" styleClass="warning-btn" title="Cerveza artesanal combo x 2"
                                                                  style="width:48px; height: 48px;" type="submit">
