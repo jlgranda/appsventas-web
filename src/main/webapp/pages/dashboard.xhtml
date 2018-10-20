@@ -18,15 +18,20 @@
                 <div class="ui-g-12 ui-md-6 ui-lg-6">
                     <div class="overview-box sales">
                         <p:graphicImage name="images/icon-sales.png" library="ecuador-layout"  styleClass="image-icon" />
-                        <div class="overview-title">#{i18n['app.fede.allmysales']}</div>
+                        <div class="overview-title">#{i18n['app.fede.sales.goal']} #{i18n['app.fede.sales']}</div>
                         <div class="overview-numbers">
-                            #{facturaElectronicaHome.countRowsByTag("own")}
+                            <h:outputText value="#{summaryHome.countSalesToday()}">
+                            </h:outputText>                          
                         </div>
                         <div class="overview-subinfo">
-                            <div class="ui-g-6 progressbar">
+                            <div class="ui-g-#{summaryHome.calculeProfitRateEquivalentForUX()} progressbar">
                                 <div class="progress sale"></div>
                             </div>
-                            <span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("own")} #{i18n['common.more']}</span>
+                            <span class="ui-g-6">
+                                <h:outputText value="#{summaryHome.calculeProfitRate()}">
+                                    <f:convertNumber type="percent" />
+                                </h:outputText>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -134,8 +139,12 @@
                                 <div class="statsbar-value" style="width: 50%"></div>
                             </div>
                             <i class="fa fa-usd"></i>
-                            <span class="icon-label">Promedio diario</span>
-                            <span>$ 194</span>
+                            <span class="icon-label">Promedio último 10 días</span>
+                            <span>
+                                <h:outputText value="#{summaryHome.calculeAverage()}">
+                                    <f:convertNumber type="currency" />
+                                </h:outputText>
+                            </span>
                             <div class="statsbar">
                                 <div class="statsbar-value" style="width: 75%"></div>
                             </div>
@@ -156,7 +165,11 @@
                                 <span>25%</span>
                             </div>
                             <div class="knob-container">
-                                <div class="knob">81%</div>
+                                <div class="knob">
+                                    <h:outputText value="#{summaryHome.calculeProfitRate()}">
+                                        <f:convertNumber type="percent" />
+                                    </h:outputText>
+                                </div>
                             </div>
                             <div class="details">
                                 <span>#{i18n['VerDetalles']}</span>

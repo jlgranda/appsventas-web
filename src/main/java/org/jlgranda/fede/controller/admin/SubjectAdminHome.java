@@ -152,6 +152,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
         }
+       
     }
 
     public LazySubjectDataModel getLazyDataModel() {

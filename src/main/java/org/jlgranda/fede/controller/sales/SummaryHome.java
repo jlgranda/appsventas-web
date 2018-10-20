@@ -16,10 +16,12 @@
  */
 package org.jlgranda.fede.controller.sales;
 
+import com.jlgranda.fede.ejb.FacturaElectronicaService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -66,6 +68,9 @@ public class SummaryHome  extends FedeController implements Serializable {
 
     @Inject 
     private FacturaElectronicaHome facturaElectronicaHome;
+    
+    @EJB
+    private FacturaElectronicaService facturaElectronicaService;
     
     //Calcular Resumen
     private BigDecimal grossSalesTotal;
@@ -166,18 +171,16 @@ public class SummaryHome  extends FedeController implements Serializable {
     }
     
     public void  calculeSummary() {
-        
-//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary");
         Date _start = Dates.minimumDate(getStart());
         Date _end = Dates.maximumDate(getEnd());
+        calculeSummary(_start, _end);
+        
+    }
+    public void  calculeSummary(Date _start, Date _end) {
         if (Dates.calculateNumberOfDaysBetween(_start, _end) <= 0){
-//            int range = Integer.parseInt(settingHome.getValue(SettingNames.DASHBOARD__SUMMARY_RANGE, "1"));
             int range = Integer.parseInt(settingHome.getValue("fede.dashboard.summary.range", "1"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
-//        long theNumberOfDaysBetween = Dates.calculateNumberOfDaysBetween(_start, getEnd());
-//        System.out.println("org.jlgranda.fede.controller.sales.InvoiceHome.calculeSummary() --> summary theNumberOfDaysBetween: " + theNumberOfDaysBetween);
-//        this.costTotal = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "70")).multiply(BigDecimal.valueOf(theNumberOfDaysBetween));
         this.costTotal = BigDecimal.ZERO;
         List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", 0, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
         objects.stream().forEach((Object[] object) -> {
@@ -223,6 +226,41 @@ public class SummaryHome  extends FedeController implements Serializable {
 
         return subtotal.subtract(discount, MathContext.UNLIMITED);
     }
+    
+    /**
+     * Calcular el equivalente en porcentaje para la UI
+     * @return 
+     */    
+    public BigDecimal calculeProfitRate(){
+        BigDecimal goal = BigDecimal.valueOf(Long.valueOf(settingHome.getValue("app.fede.sales.goal", "500")));
+        this.refresh();
+        BigDecimal profitRate = this.getProfilTotal().divide(goal);
+        return  profitRate; 
+    }
+    
+    public int calculeProfitRateEquivalentForUX(){
+        BigDecimal bd = calculeProfitRate().multiply(BigDecimal.valueOf(100));
+        bd.setScale(1, BigDecimal.ROUND_CEILING);
+        return bd.intValue();
+    }
+    
+    public BigDecimal countSalesToday() {
+        Date _start = Dates.minimumDate(getStart());
+        Date _end = Dates.maximumDate(getEnd());
+        if (Dates.calculateNumberOfDaysBetween(_start, _end) <= 0){
+            int range = Integer.parseInt(settingHome.getValue("fede.dashboard.summary.range", "1"));
+            _start = Dates.addDays(getStart(), -1 * range);
+        }
+        BigDecimal total = new BigDecimal(invoiceService.count("Invoice.countTotalInvoiceBetween", this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end));
+        return total;
+    }
+    
+    public BigDecimal calculeAverage(){
+        clear();
+        Date yesterday = Dates.addDays(Dates.now(), -1);
+        calculeSummary(yesterday, Dates.addDays(yesterday, -10));
+        return getProfilTotal().divide(BigDecimal.TEN);
+    }
 
     @Override
     public void handleReturn(SelectEvent event) {
@@ -266,4 +304,5 @@ public class SummaryHome  extends FedeController implements Serializable {
         setEnd(grupoFechas);
         calculeSummary();
     }
+
 }

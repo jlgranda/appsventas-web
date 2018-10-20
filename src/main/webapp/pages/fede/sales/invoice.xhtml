@@ -172,63 +172,64 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </p:commandButton>
                                 </ui:repeat>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('80,101')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('80,101')}" disabled="#{false}"
                                                  icon="flaticon-empanada-cafe" styleClass="warning-btn" title="Empanada + Café"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('80,87')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('80,87')}" disabled="#{false}"
                                                  icon="flaticon-empanada-chocolate" styleClass="warning-btn" title="Empanada + Chocolate"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('80,78')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('80,78')}" disabled="#{false}"
                                                  icon="flaticon-capuchino" styleClass="warning-btn" title="Empanada + Capuchino"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('370,101')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('370,101')}" disabled="#{false}"
                                                  icon="flaticon-pizza-cafe" styleClass="help-btn raised-btn" title="Empapizza + Café"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('370,87')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('370,87')}" disabled="#{false}"
                                                  icon="flaticon-pizza-chocolate" styleClass="help-btn raised-btn" title="Empapizza + Chocolate"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('370,78')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('370,78')}" disabled="#{false}"
                                                  icon="flaticon-capuchino" styleClass="help-btn raised-btn" title="Empapizza + Capuchino"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('101,6660')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('101,6660')}" disabled="#{false}"
                                                  icon="flaticon-tamal" styleClass="warning-btn" title="Tamal + café"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('101,6846')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('101,6846')}" disabled="#{false}"
                                                  icon="flaticon-humitas" styleClass="warning-btn" title="Humita + café"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 
                                 <p:commandButton ajax="true" update="@form" immediate="true"
-                                                 actionListener="#{invoiceHome.macro('100494,100558')}" disabled="#{false}"
+                                                 actionListener="#{invoiceHome.touch('100494,100558')}" disabled="#{false}"
                                                  icon="flaticon-almuerzo" styleClass="help-btn" title="Almuerzo + Aguacate"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                             </div>
                             <div class="ui-g-3">
-                                <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" minQueryLength="2" completeMethod="#{inventoryHome.find}"
+                                <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" 
+                                                minQueryLength="2" completeMethod="#{inventoryHome.find}"
                                                 var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="5" itemValue="#{entidad}" 
                                                 converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
                                                 placeholder="#{settingHome.getValue('app.sales.detail.placeholder', 'Buscar producto...')}">
                                     <p:column>
                                         <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
                                     </p:column>
-                                    <p:ajax event="itemSelect" update="@form" listener="#{invoiceHome.addCandidateDetail()}"></p:ajax>
+                                    <p:ajax event="itemSelect" update="@form" listener="#{invoiceHome.addCandidateDetail()}" partialSubmit="true"></p:ajax>
                                 </p:autoComplete>
                             </div>
                         </div>

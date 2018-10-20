@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">#{i18n['app.name']}</ui:define>
@@ -53,6 +54,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:commandButton>
                     <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
                 </div>
+                
                 <div class="card">
                     <p:tabView style="margin:-20px; border:none 0px;">
                         <p:tab title="#{i18n['app.fede.allmysales']}">
@@ -230,6 +232,80 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Separator"></div>
                                             </ui:repeat>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="#{i18n['app.fede.sale.fast.add']}">
+                            <f:facet name="title">
+                                <h:outputText value="#{i18n['app.fede.sale.fast.add']}"/>
+                            </f:facet>
+                            <div class="ui-g">
+                                <div class="Container100 Responsive100">
+                                    <div class="ContainerIndent">
+                                        <div class="ui-g-12">
+                                            <div class="ui-g-3">
+                                                <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                                                execute="@this" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
+                                                                validator="comandaValidator"
+                                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
+                                                                decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
+                                            </div>
+                                            <div class="ui-g-3">
+                                                <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
+                                                                execute="@this" render="board_number" value="#{invoiceHome.invoice.boardNumber}"
+                                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
+                                                                decimalPlaces="0" container="none" rendered="true"/>
+                                            </div>
+                                            <div class="ui-g-3">
+                                                <jlgranda:input id="amount" name="amount" type="number" label="#{i18n['ride.Factura.Detalles.cantidad']}" 
+                                                                execute="@this" render="amount" value="#{invoiceHome.amount}" 
+                                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
+                                                                decimalPlaces="0" container="none" rendered="true"/>
+                                            </div>
+                                            <div class="ui-g-3">
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('100494')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-almuerzo" styleClass="warning-btn" title="Almuerzo"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('100550')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-almuerzo-solo-sopa" styleClass="warning-btn" title="Almuerzo: sólo sopa"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('100529')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-almuerzo-solo-segundo" styleClass="warning-btn" title="Almuerzo: sólo segundo"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('80,101')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-empanada-cafe" styleClass="warning-btn" title="Empanada + Café"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('114882')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-waricha" styleClass="warning-btn" title="Cerveza artesanal combo x 2"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('108196')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-papa-frita" styleClass="help-btn" title="Micro Costillas BBQ"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('107862')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-papa-frita" styleClass="success-btn" title="Micro Alitas BBQ"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('114954')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-sanduche" styleClass="warning-btn" title="Sanduche Beto's Party"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

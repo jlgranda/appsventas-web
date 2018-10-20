@@ -53,7 +53,7 @@ public class ComandaValidator  implements Validator  {
                         new Object[0]);
                 throw new ValidatorException(new FacesMessage(message));
         } else {
-            List<BussinesEntity> result = service.findByNamedQueryWithLimit("BussinesEntity.findByCode", 1, key);
+            List<BussinesEntity> result = service.findByNamedQueryWithLimit("Invoice.findByCode", 1, key);
             if (!result.isEmpty()){
                 message = Interpolator.interpolate(
                         I18nUtil.getMessages("validation.comandaUniqueValue"),

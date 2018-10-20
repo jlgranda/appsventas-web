@@ -98,6 +98,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     @Inject
     private SettingHome settingHome;
 
+    /** Para almacemar la cantidad en el formulario de pedido rápido */
+    private Long amount;
+    
     private Invoice invoice = null;
 
     private Invoice lastInvoice;
@@ -160,6 +163,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
         
+        setAmount(0L); //Sólo si se establece un valor
         setInvoice(invoiceService.createInstance());
         setCandidateDetail(detailService.createInstance(1));
         setPayment(paymentService.createInstance());
@@ -220,6 +224,14 @@ public class InvoiceHome extends FedeController implements Serializable {
             lastInvoice = obs.isEmpty() ? new Invoice() : (Invoice) obs.get(0);
         }
         return lastInvoice;
+    }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
     }
 
     public void setLastInvoice(Invoice lastInvoice) {
@@ -301,13 +313,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public List<Invoice> getMyLastlastInvoices() {
-        System.out.println(">>>>>>>>>>>>>> 1");
         if (myLastlastInvoices.isEmpty()){
-            System.out.println(">>>>>>>>>>>>>> 2");
             filter(subject, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
             myLastlastInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
-            
-            System.out.println(">>>>>>>>>>>>>> 3");
         }
         return myLastlastInvoices;
     }
@@ -546,7 +554,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                         d.setProductId(d.getProduct().getId());
                         d.setPrice(d.getProduct().getPrice());
                         d.setUnit(d.getUnit());
-                        d.setAmount(d.getAmount());
+                        d.setAmount(this.getAmount().compareTo(Long.valueOf(0)) == 0 ? d.getAmount() : this.getAmount()); //Almacenar el valor del datalle, si no es vía el formulario rápido
                         d.setProduct(null);
                         getInvoice().addDetail(d);
 
@@ -704,11 +712,18 @@ public class InvoiceHome extends FedeController implements Serializable {
         return true;
     }
     
-    public boolean macro(String command){
+    public boolean touch(String command){
         for (String id : command.split(",")){
             touch(productService.find(Long.valueOf(id)));
         }
         return true;
+    }
+    
+    public String macro(String command){
+        for (String id : command.split(",")){
+            touch(productService.find(Long.valueOf(id)));
+        }
+        return save(true);
     }
     
     public boolean addAndSaveCandidateDetail(){
