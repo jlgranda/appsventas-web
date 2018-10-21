@@ -84,13 +84,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  icon="fa fa-dot-circle-o"
                                                                  styleClass="secondary-button Fright"
                                                                  action="#{invoiceHome.record(entity.id)}"
-                                                                 ajax="false">
+                                                                 ajax="false"
+                                                                 immediate="true">
                                                 </p:commandButton>
                                                 <!--Botón de modificación/o pago-->
                                                 <p:button title="#{i18n['app.fede.collect']}" 
                                                           icon="fa fa-dollar"
                                                           styleClass="secondary-button Fright"
-                                                          outcome="invoice.jsf?invoiceId=#{entity.id}"/>
+                                                          outcome="invoice.jsf?invoiceId=#{entity.id}"
+                                                          immediate="true"/>
     <!--                                                <p:button title="#{i18n['common.edit']}" 
                                                           icon="fa fa-edit"
                                                           styleClass="GrayButton Fright"
@@ -101,6 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  styleClass="secondary-button Fright #{entity.status}"
                                                                  action="#{invoiceHome.attend(entity.id)}"
                                                                  ajax="false"
+                                                                 immediate="true"
                                                                  rendered="true">
                                                 </p:commandButton>
                                             </div>
@@ -150,7 +153,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                      icon="fa fa-undo"
                                                                      styleClass="GrayButton Fright"
                                                                      action="#{invoiceHome.reopen(entity.id)}"
-                                                                     ajax="false">
+                                                                     ajax="false"
+                                                                     immediate="true">
                                                     </p:commandButton>
                                                 </div>
                                                 <div class="EmptyBox10"></div>
@@ -245,26 +249,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="Container100 Responsive100">
                                     <div class="ContainerIndent">
                                         <div class="ui-g-12">
-                                            <div class="ui-g-3">
+                                            <div class="ui-g-2">
                                                 <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
                                                                 execute="@this" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
                                                                 validator="comandaValidator"
                                                                 required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
                                                                 decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
                                             </div>
-                                            <div class="ui-g-3">
+                                            <div class="ui-g-2">
                                                 <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
                                                                 execute="@this" render="board_number" value="#{invoiceHome.invoice.boardNumber}"
                                                                 required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
                                                                 decimalPlaces="0" container="none" rendered="true"/>
                                             </div>
-                                            <div class="ui-g-3">
+                                            <div class="ui-g-2">
                                                 <jlgranda:input id="amount" name="amount" type="number" label="#{i18n['ride.Factura.Detalles.cantidad']}" 
                                                                 execute="@this" render="amount" value="#{invoiceHome.amount}" 
                                                                 required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
                                                                 decimalPlaces="0" container="none" rendered="true"/>
                                             </div>
-                                            <div class="ui-g-3">
+                                            <div class="ui-g-6">
                                                 <p:commandButton immediate="false" ajax="true"
                                                                  actionListener="#{invoiceHome.macro('100494')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                                  icon="flaticon-almuerzo" styleClass="warning-btn" title="Almuerzo"
@@ -305,9 +309,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  icon="flaticon-papa-frita" styleClass="success-btn" title="Micro Alitas BBQ"
                                                                  style="width:48px; height: 48px;" type="submit">
                                                 </p:commandButton>
-                                                <p:commandButton immediate="false" ajax="true"
+<!--                                                <p:commandButton immediate="false" ajax="true"
                                                                  actionListener="#{invoiceHome.macro('114954')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                                  icon="flaticon-sanduche" styleClass="warning-btn" title="Sanduche Beto's Party"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>-->
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('102086')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-almuerzo" styleClass="danger-btn" title="Almuerzo dominguero"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('100626')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-almuerzo-solo-segundo" styleClass="danger-btn" title="Almuerzo dominguero: sólo segundo"
                                                                  style="width:48px; height: 48px;" type="submit">
                                                 </p:commandButton>
                                             </div>

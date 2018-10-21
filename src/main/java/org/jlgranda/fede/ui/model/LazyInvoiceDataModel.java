@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Serializable {
     
-    private static final int MAX_RESULTS = 50;
+    private static final int MAX_RESULTS = 100;
     private static final long serialVersionUID = 2581443761081001033L;
     Logger  logger = LoggerFactory.getLogger(LazyInvoiceDataModel.class);
 

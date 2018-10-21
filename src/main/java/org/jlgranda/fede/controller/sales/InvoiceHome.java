@@ -510,10 +510,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.setInvoiceId(invoiceId);
         //load invoice
         this.getInvoice();
-        this.getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Marcar como no cobrado
-        this.getInvoice().setStatus(StatusType.OPEN.toString());
-        this.getInvoice().setActivationTime(Dates.now()); //Se vuelve a abrir para atención
-        this.save();
+        //this.getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Marcar como no cobrado
+        //this.getInvoice().setStatus(StatusType.OPEN.toString());
+        //this.getInvoice().setActivationTime(Dates.now()); //Se vuelve a abrir para atención
+        //this.save();
         redirectTo("/pages/fede/sales/invoice.jsf?invoiceId=" + this.getInvoice().getId());
     }
     
