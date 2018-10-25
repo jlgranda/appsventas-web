@@ -90,10 +90,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="ui-g-12">
                             <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
                                 <p:outputLabel for="contactable" value="¿Quiere participar de mejores promociones y descuentos?:" />
-                                <p:selectOneRadio id="contactable" value="#{invoiceHome.subjectAdminHome.subjectEdit.contactable}">
-                                    <f:selectItem itemLabel="Sí" itemValue="true" />
-                                    <f:selectItem itemLabel="No" itemValue="false" />
-                                </p:selectOneRadio>
+                                <p:selectBooleanCheckbox id="contactable" value="#{invoiceHome.subjectAdminHome.subjectEdit.contactable}" />
                             </h:panelGrid>
                         </div>
                     </div>
