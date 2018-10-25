@@ -50,7 +50,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:calendar value="#{invoiceHome.end}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
                     </p:calendar>
-                    <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false">
+                    <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
                     </p:commandButton>
                     <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
                 </div>
@@ -275,13 +275,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  style="width:48px; height: 48px;" type="submit">
                                                 </p:commandButton>
                                                 <p:commandButton immediate="false" ajax="true"
-                                                                 actionListener="#{invoiceHome.macro('100550')}" action="#{invoiceHome.redirect}" disabled="#{false}"
-                                                                 icon="flaticon-almuerzo-solo-sopa" styleClass="warning-btn" title="Almuerzo: sólo sopa"
-                                                                 style="width:48px; height: 48px;" type="submit">
-                                                </p:commandButton>
-                                                <p:commandButton immediate="false" ajax="true"
                                                                  actionListener="#{invoiceHome.macro('100529')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                                  icon="flaticon-almuerzo-solo-segundo" styleClass="warning-btn" title="Almuerzo: sólo segundo"
+                                                                 style="width:48px; height: 48px;" type="submit">
+                                                </p:commandButton>
+                                                
+                                                <p:commandButton immediate="false" ajax="true"
+                                                                 actionListener="#{invoiceHome.macro('100550')}" action="#{invoiceHome.redirect}" disabled="#{false}"
+                                                                 icon="flaticon-almuerzo-solo-sopa" styleClass="help-btn" title="Almuerzo: sólo sopa"
                                                                  style="width:48px; height: 48px;" type="submit">
                                                 </p:commandButton>
 
