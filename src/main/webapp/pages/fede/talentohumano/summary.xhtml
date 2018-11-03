@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']}</ui:define>
+
+    <ui:define name="viewname">
+        <li>#{i18n['app.name']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/sales/summary.jsf">#{i18n['app.fede.summary']}</p:link></li>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <div class="card">
+                    <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                    <p:calendar value="#{summaryHome.start}" class="input-sm">
+                        <p:ajax event="dateSelect" listener="#{summaryHome.refresh()}" oncomplete="form.submit();"/>
+                    </p:calendar>
+                    <label class="Gray">#{i18n['End']}&nbsp;</label>
+                    <p:calendar value="#{summaryHome.end}" class="input-sm">
+                        <p:ajax event="dateSelect" listener="#{summaryHome.refresh()}" oncomplete="form.submit();"/>
+                    </p:calendar>
+                    <label class="Gray">#{i18n['common.date.group']}&nbsp;</label>
+                    <p:calendar value="#{summaryHome.grupoFechas}" class="input-sm">
+                        <p:ajax event="dateSelect" listener="#{summaryHome.refreshPorGrupoFechas()}" oncomplete="form.submit();"/>
+                    </p:calendar>
+                    
+                </div>
+                <div class="card">
+                    <div class="EmptyBox10"></div>
+                    <h3 class="CardTopic">#{i18n['app.fede.summary']}</h3>
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.grosssales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.grossSalesTotal}</span>
+                        </div>
+                    </div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.discountsales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.discountTotal}</span>
+                        </div>
+                    </div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.salesTotal}</span>
+                        </div>
+                    </div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-apple Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.purchaseTotal}</span>
+                        </div>
+                    </div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GreenBorderedBox TexAlCenter">
+                            <i class="fa fa-bank Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.costs.fixed']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.costTotal}</span>
+                        </div>
+                    </div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.profit']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.profilTotal}</span>
+                        </div>
+                    </div>
+                    <div class="SeparatorFull"></div>
+                    <div class="EmptyBox10"></div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="script">
+
+    </ui:define>
+
+</ui:composition>

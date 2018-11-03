@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="productId" value="#{inventoryHome.productId}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">#{i18n['app.fede.inventory.product']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['module.stocklist']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.inventory.product']}</p:link></li>
+    </ui:define>
+
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.sales.ProductType" />
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h1 class="BigTopic">#{i18n['app.fede.inventory.product']} </h1>
+                <div class="ui-g">
+                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}" 
+                                    value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
+                    <div class="Container100 Responsive50">
+                        <div class="ContainerIndent">
+                            <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
+                            <p:selectOneMenu value="#{inventoryHome.product.productType}" effect="fade"
+                                             required="#{true}" immediate="true"> 
+                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@form" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
+                                    value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
+
+                    <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
+                                    value="#{inventoryHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
+
+                    <jlgranda:input id="price" name="price" type="number" label="#{i18n['app.fede.inventory.product.price']}" 
+                                    value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
+
+                </div>
+                <div class="EmptyBox10"></div>
+                <p:toolbar rendered="#{true}">
+                    <f:facet name="left">
+                        <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 
+                                         actionListener="#{inventoryHome.save()}" action="#{inventoryHome.redirect()}" 
+                                         disabled="#{false}" 
+                                         style="width: auto !important;"
+                                         type="submit"/>
+                        <span class="ui-separator">
+                            <span class="fa fa-ellipsis-v SoftGray" />
+                        </span>
+                    </f:facet>
+
+                    <f:facet name="right">
+
+                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                                         actionListener="#{inventoryHome.closeDialog(null)}" 
+                                         action="home"
+                                         icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                         />
+                        <!--p:menuButton value="#{i18n['common.options']}">
+                            <p:menuitem value="#{i18n['Save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                        actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
+                                        immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
+                        </p:menuButton-->
+                    </f:facet>
+
+                </p:toolbar>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

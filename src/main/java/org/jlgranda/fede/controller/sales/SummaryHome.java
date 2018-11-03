@@ -258,9 +258,16 @@ public class SummaryHome  extends FedeController implements Serializable {
     public BigDecimal calculeAverage(){
         clear();
         Date yesterday = Dates.addDays(Dates.now(), -1);
-        calculeSummary(yesterday, Dates.addDays(yesterday, -10));
+        calculeSummary(Dates.addDays(yesterday, -10), yesterday);
         return getProfilTotal().divide(BigDecimal.TEN);
     }
+    
+    public BigDecimal calculeProfitRateAverage(){
+        BigDecimal goal = BigDecimal.valueOf(Long.valueOf(settingHome.getValue("app.fede.sales.goal", "500")));
+        return  calculeAverage().divide(goal);
+    }
+    
+    
 
     @Override
     public void handleReturn(SelectEvent event) {
