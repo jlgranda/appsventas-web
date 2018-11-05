@@ -176,7 +176,7 @@ public class SettingHome extends FedeController implements Serializable {
     public String getGlobalValue(String name, String defaultValue) {
         Setting s = settingService.findByName(name, null);
         if (s == null) {
-            //logger.info("La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
+            logger.info("SettingHome: La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
             return defaultValue;
         }
         return s.getValue();

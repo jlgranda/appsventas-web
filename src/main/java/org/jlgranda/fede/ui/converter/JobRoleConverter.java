@@ -17,6 +17,7 @@
 package org.jlgranda.fede.ui.converter;
 
 import com.jlgranda.fede.ejb.sales.ProductService;
+import com.jlgranda.fede.ejb.talentohumano.JobRoleService;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -27,20 +28,21 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.NoResultException;
-import org.jpapi.model.profile.Subject;
+import org.jlgranda.fede.model.talentohumano.JobRole;
 
 /**
  *
  * @author jlgranda
  */
 @RequestScoped
-@FacesConverter("org.jlgranda.fede.ui.converter.ProductConverter")
-public class ProductConverter implements Converter, Serializable {
+@FacesConverter("org.jlgranda.fede.ui.converter.JobRoleConverter")
+public class JobRoleConverter implements Converter, Serializable {
 
-    private static final long serialVersionUID = -3361609066820809465L;
+    private static final long serialVersionUID = 5913738691804819288L;
+
 
     @EJB
-    private ProductService service;
+    private JobRoleService service;
 
     @PostConstruct
     public void setup() {
@@ -52,13 +54,11 @@ public class ProductConverter implements Converter, Serializable {
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
-
-
         if (value != null && !value.isEmpty() && service != null) {
             try {
                 return service.find(getKey(value));
             } catch (NoResultException e) {
-                return new Subject();
+                return new JobRole();
             }
 
         }
@@ -72,6 +72,7 @@ public class ProductConverter implements Converter, Serializable {
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object value) {
+        
         if (value != null) {
             return value.toString();
         } else {

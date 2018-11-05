@@ -70,6 +70,27 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>jobroles</from-outcome>
+            <to-view-id>/pages/fede/talentohumano/roles.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>employees</from-outcome>
+            <to-view-id>/pages/fede/talentohumano/employees.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>registrar</from-outcome>
+            <to-view-id>/pages/fede/talentohumano/registrar.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>registrar-manual</from-outcome>
+            <to-view-id>/pages/fede/talentohumano/registrar_manual.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <navigation-case>
             <from-outcome>tareas</from-outcome>
             <to-view-id>/pages/management/tarea/dashboard.jsf</to-view-id>
             <redirect />
@@ -90,17 +111,17 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>admin-subject</from-outcome>
-            <to-view-id>/pages/admin/subject/inbox.jsf</to-view-id>
+            <from-outcome>subjects</from-outcome>
+            <to-view-id>/pages/fede/admin/subject/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>admin-group</from-outcome>
+            <from-outcome>groups</from-outcome>
             <to-view-id>/pages/admin/security/group/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>admin-template</from-outcome>
+            <from-outcome>templates</from-outcome>
             <to-view-id>/pages/admin/template/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>

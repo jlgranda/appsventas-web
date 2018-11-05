@@ -18,6 +18,9 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.SubjectService;
+import com.jlgranda.shiro.UsersRoles;
+import com.jlgranda.shiro.UsersRolesPK;
+import com.jlgranda.shiro.ejb.UsersRolesFacade;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +32,18 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.UserTransaction;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.authc.credential.PasswordService;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.jpapi.util.Strings;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +67,9 @@ public class SubjectHome extends FedeController implements Serializable {
 
     @EJB
     SubjectService subjectService;
+    
+    @EJB
+    UsersRolesFacade usersRolesFacade;
 
     @Inject
     private SettingHome settingHome;
@@ -70,6 +82,8 @@ public class SubjectHome extends FedeController implements Serializable {
     
     @Inject
     private TemplateHome templateHome;
+    
+    PasswordService svc = new DefaultPasswordService();
 
     public boolean isLoggedIn() {
         return loggedIn != null && loggedIn.getId() != null;
@@ -106,81 +120,89 @@ public class SubjectHome extends FedeController implements Serializable {
      * @param owner el propietario del objeto a agregar
      */
     public void processSignup(Subject _signup, Subject owner) {
-
-//
+        processSignup(_signup, owner, "USER");
+    }
+    
+    /**
+     * Procesa la creación de una cuenta en fede para el usuario dado
+     * @param _signup el objeto <tt>Subject</tt> a agregar
+     * @param owner el propietario del objeto a agregar
+     */
+    public void processSignupEmployee(Subject _signup, Subject owner) {
+        processSignup(_signup, owner, "EMPLOYEE");
+    }
+    
+    /**
+     * Procesa la creación de una cuenta en fede para el usuario dado
+     * @param _signup el objeto <tt>Subject</tt> a agregar
+     * @param owner el propietario del objeto a agregar
+     */
+    public void processSignup(Subject _signup, Subject owner, String roles) {
         if (_signup != null) {
             //Crear la identidad para acceso al sistema
             try {
-                
-//
-//                //Prepare password
-//                Password password = new Password(_signup.getPassword());
-//                
-//                //separar nombres
-//                if (Strings.isNullOrEmpty(_signup.getSurname())){
-//                    List<String> names = Strings.splitNamesAt(_signup.getFirstname());
-//
-//                    if (names.size() > 1) {
-//                        _signup.setFirstname(names.get(0));
-//                        _signup.setSurname(names.get(1));
-//                    }
-//                }
-//                
-                _signup.setUsername(_signup.getEmail());
-//
-//                this.userTransaction.begin();
-//                User user = new User(_signup.getUsername());
-//                user.setFirstName(_signup.getFirstname());
-//                user.setLastName(_signup.getSurname());
-//                user.setEmail(_signup.getEmail());
-//                user.setCreatedDate(Dates.now());
-//                identityManager.add(user);
-//
-//                identityManager.updateCredential(user, password);
-//
-//                // Create application role "superuser"
-//                Role superuser = BasicModel.getRole(identityManager, "superuser");
-//
-//                Group group = BasicModel.getGroup(identityManager, "fede");
-//
-//                RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
-//                // Make john a member of the "sales" group
-//                addToGroup(relationshipManager, user, group);
-//                // Make mary a manager of the "sales" group
-//                grantGroupRole(relationshipManager, user, superuser, group);
-//                // Grant the "superuser" application role to jane
-//                grantRole(relationshipManager, user, superuser);
-//
-//                this.userTransaction.commit();
-//
-                //Conectar con el user auth
-                String passwrod_ = "sin password";//new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
+
+                //separar nombres
+                if (Strings.isNullOrEmpty(_signup.getSurname())){
+                    List<String> names = Strings.splitNamesAt(_signup.getFirstname());
+
+                    if (names.size() > 1) {
+                        _signup.setFirstname(names.get(0));
+                        _signup.setSurname(names.get(1));
+                    }
+                }
+                //Más valores de autenticación
                 _signup.setUsername(_signup.getEmail());
                 _signup.setCodeType(CodeType.CEDULA);
-                _signup.setPassword(passwrod_);
                 _signup.setUsernameConfirmed(true);
 
                 //Set fede email
                 _signup.setFedeEmail(_signup.getCode().concat("@").concat(settingHome.getValue("mail.imap.host", "localhost")));
-                _signup.setFedeEmailPassword(passwrod_);
+                _signup.setFedeEmailPassword(_signup.getPassword());
 //
                 //Finalmente crear en fede
                 _signup.setUuid(UUID.randomUUID().toString());
                 _signup.setSubjectType(Subject.Type.NATURAL);
                 _signup.setOwner(owner);
-                _signup.setConfirmed(false);
-                _signup.setActive(false);
+                _signup.setConfirmed(true);
+                _signup.setActive(true);
+                
+                //crypt password
+                _signup.setPassword(svc.encryptPassword(_signup.getCode()));
                 
                 subjectService.save(_signup);
+                
+                //Asignar roles
+                UsersRoles shiroUsersRoles = new UsersRoles();
+                UsersRolesPK usersRolesPK = new UsersRolesPK(_signup.getUsername(), roles);
+                shiroUsersRoles.setUsersRolesPK(usersRolesPK);
+                usersRolesFacade.create(shiroUsersRoles);
+                
+
+            } catch (SecurityException | IllegalStateException e) {
+                throw new RuntimeException("Could not create default security entities.", e);
+            }
+        }
+
+    }
+    
+    /**
+     * Procesa la creación de una cuenta en fede para el usuario dado
+     * @param _signup el objeto <tt>Subject</tt> a agregar
+     * @param owner el propietario del objeto a agregar
+     */
+    public void processChangePassword(Subject _signup) {
+
 //
-//                //Crear grupos por defecto para el subject
-//                groupHome.createDefaultGroups(_signup);
-//
-            } catch (/*NotSupportedException | SystemException | IdentityManagementException | RollbackException | HeuristicMixedException | HeuristicRollbackException | */SecurityException | IllegalStateException e) {
-//                try {
-//                    this.userTransaction.rollback();
-//                } catch (SystemException ignore) {
-//                }
+        if (_signup != null) {
+            //Crear la identidad para acceso al sistema
+            try {
+                //crypt password
+                _signup.setPassword(svc.encryptPassword(_signup.getPassword()));
+                
+                subjectService.save(_signup);
+
+            } catch (SecurityException | IllegalStateException e) {
                 throw new RuntimeException("Could not create default security entities.", e);
             }
         }
@@ -243,5 +265,22 @@ public class SubjectHome extends FedeController implements Serializable {
     @Override
     public List<org.jpapi.model.Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public static void main(String[] args) {
+        
+        PasswordService svc = new DefaultPasswordService();
+         
+        //RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+        //Object salt = rng.nextBytes();
+
+        // Now hash the plain-text password with the random salt and multiple
+        // iterations and then Base64-encode the value (requires less space than Hex):
+        //String hashedPasswordBase64 = new Sha256Hash("sin password", salt, 1024).toBase64();
+
+        //System.out.println("hashedPasswordBase64: " + hashedPasswordBase64);
+        //System.out.println("sal: " + salt.toString());
+        System.out.println("sv: " + svc.encryptPassword("1103411540"));
+        //user.setSalt(salt.toString());
     }
 }

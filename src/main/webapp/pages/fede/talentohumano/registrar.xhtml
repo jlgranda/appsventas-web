@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="params">
+    </ui:define>
+
+    <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.talentohumano.registrar']}</li>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h1 class="BigTopic">#{journalHome.employee.role.name}</h1>
+                <h1 class="BigTopic">#{journalHome.employee.owner.fullName}</h1>
+                <h1 class="BigTopic">#{journalHome.employee.owner.code}</h1>
+                <div class="ui-g-12">
+                    <p:timeline id="timeline" value="#{journalHome.model}" height="250px"
+                            selectable="#{journalHome.selectable}"
+                            zoomable="#{journalHome.zoomable}"
+                            moveable="#{journalHome.moveable}"
+                            stackEvents="#{journalHome.stackEvents}"
+                            axisOnTop="#{journalHome.axisOnTop}"
+                            eventStyle="#{journalHome.eventStyle}"
+                            showCurrentTime="#{journalHome.showCurrentTime}"
+                            showNavigation="#{journalHome.showNavigation}">
+
+                        <p:ajax event="select" listener="#{journalHome.onSelect}"/>
+                    </p:timeline>
+                </div>
+                <h1 class="SoftGray BigTopic">#{i18n['app.fede.talentohumano.registrar']}</h1>
+                <div class="ui-g-6">
+                    <p:clock displayMode="analog" mode="server"/>
+                </div>
+                <div class="ui-g-6">
+                    <jlgranda:input id="psw" name="password" type="password" label="#{i18n['common.password']}" 
+                                    value="#{journalHome.password}" required="true" inlinehelp="#{messages['common.password.first']}" execute="@this check" render="psw"/>
+                    <p:commandButton value="#{i18n['app.fede.talentohumano.check']}" id="check" actionListener="#{journalHome.check()}" action="#{journalHome.redirect()}" icon="fa fa-key" />
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

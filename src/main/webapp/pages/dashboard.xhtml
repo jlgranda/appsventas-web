@@ -60,7 +60,7 @@
                                 <div class="statsbar-value" style="width: 50%"></div>
                             </div>-->
                             <i class="fa fa-usd"></i>
-                            <span class="icon-label">Promedio último 10 días #{summaryHome.calculeAverage()}</span>
+                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.sales.average.days", "10")} #{i18n['common.days']}</span>
                             <span>
                                 <h:outputText value="#{summaryHome.calculeProfitRateAverage()}">
                                     <f:convertNumber type="percent" />
@@ -108,7 +108,7 @@
                             <ui:repeat value="#{subjectAdminHome.lazyDataModel.resultList}" var="entity">
                                 <li>
                                     <p:graphicImage name="images/if_20.Photos_290130.png" library="ecuador-layout" rendered="#{empty entity.photo}"/>
-                                    <p:graphicImage value="#{entity.photo}" rendered="#{not empty entity.photo}"/>
+                                    <p:graphicImage value="#{ui.translateImageFromDB(entity.photo)}" rendered="#{not empty entity.photo}"/>
                                     <div class="seperator"></div>
                                     <div class="team-box">
                                         <span class="team-member">#{entity.fullName}</span>

@@ -81,8 +81,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Inject
     GroupHome groupHome;
 
-    @Resource
-    private UserTransaction userTransaction;
     @EJB
     private GroupService groupService;
     @EJB
@@ -114,10 +112,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         this.cambiarClave = false;
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        setOutcome("admin-subject");
+        setOutcome("subjects");
         setSubjectEdit(subjectService.createInstance()); //Siempre listo para recibir la petición de creación
-        //TODO Establecer temporalmente la organización por defecto
-        //getOrganizationHome().setOrganization(organizationService.find(1L));
     }
 
     @Override
@@ -162,7 +158,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public void mostrarFormularioCambiarClave() {
         this.cambiarClave = true;
-//        RequestContext.getCurrentInstance().execute("PF('dlgCambiarClave').show()");
     }
 
     public void handlePhotoUpload(FileUploadEvent event) {
@@ -198,8 +193,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             if (event != null && event.getObject() != null) {
 
                 //TODO leer desde configuración el url destino
-                //redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
-                redirectTo("/pages/admin/subject/profile_summary.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/fede/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
+//                redirectTo("/pages/fede/admin/subject/profile_summary.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
@@ -243,11 +238,14 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return getOutcome();
     }
     public String save() {
+        return save("USER");
+    }
+    
+    public String save(String role) {
         //Realizar signup
         try {
             if (!getSubjectEdit().isPersistent()) {
-                getSubjectEdit().setPassword(UUID.randomUUID().toString());
-                subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
+                subjectHome.processSignup(getSubjectEdit(), subject, role); //El propietario es el administrador actual y se asigna con un rol
                 addDefaultSuccessMessage();
             } else {
                 //Solo actualizar
@@ -279,32 +277,15 @@ public class SubjectAdminHome extends FedeController implements Serializable {
      * el cambio de clave.
      */
     public void changePassword() {
-//        int length = Integer.valueOf(settingHome.getValue("app.password.length", "8"));
-//        if (!StringValidations.isPassword(clave)) {
-//            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "" + length));
-//            return;
-//        }
-//        if (this.clave.equals(this.confirmarClave)) {
-//            try {
-//                identityManager = partitionManager.createIdentityManager();
-//                logger.info("identityManager: {}", identityManager);
-//                logger.info("getSubjectEdit().getUsername(): {}", getSubjectEdit().getUsername());
-//                this.userTransaction.begin();
-//                Password password = new Password(this.clave);
-//                User user = BasicModel.getUser(identityManager, getSubjectEdit().getUsername());
-//                identityManager.update(user);
-//                identityManager.updateCredential(user, password);
-//                this.userTransaction.commit();
-//                String password_ = new BasicPasswordEncryptor().encryptPassword(new String(password.getValue()));
-//                subjectEdit.setPassword(password_);
-//                subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
-//                addDefaultSuccessMessage();
-//            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-//                logger.error(ex.getMessage(), ex);
-//            }
-//        } else {
-//            addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
-//        }
+        if (getClave().equalsIgnoreCase(getConfirmarClave())){
+            getSubjectEdit().setPassword(getClave());
+            getSubjectEdit().setLastUpdate(Dates.now());
+            subjectHome.processChangePassword(getSubjectEdit());
+            this.addSuccessMessage("La contraseña se actualizó correctamente.", "");
+        } else {
+            this.addWarningMessage("Las contraseñas no coinciden! Intente nuevamente.", "");
+        }
+        
     }
 
     public Subject getSubjectEdit() {

@@ -33,11 +33,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.jlgranda.fede.controller.admin.TemplateHome;
-import org.jlgranda.fede.model.sales.Invoice;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -296,12 +296,15 @@ public abstract class FedeController {
         options.put("resizable", resizable);
         options.put("left", left);
         options.put("top", top);
-        options.put("contentWidth", width);
-        options.put("contentHeight", height);
+        options.put("width", width);
+        options.put("height", height);
+        options.put("contentWidth", "100%");
+        options.put("contentHeight", "100%");
         options.put("closable", closable);
         //options.put("includeViewParams", false);
-
-        RequestContext.getCurrentInstance().openDialog(name, options, params);
+         
+        PrimeFaces.current().dialog().openDynamic(name, options, null);
+        
         //logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
     }
     

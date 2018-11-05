@@ -256,9 +256,10 @@ public class SummaryHome  extends FedeController implements Serializable {
     }
     
     public BigDecimal calculeAverage(){
+        int days = Integer.valueOf(settingHome.getValue("app.fede.sales.average.days", "10"));
         clear();
         Date yesterday = Dates.addDays(Dates.now(), -1);
-        calculeSummary(Dates.addDays(yesterday, -10), yesterday);
+        calculeSummary(Dates.addDays(yesterday, -1 * days), yesterday);
         return getProfilTotal().divide(BigDecimal.TEN);
     }
     

@@ -17,12 +17,18 @@
  */
 package org.jlgranda.fede.ui.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import org.jlgranda.fede.controller.SettingHome;
@@ -30,9 +36,12 @@ import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Setting;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  * Utilidades para la construcción de vistas
@@ -131,6 +140,19 @@ public class UI {
         for (Setting x : entities) {
             items[i++] = new SelectItem(x.getName(), x.getLabel());
         }
+        return items;
+    }
+    
+    public List<SelectItem> getJobRoleAsSelectItems(List<JobRole> values) {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        for (JobRole o : values) {
+            item = new SelectItem(o.getId(), o.getName());
+            items.add(item);
+        }
+
         return items;
     }
     
@@ -241,6 +263,31 @@ public class UI {
         if (entity == null) return "";
         //TODO Aplicar template via velocity
         return entity.getFullName() + ", " + entity.getCode() + ", " + entity.getDescription();
+    }
+    
+    public static StreamedContent translateImageFromDB(byte[] image) throws IOException {
+        
+        if (image != null) {
+            FacesContext context = FacesContext.getCurrentInstance();
+
+            if (context.getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+                return new DefaultStreamedContent();
+            } else {
+
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+                return new DefaultStreamedContent(new ByteArrayInputStream(image),
+                        "image/png");
+
+            }
+        } else {
+            return new DefaultStreamedContent();
+        }
+    }
+    
+    public TimeZone getTimeZone() {
+        TimeZone timeZone = TimeZone.getDefault();
+        return timeZone;
     }
     
     public static void main(String[] args) {

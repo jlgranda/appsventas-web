@@ -52,7 +52,7 @@ public class LoginSubjectCacheProvider implements Serializable{
                         new CacheLoader<String, Subject>() {
                             @Override
                             public Subject load(String id) throws Exception {
-                                return subjectService.findUniqueByNamedQuery("Subject.findUserByUUID", id);
+                                return subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", id);
                             }
                         }
                 );

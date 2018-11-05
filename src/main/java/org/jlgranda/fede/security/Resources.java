@@ -5,9 +5,6 @@
  */
 package org.jlgranda.fede.security;
 
-import com.google.common.cache.LoadingCache;
-import com.jlgranda.fede.ejb.SubjectService;
-import javax.ejb.EJB;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;

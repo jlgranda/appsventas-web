@@ -28,51 +28,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <ui:define name="params">
         <f:metadata>
-            <f:viewParam name="productId" value="#{inventoryHome.productId}" />
+            <f:viewParam name="jobRoleId" value="#{jobRoleHome.jobRoleId}" />
         </f:metadata>
     </ui:define>
 
-    <ui:define name="title">#{i18n['app.fede.inventory.product']}</ui:define>
+    <ui:define name="title">#{i18n['app.fede.talentohumano.role']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['module.stocklist']}</li>
+        <li>#{i18n['app.fede.talentohumano.roles']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.inventory.product']}</p:link></li>
+        <li><p:link outcome="/pages/fede/talentohumano/role.jsf">#{jobRoleHome.jobRoleId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.role']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
-        <o:importConstants type="org.jlgranda.fede.model.sales.ProductType" />
         <div class="ui-g">
             <div class="ui-g-12">
-                <h1 class="BigTopic">#{i18n['app.fede.inventory.product']} </h1>
+                <h1 class="BigTopic">#{i18n['app.fede.talentohumano.role']} </h1>
                 <div class="ui-g">
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}" 
-                                    value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
-                    <div class="Container100 Responsive50">
-                        <div class="ContainerIndent">
-                            <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
-                            <p:selectOneMenu value="#{inventoryHome.product.productType}" effect="fade"
-                                             required="#{true}" immediate="true"> 
-                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
-                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@form" />
-                            </p:selectOneMenu>
-                        </div>
-                    </div>
-                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
-                                    value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
-
+                                    value="#{jobRoleHome.jobRole.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
-                                    value="#{inventoryHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
+                                    value="#{jobRoleHome.jobRole.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
 
-                    <jlgranda:input id="price" name="price" type="number" label="#{i18n['app.fede.inventory.product.price']}" 
-                                    value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
+                    <jlgranda:input id="remuneration" name="remuneration" type="number" label="#{i18n['app.fede.talentohumano.remuneration']}" 
+                                    value="#{jobRoleHome.jobRole.remuneration}" required="false" inlinehelp="#{messages['app.fede.talentohumano.remuneration.inlinehelp']}" execute="@this save" render="remuneration"/>
+                    
+                    <jlgranda:input id="dedication" name="dedication" type="number" label="#{i18n['app.fede.talentohumano.dedication']}" 
+                                    value="#{jobRoleHome.jobRole.dedication}" required="false" inlinehelp="#{messages['app.fede.talentohumano.dedication.inlinehelp']}" execute="@this save" render="dedication"/>
 
                 </div>
                 <div class="EmptyBox10"></div>
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
                         <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 
-                                         actionListener="#{inventoryHome.save()}" action="#{inventoryHome.redirect()}" 
+                                         actionListener="#{jobRoleHome.save()}" action="#{jobRoleHome.redirect()}" 
                                          disabled="#{false}" 
                                          style="width: auto !important;"
                                          type="submit"/>
@@ -84,15 +72,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <f:facet name="right">
 
                         <p:commandButton ajax="true" disabled="false" immediate="true"
-                                         actionListener="#{inventoryHome.closeDialog(null)}" 
+                                         actionListener="#{jobRoleHome.closeDialog(null)}" 
                                          action="home"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                          />
-                        <!--p:menuButton value="#{i18n['common.options']}">
-                            <p:menuitem value="#{i18n['Save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
-                                        actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
-                                        immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
-                        </p:menuButton-->
                     </f:facet>
 
                 </p:toolbar>

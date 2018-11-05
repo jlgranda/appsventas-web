@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="params">
+        employeeSelectedId
+        <f:metadata>
+            <f:viewParam name="employeeSelectedId" value="#{journalHome.employeeSelectedId}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.talentohumano.registrar']}</li>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h1 class="BigTopic">#{i18n['app.fede.talentohumano.employee']}</h1>
+                <div class="ui-g-12">
+                    <div class="card">
+                        <p:dataTable var="employee" 
+                                     value="#{employeeHome.lazyDataModel}" 
+                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                     reflow="true" selection="#{journalHome.employeeSelected}" 
+                                     rowKey="#{employee.id}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                            <p:ajax event="rowSelectRadio" update="@form"/>
+                            <p:column selectionMode="single" style="width:32px;text-align:center"/>
+                            <p:column headerText="#{i18n['name']}" sortBy="#{employee.owner.fullName}">
+                                <h:outputText value="#{employee.owner.fullName}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['app.fede.talentohumano.role']}" sortBy="#{employee.role.name}">
+                                <h:outputText value="#{employee.role.name}" />
+                            </p:column>
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.crationDate']}" sortBy="#{employee.activationTime}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{employee.activationTime}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+                <h1 class="SoftGray BigTopic">#{i18n['app.fede.talentohumano.registrar']}</h1>
+                <div class="ui-g-12">
+                    <p:calendar value="#{journalHome.journal.beginTime}" pattern="dd/MM/yyyy HH:mm:ss"></p:calendar>
+                    <p:commandButton value="#{i18n['Add']}" id="check" actionListener="#{journalHome.add()}" action="#{journalHome.redirect()}" icon="fa fa-plus" />
+                </div>
+                <div class="ui-g-12">
+                    <p:dataTable var="journal" 
+                                 value="#{journalHome.employeeSelected.journals}" 
+                                 paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                 reflow="true" 
+                                 rowKey="#{journal.id}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                 id="dataTableJournal" widgetVar="dataTable_j" lazy="true">
+                        <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                            <h:outputText value="#{journal.name}" />
+                        </p:column>
+                        <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
+                                   styleClass="text-right">
+                            <h:outputText value="#{journal.beginTime}">
+                                <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

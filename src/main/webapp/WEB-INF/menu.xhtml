@@ -3,7 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets" 
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:pe="http://primefaces.org/ecuador">
+                xmlns:pe="http://primefaces.org/ecuador"
+                >
 
 <div class="layout-sidebar">
         <div class="nano">
@@ -11,16 +12,22 @@
                 <h:form id="menuform">
                     <div class="layout-menu-title">#{i18n['common.menu.main']}</div>
                     <pe:menu widgetVar="me">
-                        <p:menuitem id="om_dashboard" value="#{i18n['common.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard" />
-                        <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" url="/pages/fede/sales/preinvoices.jsf" />    
-                        <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-money" url="/pages/fede/inbox.jsf" /> 
-                        <p:menuitem id="rm_inventory_products" value="#{i18n['app.fede.inventory.products']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inventory/items.jsf"/>
-                        <p:submenu id="om_talento_humano" label="Talento Humano" icon="fa fa-fw fa-clock-o">
-                            <p:menuitem id="om_talentohumano_registro" value="Registro" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registro.jsf" />
+                        <p:menuitem id="om_dashboard" value="#{i18n['common.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                        <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" url="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
+                        <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-money" url="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/> 
+                        <p:menuitem id="rm_inventory_products" value="#{i18n['app.fede.inventory.products']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                        <p:submenu id="om_admin" label="Administración" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN')}">
+                            <p:menuitem id="om_subjects" value="Sujetos" icon="fa fa-fw fa-user" outcome="/pages/fede/admin/subject/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
                         </p:submenu>
-                        <p:submenu id="om_reportes" label="Reportes" icon="fa fa-fw fa-cog">
-                            <p:menuitem id="om_resumen_ventas_productos" value="Resumen de ventas por productos" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/products.jsf" />
-                            <p:menuitem id="om_resumen_ventas_compras" value="Resumen de ventas/compras" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/summary.jsf" rendered="false"/>
+                        <p:submenu id="om_talento_humano" label="Talento Humano" icon="fa fa-fw fa-clock-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
+                            <p:menuitem id="om_talentohumano_registrar" value="Registrar" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar.jsf"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
+                            <p:menuitem id="om_talentohumano_registrar_manual" value="Registrar manual" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar_manual.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_role" value="Roles" icon="fa fa-fw fa fa-group" outcome="/pages/fede/talentohumano/roles.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_employee" value="Empleados" icon="fa fa-fw fa fa-drivers-license" outcome="/pages/fede/talentohumano/employees.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                        </p:submenu>
+                        <p:submenu id="om_reportes" label="Reportes" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
+                            <p:menuitem id="om_resumen_ventas_productos" value="Resumen de ventas por productos" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/products.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_resumen_ventas_compras" value="Resumen de ventas/compras" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/summary.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
                         
 <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="fa fa-fw fa-cog">
