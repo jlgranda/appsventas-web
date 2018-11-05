@@ -164,6 +164,7 @@ public class SubjectHome extends FedeController implements Serializable {
                 _signup.setUuid(UUID.randomUUID().toString());
                 _signup.setSubjectType(Subject.Type.NATURAL);
                 _signup.setOwner(owner);
+                _signup.setAuthor(owner);
                 _signup.setConfirmed(true);
                 _signup.setActive(true);
                 

@@ -72,6 +72,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     private Long subjectId;
 
+    @Inject
     private Subject subject;
 
     private Subject subjectEdit;
