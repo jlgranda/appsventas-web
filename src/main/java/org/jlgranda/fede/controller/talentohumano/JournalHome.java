@@ -22,6 +22,7 @@ import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import com.jlgranda.fede.ejb.talentohumano.JournalService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -317,6 +318,7 @@ public class JournalHome extends FedeController implements Serializable {
         }
         journalService.save(journal.getId(), journal);
     }
+    
     public void add() throws IOException{
         getJournal().setName(calculeEvent(getEmployeeSelected()));
         getJournal().setEndTime(getJournal().getBeginTime()); //tiempo igual al de inicio
@@ -324,10 +326,59 @@ public class JournalHome extends FedeController implements Serializable {
         getJournal().setOwner(getEmployeeSelected().getOwner()); 
         getJournal().setAuthor(this.subject); //el admin
         getJournal().setEmployeeId(getEmployeeSelected().getId());
+        getJournal().setDescription("Ingresado por " + this.subject.getFullName());
+        
         journalService.save(getJournal().getId(), getJournal());
+        
         //setOutcome("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + getEmployeeSelected().getId());
         redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" +  + getEmployeeSelected().getId());
     }
+    
+    public void addRest() throws IOException{
+        Journal salida13h = journalService.createInstance();
+        Journal entrada14h = journalService.createInstance();
+        
+        Calendar c13h = Calendar.getInstance();
+        c13h.setTime(getJournal().getBeginTime());
+        c13h.set(Calendar.HOUR_OF_DAY, 13);
+        c13h.set(Calendar.MINUTE, 0);
+        c13h.set(Calendar.SECOND, 0);
+        c13h.set(Calendar.MILLISECOND, 0);
+        
+        Calendar c14h = Calendar.getInstance();
+        c14h.setTime(getJournal().getBeginTime());
+        c14h.set(Calendar.HOUR_OF_DAY, 14);
+        c14h.set(Calendar.MINUTE, 0);
+        c14h.set(Calendar.SECOND, 0);
+        c14h.set(Calendar.MILLISECOND, 0);
+        
+        //Salida 13h
+        salida13h.setName("Salida");
+        salida13h.setBeginTime(c13h.getTime()); //tiempo de entrada
+        salida13h.setEndTime(c13h.getTime()); //tiempo de entrada
+        salida13h.setLastUpdate(Dates.now());
+        salida13h.setOwner(getEmployeeSelected().getOwner()); 
+        salida13h.setAuthor(this.subject); //el admin
+        salida13h.setEmployeeId(getEmployeeSelected().getId());
+        salida13h.setDescription("Ingresado por " + this.subject.getFullName());
+        
+        //Entrada 14h
+        entrada14h.setName("Entrada");
+        entrada14h.setBeginTime(c14h.getTime()); //tiempo de salida
+        entrada14h.setEndTime(c14h.getTime()); //tiempo de salida
+        entrada14h.setLastUpdate(Dates.now());
+        entrada14h.setOwner(getEmployeeSelected().getOwner()); 
+        entrada14h.setAuthor(this.subject); //el admin
+        entrada14h.setEmployeeId(getEmployeeSelected().getId());
+        entrada14h.setDescription("Ingresado por " + this.subject.getFullName());
+        
+        journalService.save(salida13h.getId(), salida13h);
+        journalService.save(entrada14h.getId(), entrada14h);
+        
+        redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" +  + getEmployeeSelected().getId());
+    }
+    
+    
     public void check() {
         if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())){
             getJournal().setName(calculeEvent(getEmployee()));
@@ -338,6 +389,48 @@ public class JournalHome extends FedeController implements Serializable {
         } else {
             addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
         }
+    }
+    
+    public void checkRest() throws IOException{
+        Journal salida13h = journalService.createInstance();
+        Journal entrada14h = journalService.createInstance();
+        
+        Calendar c13h = Calendar.getInstance();
+        c13h.setTime(getJournal().getBeginTime());
+        c13h.set(Calendar.HOUR_OF_DAY, 13);
+        c13h.set(Calendar.MINUTE, 0);
+        c13h.set(Calendar.SECOND, 0);
+        c13h.set(Calendar.MILLISECOND, 0);
+        
+        Calendar c14h = Calendar.getInstance();
+        c14h.setTime(getJournal().getBeginTime());
+        c14h.set(Calendar.HOUR_OF_DAY, 14);
+        c14h.set(Calendar.MINUTE, 0);
+        c14h.set(Calendar.SECOND, 0);
+        c14h.set(Calendar.MILLISECOND, 0);
+        
+        //Salida 13h
+        salida13h.setName("Salida");
+        salida13h.setBeginTime(c13h.getTime()); //tiempo de entrada
+        salida13h.setEndTime(c13h.getTime()); //tiempo de entrada
+        salida13h.setLastUpdate(Dates.now());
+        salida13h.setOwner(getEmployeeSelected().getOwner()); 
+        salida13h.setAuthor(this.subject); //el admin
+        salida13h.setEmployeeId(getEmployee().getId());
+        salida13h.setDescription("Registrado por " + this.subject.getFullName());
+        
+        //Entrada 14h
+        entrada14h.setName("Entrada");
+        entrada14h.setBeginTime(c14h.getTime()); //tiempo de salida
+        entrada14h.setEndTime(c14h.getTime()); //tiempo de salida
+        entrada14h.setLastUpdate(Dates.now());
+        entrada14h.setOwner(getEmployeeSelected().getOwner()); 
+        entrada14h.setAuthor(this.subject); //el admin
+        entrada14h.setEmployeeId(getEmployee().getId());
+        entrada14h.setDescription("Registrado por " + this.subject.getFullName());
+        
+        journalService.save(salida13h.getId(), salida13h);
+        journalService.save(entrada14h.getId(), entrada14h);
     }
     
     private String calculeEvent(Employee e){

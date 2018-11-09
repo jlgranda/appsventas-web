@@ -71,29 +71,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <h1 class="SoftGray BigTopic">#{i18n['app.fede.talentohumano.registrar']}</h1>
                 <div class="ui-g-12">
-                    <p:calendar value="#{journalHome.journal.beginTime}" pattern="dd/MM/yyyy HH:mm:ss"></p:calendar>
-                    <p:commandButton value="#{i18n['Add']}" id="check" actionListener="#{journalHome.add()}" action="#{journalHome.redirect()}" icon="fa fa-plus" />
+                    <div class="ui-g-4">
+                        <p:calendar value="#{journalHome.journal.beginTime}" pattern="dd/MM/yyyy HH:mm:ss" mode="inline"></p:calendar>
+                        <p:commandButton id="add-btn" value="#{i18n['Add']}" actionListener="#{journalHome.add()}" 
+                                         action="#{journalHome.redirect()}" icon="fa fa-check" >
+                            <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                        </p:commandButton>
+                        <p:commandButton id="add-rest" value="#{i18n['Add']} #{i18n['common.rest']}" actionListener="#{journalHome.addRest()}" 
+                                         action="#{journalHome.redirect()}" icon="fa fa-check" styleClass="warning-btn" >
+                            <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                        </p:commandButton>
+                         <p:defaultCommand target="add-btn" />
+                    </div>
+                    <div class="ui-g-8">
+                        <p:dataTable var="journal" 
+                                     value="#{journalHome.employeeSelected.journals}" 
+                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                     reflow="true" 
+                                     rowKey="#{journal.id}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                     id="dataTableJournal" widgetVar="dataTable_j" lazy="true">
+                            <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
+                                <h:outputText value="#{journal.id}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                                <h:outputText value="#{journal.name}" />
+                            </p:column>
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{journal.beginTime}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
                 </div>
-                <div class="ui-g-12">
-                    <p:dataTable var="journal" 
-                                 value="#{journalHome.employeeSelected.journals}" 
-                                 paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                 reflow="true" 
-                                 rowKey="#{journal.id}" 
-                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                 id="dataTableJournal" widgetVar="dataTable_j" lazy="true">
-                        <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
-                            <h:outputText value="#{journal.name}" />
-                        </p:column>
-                        <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
-                                   styleClass="text-right">
-                            <h:outputText value="#{journal.beginTime}">
-                                <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:dataTable>
-                </div>
+                
             </div>
         </div>
 
