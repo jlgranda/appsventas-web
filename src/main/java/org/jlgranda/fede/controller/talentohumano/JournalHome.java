@@ -98,15 +98,15 @@ public class JournalHome extends FedeController implements Serializable {
     private boolean moveable = true;
     private boolean stackEvents = true;
     private String eventStyle = "box";
-    private boolean axisOnTop;
+    private boolean axisOnTop = true;
     private boolean showCurrentTime = true;
-    private boolean showNavigation = false;
+    private boolean showNavigation = true;
 
     @PostConstruct
     private void init() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "7"));
+            range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_REPORT_DEFAULT_RANGE, "7"));
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
             range = 7;
@@ -141,7 +141,10 @@ public class JournalHome extends FedeController implements Serializable {
                  && this.subject.isPersistent()) {
             this.employee = employeeService.findUniqueByNamedQuery("Employee.findByOwner", this.subject);
             for (Journal j : this.employee.getJournals()){
-                model.add(new TimelineEvent(j, j.getBeginTime()));
+                //Mostrar registros sólo del rango definido desde start date.
+                if (j.getBeginTime().compareTo(getStart()) > 0){
+                    model.add(new TimelineEvent(j, j.getBeginTime()));
+                }
             }
         
         }
@@ -436,27 +439,20 @@ public class JournalHome extends FedeController implements Serializable {
     private String calculeEvent(Employee e){
         String eventName = "";
         if (e.getJournals().isEmpty()){
-            eventName = "Entrada";
+            eventName = "REGISTRO";
         } else if (e.getJournals().size() % 2 != 0){
-            eventName = "Salida";
+            eventName = "REGISTRO";
         } else {
-            eventName = "Entrada";
+            eventName = "REGISTRO";
         }
         
         return eventName;
     }
     
     public void onRowSelect(SelectEvent event) {
-        System.out.println(">> onRowSelect");
-//        try {
-            //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 Employee e = (Employee) event.getObject();
-                System.out.println(">> Employe: " + e);
             }
-//        } catch (IOException ex) {
-//            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
-//        }
     }
 
     @Override
