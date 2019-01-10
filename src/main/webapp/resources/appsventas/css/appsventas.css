@@ -1272,3 +1272,12 @@ input[type="text"], input[type="password"], textarea{ -webkit-appearance: none; 
     background-color: #fff !important;
     color: #000 !important;
 }
+
+.Red {
+    color: red;
+    font-weight: 700;
+}
+.Gray {
+    color: gray;
+    font-weight: 700;
+}

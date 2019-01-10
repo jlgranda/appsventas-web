@@ -37,11 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12">
-                <!--<h1 class="BigTopicfa fa-check">#{journalHome.employee.role.name}</h1>-->
-                <h1 class="BigTopic">#{journalHome.employee.owner.fullName}</h1>
-                <h1 class="BigTopic">#{journalHome.employee.owner.code}</h1>
+                <h1 class="BigTopic Red">#{'Hola :)'} <span>#{journalHome.employee.owner.firstname}</span></h1>
+                <p class=" Gray">#{journalHome.employee.owner.code} - #{journalHome.employee.owner.fullName}</p>
                 <div class="ui-g-12">
-                    <p:timeline id="timeline" value="#{journalHome.model}" height="250px"
+                    <p:timeline id="timeline" value="#{journalHome.model}" height="200px"
                             selectable="#{journalHome.selectable}"
                             zoomable="#{journalHome.zoomable}"
                             moveable="#{journalHome.moveable}"
@@ -59,6 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:clock displayMode="analog" mode="server"/>
                 </div>
                 <div class="ui-g-6">
+                    <h1 class="BigTopic Gray">#{'Hoy será el mejor día, disfruta tu trabajo en el emporio lojano.'}</h1>
                     <jlgranda:input id="psw" name="password" type="password" label="#{i18n['common.password']}" 
                                     value="#{journalHome.password}" required="true" inlinehelp="#{messages['common.password.first']}" execute="@this check" render="psw"/>
                     <p:commandButton value="#{i18n['app.fede.talentohumano.check']}" id="check-btn" 
