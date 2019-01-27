@@ -35,6 +35,7 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.management.Organization;
+import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Setting;
@@ -153,6 +154,20 @@ public class UI {
             items.add(item);
         }
 
+        return items;
+    }
+    public List<SelectItem> getPaymentMethodsAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        item = new SelectItem("EFECTIVO", "EFECTIVO");
+        items.add(item);
+        item = new SelectItem("TARJETA CREDITO", "TARJETA CREDITO");
+        items.add(item);
+        item = new SelectItem("TARJETA DEBITO", "TARJETA DEBITO");
+        items.add(item);
+        
         return items;
     }
     
