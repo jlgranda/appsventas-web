@@ -171,9 +171,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      style="width:36px; height: 36px;">
                                     </p:commandButton>
                                 </ui:repeat>
+                                <ui:repeat value="#{inventoryHome.findLast()}" var="product">  
+                                    <p:commandButton ajax="true" update="@form" immediate="true"
+                                                     actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
+                                                     icon="#{product.icon}" styleClass="danger-btn" title="#{product.name}"
+                                                     style="width:36px; height: 36px;">
+                                    </p:commandButton>
+                                </ui:repeat>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
                                                  actionListener="#{invoiceHome.touch('80,101')}" disabled="#{false}"
-                                                 icon="flaticon-empanada-cafe" styleClass="warning-btn" title="Empanada + Café"
+                                                 icon="flaticon-empanada-cafe" styleClass="success-btn" title="Empanada + Café"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
@@ -244,7 +251,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </h:outputText>]</h2>
                                 <div class="ui-g-12">
                                     <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
-                                        <div class="ui-g-3">
+                                        <div class="ui-g-2">
                                             <div class="card TexAlCenter">
                                                 <i class="#{empty detail.product.icon ? '' : (detail.product.icon.contains('flaticon') ? 'ui-icon ui-icon-appsventas '.concat(detail.product.icon) : detail.product.icon.concat('Fs40 BoldGray DispBlock'))}"></i>
                                                 <div class="EmptyBox5"></div>

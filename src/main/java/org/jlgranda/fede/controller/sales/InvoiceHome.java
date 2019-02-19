@@ -306,6 +306,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.sortOrder = sortOrder;
     }
 
+    /**
+     * Obtiene la lista de Pre facturas en estado de PRE_INVOICE
+     * para la fecha 
+     * @return 
+     */
     public List<Invoice> getMyLastlastPreInvoices() {
         if (myLastlastPreInvoices.isEmpty()){
             filter(subject, getStart(), getEnd(), DocumentType.PRE_INVOICE, getKeyword(), getTags());

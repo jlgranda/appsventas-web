@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">#{i18n['app.name']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.name']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/sales/kitchen/orders.jsf">#{i18n['app.fede.allmysales']}</p:link></li>
+    </ui:define>
+
+    <ui:define name="content">
+        <o:importConstants type="org.jpapi.model.StatusType" />
+        <div class="ui-g">
+            <div class="card">
+                <div class="ui-g">
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <ui:repeat value="#{invoiceHome.myLastlastPreInvoices}" var="entity">
+                                <div class="Container60 Fs50 Orange">
+                                    <span class="Fs20 DispBlock">
+                                        #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText #{entity.status} White " style="#{entity.status eq 'ATTEND' ? 'background-color: #4b6cb7;' : ''}"> #{entity.boardNumber}</span></i>
+                                    </span>
+                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{entity.total}">
+                                            <f:convertNumber type="currency"/>
+                                        </h:outputText>
+                                    </span>
+                                    <span class="Gray Fs12 DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                    <hr></hr>
+                                </div>
+                                <div class="Container40">
+                                    <!--Botón de marcado como atendido-->
+                                    <p:commandButton title="#{i18n['common.attend']}" 
+                                                     icon="fa fa-thumbs-o-up"
+                                                     styleClass="secondary-button Fright #{entity.status}"
+                                                     action="#{invoiceHome.attend(entity.id)}"
+                                                     ajax="false"
+                                                     immediate="true"
+                                                     rendered="true">
+                                    </p:commandButton>
+                                </div>
+                                <div class="EmptyBox10"></div>
+                                <div class="Separator"></div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
