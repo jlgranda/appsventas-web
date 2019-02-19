@@ -282,25 +282,7 @@ public class InventoryHome extends FedeController implements Serializable {
         });
         return result;
     }
-    /**
-     * TODO obtener el top 10 de productos, esta implementación es ineficiente
-     * recupera los objetos de uno en uno.
-     * @return 
-     */
-    public List<Product> findLast() {
-        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "3"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findLastProductIdsBetween", top, getStart(), getEnd());
-        List<Product> result = new ArrayList<>();
-        objects.stream().forEach((Object[] object) -> {
-            Product _product = productService.find((Long) object[0]);
-            if (_product != null){
-                //_product.getStatistics().setCount((Double) object[1]);
-                result.add(_product);
-            }
-        });
-        return result;
-    }
-    
+   
     public List<Product> findLastProductsByType(String type) {
         Map<String, Object> filters = new HashMap<>();
         Map<String, String> columns = new HashMap<>();

@@ -171,13 +171,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      style="width:36px; height: 36px;">
                                     </p:commandButton>
                                 </ui:repeat>
-                                <ui:repeat value="#{inventoryHome.findLast()}" var="product">  
-                                    <p:commandButton ajax="true" update="@form" immediate="true"
-                                                     actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
-                                                     icon="#{product.icon}" styleClass="danger-btn" title="#{product.name}"
-                                                     style="width:36px; height: 36px;">
-                                    </p:commandButton>
-                                </ui:repeat>
                                 <p:commandButton ajax="true" update="@form" immediate="true"
                                                  actionListener="#{invoiceHome.touch('80,101')}" disabled="#{false}"
                                                  icon="flaticon-empanada-cafe" styleClass="success-btn" title="Empanada + Café"
@@ -228,16 +221,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:commandButton>
                             </div>
                             <div class="ui-g-3">
-                                <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" 
-                                                minQueryLength="2" completeMethod="#{inventoryHome.find}"
-                                                var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="5" itemValue="#{entidad}" 
-                                                converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
-                                                placeholder="#{settingHome.getValue('app.sales.detail.placeholder', 'Buscar producto...')}">
-                                    <p:column>
-                                        <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
-                                    </p:column>
-                                    <p:ajax event="itemSelect" update="@form:DetailPanel" listener="#{invoiceHome.addCandidateDetail()}" partialSubmit="true"></p:ajax>
-                                </p:autoComplete>
+                                <p:panel id="AutoCompletePanel" class="">
+                                    <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" 
+                                                    minQueryLength="2" completeMethod="#{inventoryHome.find}"
+                                                    var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="5" itemValue="#{entidad}" 
+                                                    converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
+                                                    placeholder="#{settingHome.getValue('app.sales.detail.placeholder', 'Buscar producto...')}">
+                                        <p:column>
+                                            <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
+                                        </p:column>
+                                        <p:ajax event="itemSelect" update="@form:DetailPanel @form:AutoCompletePanel" listener="#{invoiceHome.addCandidateDetail()}" partialSubmit="true"></p:ajax>
+                                    </p:autoComplete>
+                                    <ui:repeat value="#{invoiceHome.recents.toArray()}" var="product">  
+                                        <p:commandButton ajax="true" update="@form" immediate="true"
+                                                         actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
+                                                         icon="#{product.icon}" styleClass="danger-btn" title="#{product.name}"
+                                                         style="width:36px; height: 36px;">
+                                        </p:commandButton>
+                                    </ui:repeat>
+                                </p:panel>
                             </div>
                         </div>
                     </div>

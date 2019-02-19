@@ -33,8 +33,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -112,6 +115,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Detail candidateDetail;
 
     private List<Detail> candidateDetails = new ArrayList<>();
+    
+    private Set<Product> recents = new HashSet<Product>();
     
     private Payment payment;
     
@@ -266,6 +271,14 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void setCandidateDetails(List<Detail> candidateDetails) {
         this.candidateDetails = candidateDetails;
+    }
+
+    public Set<Product> getRecents() {
+        return recents;
+    }
+
+    public void setRecents(Set<Product> recents) {
+        this.recents = recents;
     }
 
     public Payment getPayment() {
@@ -716,6 +729,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
         
+        //Agregar a lista de últimos agregados
+        getRecents().add(product);
         return true;
     }
     
