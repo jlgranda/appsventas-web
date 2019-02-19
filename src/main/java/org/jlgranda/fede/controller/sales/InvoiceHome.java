@@ -708,9 +708,11 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public boolean addCandidateDetail(){
+        
+        Product p = candidateDetail.getProduct();
         touch(candidateDetail.getProduct());
         //Agregar a lista de últimos agregados desde autocomplete
-        getRecents().add(candidateDetail.getProduct());
+        getRecents().add(p);
         return true;
     }
     
