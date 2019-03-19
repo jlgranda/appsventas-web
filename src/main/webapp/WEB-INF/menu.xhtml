@@ -28,6 +28,7 @@
                         <p:submenu id="om_reportes" label="Reportes" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
                             <p:menuitem id="om_resumen_ventas_productos" value="Resumen de ventas por productos" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/products.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                             <p:menuitem id="om_resumen_ventas_compras" value="Resumen de ventas/compras" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/summary.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_detalle_registro" value="Detalle registros" icon="fa fa-fw fa-list-ol" outcome="/pages/fede/talentohumano/detalle_registros.jsf"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
                         </p:submenu>
                         
 <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="fa fa-fw fa-cog">
