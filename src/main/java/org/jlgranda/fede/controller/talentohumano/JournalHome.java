@@ -17,12 +17,12 @@
 package org.jlgranda.fede.controller.talentohumano;
 
 import com.google.common.base.Strings;
-import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import com.jlgranda.fede.ejb.talentohumano.JournalService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -36,6 +36,7 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.model.talentohumano.Journal;
 import org.jlgranda.fede.ui.model.LazyEmployeeDataModel;
+import org.jlgranda.fede.ui.model.LazyJournalDataModel;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -55,39 +56,41 @@ import org.slf4j.LoggerFactory;
 public class JournalHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -3433906827306269659L;
-    
+
     Logger logger = LoggerFactory.getLogger(JournalHome.class);
-    
+
     private Employee employee;
     private Employee employeeSelected;
-    
+
     private Long employeeSelectedId;
-    
+
     private Journal journal;
-    
+
     @Inject
     private SettingHome settingHome;
-    
+
     protected List<Employee> selectedEmployees;
-    
-    private LazyEmployeeDataModel lazyDataModel;
-    
+
+    private LazyEmployeeDataModel lazyEmployeeDataModel;
+
+    private LazyJournalDataModel lazyDataModel;
+
     @EJB
     private EmployeeService employeeService;
-    
+
     @EJB
     private JournalService journalService;
-    
+
     @Inject
     private Subject subject;
-    
+
     private String password;
-    
+
     PasswordService passwordService = new DefaultPasswordService();
-    
+
     //UIX
     private TimelineModel model;
- 
+
     private boolean selectable = true;
     private boolean zoomable = true;
     private boolean moveable = true;
@@ -101,22 +104,23 @@ public class JournalHome extends FedeController implements Serializable {
     private void init() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_REPORT_DEFAULT_RANGE, "7"));
+            //range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_REPORT_DEFAULT_RANGE, "7"));
+            range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
             range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        
+
         setEmployee(null); //Forzar inicilización con subject
         setEmployeeSelected(employeeService.createInstance());
         setOutcome("registrar");
-        
+
         //Establecer objeto para nuevas entradas
         setJournal(journalService.createInstance());
         getJournal().setBeginTime(Dates.now()); //Fecha y hora actual
-        
+
         //Modelo de línea de tiempo. Enfocar en el día actual
         model = new TimelineModel();
         Journal inicioDia = new Journal();
@@ -129,19 +133,18 @@ public class JournalHome extends FedeController implements Serializable {
         model.add(new TimelineEvent(finDia, finDia.getBeginTime()));
     }
 
-
     public Employee getEmployee() {
-         if (this.employee == null
-                 && this.subject != null 
-                 && this.subject.isPersistent()) {
+        if (this.employee == null
+                && this.subject != null
+                && this.subject.isPersistent()) {
             this.employee = employeeService.findUniqueByNamedQuery("Employee.findByOwner", this.subject);
-            for (Journal j : this.employee.getJournals()){
+            for (Journal j : this.employee.getJournals()) {
                 //Mostrar registros sólo del rango definido desde start date.
-                if (j.getBeginTime().compareTo(getStart()) > 0){
+                if (j.getBeginTime().compareTo(getStart()) > 0) {
                     model.add(new TimelineEvent(j, j.getBeginTime()));
                 }
             }
-        
+
         }
         return employee;
     }
@@ -170,7 +173,7 @@ public class JournalHome extends FedeController implements Serializable {
     }
 
     public List<Employee> getSelectedEmployees() {
-        
+
         return selectedEmployees;
     }
 
@@ -266,32 +269,47 @@ public class JournalHome extends FedeController implements Serializable {
         this.showNavigation = showNavigation;
     }
 
-    public LazyEmployeeDataModel getLazyDataModel() {
+    public LazyEmployeeDataModel getLazyEmployeeDataModel() {
+        filter();
+        return lazyEmployeeDataModel;
+    }
+
+    public void setLazyEmployeeDataModel(LazyEmployeeDataModel lazyDataModel) {
+        this.lazyEmployeeDataModel = lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyJournalDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+
+    public LazyJournalDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
     }
 
-    public void setLazyDataModel(LazyEmployeeDataModel lazyDataModel) {
-        this.lazyDataModel = lazyDataModel;
-    }
-    
     public void onSelect(TimelineSelectEvent e) {
         TimelineEvent timelineEvent = e.getTimelineEvent();
         Journal j = (Journal) timelineEvent.getData();
         addWarningMessage(j.getName(), j.getEndTime().toString());
- 
+
     }
-    
+
+    public void clear() {
+        lazyDataModel = null;
+    }
+
     /**
      * Filtro que llena el Lazy Datamodel
      */
     private void filter() {
         if (lazyDataModel == null) {
-            lazyDataModel = new LazyEmployeeDataModel(employeeService);
+            lazyDataModel = new LazyJournalDataModel(journalService);
         }
-        
+
         lazyDataModel.setOwner(null); //listar todos
         lazyDataModel.setAuthor(subject);
+        lazyDataModel.setStart(this.getStart());
+        lazyDataModel.setEnd(this.getEnd());
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
@@ -303,11 +321,11 @@ public class JournalHome extends FedeController implements Serializable {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
         }
-        
+
     }
-    
-    public void save(){
-        if (getJournal().isPersistent()){
+
+    public void save() {
+        if (getJournal().isPersistent()) {
             getJournal().setLastUpdate(Dates.now());
         } else {
             getJournal().setLastUpdate(Dates.now());
@@ -316,138 +334,148 @@ public class JournalHome extends FedeController implements Serializable {
         }
         journalService.save(journal.getId(), journal);
     }
-    
-    public void add() throws IOException{
+
+    public void add() throws IOException {
         getJournal().setName(calculeEvent(getEmployeeSelected()));
         getJournal().setEndTime(getJournal().getBeginTime()); //tiempo igual al de inicio
         getJournal().setLastUpdate(Dates.now());
-        getJournal().setOwner(getEmployeeSelected().getOwner()); 
+        getJournal().setOwner(getEmployeeSelected().getOwner());
         getJournal().setAuthor(this.subject); //el admin
         getJournal().setEmployeeId(getEmployeeSelected().getId());
         getJournal().setDescription("Ingresado por " + this.subject.getFullName());
-        
+
         journalService.save(getJournal().getId(), getJournal());
-        
+
         //setOutcome("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + getEmployeeSelected().getId());
-        redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" +  + getEmployeeSelected().getId());
+        redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + +getEmployeeSelected().getId());
     }
-    
-    public void addRest() throws IOException{
+
+    public void addRest() throws IOException {
         Journal salida13h = journalService.createInstance();
         Journal entrada14h = journalService.createInstance();
-        
+
         Calendar c13h = Calendar.getInstance();
         c13h.setTime(getJournal().getBeginTime());
         c13h.set(Calendar.HOUR_OF_DAY, 13);
         c13h.set(Calendar.MINUTE, 0);
         c13h.set(Calendar.SECOND, 0);
         c13h.set(Calendar.MILLISECOND, 0);
-        
+
         Calendar c14h = Calendar.getInstance();
         c14h.setTime(getJournal().getBeginTime());
         c14h.set(Calendar.HOUR_OF_DAY, 14);
         c14h.set(Calendar.MINUTE, 0);
         c14h.set(Calendar.SECOND, 0);
         c14h.set(Calendar.MILLISECOND, 0);
-        
+
         //Salida 13h
         salida13h.setName("Salida");
         salida13h.setBeginTime(c13h.getTime()); //tiempo de entrada
         salida13h.setEndTime(c13h.getTime()); //tiempo de entrada
         salida13h.setLastUpdate(Dates.now());
-        salida13h.setOwner(getEmployeeSelected().getOwner()); 
+        salida13h.setOwner(getEmployeeSelected().getOwner());
         salida13h.setAuthor(this.subject); //el admin
         salida13h.setEmployeeId(getEmployeeSelected().getId());
         salida13h.setDescription("Ingresado por " + this.subject.getFullName());
-        
+
         //Entrada 14h
         entrada14h.setName("Entrada");
         entrada14h.setBeginTime(c14h.getTime()); //tiempo de salida
         entrada14h.setEndTime(c14h.getTime()); //tiempo de salida
         entrada14h.setLastUpdate(Dates.now());
-        entrada14h.setOwner(getEmployeeSelected().getOwner()); 
+        entrada14h.setOwner(getEmployeeSelected().getOwner());
         entrada14h.setAuthor(this.subject); //el admin
         entrada14h.setEmployeeId(getEmployeeSelected().getId());
         entrada14h.setDescription("Ingresado por " + this.subject.getFullName());
-        
+
         journalService.save(salida13h.getId(), salida13h);
         journalService.save(entrada14h.getId(), entrada14h);
-        
-        redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" +  + getEmployeeSelected().getId());
+
+        redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + +getEmployeeSelected().getId());
     }
-    
-    
+
     public void check() {
-        if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())){
-            getJournal().setName(calculeEvent(getEmployee()));
-            getJournal().setBeginTime(Dates.now());
-            getJournal().setEndTime(Dates.now());
-            getJournal().setEmployeeId(getEmployee().getId());
-            save();
+        if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
+            System.out.println("Fecha de registro => " + getJournal().getActivationTime());
+            if (isCheckable(Dates.now(), getJournal().getActivationTime())) {
+                getJournal().setName(calculeEvent(getEmployee()));
+                getJournal().setBeginTime(Dates.now());
+                getJournal().setEndTime(Dates.now());
+                getJournal().setEmployeeId(getEmployee().getId());
+                save();
+            }else{
+                addWarningMessage("Acabó de realizar un registro!", "Vuelva a intentar despues de un momento.");
+            }
         } else {
             addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
         }
     }
-    
-    public void checkRest() throws IOException{
+
+    public boolean isCheckable(Date startDate, Date endDate) {
+        System.out.println("Time diff => " + Dates.calculateNumberOfMinutesBetween(startDate, endDate));
+        long diffTime = Dates.calculateNumberOfMinutesBetween(startDate, endDate);
+        return diffTime <= 1 || diffTime > 300;
+    }
+
+    public void checkRest() throws IOException {
         Journal salida13h = journalService.createInstance();
         Journal entrada14h = journalService.createInstance();
-        
+
         Calendar c13h = Calendar.getInstance();
         c13h.setTime(getJournal().getBeginTime());
         c13h.set(Calendar.HOUR_OF_DAY, 13);
         c13h.set(Calendar.MINUTE, 0);
         c13h.set(Calendar.SECOND, 0);
         c13h.set(Calendar.MILLISECOND, 0);
-        
+
         Calendar c14h = Calendar.getInstance();
         c14h.setTime(getJournal().getBeginTime());
         c14h.set(Calendar.HOUR_OF_DAY, 14);
         c14h.set(Calendar.MINUTE, 0);
         c14h.set(Calendar.SECOND, 0);
         c14h.set(Calendar.MILLISECOND, 0);
-        
+
         //Salida 13h
         salida13h.setName("Salida");
         salida13h.setBeginTime(c13h.getTime()); //tiempo de entrada
         salida13h.setEndTime(c13h.getTime()); //tiempo de entrada
         salida13h.setLastUpdate(Dates.now());
-        salida13h.setOwner(getEmployeeSelected().getOwner()); 
+        salida13h.setOwner(getEmployeeSelected().getOwner());
         salida13h.setAuthor(this.subject); //el admin
         salida13h.setEmployeeId(getEmployee().getId());
         salida13h.setDescription("Registrado por " + this.subject.getFullName());
-        
+
         //Entrada 14h
         entrada14h.setName("Entrada");
         entrada14h.setBeginTime(c14h.getTime()); //tiempo de salida
         entrada14h.setEndTime(c14h.getTime()); //tiempo de salida
         entrada14h.setLastUpdate(Dates.now());
-        entrada14h.setOwner(getEmployeeSelected().getOwner()); 
+        entrada14h.setOwner(getEmployeeSelected().getOwner());
         entrada14h.setAuthor(this.subject); //el admin
         entrada14h.setEmployeeId(getEmployee().getId());
         entrada14h.setDescription("Registrado por " + this.subject.getFullName());
-        
+
         journalService.save(salida13h.getId(), salida13h);
         journalService.save(entrada14h.getId(), entrada14h);
     }
-    
-    private String calculeEvent(Employee e){
+
+    private String calculeEvent(Employee e) {
         String eventName = "";
-        if (e.getJournals().isEmpty()){
+        if (e.getJournals().isEmpty()) {
             eventName = "REGISTRO";
-        } else if (e.getJournals().size() % 2 != 0){
+        } else if (e.getJournals().size() % 2 != 0) {
             eventName = "REGISTRO";
         } else {
             eventName = "REGISTRO";
         }
-        
+
         return eventName;
     }
-    
+
     public void onRowSelect(SelectEvent event) {
-            if (event != null && event.getObject() != null) {
-                Employee e = (Employee) event.getObject();
-            }
+        if (event != null && event.getObject() != null) {
+            Employee e = (Employee) event.getObject();
+        }
     }
 
     @Override
