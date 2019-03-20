@@ -27,6 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="showCurrentDay" value="#{journalHome.showCurrentDay}" />
+        </f:metadata>
     </ui:define>
 
     <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
@@ -41,53 +44,85 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p class=" Gray">#{journalHome.employee.owner.code} - #{journalHome.employee.owner.fullName}</p>
                 <div class="ui-g-12">
                     <p:timeline id="timeline" value="#{journalHome.model}" height="200px"
-                            selectable="#{journalHome.selectable}"
-                            zoomable="#{journalHome.zoomable}"
-                            moveable="#{journalHome.moveable}"
-                            stackEvents="#{journalHome.stackEvents}"
-                            axisOnTop="#{journalHome.axisOnTop}"
-                            eventStyle="#{journalHome.eventStyle}"
-                            showCurrentTime="#{journalHome.showCurrentTime}"
-                            showNavigation="#{journalHome.showNavigation}" locale="#{'es_EC'}">
-
+                                selectable="#{journalHome.selectable}"
+                                zoomable="#{journalHome.zoomable}"
+                                moveable="#{journalHome.moveable}"
+                                stackEvents="#{journalHome.stackEvents}"
+                                axisOnTop="#{journalHome.axisOnTop}"
+                                eventStyle="#{journalHome.eventStyle}"
+                                showCurrentTime="#{journalHome.showCurrentTime}"
+                                showNavigation="#{journalHome.showNavigation}" locale="#{'es_EC'}" rendered="false">
                         <p:ajax event="select" listener="#{journalHome.onSelect}"/>
                     </p:timeline>
                 </div>
-                <h1 class="SoftGray BigTopic">#{i18n['app.fede.talentohumano.registrar']}</h1>
-                <div class="ui-g-6">
+                <h1 class="SoftGray BigTopic">#{'Hoy será el mejor día, disfruta tu trabajo en el emporio lojano.'}</h1>
+                <div class="ui-g-4">
                     <p:clock displayMode="analog" mode="server"/>
                 </div>
-                <div class="ui-g-6">
-                    <h1 class="BigTopic Gray">#{'Hoy será el mejor día, disfruta tu trabajo en el emporio lojano.'}</h1>
-                    <jlgranda:input id="psw" name="password" type="password" label="#{i18n['common.password']}" 
-                                    value="#{journalHome.password}" required="true" inlinehelp="#{messages['common.password.first']}" execute="@this check" render="psw"/>
-                    <p:commandButton value="#{i18n['app.fede.talentohumano.check']}" id="check-btn" 
-                                     actionListener="#{journalHome.check()}" action="#{journalHome.redirect()}" icon="fa fa-handshake-o">
-                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
-                    </p:commandButton>
-                    
-                    <p:commandButton value="#{i18n['Add']} #{i18n['common.rest']}" id="rest-btn" 
-                                     actionListener="#{journalHome.checkRest()}" action="#{journalHome.redirect()}" icon="fa fa-spoon" styleClass="warning-btn" >
-                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
-                    </p:commandButton>
-                    
-                    <p:defaultCommand target="check-btn" />
+                <div class="ui-g-8">
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+                            <div class="ui-g-4">
+                                <jlgranda:input id="psw" name="password" type="password" label="#{i18n['common.password']}" 
+                                                value="#{journalHome.password}" required="true" 
+                                                inlinehelp="#{messages['common.password.first']}" execute="@this check" render="psw"
+                                                containe="none" placeholder="true"/>
+                            </div>
+                            <div class="ui-g-8">
+                                <p:commandButton value="#{i18n['app.fede.talentohumano.check']}" id="check-btn" 
+                                                 actionListener="#{journalHome.check()}" action="#{journalHome.redirect()}" icon="fa fa-handshake-o">
+                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                </p:commandButton>
+                            </div>
+                            <p:commandButton value="#{i18n['Add']} #{i18n['common.rest']}" id="rest-btn" rendered="false"
+                                             actionListener="#{journalHome.checkRest()}" action="#{journalHome.redirect()}" icon="fa fa-spoon" styleClass="warning-btn" >
+                                <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                            </p:commandButton>
+
+                            <p:defaultCommand target="check-btn" />
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="card">
+                                <p:dataTable var="journal" 
+                                             value="#{journalHome.lazyDataModel}" 
+                                             paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                             sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                             reflow="true" selection="#{journalHome.selectedBussinesEntities}" 
+                                             rowKey="#{journal.id}" 
+                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                             id="dataTableJournal" widgetVar="dataTable_j" lazy="true">
+                                    <p:ajax event="rowSelect" listener="#{journalHome.onRowSelect}"/>
+                                    <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
+                                        <h:outputText value="#{journal.id}" />
+                                    </p:column>
+                                    <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                                        <h:outputText value="#{journal.name}" />
+                                    </p:column>
+                                    <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.date_entry']}" sortBy="#{journal.activationTime}"
+                                               styleClass="text-right">
+                                        <h:outputText value="#{journal.activationTime}">
+                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
+                                        </h:outputText>
+                                    </p:column>s                    
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">
             //<![CDATA[
 
             $(document).ready(function () {
-                $('input[id*="spinner"]').attr('type', 'number');
-                $(this).select();
+            $('input[id*="spinner"]').attr('type', 'number');
+            $(this).select();
             });
 
             $('input[id*="spinner"]').focus(function () {
-                $(this).select();
+            $(this).select();
             });
             //]]>
         </script>

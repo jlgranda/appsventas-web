@@ -126,7 +126,7 @@ limitations under the License.
             <c:if test="#{container != 'default'}">
 
                 <div class="#{container == 'none' ? '' : 'Container'.concat(container).concat(' Responsive50')}">
-                    <h:panelGroup id="panel-group-#{id}" layout="block" class="ContainerIndent" rendered="#{rendered}">
+                    <h:panelGroup id="panel-group-#{id}" layout="block" class="" rendered="#{rendered}">
                         <c:if test="#{placeholder == 'false' and rendered == 'true'}">
                             <h2 class="BigTopic">#{label}</h2>
                             <!--<h:outputText value="#{label}" />-->

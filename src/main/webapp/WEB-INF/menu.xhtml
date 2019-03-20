@@ -20,15 +20,15 @@
                             <p:menuitem id="om_subjects" value="Sujetos" icon="fa fa-fw fa-user" outcome="/pages/fede/admin/subject/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
                         </p:submenu>
                         <p:submenu id="om_talento_humano" label="Talento Humano" icon="fa fa-fw fa-clock-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
-                            <p:menuitem id="om_talentohumano_registrar" value="Registrar" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar.jsf"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
+                            <p:menuitem id="om_talentohumano_registrar" value="Registrar" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
+                            <p:menuitem id="om_talentohumano_detalle_registro" value="Detalle registros" icon="fa fa-fw fa-list-ol" outcome="/pages/fede/talentohumano/detalle_registros.jsf"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
                             <p:menuitem id="om_talentohumano_registrar_manual" value="Registrar manual" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar_manual.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                             <p:menuitem id="om_talentohumano_role" value="Roles" icon="fa fa-fw fa fa-group" outcome="/pages/fede/talentohumano/roles.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                             <p:menuitem id="om_talentohumano_employee" value="Empleados" icon="fa fa-fw fa fa-drivers-license" outcome="/pages/fede/talentohumano/employees.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
-                        <p:submenu id="om_reportes" label="Reportes" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
+                        <p:submenu id="om_reportes" label="Reportes" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN')}">
                             <p:menuitem id="om_resumen_ventas_productos" value="Resumen de ventas por productos" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/products.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                             <p:menuitem id="om_resumen_ventas_compras" value="Resumen de ventas/compras" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/summary.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
-                            <p:menuitem id="om_talentohumano_detalle_registro" value="Detalle registros" icon="fa fa-fw fa-list-ol" outcome="/pages/fede/talentohumano/detalle_registros.jsf"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
                         </p:submenu>
                         
 <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="fa fa-fw fa-cog">

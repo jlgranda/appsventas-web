@@ -295,7 +295,7 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
+            <version>[1.3.3,)</version>
             <scope>compile</scope>
         </dependency>
    
@@ -428,8 +428,8 @@
                 <configuration>
                     <modules-path>
                         <paths>
-                            <jboss-home>/home/opt/wildfly-10.0.0.Final</jboss-home>
-                            <modules-path>/home/opt/wildfly-10.0.0.Final/modules</modules-path>
+                            <jboss-home>/home/opt/wildfly-13.0.0.Final</jboss-home>
+                            <modules-path>/home/opt/wildfly-13.0.0.Final/modules</modules-path>
                         </paths>
                     </modules-path>
                 </configuration>

@@ -100,19 +100,12 @@ public class JournalHome extends FedeController implements Serializable {
     private boolean showCurrentTime = true;
     private boolean showNavigation = true;
 
+    private boolean showCurrentDay = false;
+
     @PostConstruct
     private void init() {
-        int range = 0; //Rango de fechas para visualiar lista de entidades
-        try {
-            //range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_REPORT_DEFAULT_RANGE, "7"));
-            range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 7;
-        }
-        setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-
+        
+        initializeDateRange();
         setEmployee(null); //Forzar inicilización con subject
         setEmployeeSelected(employeeService.createInstance());
         setOutcome("registrar");
@@ -274,6 +267,17 @@ public class JournalHome extends FedeController implements Serializable {
         return lazyEmployeeDataModel;
     }
 
+    public void setShowCurrentDay(boolean showCurrentDay){
+        System.out.println("setShowCurrentDay: " + showCurrentDay);
+        this.showCurrentDay = showCurrentDay;
+        clear(); //forzar carga de lazyDataModel
+        initializeDateRange();
+    }
+
+    public boolean isShowCurrentDay(){
+        return showCurrentDay;
+    }
+
     public void setLazyEmployeeDataModel(LazyEmployeeDataModel lazyDataModel) {
         this.lazyEmployeeDataModel = lazyDataModel;
     }
@@ -394,10 +398,10 @@ public class JournalHome extends FedeController implements Serializable {
         redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + +getEmployeeSelected().getId());
     }
 
-    public void check() {
+    public void check() throws IOException {
         if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
-            System.out.println("Fecha de registro => " + getJournal().getActivationTime());
-            if (isCheckable(Dates.now(), getJournal().getActivationTime())) {
+            //System.out.println("Fecha de registro => " + getJournal().getActivationTime());
+            if (true /*isCheckable(Dates.now(), getJournal().getActivationTime())*/) {
                 getJournal().setName(calculeEvent(getEmployee()));
                 getJournal().setBeginTime(Dates.now());
                 getJournal().setEndTime(Dates.now());
@@ -409,10 +413,12 @@ public class JournalHome extends FedeController implements Serializable {
         } else {
             addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
         }
+        
+        redirectTo("/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true");
     }
 
     public boolean isCheckable(Date startDate, Date endDate) {
-        System.out.println("Time diff => " + Dates.calculateNumberOfMinutesBetween(startDate, endDate));
+        //System.out.println("Time diff => " + Dates.calculateNumberOfMinutesBetween(startDate, endDate));
         long diffTime = Dates.calculateNumberOfMinutesBetween(startDate, endDate);
         return diffTime <= 1 || diffTime > 300;
     }
@@ -491,5 +497,23 @@ public class JournalHome extends FedeController implements Serializable {
     @Override
     public void handleReturn(SelectEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void initializeDateRange() {
+        int range = 0; //Rango de fechas para visualiar lista de entidades
+        try {
+            //range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_REPORT_DEFAULT_RANGE, "7"));
+            if (isShowCurrentDay()){
+                range = 1; //El día de hoy
+            } else {
+                range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
+            }
+            System.out.println(">>>> Estableciendo el range: " + range);
+        } catch (java.lang.NumberFormatException nfe) {
+            nfe.printStackTrace();
+            range = 7;
+        }
+        setEnd(Dates.maximumDate(Dates.now()));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
 }
