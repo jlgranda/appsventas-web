@@ -96,7 +96,6 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
 
     public List<Journal> getResultList() {
         logger.info("load BussinesEntitys");
-
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
@@ -234,7 +233,7 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
             }
         }
         if (!range.isEmpty()){
-            _filters.put(Journal_.createdOn.getName(), range); //Filtro de fecha inicial
+            _filters.put(Journal_.beginTime.getName(), range); //Filtro de fecha registro
         }
         if (getOwner() != null){
             _filters.put(Journal_.owner.getName(), getOwner()); //Filtro por defecto

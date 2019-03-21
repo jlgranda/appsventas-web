@@ -22,7 +22,6 @@ import com.jlgranda.fede.ejb.talentohumano.JournalService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -268,7 +267,6 @@ public class JournalHome extends FedeController implements Serializable {
     }
 
     public void setShowCurrentDay(boolean showCurrentDay){
-        System.out.println("setShowCurrentDay: " + showCurrentDay);
         this.showCurrentDay = showCurrentDay;
         clear(); //forzar carga de lazyDataModel
         initializeDateRange();
@@ -310,8 +308,8 @@ public class JournalHome extends FedeController implements Serializable {
             lazyDataModel = new LazyJournalDataModel(journalService);
         }
 
-        lazyDataModel.setOwner(null); //listar todos
-        lazyDataModel.setAuthor(subject);
+        lazyDataModel.setOwner(subject); //listar todos
+        lazyDataModel.setAuthor(null);
         lazyDataModel.setStart(this.getStart());
         lazyDataModel.setEnd(this.getEnd());
 
@@ -333,8 +331,8 @@ public class JournalHome extends FedeController implements Serializable {
             getJournal().setLastUpdate(Dates.now());
         } else {
             getJournal().setLastUpdate(Dates.now());
-            getJournal().setOwner(this.subject);
-            getJournal().setAuthor(this.subject);
+            getJournal().setOwner(this.subject); //El propietario de los registros
+            getJournal().setAuthor(this.subject); //Quien registra el registro
         }
         journalService.save(journal.getId(), journal);
     }
@@ -400,15 +398,14 @@ public class JournalHome extends FedeController implements Serializable {
 
     public void check() throws IOException {
         if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
-            //System.out.println("Fecha de registro => " + getJournal().getActivationTime());
-            if (true /*isCheckable(Dates.now(), getJournal().getActivationTime())*/) {
+            if (isCheckable()) {
                 getJournal().setName(calculeEvent(getEmployee()));
                 getJournal().setBeginTime(Dates.now());
                 getJournal().setEndTime(Dates.now());
                 getJournal().setEmployeeId(getEmployee().getId());
                 save();
-            }else{
-                addWarningMessage("Acabó de realizar un registro!", "Vuelva a intentar despues de un momento.");
+            } else{
+                addWarningMessage("Acaba de registrarse!", "Vuelva a intentar más tarde.");
             }
         } else {
             addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
@@ -417,10 +414,16 @@ public class JournalHome extends FedeController implements Serializable {
         redirectTo("/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true");
     }
 
-    public boolean isCheckable(Date startDate, Date endDate) {
-        //System.out.println("Time diff => " + Dates.calculateNumberOfMinutesBetween(startDate, endDate));
-        long diffTime = Dates.calculateNumberOfMinutesBetween(startDate, endDate);
-        return diffTime <= 1 || diffTime > 300;
+    public boolean isCheckable() {
+        
+        List<Journal> journals = journalService.findByNamedQueryWithLimit("Journal.findLastForOwner", 1, this.subject);
+        
+        if (journals.isEmpty()) return true;
+        
+        Journal lastJournal = journals.get(0);
+        int limit = Integer.parseInt(settingHome.getValue("app.fede.talentohumano.check.gap", "10"));
+        long diffTime = Dates.calculateNumberOfMinutesBetween(Dates.now(), lastJournal.getBeginTime());
+        return ! (diffTime >= 0 && diffTime < limit); //
     }
 
     public void checkRest() throws IOException {
@@ -466,15 +469,14 @@ public class JournalHome extends FedeController implements Serializable {
     }
 
     private String calculeEvent(Employee e) {
-        String eventName = "";
-        if (e.getJournals().isEmpty()) {
-            eventName = "REGISTRO";
-        } else if (e.getJournals().size() % 2 != 0) {
-            eventName = "REGISTRO";
-        } else {
-            eventName = "REGISTRO";
-        }
-
+        String eventName = "REGISTRO";
+//        if (e.getJournals().isEmpty()) {
+//            eventName = "REGISTRO";
+//        } else if (e.getJournals().size() % 2 != 0) {
+//            eventName = "REGISTRO";
+//        } else {
+//            eventName = "REGISTRO";
+//        }
         return eventName;
     }
 
@@ -504,13 +506,11 @@ public class JournalHome extends FedeController implements Serializable {
         try {
             //range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_REPORT_DEFAULT_RANGE, "7"));
             if (isShowCurrentDay()){
-                range = 1; //El día de hoy
+                range = 0; //El día de hoy
             } else {
                 range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
             }
-            System.out.println(">>>> Estableciendo el range: " + range);
         } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
             range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));

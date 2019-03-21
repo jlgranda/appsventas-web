@@ -23,6 +23,7 @@ import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
+import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -37,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -137,7 +137,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     private PaymentService paymentService;
     
     @EJB
-    private ProductService productService;
+    private ProductCache productCache;
     
     private LazyInvoiceDataModel lazyDataModel; 
     
@@ -738,14 +738,16 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public boolean touch(String command){
         for (String id : command.split(",")){
-            touch(productService.find(Long.valueOf(id)));
+//            touch(productService.find(Long.valueOf(id)));
+            touch(productCache.lookup(Long.valueOf(id)));
         }
         return true;
     }
     
     public String macro(String command){
         for (String id : command.split(",")){
-            touch(productService.find(Long.valueOf(id)));
+//            touch(productService.find(Long.valueOf(id)));
+            touch(productCache.lookup(Long.valueOf(id)));
         }
         return save(true);
     }

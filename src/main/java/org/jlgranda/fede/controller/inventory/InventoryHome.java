@@ -19,6 +19,7 @@ package org.jlgranda.fede.controller.inventory;
 
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -94,6 +95,9 @@ public class InventoryHome extends FedeController implements Serializable {
     @EJB
     private ProductService productService; 
     
+    @EJB
+    private ProductCache productCache;
+    
     @Inject
     private Subject subject;
     
@@ -117,17 +121,17 @@ public class InventoryHome extends FedeController implements Serializable {
         
         //Lista de productos a gráficar por defecto
         List<BussinesEntity> defaultProducts = new ArrayList<>();
-        defaultProducts.add(productService.find(80L)); //Queso
-        defaultProducts.add(productService.find(81L)); //Cebolla
-        defaultProducts.add(productService.find(370L)); //Empapizza
+        defaultProducts.add(productCache.lookup(80L)); //Queso
+        defaultProducts.add(productCache.lookup(81L)); //Cebolla
+        defaultProducts.add(productCache.lookup(370L)); //Empapizza
         //defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
         //defaultProducts.add(productService.find(47763L)); //Empapizza de tocino
         //defaultProducts.add(productService.find(4563L)); //Verde
         //defaultProducts.add(productService.find(6660L)); //Tamal
         //defaultProducts.add(productService.find(6846L)); //Humita
-        defaultProducts.add(productService.find(87L)); //Chocolate
-        defaultProducts.add(productService.find(101L)); //Cafe
-        defaultProducts.add(productService.find(78L)); //Capuchino
+        defaultProducts.add(productCache.lookup(87L)); //Chocolate
+        defaultProducts.add(productCache.lookup(101L)); //Cafe
+        defaultProducts.add(productCache.lookup(78L)); //Capuchino
         //defaultProducts.add(productService.find(416L)); //Jugos
         //defaultProducts.add(productService.find(39640L)); //Frapuchino
         //defaultProducts.add(productService.find(39527L)); //Helado
@@ -254,15 +258,17 @@ public class InventoryHome extends FedeController implements Serializable {
      * @return una lista de objetos <tt>Product</tt> que coinciden con la palabra clave dada.
      */
     public List<Product> find(String keyword) {
-        keyword = keyword.trim();
-        Map<String, Object> filters = new HashMap<>();
-        Map<String, String> columns = new HashMap<>();
-        columns.put("code", keyword);
-        columns.put("name", keyword);
-        filters.put("productType", getProductType());
-        filters.put("dummy", columns);
-        QueryData<Product> queryData = productService.find(-1, -1, "code, name", QuerySortOrder.ASC, filters);
-        return queryData.getResult();
+        
+        return productCache.lookup(keyword);
+//        keyword = keyword.trim();
+//        Map<String, Object> filters = new HashMap<>();
+//        Map<String, String> columns = new HashMap<>();
+//        columns.put("code", keyword);
+//        columns.put("name", keyword);
+//        filters.put("productType", getProductType());
+//        filters.put("dummy", columns);
+//        QueryData<Product> queryData = productService.find(-1, -1, "code, name", QuerySortOrder.ASC, filters);
+//        return queryData.getResult();
     }
     /**
      * TODO obtener el top 10 de productos, esta implementación es ineficiente
