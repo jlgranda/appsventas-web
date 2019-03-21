@@ -14,6 +14,7 @@
                     <pe:menu widgetVar="me">
                         <p:menuitem id="om_dashboard" value="#{i18n['common.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                         <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" url="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
+                        <p:menuitem id="rm_myoverdues" value="#{i18n['app.fede.allmyoverdues']}" icon="fa fa-fw fa-credit-card" url="/pages/fede/sales/overdues.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
                         <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-money" url="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/> 
                         <p:menuitem id="rm_inventory_products" value="#{i18n['app.fede.inventory.products']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         <p:submenu id="om_admin" label="Administración" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN')}">

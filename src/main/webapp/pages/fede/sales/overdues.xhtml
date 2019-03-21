@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">#{i18n['app.name']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.name']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/sales/overdues.jsf">#{i18n['common.overdue']}</p:link></li>
+    </ui:define>
+
+    <ui:define name="content">
+        <o:importConstants type="org.jpapi.model.StatusType" />
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h1 class="BigTopic"><h:outputText value="#{i18n['app.fede.overdue']}"/></h1>
+            </div>
+            <div class="ui-g-12">
+                <div class="card">
+                    <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                    <p:inputText value="#{invoiceHome.keyword}" class="input-sm">
+                    </p:inputText>
+                    <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                    <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                        <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
+                    </p:calendar>
+                    <label class="Gray">#{i18n['End']}&nbsp;</label>
+                    <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                        <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
+                    </p:calendar>
+                    <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
+                    </p:commandButton>
+                    <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
+                </div>
+                <div class="card">
+                    <div class="ui-g">
+                        <div class="Container100">
+                            <div class="Container100 Responsive100">
+                                <div class="ContainerIndent">
+                                    <ui:repeat value="#{invoiceHome.myOverduelastPreInvoices}" var="entity">
+                                        <div class="Container70 Fs50 FontRobotoLight Orange">
+                                            <span class="Fs20 DispBlock">
+                                                #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
+                                            </span>
+                                            <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText>
+                                            </span>
+                                            <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: <strong>#{entity.lastUpdate}</strong> | #{i18n['app.fede.sales.invoice.comandaNumber']}: #{entity.code}</span>
+                                        </div>
+                                        <div class="Container30">
+
+                                            <p:button title="#{i18n['app.fede.collect']}" 
+                                                      icon="fa fa-dollar"
+                                                      styleClass="RedButton Fright"
+                                                      outcome="invoice.jsf?invoiceId=#{entity.id}"/>
+                                        </div>
+                                        <div class="EmptyBox10"></div>
+                                        <div class="Separator"></div>
+                                    </ui:repeat>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

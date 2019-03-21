@@ -91,21 +91,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <div class="ui-g ui-fluid">
             <div class="ui-g-12">
                 <div class="card card-w-title">
-                    <h1>#{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType).concat('.lead')]} </h1>
                     <!-- sección de formulario -->
                     <div class="ui-g">
                         <div class="ui-g-12">
-                            <h2>#{i18n['app.fede.sales.invoice.header']}</h2>
-                            <div class="ui-g-12">
+                            <div class="ui-g-8">
+                                <h2>#{i18n['app.fede.sales.invoice.header']}</h2>
                                 <div class="ui-g-12">
-                                    <div class="ui-g-3">
+                                    <div class="ui-g-4">
                                         <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['ride.no']}" 
                                                         execute="@this save-button" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
                                                         required="true" requiredMessage="#{i18n['ride.no.required']}" 
                                                         placeholder="#{i18n['ride.no']}"
                                                         container="none"/>
                                     </div>
-                                    <div class="ui-g-5">
+                                    <div class="ui-g-4">
                                         <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="fade" 
                                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                         completeMethod="#{subjectHome.find}"
@@ -137,24 +136,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="ui-g-12">
-                            <div class="ui-g-6">
-                                <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
-                                                execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
-                                                validator="comandaValidator"
-                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
-                                                decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
-                                <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
-                                                execute="@this save-button" render="comanda_number_edit" value="#{invoiceHome.invoice.code}" 
-                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
-                                                decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
-                            </div>
-                            <div class="ui-g-6">
-                                <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
-                                                execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
-                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
-                                                decimalPlaces="0" container="none" rendered="true"/>
+                            <div class="ui-g-4">
+                                <div class="ui-g-12">
+                                    <div class="ui-g-6">
+                                        <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                                        execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
+                                                        validator="comandaValidator" placeholder="false"
+                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
+                                                        decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
+                                        <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                                        execute="@this save-button" render="comanda_number_edit" value="#{invoiceHome.invoice.code}" 
+                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
+                                                        placeholder="false"
+                                                        decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
+                                    </div>
+                                    <div class="ui-g-6">
+                                        <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
+                                                        execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
+                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
+                                                        placeholder="false"
+                                                        decimalPlaces="0" container="none" rendered="true"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -186,7 +189,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  icon="flaticon-capuchino" styleClass="warning-btn" title="Empanada + Capuchino"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
-                                
+
                                 <p:commandButton ajax="true" update="@form" immediate="true"
                                                  actionListener="#{invoiceHome.touch('370,101')}" disabled="#{false}"
                                                  icon="flaticon-pizza-cafe" styleClass="help-btn raised-btn" title="Empapizza + Café"
@@ -202,7 +205,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  icon="flaticon-capuchino" styleClass="help-btn raised-btn" title="Empapizza + Capuchino"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
-                                
+
                                 <p:commandButton ajax="true" update="@form" immediate="true"
                                                  actionListener="#{invoiceHome.touch('101,6660')}" disabled="#{false}"
                                                  icon="flaticon-tamal" styleClass="warning-btn" title="Tamal + café"
@@ -213,7 +216,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  icon="flaticon-humitas" styleClass="warning-btn" title="Humita + café"
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
-                                
+
                                 <p:commandButton ajax="true" update="@form" immediate="true"
                                                  actionListener="#{invoiceHome.touch('100494,100558')}" disabled="#{false}"
                                                  icon="flaticon-almuerzo" styleClass="help-btn" title="Almuerzo + Aguacate"
@@ -242,12 +245,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:panel>
                             </div>
                         </div>
-                    </div>
-                    <!-- FIN sección de formulario -->
-                    <!-- sección de formulario -->
-                    <p:panel id="DetailPanel" class="">
-                        <div class="ui-g">
-                            <div class="ui-g-12">
+                        <!-- sección de formulario -->
+                        <p:panel id="DetailPanel" styleClass="ui-g-12">
                                 <h2>#{i18n['app.fede.sales.details']} [<h:outputText id="invoice-total" value="#{invoiceHome.calculeCandidateDetailTotal()}">
                                         <f:convertNumber type="currency"/>
                                     </h:outputText>]</h2>
@@ -255,14 +254,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
                                         <div class="ui-g-2">
                                             <div class="card TexAlCenter">
-                                                <i class="#{empty detail.product.icon ? '' : (detail.product.icon.contains('flaticon') ? 'ui-icon ui-icon-appsventas '.concat(detail.product.icon) : detail.product.icon.concat('Fs40 BoldGray DispBlock'))}"></i>
+                                                <i class="#{empty detail.product.icon ? '' : (detail.product.icon.contains('flaticon') ? 'ui-icon ui-icon-appsventas '.concat(detail.product.icon) : detail.product.icon.concat('Fs32 BoldGray DispBlock'))}"></i>
                                                 <div class="EmptyBox5"></div>
-                                                <span class="Fs18">#{detail.product.name}</span>
+                                                <span class="Fs14">#{detail.product.name}</span>
                                                 <div class="EmptyBox5"></div>
-                                                <span class="Fs10"><h:outputText value="#{detail.product.price}">
+                                                <span class="Fs12"><h:outputText value="#{detail.product.price}">
                                                         <f:convertNumber type="currency"/>
                                                     </h:outputText></span>
-                                                <div class="EmptyBox10"></div>
+                                                <div class="EmptyBox5"></div>
                                                 <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="SoftGreenBack">
                                                     <p:ajax update="@form:invoice-total @form:payment-panel" listener="#{invoiceHome.calculeChange()}"></p:ajax>
                                                 </p:spinner>
@@ -328,9 +327,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="ui-g-12">
                                     <h2>#{i18n['common.observation']}</h2>
                                     <jlgranda:input id="description" name="description" type="textarea" placeholder="#{i18n['common.observation']}" 
-                                                       execute="none" render="board_number" value="#{invoiceHome.invoice.description}" 
-                                                       required="false" requiredMessage="#{i18n['common.observation']}"
-                                                       decimalPlaces="0" container="none"/>
+                                                    execute="none" render="board_number" value="#{invoiceHome.invoice.description}" 
+                                                    required="false" requiredMessage="#{i18n['common.observation']}"
+                                                    decimalPlaces="0" container="none"/>
                                 </div>
                                 <div class="ui-g-12">
                                     <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
@@ -344,7 +343,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </f:facet>
 
                                         <f:facet name="right">
-
                                             <p:commandButton ajax="true" disabled="false" immediate="true"
                                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                                              action="home"
@@ -407,10 +405,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                     </p:toolbar>
                                 </div>
-
-                            </div>
-                        </div>
-                    </p:panel>
+                        </p:panel>
+                        <!-- FIN sección de formulario -->
+                    </div>
                     <!-- FIN sección de formulario -->
                 </div>
             </div>

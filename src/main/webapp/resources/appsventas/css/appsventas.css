@@ -1281,3 +1281,19 @@ input[type="text"], input[type="password"], textarea{ -webkit-appearance: none; 
     color: gray;
     font-weight: 700;
 }
+
+
+body .ui-panel .ui-panel-content {
+    border: 0px solid #dedede !important;
+    background-color: #ffffff;
+    color: #333333;
+    padding: 0.571em 1em;
+    border-top: 0 none;
+    line-height: 1.5; 
+}
+
+/* row reciente en tablas de registro de tiempos */
+.just {
+    background-color: #f9e09e !important;
+    font-weight: 700;
+}

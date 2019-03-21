@@ -74,12 +74,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
                                     <h:outputText value="#{journal.name}" />
                                 </p:column>
-                                <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.date_entry']}" sortBy="#{journal.activationTime}"
+                                <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
                                            styleClass="text-right">
-                                    <h:outputText value="#{journal.activationTime}">
-                                        <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
+                                    <h:outputText value="#{journal.beginTime}">
+                                        <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}" timeZone="#{ui.timeZone}"/>
                                     </h:outputText>
-                                </p:column>s                    
+                                </p:column>                    
+                                <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
+                                           styleClass="text-right">
+                                    <h:outputText value="#{journal.beginTime}">
+                                        <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                    </h:outputText>
+                                </p:column>                   
                             </p:dataTable>
                         </div>
                     </div>

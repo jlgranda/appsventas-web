@@ -104,7 +104,9 @@ limitations under the License.
                         </p:selectOneMenu>   
                     </c:when>
                     <c:when test="#{type == 'number'}">
-                        <p:inputNumber id="#{name}" value="#{value}" required="#{required}" rendered="#{rendered}" disabled="#{disabled}"
+                        <p:inputNumber id="#{name}" value="#{value}" required="#{required}" 
+                                       rendered="#{rendered}" disabled="#{disabled}"
+                                       placeholder="#{placeholder == 'true' ? label :  ''}"
                                        styleClass="#{class}" requiredMessage="#{requiredMessage}"
                                        decimalSeparator="." thousandSeparator="," decimalPlaces="#{decimalPlaces}">
                             <c:if test="#{listener != 'none'}">
