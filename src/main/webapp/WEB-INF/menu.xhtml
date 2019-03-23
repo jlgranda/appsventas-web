@@ -14,7 +14,7 @@
                     <pe:menu widgetVar="me">
                         <p:menuitem id="om_dashboard" value="#{i18n['common.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                         <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" url="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
-                        <p:menuitem id="rm_myoverdues" value="#{i18n['app.fede.allmyoverdues']}" icon="fa fa-fw fa-credit-card" url="/pages/fede/sales/overdues.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
+                        <p:menuitem id="rm_myoverdues" value="#{i18n['app.fede.allmyoverdues']}" icon="fa fa-fw fa-credit-card" url="/pages/fede/sales/overdues.jsf?interval=60"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
                         <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-money" url="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/> 
                         <p:menuitem id="rm_inventory_products" value="#{i18n['app.fede.inventory.products']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         <p:submenu id="om_admin" label="Administración" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN')}">
@@ -24,6 +24,7 @@
                             <p:menuitem id="om_talentohumano_registrar" value="Registrar" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
                             <p:menuitem id="om_talentohumano_detalle_registro" value="Detalle registros" icon="fa fa-fw fa-list-ol" outcome="/pages/fede/talentohumano/detalle_registros.jsf"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
                             <p:menuitem id="om_talentohumano_registrar_manual" value="Registrar manual" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar_manual.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_registrar_rapido" value="Registrar rápido" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                             <p:menuitem id="om_talentohumano_role" value="Roles" icon="fa fa-fw fa fa-group" outcome="/pages/fede/talentohumano/roles.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                             <p:menuitem id="om_talentohumano_employee" value="Empleados" icon="fa fa-fw fa fa-drivers-license" outcome="/pages/fede/talentohumano/employees.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>

@@ -24,7 +24,6 @@ import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
-import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -164,6 +163,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     private boolean orderByCode;
     
     private String sortOrder="DESCENDING";
+    
+    private Long interval; //Intervalo de tiempo
     
     @PostConstruct
     private void init() {
@@ -317,6 +318,15 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public Long getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Long interval) {
+        this.interval = interval;
+        initializeDateInterval();
     }
 
     /**
@@ -530,10 +540,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.setInvoiceId(invoiceId);
         //load invoice
         this.getInvoice();
-        //this.getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Marcar como no cobrado
-        //this.getInvoice().setStatus(StatusType.OPEN.toString());
-        //this.getInvoice().setActivationTime(Dates.now()); //Se vuelve a abrir para atención
-        //this.save();
         redirectTo("/pages/fede/sales/invoice.jsf?invoiceId=" + this.getInvoice().getId());
     }
     
@@ -926,6 +932,29 @@ public class InvoiceHome extends FedeController implements Serializable {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
         inventoryHome.setEnd(Dates.maximumDate(getEnd()));
         return inventoryHome.buildLineBarChartModel(getSelectedBussinesEntities(), "skinChart");
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        int range = 0; //Rango de fechas para visualiar lista de entidades
+        try {
+            if (null == getInterval()){
+                range = 0; //El día de hoy
+            }
+            
+            switch (getInterval().intValue()) {
+                case -1:
+                    range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
+                    break;
+                default:
+                    range = getInterval().intValue();
+                    break;
+            }
+        } catch (java.lang.NumberFormatException nfe) {
+            range = 7;
+        }
+        setEnd(Dates.maximumDate(Dates.now()));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
     
 }

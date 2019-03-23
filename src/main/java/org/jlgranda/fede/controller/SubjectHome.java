@@ -34,9 +34,6 @@ import javax.inject.Named;
 import javax.transaction.UserTransaction;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
@@ -283,5 +280,10 @@ public class SubjectHome extends FedeController implements Serializable {
         //System.out.println("sal: " + salt.toString());
         System.out.println("sv: " + svc.encryptPassword("1104499049"));
         //user.setSalt(salt.toString());
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

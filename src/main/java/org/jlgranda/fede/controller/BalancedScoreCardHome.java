@@ -24,8 +24,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.ui.model.LazyBalancedScoreCardDataModel;
 import org.jpapi.model.Group;
@@ -106,6 +104,11 @@ public class BalancedScoreCardHome extends FedeController implements Serializabl
 
     @Override
     public List<Group> getGroups() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

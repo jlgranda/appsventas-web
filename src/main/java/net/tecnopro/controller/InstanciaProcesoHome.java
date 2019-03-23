@@ -590,4 +590,9 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

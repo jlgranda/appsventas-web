@@ -28,12 +28,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">#{i18n['app.name']}</ui:define>
+    
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="interval" value="#{invoiceHome.interval}" />
+        </f:metadata>
+    </ui:define>
+    
     <ui:define name="viewname">
         <li>#{i18n['app.name']}</li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/sales/overdues.jsf">#{i18n['common.overdue']}</p:link></li>
     </ui:define>
 
+    
     <ui:define name="content">
         <o:importConstants type="org.jpapi.model.StatusType" />
         <div class="ui-g">
@@ -64,18 +72,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="ContainerIndent">
                                     <ui:repeat value="#{invoiceHome.myOverduelastPreInvoices}" var="entity">
                                         <div class="Container70 Fs50 FontRobotoLight Orange">
-                                            <span class="Fs20 DispBlock">
-                                                #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
+                                            <span class="Fs18 DispBlock">
+                                               <strong>#{entity.owner.fullName}</strong> #{i18n['app.fede.sales.invoice.comandaNumber']}: #{entity.code} | <strong>#{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText></strong>
                                             </span>
-                                            <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
+                                            <span class="Gray Fs16 DispBlock">
+                                                #{i18n['common.crationDate']}: <strong>#{entity.createdOn}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate}
+                                            </span>
+                                            <span class="Gray Fs14 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
                                                     <f:convertNumber type="currency"/>
-                                                </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
-                                                    <f:convertNumber type="currency"/>
-                                                </h:outputText>
+                                                </h:outputText> 
                                             </span>
-                                            <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: <strong>#{entity.lastUpdate}</strong> | #{i18n['app.fede.sales.invoice.comandaNumber']}: #{entity.code}</span>
+                                            <span class="Gray Fs10 FontRobotoLight DispBlock">#{entity.summary} <i class="fa fa-shopping-cart Fs10"><span class="CartText White"> #{entity.boardNumber}</span></i></span>
                                         </div>
                                         <div class="Container30">
 

@@ -21,7 +21,6 @@ import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -88,14 +87,7 @@ public class SummaryHome  extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
 
-        int range = 0; //Rango de fechas para visualiar lista de entidades
-        try {
-            //range = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD__SUMMARY_RANGE, "0"));
-            range = Integer.valueOf(settingHome.getValue("fede.dashboard.summary.range", "0"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 1;
-        }
+        initializeDateInterval();
         
         setGrossSalesTotal(BigDecimal.ZERO);
         setDiscountTotal(BigDecimal.ZERO);
@@ -103,10 +95,6 @@ public class SummaryHome  extends FedeController implements Serializable {
         setPurchaseTotal(BigDecimal.ZERO);
         setCostTotal(BigDecimal.ZERO);
         setProfilTotal(BigDecimal.ZERO);
-        
-        
-        setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         
         setOutcome("dashboard");
 
@@ -311,6 +299,21 @@ public class SummaryHome  extends FedeController implements Serializable {
         setStart(grupoFechas);
         setEnd(grupoFechas);
         calculeSummary();
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        int range = 0; //Rango de fechas para visualiar lista de entidades
+        try {
+            //range = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD__SUMMARY_RANGE, "0"));
+            range = Integer.valueOf(settingHome.getValue("fede.dashboard.summary.range", "0"));
+        } catch (java.lang.NumberFormatException nfe) {
+            nfe.printStackTrace();
+            range = 1;
+        }
+        
+        setEnd(Dates.maximumDate(Dates.now()));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
 
 }

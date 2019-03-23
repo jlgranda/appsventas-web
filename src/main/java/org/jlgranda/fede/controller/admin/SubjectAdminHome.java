@@ -26,21 +26,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.GroupHome;
 import org.jlgranda.fede.controller.SettingHome;
@@ -388,6 +379,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public void setGrupos(List<Group> grupos) {
         this.grupos = grupos;
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

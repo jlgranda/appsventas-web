@@ -64,7 +64,6 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
-import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
@@ -914,5 +913,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         System.out.println(">>> 2. getPayment: " + getPayment());
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

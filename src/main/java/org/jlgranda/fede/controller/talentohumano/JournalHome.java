@@ -61,6 +61,8 @@ public class JournalHome extends FedeController implements Serializable {
     private Employee employee;
     private Employee employeeSelected;
 
+    private Long employeeId;
+
     private Long employeeSelectedId;
 
     private Journal journal;
@@ -104,39 +106,24 @@ public class JournalHome extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
         
-        initializeDateRange();
+        initializeDateInterval();
         setEmployee(null); //Forzar inicilización con subject
         setEmployeeSelected(employeeService.createInstance());
         setOutcome("registrar");
-
+        
         //Establecer objeto para nuevas entradas
         setJournal(journalService.createInstance());
         getJournal().setBeginTime(Dates.now()); //Fecha y hora actual
 
-        //Modelo de línea de tiempo. Enfocar en el día actual
-        model = new TimelineModel();
-        Journal inicioDia = new Journal();
-        inicioDia.setName("");
-        inicioDia.setBeginTime(Dates.minimumDate(Dates.now()));
-        Journal finDia = new Journal();
-        finDia.setName("");
-        finDia.setBeginTime(Dates.maximumDate(Dates.now()));
-        model.add(new TimelineEvent(inicioDia, inicioDia.getBeginTime()));
-        model.add(new TimelineEvent(finDia, finDia.getBeginTime()));
     }
 
     public Employee getEmployee() {
-        if (this.employee == null
+        if (getEmployeeId() != null){ //Cargar el empleado indicado por employeeId
+            this.employee = employeeService.find(getEmployeeId());
+        } else if (this.employee == null
                 && this.subject != null
-                && this.subject.isPersistent()) {
+                && this.subject.isPersistent()) {//Sino el empleado logeado en la sessión
             this.employee = employeeService.findUniqueByNamedQuery("Employee.findByOwner", this.subject);
-            for (Journal j : this.employee.getJournals()) {
-                //Mostrar registros sólo del rango definido desde start date.
-                if (j.getBeginTime().compareTo(getStart()) > 0) {
-                    model.add(new TimelineEvent(j, j.getBeginTime()));
-                }
-            }
-
         }
         return employee;
     }
@@ -162,6 +149,14 @@ public class JournalHome extends FedeController implements Serializable {
 
     public void setEmployeeSelectedId(Long employeeSelectedId) {
         this.employeeSelectedId = employeeSelectedId;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
     public List<Employee> getSelectedEmployees() {
@@ -269,7 +264,7 @@ public class JournalHome extends FedeController implements Serializable {
     public void setShowCurrentDay(boolean showCurrentDay){
         this.showCurrentDay = showCurrentDay;
         clear(); //forzar carga de lazyDataModel
-        initializeDateRange();
+        initializeDateInterval();
     }
 
     public boolean isShowCurrentDay(){
@@ -308,7 +303,7 @@ public class JournalHome extends FedeController implements Serializable {
             lazyDataModel = new LazyJournalDataModel(journalService);
         }
 
-        lazyDataModel.setOwner(subject); //listar todos
+        lazyDataModel.setOwner(getEmployee().getOwner()); //listar todos
         lazyDataModel.setAuthor(null);
         lazyDataModel.setStart(this.getStart());
         lazyDataModel.setEnd(this.getEnd());
@@ -331,7 +326,7 @@ public class JournalHome extends FedeController implements Serializable {
             getJournal().setLastUpdate(Dates.now());
         } else {
             getJournal().setLastUpdate(Dates.now());
-            getJournal().setOwner(this.subject); //El propietario de los registros
+            getJournal().setOwner(getEmployee().getOwner()); //El propietario de los registros
             getJournal().setAuthor(this.subject); //Quien registra el registro
         }
         journalService.save(journal.getId(), journal);
@@ -396,27 +391,52 @@ public class JournalHome extends FedeController implements Serializable {
         redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + +getEmployeeSelected().getId());
     }
 
+    /**
+     * Registrar registro de jornada.
+     */
+    private void register() {
+        if (isCheckable()) {
+            getJournal().setName(calculeEvent(getEmployee()));
+            getJournal().setBeginTime(Dates.now());
+            getJournal().setEndTime(Dates.now());
+            getJournal().setEmployeeId(getEmployee().getId());
+            save();
+        } else {
+            addErrorMessage("Acaba de registrarse!", "Vuelva a intentar más tarde.");
+        }
+    }
+    
     public void check() throws IOException {
         if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
-            if (isCheckable()) {
-                getJournal().setName(calculeEvent(getEmployee()));
-                getJournal().setBeginTime(Dates.now());
-                getJournal().setEndTime(Dates.now());
-                getJournal().setEmployeeId(getEmployee().getId());
-                save();
-            } else{
-                addWarningMessage("Acaba de registrarse!", "Vuelva a intentar más tarde.");
-            }
+            register();
         } else {
             addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
         }
-        
         redirectTo("/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true");
+    }
+    
+    public void quickCheck() throws IOException {
+        
+        if (!Strings.isNullOrEmpty(getPassword())) {
+            //Cargar Empleado dado el código rápido
+            try {
+                Employee _employee = employeeService.find(Long.valueOf(getPassword()));
+                setEmployee(_employee);
+                setEmployeeId(_employee.getId());
+                register();
+            } catch (NumberFormatException nfe){
+                addWarningMessage("El código es un número!", "Vuelva a intentar.");
+            }
+        } else {
+            addWarningMessage("Indique un código válido!", "Vuelva a intentar.");
+        }
+        
+        redirectTo("/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true&employeeId="+ getEmployeeId()); //volver a carga la vista para el usuario en registro
     }
 
     public boolean isCheckable() {
         
-        List<Journal> journals = journalService.findByNamedQueryWithLimit("Journal.findLastForOwner", 1, this.subject);
+        List<Journal> journals = journalService.findByNamedQueryWithLimit("Journal.findLastForOwner", 1, getEmployee().getOwner());
         
         if (journals.isEmpty()) return true;
         
@@ -501,7 +521,8 @@ public class JournalHome extends FedeController implements Serializable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void initializeDateRange() {
+    @Override
+    protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
             //range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_REPORT_DEFAULT_RANGE, "7"));

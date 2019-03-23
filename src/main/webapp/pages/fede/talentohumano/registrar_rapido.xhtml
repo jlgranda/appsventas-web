@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="showCurrentDay" value="#{journalHome.showCurrentDay}" />
+            <f:viewParam name="employeeId" value="#{journalHome.employeeId}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.talentohumano.registrar']}</li>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h1 class="BigTopic Red">#{'Aplicación de registro rápido'}</h1>
+                <div class="ui-g-4">
+                    <p:clock displayMode="analog" mode="server"/>
+                </div>
+                <div class="ui-g-8">
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+                            <h1 class="SoftGray BigTopic">#{'Ingrese el código de empleado'}</h1>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-4">
+                                <jlgranda:input id="employeeid" name="password" type="password" label="#{i18n['common.employeeid']}" 
+                                                value="#{journalHome.password}" required="true" 
+                                                inlinehelp="#{messages['common.employeeid.first']}" execute="@this check" render="employeeid"
+                                                containe="none" placeholder="true"/>
+                            </div>
+                            <div class="ui-g-8">
+                                <p:commandButton value="#{i18n['app.fede.talentohumano.check']}" id="check-btn" 
+                                                 actionListener="#{journalHome.quickCheck()}" action="#{journalHome.redirect()}" icon="fa fa-handshake-o">
+                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                </p:commandButton>
+                            </div>
+                            <p:defaultCommand target="check-btn" />
+                        </div>
+                        <div class="ui-g-12">
+                            <p:panel id="employeePanel" rendered="#{not empty journalHome.employeeId}">
+                                <div class="ui-g-12">
+                                    <h1 class="BigTopic Red">#{'Se registró para'} <span style="color:000;">#{journalHome.employee.owner.fullName}</span></h1>
+                                    <p class=" Gray">#{journalHome.employee.owner.code} - #{journalHome.employee.owner.fullName}</p>
+                                </div>
+                                <div class="ui-g-12">
+                                    <p:dataTable var="journal" 
+                                                 value="#{journalHome.lazyDataModel}" 
+                                                 paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                                 reflow="true" selection="#{journalHome.selectedBussinesEntities}" 
+                                                 rowKey="#{journal.id}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                                 id="dataTableJournal" widgetVar="dataTable_j" lazy="true"
+                                                 rowStyleClass="#{journal.justChecked ? 'Red just' : ''}">
+                                        <p:ajax event="rowSelect" listener="#{journalHome.onRowSelect}"/>
+                                        <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
+                                            <h:outputText value="#{journal.id}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                                            <h:outputText value="#{journal.name}" />
+                                        </p:column>
+                                        <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
+                                                   styleClass="text-right">
+                                            <h:outputText value="#{journal.beginTime}">
+                                                <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}" timeZone="#{ui.timeZone}"/>
+                                            </h:outputText>
+                                        </p:column>                    
+                                        <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
+                                                   styleClass="text-right">
+                                            <h:outputText value="#{journal.beginTime}">
+                                                <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                            </h:outputText>
+                                        </p:column>                    
+                                    </p:dataTable>
+                                </div>
+                            </p:panel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+            $('input[id*="spinner"]').attr('type', 'number');
+            $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+            $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

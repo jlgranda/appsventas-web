@@ -33,11 +33,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import net.tecnopro.document.ejb.TemplateService;
 import net.tecnopro.document.model.Template;
-import net.tecnopro.helper.mail.MailingHelper;
 import net.tecnopro.helper.mail.VelocityHelper;
 import net.tecnopro.mailing.Message;
 import net.tecnopro.mailing.Notification;
-import org.jlgranda.fede.cdi.LoggedIn;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -262,6 +260,11 @@ public class TemplateHome extends FedeController implements Serializable {
             }
         }
         return valorRetorno;
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

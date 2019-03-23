@@ -327,9 +327,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="ui-g-12">
                                     <h2>#{i18n['common.observation']}</h2>
                                     <jlgranda:input id="description" name="description" type="textarea" placeholder="#{i18n['common.observation']}" 
-                                                    execute="none" render="board_number" value="#{invoiceHome.invoice.description}" 
+                                                    execute="none" render="description" value="#{invoiceHome.invoice.description}" 
                                                     required="false" requiredMessage="#{i18n['common.observation']}"
-                                                    decimalPlaces="0" container="none"/>
+                                                    container="none"/>
                                 </div>
                                 <div class="ui-g-12">
                                     <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">

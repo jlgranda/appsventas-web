@@ -280,7 +280,7 @@ public class InventoryHome extends FedeController implements Serializable {
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
         List<Product> result = new ArrayList<>();
         objects.stream().forEach((Object[] object) -> {
-            Product _product = productService.find((Long) object[0]);
+            Product _product = productCache.lookup((Long) object[0]);
             if (_product != null){
                 _product.getStatistics().setCount((Double) object[1]);
                 result.add(_product);
@@ -583,5 +583,10 @@ public class InventoryHome extends FedeController implements Serializable {
     
     public SelectItem[] getModesAsSelectItem(){
         return UI.getSettingAsSelectItems(settingHome.findSettings("app.fede.chart.gap."), true);
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

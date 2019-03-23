@@ -766,4 +766,9 @@ public class TareaHome extends FedeController implements Serializable {
 
         return groups;
     }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

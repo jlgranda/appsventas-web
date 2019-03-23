@@ -411,6 +411,8 @@ public abstract class FedeController {
     }
     
     public abstract Group getDefaultGroup();
+    
+    protected abstract void initializeDateInterval();
 
     public void addDefaultSuccessMessage() {
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
