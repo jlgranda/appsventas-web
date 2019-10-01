@@ -218,7 +218,7 @@ public abstract class FedeController {
     public String getRequestParameter(String key) {
         return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
     }
-
+    
     /**
      * Gets the object from request parameter.
      *

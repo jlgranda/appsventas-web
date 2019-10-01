@@ -45,17 +45,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
                                             value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
                                             inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
-                            <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
-                                            execute="@this save" render="bio"/>
+                            
                             <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
                                             value="#{subjectAdminHome.subjectEdit.description}" required="false" 
                                             inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
 
                             <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
                                             value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                            required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
+                                            required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                             execute="@this save" render="email"/>
+                            
+                            <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['phone']}" 
+                                            value="#{subjectAdminHome.subjectEdit.mobileNumber}"
+                                            required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                            execute="@this save" render="mobileNumber"/>
+                            
+                             <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
+                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                            execute="@this save" render="bio"/>
 
                             <p:panel rendered="#{!subjectAdminHome.subjectEdit.persistent}">
                                 <jlgranda:input id="clave" name="clave" type="password" label="#{i18n['common.password']}" 

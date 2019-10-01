@@ -60,14 +60,36 @@
                                 <div class="statsbar-value" style="width: 50%"></div>
                             </div>-->
                             <i class="fa fa-usd"></i>
-                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.sales.average.days", "10")} #{i18n['common.days']}</span>
+                            <!--30 días-->
+                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.date.range.month", "30")} #{i18n['common.days']}</span>
                             <span>
-                                <h:outputText value="#{summaryHome.calculeProfitRateAverage()}">
+                                <h:outputText value="#{summaryHome.calculeProfitRateAverage(30)}">
                                     <f:convertNumber type="percent" />
                                 </h:outputText>
                             </span>
                             <div class="statsbar">
-                                <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage() * 100}%"></div>
+                                <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(30) * 100}%"></div>
+                            </div>
+                            <!--7 días-->
+                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.date.range.week", "7")} #{i18n['common.days']}</span>
+                            <span>
+                                <h:outputText value="#{summaryHome.calculeProfitRateAverage(7)}">
+                                    <f:convertNumber type="percent" />
+                                </h:outputText>
+                            </span>
+                            <div class="statsbar">
+                                <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(7) * 100}%"></div>
+                            </div>
+                            
+                            <!-- Ayer -->
+                            <span class="icon-label">#{i18n['app.date,yesterday']}</span>
+                            <span>
+                                <h:outputText value="#{summaryHome.calculeProfitRateAverage(1)}">
+                                    <f:convertNumber type="percent" />
+                                </h:outputText>
+                            </span>
+                            <div class="statsbar">
+                                <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(1) * 100}%"></div>
                             </div>
 <!--                            <i class="fa fa-history"></i>
                             <span class="icon-label">Tiempo faltante</span>

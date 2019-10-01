@@ -126,9 +126,10 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazySubjectDataModel(subjectService);
         }
-        lazyDataModel.setOwner(subject);
-        lazyDataModel.setStart(getStart());
-        lazyDataModel.setEnd(getEnd());
+//        lazyDataModel.setOwner(subject); //Buscar todos los sujetos
+        lazyDataModel.setOwner(null); //Buscar todos los sujetos
+//        lazyDataModel.setStart(getStart());
+        //lazyDataModel.setEnd(getEnd());
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");

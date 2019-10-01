@@ -29,12 +29,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import net.sf.dynamicreports.report.base.expression.AbstractValueFormatter;
-import net.sf.dynamicreports.report.builder.HyperLinkBuilder;
 import net.sf.dynamicreports.report.builder.ReportTemplateBuilder;
 import net.sf.dynamicreports.report.builder.component.ComponentBuilder;
 import net.sf.dynamicreports.report.builder.datatype.BigDecimalType;
-import net.sf.dynamicreports.report.builder.style.FontBuilder;
-import net.sf.dynamicreports.report.builder.style.SimpleStyleBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
 import net.sf.dynamicreports.report.builder.tableofcontents.TableOfContentsCustomizerBuilder;
 import net.sf.dynamicreports.report.constant.HorizontalTextAlignment;
@@ -48,124 +45,168 @@ import org.omnifaces.el.functions.Dates;
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
  */
 public class Templates {
-	public static final StyleBuilder rootStyle;
-	public static final StyleBuilder boldStyle;
-	public static final StyleBuilder italicStyle;
-	public static final StyleBuilder boldCenteredStyle;
-	public static final StyleBuilder bold10CenteredStyle;
-	public static final StyleBuilder bold12CenteredStyle;
-	public static final StyleBuilder bold18CenteredStyle;
-	public static final StyleBuilder bold22CenteredStyle;
-	public static final StyleBuilder columnStyle;
-	public static final StyleBuilder columnTitleStyle;
-	public static final StyleBuilder groupStyle;
-	public static final StyleBuilder subtotalStyle;
-        public static final SimpleStyleBuilder evenStyle;
-        public static final SimpleStyleBuilder oddStyle;
+	 /**
+     * Constant <code>rootStyle</code>
+     */
+    public static final StyleBuilder rootStyle;
+    /**
+     * Constant <code>rootStyle</code>
+     */
+    public static final StyleBuilder footerStyle;
+    /**
+     * Constant <code>boldStyle</code>
+     */
+    public static final StyleBuilder boldStyle;
+    /**
+     * Constant <code>italicStyle</code>
+     */
+    public static final StyleBuilder italicStyle;
+    /**
+     * Constant <code>boldCenteredStyle</code>
+     */
+    public static final StyleBuilder boldCenteredStyle;
+    /**
+     * Constant <code>bold10CenteredStyle</code>
+     */
+    public static final StyleBuilder bold10CenteredStyle;
+    /**
+     * Constant <code>bold12CenteredStyle</code>
+     */
+    public static final StyleBuilder bold12CenteredStyle;
+    /**
+     * Constant <code>bold18CenteredStyle</code>
+     */
+    public static final StyleBuilder bold18CenteredStyle;
+    /**
+     * Constant <code>bold22CenteredStyle</code>
+     */
+    public static final StyleBuilder bold22CenteredStyle;
+    /**
+     * Constant <code>columnStyle</code>
+     */
+    public static final StyleBuilder columnStyle;
+    /**
+     * Constant <code>columnTitleStyle</code>
+     */
+    public static final StyleBuilder columnTitleStyle;
+    /**
+     * Constant <code>groupStyle</code>
+     */
+    public static final StyleBuilder groupStyle;
+    /**
+     * Constant <code>subtotalStyle</code>
+     */
+    public static final StyleBuilder subtotalStyle;
 
-	public static final ReportTemplateBuilder reportTemplate;
-	public static final CurrencyType currencyType;
-	public static final ComponentBuilder<?, ?> dynamicReportsComponent;
-	public static final ComponentBuilder<?, ?> jlgrandaComponent;
-	public static final ComponentBuilder<?, ?> footerComponent;
+    /**
+     * Constant <code>reportTemplate</code>
+     */
+    public static final ReportTemplateBuilder reportTemplate;
+    /**
+     * Constant <code>currencyType</code>
+     */
+    public static final CurrencyType currencyType;
+    /**
+     * Constant <code>dynamicReportsComponent</code>
+     */
+    //public static final ComponentBuilder<?, ?> dynamicReportsComponent = new ComponentBuilder<ComponentBuilder<T, U>, DRComponent>();
+    /**
+     * Constant <code>footerComponent</code>
+     */
+    public static final ComponentBuilder<?, ?> footerComponent;
 
-	static {
-		rootStyle           = stl.style().setPadding(2);
-		boldStyle           = stl.style(rootStyle).bold();
-		italicStyle         = stl.style(rootStyle).italic();
-		boldCenteredStyle   = stl.style(boldStyle)
-		                         .setTextAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.MIDDLE);
-		bold10CenteredStyle = stl.style(boldCenteredStyle)
-		                         .setFontSize(10);
-		bold12CenteredStyle = stl.style(boldCenteredStyle)
-		                         .setFontSize(12);
-		bold18CenteredStyle = stl.style(boldCenteredStyle)
-		                         .setFontSize(18);
-		bold22CenteredStyle = stl.style(boldCenteredStyle)
-                             .setFontSize(22);
-		columnStyle         = stl.style(rootStyle).setVerticalTextAlignment(VerticalTextAlignment.MIDDLE);
-		columnTitleStyle    = stl.style(columnStyle)
-		                         .setBorder(stl.pen1Point())
-		                         .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
-		                         .setBackgroundColor(Color.LIGHT_GRAY)
-		                         .bold();
-		groupStyle          = stl.style(boldStyle)
-		                         .setHorizontalTextAlignment(HorizontalTextAlignment.LEFT);
-		subtotalStyle       = stl.style(boldStyle)
-		                         .setTopBorder(stl.pen1Point());
-                evenStyle = stl.simpleStyle().setBackgroundColor(Color.WHITE);
-                oddStyle = stl.simpleStyle().setBackgroundColor(Color.WHITE);
+    static {
+        rootStyle = stl.style().setPadding(1).setFontSize(10);
+        footerStyle = stl.style().setPadding(1).setFontSize(8);
+        boldStyle = stl.style(rootStyle).bold();
+        italicStyle = stl.style(rootStyle).italic();
+        boldCenteredStyle = stl.style(boldStyle).setTextAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.MIDDLE);
+        bold10CenteredStyle = stl.style(boldCenteredStyle).setFontSize(10);
+        bold12CenteredStyle = stl.style(boldCenteredStyle).setFontSize(12);
+        bold18CenteredStyle = stl.style(boldCenteredStyle).setFontSize(18);
+        bold22CenteredStyle = stl.style(boldCenteredStyle).setFontSize(22);
+        columnStyle = stl.style(rootStyle).setVerticalTextAlignment(VerticalTextAlignment.MIDDLE);
+        columnTitleStyle = stl.style(columnStyle).setBorder(stl.penDotted()).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER).setBackgroundColor(Color.WHITE).bold();
+        groupStyle = stl.style(boldStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT).setFirstLineIndent(0);
+        subtotalStyle = stl.style(boldStyle).setTopBorder(stl.penDotted());
 
-		StyleBuilder crosstabGroupStyle      = stl.style(columnTitleStyle);
-		StyleBuilder crosstabGroupTotalStyle = stl.style(columnTitleStyle)
-		                                          .setBackgroundColor(new Color(170, 170, 170));
-		StyleBuilder crosstabGrandTotalStyle = stl.style(columnTitleStyle)
-		                                          .setBackgroundColor(new Color(140, 140, 140));
-		StyleBuilder crosstabCellStyle       = stl.style(columnStyle)
-		                                          .setBorder(stl.pen1Point());
-                
-		TableOfContentsCustomizerBuilder tableOfContentsCustomizer = tableOfContentsCustomizer()
-			.setHeadingStyle(0, stl.style(rootStyle).bold());
+        StyleBuilder crosstabGroupStyle = stl.style(columnTitleStyle);
+        StyleBuilder crosstabGroupTotalStyle = stl.style(columnTitleStyle).setBackgroundColor(Color.WHITE);
+        StyleBuilder crosstabGrandTotalStyle = stl.style(columnTitleStyle).setBackgroundColor(Color.WHITE);
+        StyleBuilder crosstabCellStyle = stl.style(columnStyle).setBorder(stl.pen1Point());
 
-		reportTemplate = template()
-                                    .setPageFormat(PageType.A6)
-                                    .setPageMargin(margin(20))
-		                   .setLocale(Locale.ENGLISH)
-		                   .setColumnStyle(columnStyle)
-		                   .setColumnTitleStyle(columnTitleStyle)
-		                   .setGroupStyle(groupStyle)
-		                   .setGroupTitleStyle(groupStyle)
-		                   .setSubtotalStyle(subtotalStyle)
-		                   .highlightDetailEvenRows()
-		                   .crosstabHighlightEvenRows()
-		                   .setCrosstabGroupStyle(crosstabGroupStyle)
-		                   .setCrosstabGroupTotalStyle(crosstabGroupTotalStyle)
-		                   .setCrosstabGrandTotalStyle(crosstabGrandTotalStyle)
-		                   .setCrosstabCellStyle(crosstabCellStyle)
-		                   .setTableOfContentsCustomizer(tableOfContentsCustomizer)
-                                   .setShowColumnTitle(Boolean.FALSE)
-                                   .setDetailEvenRowStyle(evenStyle)
-                                   .setDetailOddRowStyle(oddStyle);
+        TableOfContentsCustomizerBuilder tableOfContentsCustomizer = tableOfContentsCustomizer().setHeadingStyle(0, stl.style(rootStyle).bold());
 
-		currencyType = new CurrencyType();
+        reportTemplate = template().setPageFormat(PageType.HALF_A5_EMPORIO)
+                                   .setLocale(Locale.ENGLISH)
+                                   .setColumnStyle(columnStyle)
+                                   .setColumnTitleStyle(columnTitleStyle)
+                                   .setGroupStyle(groupStyle)
+                                   .setGroupTitleStyle(groupStyle)
+                                   .setSubtotalStyle(subtotalStyle)
+                                   .setCrosstabGroupStyle(crosstabGroupStyle)
+                                   .setCrosstabGroupTotalStyle(crosstabGroupTotalStyle)
+                                   .setCrosstabGrandTotalStyle(crosstabGrandTotalStyle)
+                                   .setCrosstabCellStyle(crosstabCellStyle)
+                                   .setTableOfContentsCustomizer(tableOfContentsCustomizer);
 
-		HyperLinkBuilder link = hyperLink("http://www.jlgranda.com");
-		dynamicReportsComponent =
-		  cmp.horizontalList(
-		  	cmp.image(Templates.class.getResource("images/appsventas.png")).setFixedDimension(15, 15),
-		  	cmp.verticalList(
-		  		cmp.text("jlgranda.com").setStyle(bold22CenteredStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT),
-		  		cmp.text("http://www.jlgranda.com").setStyle(italicStyle).setHyperLink(link))).setFixedWidth(200);
-		jlgrandaComponent =
-		  cmp.horizontalList(
-		  	cmp.verticalList(
-		  		cmp.text("jlgranda.com, consigue +!").setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)));
+        currencyType = new CurrencyType();
 
-//		footerComponent = cmp.pageXofY()
-//		                     .setStyle(
-//		                     	stl.style(boldCenteredStyle)
-//		                     	   .setTopBorder(stl.pen1Point()));
-		footerComponent = cmp.gap(0, 10)
-		                     .setStyle(
-		                     	stl.style(boldCenteredStyle)
-		                     	   .setTopBorder(stl.pen1Point()));
-	}
+        //footerComponent = cmp.pageXofY().setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
+        //footerComponent = cmp.text("AppsVentas por jlgranda.com").setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
+        footerComponent = cmp.text("Buen café a mejor precio www.cafesdeloja.com").setStyle(stl.style(footerStyle).setTopBorder(stl.pen1Point()));
+    }
 
-	/**
-	 * Creates custom component which is possible to add to any report band component
-	 */
-	public static ComponentBuilder<?, ?> createTitleComponent(String label) {
-		return cmp.horizontalList()
-		        .add(
-		        	dynamicReportsComponent,
-		        	cmp.text(label).setStyle(bold12CenteredStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
-		        .newRow()
-		        .add(cmp.line())
-		        .newRow()
-		        .add(cmp.verticalGap(10));
-	}
-        
-	/**
+    /**
+     * Creates custom component which is possible to add to any report band component
+     *
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link net.sf.dynamicreports.report.builder.component.ComponentBuilder} object.
+     */
+    public static ComponentBuilder<?, ?> createTitleComponent(String label) {
+        return cmp.horizontalList()
+                  .add(cmp.text(label).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                  .newRow()
+                  .add(cmp.line())
+                  .newRow()
+                  .add(cmp.verticalGap(6));
+    }
+
+    /**
+     * <p>createCurrencyValueFormatter.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link net.sf.dynamicreports.examples.Templates.CurrencyValueFormatter} object.
+     */
+    public static CurrencyValueFormatter createCurrencyValueFormatter(String label) {
+        return new CurrencyValueFormatter(label);
+    }
+
+    public static class CurrencyType extends BigDecimalType {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getPattern() {
+            return "$ #,###.00";
+        }
+    }
+
+    private static class CurrencyValueFormatter extends AbstractValueFormatter<String, Number> {
+        private static final long serialVersionUID = 1L;
+
+        private String label;
+
+        public CurrencyValueFormatter(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String format(Number value, ReportParameters reportParameters) {
+            return label + currencyType.valueToString(value, reportParameters.getLocale());
+        }
+    }
+    
+    /**
 	 * Creates custom component which is possible to add to any report band component
      * @param settings
 	 */
@@ -180,48 +221,19 @@ public class Templates {
 		return cmp.horizontalList()
 		        .add(cmp.verticalGap(Integer.valueOf(settings.get("app.fede.report.invoice.startLine"))))
                         .newRow()
-                        .add(cmp.gap(68, 0))
-                        .add(cmp.text(Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm") + " | Mesa:" + invoice.getBoardNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .add(cmp.text("Cliente: " + invoice.getOwner().getFullName()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
-                        .add(cmp.gap(45, 0))
-                        .add(cmp.text(invoice.getOwner().getFullName()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-		        .newRow()
-                        .add(cmp.gap(60, 0))
-                        .add(cmp.text(invoice.getOwner().getDescription()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .add(cmp.text("C.I/RUC: " + invoice.getOwner().getCode()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
-                        .add(cmp.gap(48, 0))
-                        .add(cmp.text(invoice.getOwner().getCode()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT), 
-                                cmp.gap(10, 0), 
-                                cmp.text(invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                        .add(cmp.text("Dirección: " + invoice.getOwner().getDescription()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
-                        .add(cmp.verticalGap(10));
-	}
-
-	public static CurrencyValueFormatter createCurrencyValueFormatter(String label) {
-		return new CurrencyValueFormatter(label);
-	}
-
-	public static class CurrencyType extends BigDecimalType {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public String getPattern() {
-			return "$ #,###.00";
-		}
-	}
-
-	private static class CurrencyValueFormatter extends AbstractValueFormatter<String, Number> {
-		private static final long serialVersionUID = 1L;
-
-		private String label;
-
-		public CurrencyValueFormatter(String label) {
-			this.label = label;
-		}
-
-		@Override
-		public String format(Number value, ReportParameters reportParameters) {
-			return label + currencyType.valueToString(value, reportParameters.getLocale());
-		}
+                        .add(cmp.text("Teléfono: " + invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .newRow()
+                        .add(cmp.text("Correo: " + invoice.getOwner().getEmail()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .newRow()
+                        .add(cmp.text("Fecha: " + Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm")).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .newRow()
+                        .add(cmp.text("Mesa: "  + invoice.getBoardNumber() + " / Servicio: " + invoice.getAuthor().getFirstname()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .add(cmp.verticalGap(5));
 	}
 }

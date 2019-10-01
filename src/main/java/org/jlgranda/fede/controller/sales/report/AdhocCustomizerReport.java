@@ -24,48 +24,29 @@ package org.jlgranda.fede.controller.sales.report;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.HashPrintServiceAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.PrintServiceAttributeSet;
-import javax.print.attribute.standard.JobName;
-import javax.print.attribute.standard.MediaSizeName;
-import javax.print.attribute.standard.PrinterName;
 import static net.sf.dynamicreports.report.builder.DynamicReports.*;
 
 import net.sf.dynamicreports.adhoc.AdhocManager;
 import net.sf.dynamicreports.adhoc.configuration.AdhocCalculation;
 import net.sf.dynamicreports.adhoc.configuration.AdhocColumn;
 import net.sf.dynamicreports.adhoc.configuration.AdhocConfiguration;
+import net.sf.dynamicreports.adhoc.configuration.AdhocGroup;
+import net.sf.dynamicreports.adhoc.configuration.AdhocGroupHeaderLayout;
 import net.sf.dynamicreports.adhoc.configuration.AdhocReport;
 import net.sf.dynamicreports.adhoc.configuration.AdhocSubtotal;
 import net.sf.dynamicreports.adhoc.configuration.AdhocSubtotalPosition;
 import net.sf.dynamicreports.adhoc.report.DefaultAdhocReportCustomizer;
-import net.sf.dynamicreports.jasper.base.export.JasperHtmlExporter;
-import net.sf.dynamicreports.jasper.base.export.JasperOdtExporter;
+import net.sf.dynamicreports.adhoc.transformation.AdhocToXmlTransform;
+import net.sf.dynamicreports.adhoc.transformation.XmlToAdhocTransform;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
-import net.sf.dynamicreports.jasper.builder.export.JasperHtmlExporterBuilder;
-import net.sf.dynamicreports.jasper.builder.export.JasperOdtExporterBuilder;
 import net.sf.dynamicreports.jasper.builder.export.JasperPdfExporterBuilder;
-import net.sf.dynamicreports.jasper.builder.export.JasperTextExporterBuilder;
 import net.sf.dynamicreports.report.builder.ReportBuilder;
-import net.sf.dynamicreports.report.constant.Orientation;
 import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.dynamicreports.report.definition.datatype.DRIDataType;
-import net.sf.dynamicreports.report.definition.expression.DRIExpression;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
-import net.sf.jasperreports.engine.export.JRTextExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 import org.jlgranda.fede.model.sales.Detail;
 import org.jlgranda.fede.model.sales.Invoice;
-import org.jlgranda.fede.model.sales.Payment;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
@@ -78,33 +59,40 @@ public class AdhocCustomizerReport {
     }
 
     private void build(Invoice invoice, Map<String, String> settings) {
+        
         AdhocConfiguration configuration = new AdhocConfiguration();
         AdhocReport report = new AdhocReport();
         configuration.setReport(report);
 
-        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth()- 40;
+        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth()-30;
+        
         //columns
         AdhocColumn column = new AdhocColumn();
         column.setName("cantidad");
-        column.setWidth(calculePorcentaje(pageWidth, 12));
+        column.setTitle("Cant.");
+        column.setWidth(calculePorcentaje(pageWidth, 14));
         report.addColumn(column);
         column = new AdhocColumn();
         column.setName("descripcion");
-        column.setWidth(calculePorcentaje(pageWidth, 58));
+        column.setTitle("Descripción");
+        column.setWidth(calculePorcentaje(pageWidth, 56));
         report.addColumn(column);
         column = new AdhocColumn();
         column.setName("preciounitario");
-        column.setWidth(calculePorcentaje(pageWidth, 15));
+        column.setTitle("P.U.");
+        column.setWidth(calculePorcentaje(pageWidth, 14));
         report.addColumn(column);
         column = new AdhocColumn();
         column.setName("subtotal");
-        column.setWidth(calculePorcentaje(pageWidth,15));
+        column.setTitle("Subtotal");
+        column.setWidth(calculePorcentaje(pageWidth, 16));
         report.addColumn(column);
 
-//		//groups
-//		AdhocGroup group = new AdhocGroup();
-//		group.setName("invoice");
-//		report.addGroup(group);
+	//groups
+        //AdhocGroup group = new AdhocGroup();
+        //group.setName("invoice");
+        //group.setHeaderLayout(AdhocGroupHeaderLayout.EMPTY);
+        //report.addGroup(group);
         //subtotal
 //		AdhocSubtotal subtotal = new AdhocSubtotal();
 //		subtotal.setName("quantity");
@@ -113,8 +101,10 @@ public class AdhocCustomizerReport {
         AdhocSubtotal subtotal = new AdhocSubtotal();
         subtotal.setCalculation(AdhocCalculation.SUM);
         subtotal.setName("subtotal");
-        subtotal.setPosition(AdhocSubtotalPosition.PAGE_FOOTER);
+        //subtotal.setGroupName("invoice");
+        subtotal.setPosition(AdhocSubtotalPosition.SUMMARY);
         report.addSubtotal(subtotal);
+            
 //		//sorts
 //		AdhocSort sort = new AdhocSort();
 //		sort.setName("item");
@@ -122,15 +112,16 @@ public class AdhocCustomizerReport {
 
         try {
 
-            JasperReportBuilder reportBuilder = AdhocManager.createReport(configuration.getReport(), new ReportCustomizer(invoice, settings));
+            AdhocManager adhocManager = AdhocManager.getInstance(new AdhocToXmlTransform(), new XmlToAdhocTransform());
+            JasperReportBuilder reportBuilder = adhocManager.createReport(configuration.getReport(), new ReportCustomizer(invoice, settings));
             reportBuilder.setDataSource(createDataSource(invoice));
             
             
             
             //PDF
-//            JasperPdfExporterBuilder pdfExporter = export.pdfExporter("/tmp/" + invoice.getSequencial() + ".pdf")
-//                    .setEncrypted(false);
-//            reportBuilder.toPdf(pdfExporter);
+            JasperPdfExporterBuilder pdfExporter = export.pdfExporter("/tmp/" + invoice.getSequencial() + ".pdf")
+                    .setEncrypted(false);
+            reportBuilder.toPdf(pdfExporter);
             
             //HTML 
 //            JasperHtmlExporterBuilder htmlExporter = export.htmlExporter("/tmp/" + invoice.getSequencial() + ".html");
@@ -141,8 +132,8 @@ public class AdhocCustomizerReport {
 //            reportBuilder.toText(txtExporter);
             
             //ODT JRTextExporter
-            JasperOdtExporterBuilder odtExporter = export.odtExporter("/tmp/" + invoice.getSequencial() + ".odt");
-            reportBuilder.toOdt(odtExporter);
+//            JasperOdtExporterBuilder odtExporter = export.odtExporter("/tmp/" + invoice.getSequencial() + ".odt");
+//            reportBuilder.toOdt(odtExporter);
             
             //Directamente a la impresora
 //            PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();
@@ -185,13 +176,12 @@ public class AdhocCustomizerReport {
     }
 
     public static void main(String[] args) {
-        new AdhocCustomizerReport(new Invoice(), null);
+        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(new Invoice(), null);
     }
 
     public static Integer calculePorcentaje(int pageWidth, int porcentaje) {
         double factor = (porcentaje / (double) 100);
         int valor = (int) (pageWidth * factor);
-        //System.out.println(">>> pageWidth: " + pageWidth + ", pocentaje:" + porcentaje + ", factor" + factor+ ", valor " + valor);
         return valor;
     }
 
@@ -218,8 +208,9 @@ public class AdhocCustomizerReport {
             //report.title(Templates.createTitleComponent(invoice.getOwner().getFullName()));
             //Header
             report.addPageHeader(Templates.createInvoiceHeaderComponent(this.invoice, this.settings));
+            
             //a fixed page footer that user cannot change, this customization is not stored in the xml file
-            report.pageFooter(Templates.jlgrandaComponent, Templates.footerComponent);
+            report.pageFooter(Templates.footerComponent);
         }
 
         /**
@@ -250,7 +241,7 @@ public class AdhocCustomizerReport {
         @Override
         protected String getFieldLabel(String name) {
             if (name.equals("invoice")) {
-                return "Factura";
+                return "Factura No";
             }
             if (name.equals("descripcion")) {
                 return "Descripción";
@@ -259,10 +250,10 @@ public class AdhocCustomizerReport {
                 return "Cant.";
             }
             if (name.equals("preciounitario")) {
-                return "V. Unit.";
+                return "P.U.";
             }
             if (name.equals("subtotal")) {
-                return "V. Total";
+                return "Subtotal";
             }
             return name;
         }

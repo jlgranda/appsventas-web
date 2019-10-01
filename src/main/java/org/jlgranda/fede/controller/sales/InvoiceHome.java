@@ -416,7 +416,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         getInvoice().setActive(false);
         //getInvoice().setSequencial(UUID.randomUUID().toString());//Generar el secuencia legal de factura
         save(true); //Guardar forzando
-        return "preinvoices";
+        return getOutcome();
     }
     
     /**
@@ -457,7 +457,6 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
-        String outcome = "preinvoices";
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             getInvoice().setDocumentType(documentType); //Se convierte en factura
@@ -467,12 +466,11 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().addPayment(getPayment());
             getInvoice().setStatus(status);
             save(true);
-            setOutcome("preinvoices");
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
             setOutcome("");
         }
-        return outcome;
+        return "failed";
     }
     
     public String print(){
@@ -483,14 +481,16 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice(); //recargar
             //Imprimir reporte
             Map<String, String> settings = new HashMap<>();
-            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "110"));
+            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "60"));
             //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
-            settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "12"));
-            settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "bold"));
+            settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "8"));
+            settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));
             
             AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice(), settings);
+            //InvoiceDesign invoiceDesign = new InvoiceDesign(this.getInvoice(), settings);
             //Invocar Servlet en nueva ventana del navegador
-            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
+//            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
+            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=pdf");
             
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
@@ -548,18 +548,17 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return 
      */
     public String save(){
-        String outcome = "preinvoices";
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().addPayment(getPayment());
-            outcome = save(false);
+            setOutcome(save(false));
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
             setOutcome("");
         }
-        return outcome;
+        return getOutcome();
     }
     
     public String save(boolean force) {
@@ -591,8 +590,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setLastUpdate(Dates.now()); //Forzar pues no se realiza ningun cambio en el objeto maestro
             invoiceService.save(getInvoice().getId(), getInvoice());
             this.addDefaultSuccessMessage();
-            setOutcome("preinvoices");
-            return "success";
+            return getOutcome();
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }

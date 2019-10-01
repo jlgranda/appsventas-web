@@ -21,6 +21,7 @@ import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -165,10 +166,7 @@ public class SummaryHome  extends FedeController implements Serializable {
         
     }
     public void  calculeSummary(Date _start, Date _end) {
-        if (Dates.calculateNumberOfDaysBetween(_start, _end) <= 0){
-            int range = Integer.parseInt(settingHome.getValue("fede.dashboard.summary.range", "1"));
-            _start = Dates.addDays(getStart(), -1 * range);
-        }
+       
         this.costTotal = BigDecimal.ZERO;
         List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", 0, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
         objects.stream().forEach((Object[] object) -> {
@@ -181,6 +179,11 @@ public class SummaryHome  extends FedeController implements Serializable {
             this.purchaseTotal = (BigDecimal) object;
         });  
         
+        if (this.discountTotal == null) {
+            this.discountTotal = BigDecimal.ZERO;
+        } 
+        
+        
         if (this.salesTotal == null) {
             this.salesTotal = BigDecimal.ZERO;
         } 
@@ -189,6 +192,7 @@ public class SummaryHome  extends FedeController implements Serializable {
             this.purchaseTotal = BigDecimal.ZERO;
         }
         
+        this.salesTotal = this.salesTotal.subtract(this.discountTotal);
         this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
         
     }
@@ -243,17 +247,16 @@ public class SummaryHome  extends FedeController implements Serializable {
         return total;
     }
     
-    public BigDecimal calculeAverage(){
-        int days = Integer.valueOf(settingHome.getValue("app.fede.sales.average.days", "10"));
+    public BigDecimal calculeAverage(int days){
         clear();
         Date yesterday = Dates.addDays(Dates.now(), -1);
-        calculeSummary(Dates.addDays(yesterday, -1 * days), yesterday);
-        return getProfilTotal().divide(BigDecimal.TEN);
+        calculeSummary(Dates.minimumDate(Dates.addDays(yesterday, -1 * (days - 1))), Dates.maximumDate(yesterday));
+        return getProfilTotal().divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP);
     }
     
-    public BigDecimal calculeProfitRateAverage(){
+    public BigDecimal calculeProfitRateAverage(int days){
         BigDecimal goal = BigDecimal.valueOf(Long.valueOf(settingHome.getValue("app.fede.sales.goal", "500")));
-        return  calculeAverage().divide(goal);
+        return  calculeAverage(days).divide(goal);
     }
     
     

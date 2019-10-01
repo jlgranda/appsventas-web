@@ -31,6 +31,7 @@ import org.jpapi.model.profile.Subject_;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.jpapi.util.Strings;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
@@ -159,14 +160,22 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
         }
         
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-        _filters.put(Subject_.owner.getName(), getOwner()); //Filtro por defecto
+        if (null != getOwner())
+            _filters.put(Subject_.owner.getName(), getOwner()); //Filtro por defecto
 
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
         
-        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
-            _filters.put("keyword", getFilterValue()); //Filtro general
+        if (!Strings.isNullOrEmpty(getFilterValue())){
+            Map<String, String> columns = new HashMap<>();
+            columns.put(Subject_.name.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.firstname.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.surname.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.email.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.mobileNumber.getName(), getFilterValue()); //Filtro general
+            
+            _filters.put("search", columns);
         }
 
         _filters.putAll(filters);
