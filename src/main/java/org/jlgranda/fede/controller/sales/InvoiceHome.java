@@ -144,6 +144,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private boolean useDefaultCustomer;
     
+    private boolean useDefaultEmail;
+    
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
     
@@ -179,6 +181,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora
+        setUseDefaultEmail(false); //Usar consumidor final por ahora
+        updateDefaultEmail();
         
         getSubjectAdminHome().setOutcome("invoice");
         
@@ -299,6 +303,13 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void updateDefaultCustomer(){
         this.customer = null;
     }
+    
+    public void updateDefaultEmail(){
+        if (isUseDefaultEmail())
+            this.subjectAdminHome.getSubjectEdit().setEmail(this.subjectAdminHome.getSubjectEdit().getCode() + "@emporiolojano.com");
+        else
+            this.subjectAdminHome.getSubjectEdit().setEmail("@");
+    }
 
     public void setCustomer(Subject customer) {
         this.customer = customer;
@@ -310,6 +321,14 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void setUseDefaultCustomer(boolean useDefaultCustomer) {
         this.useDefaultCustomer = useDefaultCustomer;
+    }
+
+    public boolean isUseDefaultEmail() {
+        return useDefaultEmail;
+    }
+
+    public void setUseDefaultEmail(boolean useDefaultEmail) {
+        this.useDefaultEmail = useDefaultEmail;
     }
 
     public String getSortOrder() {
@@ -598,9 +617,10 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public void saveCustomer(){
-        getSubjectAdminHome().save(); //Guardar profile
-        setCustomer(getSubjectAdminHome().getSubjectEdit());
-        closeDialog(getCustomer());
+        if (!"failed".equalsIgnoreCase(getSubjectAdminHome().save())){ //Guardar profile
+            setCustomer(getSubjectAdminHome().getSubjectEdit());
+            closeDialog(getCustomer());
+        } 
     }
     
     /**

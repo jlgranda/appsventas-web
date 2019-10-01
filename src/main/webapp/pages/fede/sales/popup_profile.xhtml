@@ -48,7 +48,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ui-g-4">
                                 <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" rendered="true"
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
-                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" 
+                                                execute="@this save" render="code"
+                                                />
                             </div>
                             <div class="ui-g-4">
                                 <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
@@ -72,6 +74,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                         required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                         execute="@this save" render="email"/>
+                                <h:outputText value=" No tiene correo " />
+                                <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultEmail}">
+                                    <p:ajax update="email" listener="#{invoiceHome.updateDefaultEmail}" />
+                                </p:selectBooleanCheckbox>
                             </div>
                         </div>
                         

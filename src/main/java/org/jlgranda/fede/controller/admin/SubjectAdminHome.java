@@ -238,7 +238,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         //Realizar signup
         try {
             if (!getSubjectEdit().isPersistent()) {
-                subjectHome.processSignup(getSubjectEdit(), subject, role); //El propietario es el administrador actual y se asigna con un rol
+                boolean setupRoles =  "admin".equalsIgnoreCase(subject.getUsername());
+                subjectHome.processSignup(getSubjectEdit(), subject, role, setupRoles); //El propietario es el administrador actual y se asigna con un rol
                 addDefaultSuccessMessage();
             } else {
                 //Solo actualizar
@@ -247,6 +248,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            addErrorMessage(I18nUtil.getMessages("error.persistence"), e.getMessage());
+            setOutcome("failed");
         }
 
         return getOutcome();

@@ -116,7 +116,7 @@ public class Templates {
     public static final ComponentBuilder<?, ?> footerComponent;
 
     static {
-        rootStyle = stl.style().setPadding(1).setFontSize(10);
+        rootStyle = stl.style().setPadding(1);
         footerStyle = stl.style().setPadding(1).setFontSize(8);
         boldStyle = stl.style(rootStyle).bold();
         italicStyle = stl.style(rootStyle).italic();
@@ -154,7 +154,7 @@ public class Templates {
 
         //footerComponent = cmp.pageXofY().setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
         //footerComponent = cmp.text("AppsVentas por jlgranda.com").setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
-        footerComponent = cmp.text("Buen café a mejor precio www.cafesdeloja.com").setStyle(stl.style(footerStyle).setTopBorder(stl.pen1Point()));
+        footerComponent = cmp.text("Buen café a mejor precio cafesdeloja.com").setStyle(stl.style(footerStyle).setTopBorder(stl.pen1Point()));
     }
 
     /**
@@ -233,7 +233,7 @@ public class Templates {
                         .newRow()
                         .add(cmp.text("Fecha: " + Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm")).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
-                        .add(cmp.text("Mesa: "  + invoice.getBoardNumber() + " / Servicio: " + invoice.getAuthor().getFirstname()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .add(cmp.text("Mesa: "  + invoice.getBoardNumber() + " / Comanda: " + invoice.getCode() + " / Servicio: " + invoice.getAuthor().getFirstname()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .add(cmp.verticalGap(5));
 	}
 }

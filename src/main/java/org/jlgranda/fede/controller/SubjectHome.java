@@ -117,7 +117,7 @@ public class SubjectHome extends FedeController implements Serializable {
      * @param owner el propietario del objeto a agregar
      */
     public void processSignup(Subject _signup, Subject owner) {
-        processSignup(_signup, owner, "USER");
+        processSignup(_signup, owner, "USER", true);
     }
     
     /**
@@ -126,7 +126,7 @@ public class SubjectHome extends FedeController implements Serializable {
      * @param owner el propietario del objeto a agregar
      */
     public void processSignupEmployee(Subject _signup, Subject owner) {
-        processSignup(_signup, owner, "EMPLOYEE");
+        processSignup(_signup, owner, "EMPLOYEE", true);
     }
     
     /**
@@ -134,7 +134,7 @@ public class SubjectHome extends FedeController implements Serializable {
      * @param _signup el objeto <tt>Subject</tt> a agregar
      * @param owner el propietario del objeto a agregar
      */
-    public void processSignup(Subject _signup, Subject owner, String roles) {
+    public void processSignup(Subject _signup, Subject owner, String roles, boolean setupRoles) {
         if (_signup != null) {
             //Crear la identidad para acceso al sistema
             try {
@@ -170,11 +170,13 @@ public class SubjectHome extends FedeController implements Serializable {
                 
                 subjectService.save(_signup);
                 
-                //Asignar roles
-                UsersRoles shiroUsersRoles = new UsersRoles();
-                UsersRolesPK usersRolesPK = new UsersRolesPK(_signup.getUsername(), roles);
-                shiroUsersRoles.setUsersRolesPK(usersRolesPK);
-                usersRolesFacade.create(shiroUsersRoles);
+                if (setupRoles){
+                    //Asignar roles
+                    UsersRoles shiroUsersRoles = new UsersRoles();
+                    UsersRolesPK usersRolesPK = new UsersRolesPK(_signup.getUsername(), roles);
+                    shiroUsersRoles.setUsersRolesPK(usersRolesPK);
+                    usersRolesFacade.create(shiroUsersRoles);
+                }
                 
 
             } catch (SecurityException | IllegalStateException e) {
