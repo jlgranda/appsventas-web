@@ -271,9 +271,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </ui:repeat>
                                 </div>
                                 <div class="ui-g-12">
-                                    <h2>#{i18n['app.fede.sales.payments']} [<h:outputText id="payment-total" value="#{0 - invoiceHome.calculeCandidateDetailTotal()}">
+                                    <h2>#{i18n['app.fede.sales.payments']} [<h:outputText id="payment-total" value="#{-(invoiceHome.calculeCandidateDetailTotal() - invoiceHome.payment.discount)}">
                                             <f:convertNumber type="currency"/>
-                                        </h:outputText>]</h2>
+                                        </h:outputText>] </h2>
                                     <p:panel id="payment-panel" class="ui-g" rendered="#{not empty invoiceHome.candidateDetails}">
                                         <div class="ui-g-12">
                                             <div class="ui-g-3">
@@ -306,7 +306,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                    thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                                    decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change" partialSubmit="true"/>
+                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change, payment-total" partialSubmit="true"/>
                                                     </p:inputNumber>
                                                 </div>
                                             </div>
