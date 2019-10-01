@@ -182,6 +182,12 @@ public class Templates {
         return new CurrencyValueFormatter(label);
     }
 
+    private static String corregirCorreoElectronico(String email) {
+        if (email.endsWith("@emporiolojano.com"))
+            return "-";
+        return email;
+    }
+
     public static class CurrencyType extends BigDecimalType {
         private static final long serialVersionUID = 1L;
 
@@ -229,7 +235,7 @@ public class Templates {
                         .newRow()
                         .add(cmp.text("Teléfono: " + invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
-                        .add(cmp.text("Correo: " + invoice.getOwner().getEmail()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                        .add(cmp.text("Correo: " + corregirCorreoElectronico(invoice.getOwner().getEmail())).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
                         .add(cmp.text("Fecha: " + Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm")).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                         .newRow()
