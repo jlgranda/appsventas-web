@@ -76,6 +76,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </h:outputText>
                                                 </span>
                                                 <span class="Gray Fs12 DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                                <span class="Gray Fs10 DispBlock">#{i18n['common.observation']}: <strong>#{entity.description}</strong></span>
+
                                                 <hr></hr>
                                             </div>
                                             <div class="Container40">
@@ -84,7 +86,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <p:commandButton title="#{i18n['common.record']}" 
                                                                  icon="fa fa-dot-circle-o"
                                                                  styleClass="secondary-button Fright"
-                                                                 action="#{invoiceHome.record(entity.id)}"
+                                                                 actionListener="#{invoiceHome.record(entity.id)}" action="#{invoiceHome.redirect}" 
                                                                  ajax="false"
                                                                  immediate="true">
                                                 </p:commandButton>
@@ -107,7 +109,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  immediate="true"
                                                                  rendered="true">
                                                 </p:commandButton>
-                                            </div>
+                                            </div>                                       
                                             <div class="EmptyBox10"></div>
                                             <div class="Separator"></div>
                                         </ui:repeat>

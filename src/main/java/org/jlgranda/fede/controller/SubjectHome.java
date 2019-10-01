@@ -87,7 +87,7 @@ public class SubjectHome extends FedeController implements Serializable {
     }
 
     /**
-     * Guardar la instancia <tt>Subject</tt>
+     * Guardar la instancia <tt>Subject</tt> en el medio de almacenamiento persistente
      * @param subject la instancia a guardar
      */
     public void save(Subject subject) {
@@ -126,6 +126,7 @@ public class SubjectHome extends FedeController implements Serializable {
      * @param owner el propietario del objeto a agregar
      */
     public void processSignupEmployee(Subject _signup, Subject owner) {
+        
         processSignup(_signup, owner, "EMPLOYEE", true);
     }
     

@@ -306,7 +306,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public void updateDefaultEmail(){
         if (isUseDefaultEmail())
-            this.subjectAdminHome.getSubjectEdit().setEmail(this.subjectAdminHome.getSubjectEdit().getCode() + "@emporiolojano.com");
+            this.subjectAdminHome.getSubjectEdit().setEmail( this.subjectAdminHome.getSubjectEdit().getCode().replaceAll("^\\s*","") + "@emporiolojano.com");
         else
             this.subjectAdminHome.getSubjectEdit().setEmail("@");
     }

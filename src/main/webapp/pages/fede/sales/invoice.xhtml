@@ -264,7 +264,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </h:outputText></span>
                                                 <div class="EmptyBox5"></div>
                                                 <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="SoftGreenBack">
-                                                    <p:ajax update="@form:invoice-total @form:payment-panel" listener="#{invoiceHome.calculeChange()}"></p:ajax>
+                                                    <p:ajax update="@form:invoice-total @form:payment-panel, @form:payment-total" listener="#{invoiceHome.calculeChange()}"></p:ajax>
                                                 </p:spinner>
                                             </div>
                                         </div>
@@ -294,7 +294,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                    thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                                    decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change collect-button" partialSubmit="true"></p:ajax>
+                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change, collect-button" partialSubmit="true"></p:ajax>
                                                     </p:inputNumber>
                                                 </div>
                                             </div>
