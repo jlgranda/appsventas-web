@@ -213,7 +213,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             loadCandidateDetails(this.invoice.getDetails());
             setCustomer(this.invoice.getOwner());
             calculeChange();//Prellenar formulario de pago
-            setUseDefaultCustomer(this.invoice.getOwner() == null);
+            setUseDefaultCustomer(this.invoice.getOwner() == null || Long.valueOf(511).equals(this.invoice.getOwner().getId()));
             //Establecer nuevo número de comanda
             this.invoice.setSequencial(settingHome.getValue("app.fede.sales.invoice.comanda.sequence", ""));
             if (!this.invoice.getPayments().isEmpty())
@@ -455,7 +455,13 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String overdue() {
-        collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
+        if (!isUseDefaultCustomer()){
+            collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
+            setOutcome("overdues");
+        } else {
+            addWarningMessage("¿Quién será reesponsable del crédito?", "Seleccione una persona/entidad como responsable del crédito.");
+            setOutcome( "currentpage.xhtml?faces-redirect=true");
+        }
         return getOutcome();
     }
 
