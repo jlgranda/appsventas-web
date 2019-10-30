@@ -13,7 +13,11 @@
                     <div class="layout-menu-title">#{i18n['common.menu.main']}</div>
                     <pe:menu widgetVar="me">
                         <p:menuitem id="om_dashboard" value="#{i18n['common.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
-                        <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" url="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
+                        <!-- <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" url="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/> -->
+                        <p:submenu id="om_mysales" label="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}">
+                            <p:menuitem id="om_current" value="Actual" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_search" value="Historico" icon="fa fa-fw fa-list-ol" outcome="/pages/fede/sales/preinvoices_search.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                        </p:submenu>
                         <p:menuitem id="rm_myoverdues" value="#{i18n['app.fede.allmyoverdues']}" icon="fa fa-fw fa-credit-card" url="/pages/fede/sales/overdues.jsf?interval=60&amp;overcome=overdues"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
                         <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-money" url="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/> 
                         <p:menuitem id="rm_inventory_products" value="#{i18n['app.fede.inventory.products']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>

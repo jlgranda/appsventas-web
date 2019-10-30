@@ -146,12 +146,17 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private boolean useDefaultEmail;
     
+    private boolean busquedaAvanzada;
+    
+    private boolean busquedaEjecutada;
+    
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
     
     private List<Invoice> myPendinglastPreInvoices = new ArrayList<>();
     private List<Invoice> myOverduelastPreInvoices = new ArrayList<>();
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
+    private List<Invoice> myAllInvoices = new ArrayList<>(); // --
     
     @Inject 
     private FacturaElectronicaHome facturaElectronicaHome;
@@ -182,6 +187,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por ahora
         setUseDefaultEmail(false); //Usar consumidor final por ahora
+        setBusquedaEjecutada(!Strings.isNullOrEmpty(getKeyword()));
         updateDefaultEmail();
         
         getSubjectAdminHome().setOutcome("invoice");
@@ -331,6 +337,22 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.useDefaultEmail = useDefaultEmail;
     }
 
+    public boolean isBusquedaAvanzada() {
+        return busquedaAvanzada;
+    }
+
+    public void setBusquedaAvanzada(boolean busquedaAvanzada) {
+        this.busquedaAvanzada = busquedaAvanzada;
+    }
+
+    public boolean isBusquedaEjecutada() {
+        return busquedaEjecutada;
+    }
+
+    public void setBusquedaEjecutada(boolean busquedaEjecutada) {
+        this.busquedaEjecutada = busquedaEjecutada;
+    }
+
     public String getSortOrder() {
         return sortOrder;
     }
@@ -378,7 +400,18 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return myPendinglastPreInvoices;
     }
- 
+    
+    // --Obtener todas mis facturas 
+    public List<Invoice> getMyAllInvoices() {
+        Date _end = Dates.maximumDate(Dates.now()); //El día de hoy
+        Date _start = Dates.addDays(_end, -30);
+        if (myAllInvoices.isEmpty()){
+            filter(subject, Dates.minimumDate(_start), Dates.maximumDate(_end), DocumentType.INVOICE, getKeyword(), getTags());
+            myAllInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
+        }
+        return myAllInvoices;
+    }
+
     public void setMyLastlastPreInvoices(List<Invoice> myLastlastPreInvoices) {
         this.myLastlastPreInvoices = myLastlastPreInvoices;
     }
@@ -638,6 +671,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.myLastlastInvoices.clear();
         this.myLastlastPreInvoices.clear();
         this.myOverduelastPreInvoices.clear();
+        this.myAllInvoices.clear(); // --
     }
     
     public BigDecimal calculeTotal(List<Invoice> list) {
@@ -680,9 +714,11 @@ public class InvoiceHome extends FedeController implements Serializable {
             lazyDataModel = new LazyInvoiceDataModel(invoiceService);
         }
 
-        lazyDataModel.setAuthor(_subject);
-        lazyDataModel.setStart(_start);
-        lazyDataModel.setEnd(_end);
+        if(_start != null || _end != null) {
+            lazyDataModel.setStart(_start);
+            lazyDataModel.setEnd(_end);
+        } 
+        lazyDataModel.setAuthor(_subject);        
         lazyDataModel.setDocumentType(_documentType);
         
 

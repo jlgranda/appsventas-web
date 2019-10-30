@@ -42,20 +42,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="card">
                     <label class="Gray">#{i18n['Find']}&nbsp;</label>
                     <p:inputText value="#{invoiceHome.keyword}" class="input-sm">
-                    </p:inputText>
-                    <label class="Gray">#{i18n['Start']}&nbsp;</label>
-                    <p:calendar value="#{invoiceHome.start}" class="input-sm">
-                        <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
-                    </p:calendar>
-                    <label class="Gray">#{i18n['End']}&nbsp;</label>
-                    <p:calendar value="#{invoiceHome.end}" class="input-sm">
-                        <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
-                    </p:calendar>
+                        <p:ajax listener="#{invoiceHome.clear()}" />
+                    </p:inputText>  
+                    <!--
+                    <h:panelGroup id="controles-busqueda-avanzada" >
+                        <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> <!oncomplete="form.submit();" 
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> 
+                            </p:calendar>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <p:selectBooleanCheckbox value="#{invoiceHome.busquedaAvanzada}">
+                        <p:ajax event="change" update="controles-busqueda-avanzada" />
+                    </p:selectBooleanCheckbox>
+                    -->
                     <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
                     </p:commandButton>
                     <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
                 </div>
-                
                 <div class="card">
                     <p:tabView style="margin:-20px; border:none 0px;">
                         <p:tab title="#{i18n['app.fede.allmysales']}">
@@ -139,7 +150,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <ui:repeat value="#{invoiceHome.myLastlastInvoices}" var="entity">
                                                 <div class="Container70 Fs50 FontRobotoLight Orange">
                                                     <span class="Fs20 DispBlock">
-                                                    #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
+                                                    #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
                                                     </span>
     <!--                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
                                                             <f:convertNumber type="currency"/>
@@ -149,7 +160,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </span>-->
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.crationDate']}: #{entity.createdOn} | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
                                                 </div>
                                                 <div class="Container30">
                                                     <p:commandButton title="#{i18n['app.fede.sales.invoice.rollback']}" 
@@ -267,6 +278,48 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </div>
                         </p:tab>
+                        <!--Busqueda-->
+                        <p:tab title="#{i18n['Search']}" rendered="#{invoiceHome.busquedaEjecutada}">
+                            <f:facet name="title">
+                                <h:outputText value="#{i18n['Search']} #{invoiceHome.start} - #{invoiceHome.end} - #{invoiceHome.keyword}" escape="false" rendered="true"/> 
+                            </f:facet>
+                            <div class="ui-g">
+                                <div class="Container100">
+                                    <div class="Container100 Responsive100">
+                                        <div class="ContainerIndent">
+                                            <ui:repeat value="#{invoiceHome.myAllInvoices}" var="entity">
+                                                <div class="Container70 Fs50 FontRobotoLight Orange">
+                                                    <span class="Fs20 DispBlock">
+                                                    #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
+                                                    </span>
+    <!--                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText>
+                                                    </span>-->
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                                </div>
+                                                <div class="Container30">
+                                                    <p:commandButton title="#{i18n['app.fede.sales.invoice.rollback']}" 
+                                                                     icon="fa fa-undo"
+                                                                     styleClass="GrayButton Fright"
+                                                                     action="#{invoiceHome.reopen(entity.id)}"
+                                                                     ajax="false"
+                                                                     immediate="true">
+                                                    </p:commandButton>
+                                                </div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <!-- Busqueda -->
                     </p:tabView>
                 </div>
             </div>

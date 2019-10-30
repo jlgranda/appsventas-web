@@ -35,7 +35,6 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.management.Organization;
-import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Setting;
