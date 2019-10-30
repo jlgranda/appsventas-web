@@ -167,7 +167,7 @@ public class SubjectHome extends FedeController implements Serializable {
                 _signup.setActive(true);
                 
                 //crypt password
-                _signup.setPassword(svc.encryptPassword(_signup.getCode()));
+                _signup.setPassword(svc.encryptPassword(_signup.getPassword()));
                 
                 subjectService.save(_signup);
                 

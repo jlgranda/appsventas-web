@@ -141,7 +141,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
         }
-       
+
     }
 
     public LazySubjectDataModel getLazyDataModel() {
@@ -230,17 +230,24 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
         return getOutcome();
     }
+
     public String save() {
         return save("USER");
     }
-    
+
     public String save(String role) {
         //Realizar signup
         try {
+
             if (!getSubjectEdit().isPersistent()) {
-                boolean setupRoles =  "admin".equalsIgnoreCase(subject.getUsername());
+                if (subject == null) {
+                    subject = subjectService.find(9L); //ID del usuario ADMIN
+                }
+                boolean setupRoles = "admin".equalsIgnoreCase(subject.getUsername());
+                getSubjectEdit().setPassword(getClave()); //Establece la clave desde la vista
                 subjectHome.processSignup(getSubjectEdit(), subject, role, setupRoles); //El propietario es el administrador actual y se asigna con un rol
                 addDefaultSuccessMessage();
+
             } else {
                 //Solo actualizar
                 subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
@@ -273,7 +280,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
      * el cambio de clave.
      */
     public void changePassword() {
-        if (getClave().equalsIgnoreCase(getConfirmarClave())){
+        if (getClave().equalsIgnoreCase(getConfirmarClave())) {
             getSubjectEdit().setPassword(getClave());
             getSubjectEdit().setLastUpdate(Dates.now());
             subjectHome.processChangePassword(getSubjectEdit());
@@ -281,7 +288,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         } else {
             this.addWarningMessage("Las contraseñas no coinciden! Intente nuevamente.", "");
         }
-        
+
     }
 
     public Subject getSubjectEdit() {

@@ -17,6 +17,7 @@
         <h:outputScript name="js/nanoscroller.js" library="ecuador-layout" />
         <h:outputScript name="js/layout.js" library="ecuador-layout" />
         <ui:insert name="head"/>
+        <ui:insert name="style"/>
     </h:head>
 
     <h:body>
@@ -62,7 +63,7 @@
                 </f:facet>
             </p:ajaxStatus>
         </div>
-       
+        <ui:insert name="script"/>
         <h:outputStylesheet name="css/nanoscroller.css" library="ecuador-layout" />
         <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="ecuador-layout" />
         <h:outputStylesheet name="css/appsventas.css" library="appsventas" />

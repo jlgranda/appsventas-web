@@ -3,20 +3,27 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
                 template="/WEB-INF/template.xhtml">
 
-    <ui:define name="title">#{i18n['common.dashboard']}</ui:define>
+    <ui:define name="title">#{i18n['common.dashboard']} - #{subject.fullName}</ui:define>
 
     <ui:define name="head"></ui:define>
-    <ui:define name="viewname">
-        <li><p:link outcome="dashboard">#{i18n['common.dashboard']}</p:link></li>
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="giftuuid" value="#{giftHome.uuid}" />
+        </f:metadata>
     </ui:define>
-
-    <ui:define name="content">
+    <ui:define name="viewname">
+        <li><p:link outcome="dashboard">#{i18n['common.dashboard']} - #{subject.fullName}</p:link></li>
+    </ui:define>
+    <ui:define name="content" rendered="#{!request.isUserInRole('USER')}">
         <div class="layout-dashboard">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-6 ui-lg-6">
+
                     <div class="overview-box sales">
+
                         <p:graphicImage name="images/icon-sales.png" library="ecuador-layout"  styleClass="image-icon" />
                         <div class="overview-title">#{i18n['app.fede.sales.goal']} #{i18n['app.fede.sales']}</div>
                         <div class="overview-numbers">
@@ -53,12 +60,12 @@
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                     <p:panel header="#{i18n['common.statistics']}" styleClass="statistics ui-g">
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
-<!--                            <i class="fa fa-level-up"></i>
-                            <span class="icon-label">Mejora</span>
-                            <span>$ 85,397</span>
-                            <div class="statsbar">
-                                <div class="statsbar-value" style="width: 50%"></div>
-                            </div>-->
+                            <!--                            <i class="fa fa-level-up"></i>
+                                                        <span class="icon-label">Mejora</span>
+                                                        <span>$ 85,397</span>
+                                                        <div class="statsbar">
+                                                            <div class="statsbar-value" style="width: 50%"></div>
+                                                        </div>-->
                             <i class="fa fa-usd"></i>
                             <!--30 días-->
                             <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.date.range.month", "30")} #{i18n['common.days']}</span>
@@ -80,7 +87,7 @@
                             <div class="statsbar">
                                 <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(7) * 100}%"></div>
                             </div>
-                            
+
                             <!-- Ayer -->
                             <span class="icon-label">#{i18n['app.date,yesterday']}</span>
                             <span>
@@ -91,22 +98,22 @@
                             <div class="statsbar">
                                 <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(1) * 100}%"></div>
                             </div>
-<!--                            <i class="fa fa-history"></i>
-                            <span class="icon-label">Tiempo faltante</span>
-                            <span>16:01:53</span>
-                            <div class="statsbar">
-                                <div class="statsbar-value" style="width: 25%"></div>
-                            </div>-->
+                            <!--                            <i class="fa fa-history"></i>
+                                                        <span class="icon-label">Tiempo faltante</span>
+                                                        <span>16:01:53</span>
+                                                        <div class="statsbar">
+                                                            <div class="statsbar-value" style="width: 25%"></div>
+                                                        </div>-->
                         </div>
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
-<!--                            <div>
-                                <i class="fa fa-level-up"></i>
-                                <span>50%</span>
-                                <i class="fa fa-usd"></i>
-                                <span>75%</span>
-                                <i class="fa fa-history"></i>
-                                <span>25%</span>
-                            </div>-->
+                            <!--                            <div>
+                                                            <i class="fa fa-level-up"></i>
+                                                            <span>50%</span>
+                                                            <i class="fa fa-usd"></i>
+                                                            <span>75%</span>
+                                                            <i class="fa fa-history"></i>
+                                                            <span>25%</span>
+                                                        </div>-->
                             <div class="knob-container">
                                 <div class="knob">
                                     <h:outputText value="#{summaryHome.calculeProfitRate()}">
@@ -157,31 +164,114 @@
                         </f:facet>
                         <ul>
                             <ui:repeat value="#{invoiceHome.myLastlastPreInvoices}" var="entity">
-                                 <li>
-                                     <span>#{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i></span> 
-                                     <div class="Fright">
-                                         <p:button title="#{i18n['app.fede.collect']}" 
-                                               icon="fa fa-dollar"
-                                               styleClass="secondary-button"
-                                               outcome="/pages/fede/sales/invoice.jsf?invoiceId=#{entity.id}"
-                                               rendered="true"/>
-                                     </div>
-<!--                                     <div class="time-badge">
-                                         <span>#{entity.boardNumber}</span>
-                                     </div>-->
+                                <li>
+                                    <span>#{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i></span> 
+                                    <div class="Fright">
+                                        <p:button title="#{i18n['app.fede.collect']}" 
+                                                  icon="fa fa-dollar"
+                                                  styleClass="secondary-button"
+                                                  outcome="/pages/fede/sales/invoice.jsf?invoiceId=#{entity.id}"
+                                                  rendered="true"/>
+                                    </div>
+                                    <!--                                     <div class="time-badge">
+                                                                             <span>#{entity.boardNumber}</span>
+                                                                         </div>-->
                                 </li>
                             </ui:repeat>
                         </ul>
                     </p:panel>
                 </div>
-                
-<!--                <div class="ui-g-12 ui-md-12 ui-lg-12">
-                    <p:panel header="#{i18n['common.uncomming.events']}" style="height:100%">
-                        <p:schedule value="#{scheduleView.eventModel}"/>
-                    </p:panel>
-                </div>-->
+
+                <!--                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                    <p:panel header="#{i18n['common.uncomming.events']}" style="height:100%">
+                                        <p:schedule value="#{scheduleView.eventModel}"/>
+                                    </p:panel>
+                                </div>-->
             </div>
         </div>
     </ui:define>
+
+    <ui:define name="style" rendered="#{!request.isUserInRole('USER')}">
+        <style type="text/css">
+        .uuid-bg-image {
+           background-image: url('#{facesContext.externalContext.requestContextPath}/images/dynamic/?uuid=#{giftHome.uuid}&amp;type=png') !important; 
+           height: 360px !important;
+        }
+        </style>
+    </ui:define>
+    
+    <ui:define name="content" rendered="#{!request.isUserInRole('USER')}">
+<!--        <o:onloadScript>
+            var element = document.getElementById('gift-image');
+            var n = document.createTextNode(' ');
+            //var disp = element.style.display;  // don't worry about previous display style
+            var backgroundImage = element.style.display.backgroundImage;  // don't worry about previous display style
+
+            element.appendChild(n);
+            element.style.display.backgroundImage = 'none';
+
+            setTimeout(function(){
+                element.style.display.backgroundImage = backgroundImage;
+                n.parentNode.removeChild(n);
+            }, 20); // you can play with this timeout to make it as short as possible
+            
+            
+            console.log("jlgranda.com >> reload " + element.style.backgroundImage);
+        </o:onloadScript>-->
+        <div class="layout-dashboard">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-6 ui-lg-4">
+                    <p:panel styleClass="profile">
+                        <div class="bg-image">
+                        </div>
+                        <div class="profile-info">
+                            <p:graphicImage name="images/avatar-jeniffer.png" library="ecuador-layout" class="profile-image"/>
+
+                            <span class="name">#{subject.fullName}</span>
+                            <div>
+                                <i class="fa fa-briefcase"></i>
+                                <span class="job">Human Resource Manager</span>
+                            </div>
+                            <div>
+                                <i class="fa fa-location-arrow"></i>
+                                <span class="location">Seattle</span>
+                            </div>
+                            <div>
+                                <div class="profile-numbers">
+                                    <span class="header">Views</span>
+                                    <span class="number">381</span>
+                                </div>
+                                <div class="profile-numbers">
+                                    <span class="header">Followers</span>
+                                    <span class="number">492</span>
+                                </div>
+                                <div class="profile-numbers">
+                                    <span class="header">Likes</span>
+                                    <span class="number">1,395</span>
+                                </div>
+                            </div>
+                        </div>
+                    </p:panel>
+
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-8">
+                    <p:panel id="gift-image-panel" header="Disfruta tu descuento directo" styleClass="profile">
+                        <p:panel id="gift-image-render" visible="#{not empty giftHome.uuid}">
+                            <div id="gift-image" class="bg-image uuid-bg-image">
+                            </div>
+                        </p:panel>
+                        <p:panel id="gift-controls" rendered="#{true}" styleClass="resolution-center">
+                            <p:commandButton id="print-button" value="#{i18n['get.gift']}" ajax="false" 
+                                             icon="fa fa-dollar"
+                                             styleClass="danger-btn"
+                                             actionListener="#{giftHome.print()}"
+                                             type="submit">
+                            </p:commandButton>
+                        </p:panel>
+                    </p:panel>
+                </div>
+            </div>
+        </div>
+    </ui:define>   
 
 </ui:composition>

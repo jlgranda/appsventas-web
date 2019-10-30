@@ -100,7 +100,6 @@ public class SummaryHome  extends FedeController implements Serializable {
         setOutcome("dashboard");
 
         calculeSummary();
-        
     }
 
     public BigDecimal getGrossSalesTotal() {

@@ -45,7 +45,12 @@
                     <a href="#" class="subinfo">
                         <span>#{i18n['signin.password.forget']}</span>
                     </a>
+                    <h:link outcome="signin" >
+                        <span>#{i18n['Registrarse']}</span>
+                    </h:link>
+                    
                 </h:form>
+                
             </div>
         </div>
         <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="ecuador-layout" />

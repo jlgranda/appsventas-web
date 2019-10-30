@@ -66,7 +66,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.sales.Payment;
-import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
+import org.jlgranda.fede.sri.factura.v110.Factura;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.SourceType;

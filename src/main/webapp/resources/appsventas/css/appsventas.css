@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : jlgranda
 */
 
-
+@charset "UTF-8";
 /**Icons*/
 .flaticon-cafe {
     background-color: transparent;
@@ -796,7 +796,7 @@ input[type="text"], input[type="password"], textarea{ -webkit-appearance: none; 
 /***************************************/
 /*    Modena core-layout               */
 /***************************************/
-@charset "UTF-8";
+
 /* CSS Document */
 
 
