@@ -41,7 +41,12 @@
         <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>home</from-outcome>
-            <to-view-id>/pages/preinvoices.jsf</to-view-id>
+            <to-view-id>/pages/home.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>preinvoices</from-outcome>
+            <to-view-id>/pages/fede/sales/preinvoices.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

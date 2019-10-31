@@ -37,6 +37,7 @@
                             <p:menuitem id="om_resumen_ventas_compras" value="Resumen de ventas/compras" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/summary.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
                         
+                        <p:menuitem id="om_home_ini" value="#{i18n['common.home']}" icon="fa fa-fw fa-dashboard" outcome="home"  rendered="#{request.isUserInRole('USER')}"/>
                         <p:menuitem id="om_gifts" value="#{i18n['My.Gifts']}" icon="fa fa-fw fa-cog" outcome="/pages/fede/gifts/gifts.jsf" rendered="#{request.isUserInRole('USER')}"/>
                         
 <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="fa fa-fw fa-cog">

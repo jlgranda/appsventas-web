@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -52,7 +53,7 @@ public class GiftHome extends FedeController implements Serializable{
     
     private LazyGiftDataModel lazyGiftDataModel;
     
-    @Inject
+    @EJB
     private GiftService giftService;
     
     public String getUuid() {

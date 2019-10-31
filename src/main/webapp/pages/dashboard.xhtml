@@ -200,7 +200,7 @@
         </style>
     </ui:define>
     
-    <ui:define name="content" rendered="#{!request.isUserInRole('USER')}">
+    <ui:define name="content" rendered="#{request.isUserInRole('USER')}">
 <!--        <o:onloadScript>
             var element = document.getElementById('gift-image');
             var n = document.createTextNode(' ');
