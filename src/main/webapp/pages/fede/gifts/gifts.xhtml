@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+
+        <ui:define name="title">#{i18n['app.name']}</ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="card">
+                        <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                        <p:calendar value="#{giftHome.start}" class="input-sm">
+                            <p:ajax event="dateSelect" listener="#{giftHome.clear()}" oncomplete="form.submit();"/>
+                        </p:calendar>
+                        <label class="Gray">#{i18n['End']}&nbsp;</label>
+                        <p:calendar value="#{giftHome.end}" class="input-sm">
+                            <p:ajax event="dateSelect" listener="#{giftHome.clear()}" oncomplete="form.submit();"/>
+                        </p:calendar>
+                        <!--<p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>-->
+                    </div>
+                    <div class="card">
+                        <!-- /.row -->
+                        <p:dataTable var="gift" 
+                                     value="#{giftHome.lazyGiftDataModel}" 
+                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                     reflow="true" selection="#{giftHome.selectedBussinesEntities}" 
+                                     rowKey="#{gift.id}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+
+                            <p:column headerText="#{i18n['common.emissionDate']}" sortBy="#{gift.createdOn}">
+                                <h:outputText value="#{gift.createdOn}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['discount.type']}" sortBy="#{gift.discountType}">
+                                <h:outputText value="#{gift.discountType}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['discount.value']}" sortBy="#{gift.discountValue}">
+                                <h:outputText value="#{gift.discountValue}" />
+                            </p:column>
+                            
+                            
+                            
+
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+        
+        <ui:define name="script">
+            
+        </ui:define>
+    </ui:composition>
+</html>
+
+
+                            <!--<p:ajax event="rowSelect" listener="#{giftHome.onRowSelect}"/>
+                            <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                            <p:column headerText="#{i18n['ride.no']}" sortBy="#{giftHome.code}">
+                                <h:outputText value="#{giftHome.code}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{giftHome.author.initials}">
+                                <h:outputText value="#{giftHome.author.initials}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}" sortBy="#{giftHome.author.initials}">
+                                <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{giftHome.importeTotal}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{giftHome.importeTotal}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{giftHome.fechaEmision}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{giftHome.fechaEmision}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['ride.infoFactura.emissionType']}" sortBy="#{giftHome.emissionType}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{giftHome.emissionType}">
+                                </h:outputText>
+                            </p:column>
+                            -->

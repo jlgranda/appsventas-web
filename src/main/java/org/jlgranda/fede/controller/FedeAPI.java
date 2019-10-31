@@ -22,7 +22,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import org.jlgranda.fede.util.FacturaUtil;
 import org.jlgranda.fede.model.document.FacturaElectronica;
-import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
+import org.jlgranda.fede.sri.factura.v110.Factura;
 import org.jpapi.model.TaxRateIVAType;
 import org.jpapi.model.TaxType;
 import org.jpapi.util.Strings;
@@ -74,19 +74,19 @@ public class FedeAPI implements Serializable {
         String str;
         char delimitador = '\0';
         char separador =  ',';
-        for (Factura.Detalles.Detalle d : f.getDetalles().getDetalle()){
-            str = d.getDescripcion();
-            str = str.replaceAll("\'", "\\\'");
-            buffer.append(delimitador)
-            .append(str)
-            .append(delimitador);
-           
-            if (index < (f.getDetalles().getDetalle().size() - 1)) {
-                buffer.append(separador);
-                buffer.append(' ');
-            }
-            index++;
-        }
+//        for (Factura.Detalles.Detalle d : f.getDetalles().getDetalle()){
+//            str = d.getDescripcion();
+//            str = str.replaceAll("\'", "\\\'");
+//            buffer.append(delimitador)
+//            .append(str)
+//            .append(delimitador);
+//           
+//            if (index < (f.getDetalles().getDetalle().size() - 1)) {
+//                buffer.append(separador);
+//                buffer.append(' ');
+//            }
+//            index++;
+//        }
         
         return buffer.toString();
     }

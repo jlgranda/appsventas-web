@@ -130,6 +130,11 @@
             <to-view-id>/pages/admin/template/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>signin</from-outcome>
+            <to-view-id>/public/signin.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
     
 </faces-config>
