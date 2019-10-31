@@ -34,8 +34,6 @@ public class GiftServlet extends HttpServlet {
 
     private static final long serialVersionUID = -2987738476456412232L;
 
-    String uuid;
-
 // Initializes the servlet.
     @Override
     public void init(ServletConfig config) throws
@@ -68,9 +66,10 @@ public class GiftServlet extends HttpServlet {
             String email = request.getParameter("email");
             String name = request.getParameter("name").replace(" ", "%20");
             String mobileNumber = request.getParameter("mobileNumber");
+            String uuid = request.getParameter("uuid");
+            String baseImage = request.getParameter("baseImage");
 
-            uuid = UUID.randomUUID().toString();
-            String ar0 = "/var/opt/appsventas/img/emporio-lojano-billete.jpg";
+            String ar0 = "/var/opt/appsventas/img/" + baseImage;
             String ar1 = "/tmp/" + uuid + ".png";
             String ar2 = "http://emporiolojano.com:8080/appsventas-web/gift.jsf?code=" + uuid;
             String ar3 = code + "," + name + "," + mobileNumber + "," + email;

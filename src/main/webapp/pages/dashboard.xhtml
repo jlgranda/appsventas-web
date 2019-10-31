@@ -225,7 +225,7 @@
                         <div class="bg-image">
                         </div>
                         <div class="profile-info">
-                            <p:graphicImage name="images/avatar-jeniffer.png" library="ecuador-layout" class="profile-image"/>
+                            <p:graphicImage name="images/avatar-jeniffer.png" library="ecuador-layout" class="profile-image" />
 
                             <span class="name">#{subject.fullName}</span>
                             <div>
@@ -255,7 +255,7 @@
 
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-8">
-                    <p:panel id="gift-image-panel" header="Disfruta tu descuento directo" styleClass="profile">
+                    <p:outputPanel id="gift-image-panel" header="Disfruta tu descuento directo" styleClass="profile">
                         <p:panel id="gift-image-render" visible="#{not empty giftHome.uuid}">
                             <div id="gift-image" class="bg-image uuid-bg-image">
                             </div>
@@ -265,10 +265,10 @@
                                              icon="fa fa-dollar"
                                              styleClass="danger-btn"
                                              actionListener="#{giftHome.print()}"
-                                             type="submit">
+                                             type="submit" >
                             </p:commandButton>
                         </p:panel>
-                    </p:panel>
+                    </p:outputPanel>
                 </div>
             </div>
         </div>
