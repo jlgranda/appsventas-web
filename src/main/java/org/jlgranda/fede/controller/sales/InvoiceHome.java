@@ -378,25 +378,34 @@ public class InvoiceHome extends FedeController implements Serializable {
     public List<Invoice> getMyLastlastPreInvoices() {
         if (myLastlastPreInvoices.isEmpty()){
             filter(subject, getStart(), getEnd(), DocumentType.PRE_INVOICE, getKeyword(), getTags());
-            myLastlastPreInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
+            myLastlastPreInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()),true);
         }
         return myLastlastPreInvoices;
     }
     
     public List<Invoice> getMyLastlastInvoices() {
+        return getMyLastlastInvoices(true);
+    }
+    
+    public List<Invoice> getMyLastlastInvoicesByOwner() {
+        return getMyLastlastInvoices(false);
+    }
+        
+    protected List<Invoice> getMyLastlastInvoices(boolean byAuthor) {
         if (myLastlastInvoices.isEmpty()){
             filter(subject, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
-            myLastlastInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
+            myLastlastInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()), byAuthor);
         }
         return myLastlastInvoices;
     }
+    
     
     public List<Invoice> getMyPendingPreInvoices() {
         Date _end = Dates.addDays(getEnd(), -1);
         Date _start = Dates.addDays(_end, -30);
         if (myPendinglastPreInvoices.isEmpty()){
             filter(subject, Dates.minimumDate(_start), Dates.maximumDate(_end), DocumentType.PRE_INVOICE, getKeyword(), getTags());
-            myPendinglastPreInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
+            myPendinglastPreInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()),true);
         }
         return myPendinglastPreInvoices;
     }
@@ -407,7 +416,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         Date _start = Dates.addDays(_end, -30);
         if (myAllInvoices.isEmpty()){
             filter(subject, Dates.minimumDate(_start), Dates.maximumDate(_end), DocumentType.INVOICE, getKeyword(), getTags());
-            myAllInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
+            myAllInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()),true);
         }
         return myAllInvoices;
     }
@@ -426,7 +435,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         Date _start = getStart();
         if (myOverduelastPreInvoices.isEmpty()){
             filter(subject, Dates.minimumDate(_start), Dates.maximumDate(_end), DocumentType.OVERDUE, getKeyword(), getTags());
-            myOverduelastPreInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()));
+            myOverduelastPreInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()),true);
         }
         return myOverduelastPreInvoices;
     }
@@ -718,7 +727,8 @@ public class InvoiceHome extends FedeController implements Serializable {
             lazyDataModel.setStart(_start);
             lazyDataModel.setEnd(_end);
         } 
-        lazyDataModel.setAuthor(_subject);        
+        lazyDataModel.setAuthor(_subject);
+        lazyDataModel.setOwner(_subject);   
         lazyDataModel.setDocumentType(_documentType);
         
 

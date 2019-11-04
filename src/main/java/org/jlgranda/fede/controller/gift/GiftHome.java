@@ -19,6 +19,7 @@ package org.jlgranda.fede.controller.gift;
 import com.jlgranda.fede.ejb.gifts.GiftService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -29,10 +30,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.gifts.GiftEntity;
+import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.ui.model.LazyGiftDataModel;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 //import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
@@ -56,6 +60,18 @@ public class GiftHome extends FedeController implements Serializable{
     @EJB
     private GiftService giftService;
     
+    @Inject
+    private SettingHome settingHome;
+    
+    private List<Invoice> myLastlastInvoices = new ArrayList<>();
+    
+    
+    @PostConstruct
+    private void init() {
+        setStart(Dates.minimumDate(Dates.addDays(Dates.now(), -5)));
+        setEnd(Dates.maximumDate(Dates.now()));
+    }
+    
     public String getUuid() {
         return uuid;
     }
@@ -63,12 +79,6 @@ public class GiftHome extends FedeController implements Serializable{
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
-    
-    @PostConstruct
-    private void init() {
-        setOutcome("inicio");
-    }
-    
     /**
      * Executa el Servlet de generación de imagenes de cupón
      */
@@ -89,7 +99,7 @@ public class GiftHome extends FedeController implements Serializable{
             
             GiftEntity giftEntity = giftService.createInstance();
             giftEntity.setUuid(uuId);
-            giftEntity.setImageBasePath("/var/opt/appsventas/img/" + baseImage);
+            giftEntity.setImageBasePath(settingHome.getValue("app.gift.baseImagePath", "/var/opt/appsventas/img/") + baseImage);
             giftEntity.setOwner(subject);
             giftEntity.setAuthor(subject);
             giftService.save(giftEntity);
@@ -162,4 +172,25 @@ public class GiftHome extends FedeController implements Serializable{
         }*/
     }    
     
+    public Long getGiftCount(){
+       // return giftService.count("gift.countGiftByOwner", subject);
+       return getGiftCountByOnwer(subject);
+    }
+    
+    public Long getGiftCountByOnwer(Subject _subject){
+        return giftService.count("gift.countGiftByOwner", _subject);
+    }
+    
+    public Long getSharedGiftCount(){
+        return giftService.count("gift.countGiftSharedByOwner", subject);
+    }
+    
+    public List<GiftEntity> getGiftsFromOthers(){
+//        return giftService.findUniqueByNamedQuery("gift.giftsFromOtherUsers", subject, getStart(), getEnd());
+        return giftService.findByNamedQuery("gift.giftsFromOtherUsers", subject, getStart(), getEnd());
+    } 
+    
+    /*public Long getGiftsCountByUserId(Long id){
+        return giftService.count("gift.countGitfsByOwnerIdAndDates",id, getStart(), getEnd());
+    } */
 }

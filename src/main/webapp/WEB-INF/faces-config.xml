@@ -23,7 +23,7 @@
               version="2.0">
 
     <!-- appsventas_erp -->
-    <name>appsventas_erp</name>
+    <name>appsventas</name>
     
     <application>
         <locale-config>

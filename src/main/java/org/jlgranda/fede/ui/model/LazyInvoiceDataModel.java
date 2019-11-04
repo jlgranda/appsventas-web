@@ -89,7 +89,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     public List<Invoice> getResultList() {
 
         if (resultList.isEmpty()) {
-            resultList = this.load(0, MAX_RESULTS, null, SortOrder.DESCENDING, buildFilters());
+            resultList = this.load(0, MAX_RESULTS, null, SortOrder.DESCENDING, buildFilters(true));
         }
         return resultList;
     }
@@ -222,7 +222,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         if (sortOrder == SortOrder.ASCENDING) {
             order = QuerySortOrder.ASC;
         }
-        Map<String, Object> _filters = buildFilters(); //Filtros desde atributos de clase
+        Map<String, Object> _filters = buildFilters(true); //Filtros desde atributos de clase
         
         _filters.putAll(filters);
         
@@ -235,7 +235,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         return qData.getResult();
     }
     
-    public List<Invoice> load(String sortField, SortOrder sortOrder) {
+    public List<Invoice> load(String sortField, SortOrder sortOrder, boolean loadByAuthor) {
 
         int end = 0 + MAX_RESULTS;
 
@@ -243,7 +243,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         if (sortOrder == SortOrder.ASCENDING) {
             order = QuerySortOrder.ASC;
         }
-        Map<String, Object> _filters = buildFilters(); //Filtros desde atributos de clase
+        Map<String, Object> _filters = buildFilters(loadByAuthor); //Filtros desde atributos de clase
         
         if (sortField == null){
             sortField = Invoice_.lastUpdate.getName();
@@ -253,7 +253,8 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
-
+    
+    
     public BussinesEntity[] getSelectedBussinesEntities() {
         return selectedBussinesEntities;
     }
@@ -270,7 +271,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
 
-    private Map<String, Object> buildFilters() {
+    private Map<String, Object> buildFilters(boolean loadByAuthor) {
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
         range.put("start", getStart());
@@ -279,8 +280,10 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         if (!Strings.isNullOrEmpty(getBoardNumber())){
             _filters.put(Invoice_.boardNumber.getName(), getBoardNumber()); //Filtro de número de mesa
         }
-        
-        _filters.put(Invoice_.author.getName(), getAuthor()); //Filtro por defecto
+        if (loadByAuthor)
+            _filters.put(Invoice_.author.getName(), getAuthor()); //Filtro por defecto
+        else 
+            _filters.put(Invoice_.owner.getName(), getOwner()); //Filtro por defecto
         _filters.put(Invoice_.createdOn.getName(), range); //Filtro de fecha inicial
         if (!Strings.isNullOrEmpty(getTags())){
             _filters.put("tag", getTags()); //Filtro de etiquetas

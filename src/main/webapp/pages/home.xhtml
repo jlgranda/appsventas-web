@@ -4,7 +4,9 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
-                template="/WEB-INF/template.xhtml">
+                xmlns:of="http://omnifaces.org/functions"
+                template="/WEB-INF/template.xhtml"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:define name="title">#{i18n['common.dashboard']} - #{subject.fullName}</ui:define>
 
@@ -20,14 +22,19 @@
 
     <ui:define name="style" rendered="#{!request.isUserInRole('USER')}">
         <style type="text/css">
-        .uuid-bg-image {
-           background-image: url('#{facesContext.externalContext.requestContextPath}/images/dynamic/?uuid=#{giftHome.uuid}&amp;type=png') !important; 
-           height: 360px !important;
+            .uuid-bg-image {
+                background-image: url('#{facesContext.externalContext.requestContextPath}/images/dynamic/?uuid=#{giftHome.uuid}&amp;type=png') !important; 
+                height: 360px !important;
+            }
+            
+        .bg-image {
+           /*background-image: url('#{not empty subject.photo ? ui.translateImageFromDB(subject.photo) : '/appsventas-web/javax.faces.resource/images/if_20.Photos_290130.png.jsf?ln=ecuador-layout'}') !important;*/ 
+           background-image: url('/appsventas-web/javax.faces.resource/images/emporio-login-2019.jpg.jsf?ln=ecuador-layout') !important; 
         }
         </style>
     </ui:define>
-    
-    <ui:define name="content" rendered="#{!request.isUserInRole('USER')}">
+
+    <ui:define name="content" rendered="#{request.isUserInRole('USER')}">
         <div class="layout-dashboard">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-4">
@@ -35,128 +42,73 @@
                         <div class="bg-image">
                         </div>
                         <div class="profile-info">
-                                <p:graphicImage name="images/avatar-jeniffer.png" library="ecuador-layout" class="profile-image"/>
-
+                            <p:graphicImage name="#{not empty subject.photo ? ui.translateImageFromDB(subject.photo) : 'images/default-profile.jpg'}" library="ecuador-layout" class="profile-image"/>
                             <span class="name">#{subject.fullName}</span>
-                            <div>
+                            <!-- <div>
                                 <i class="fa fa-briefcase"></i>
                                 <span class="job">Human Resource Manager</span>
                             </div>
                             <div>
                                 <i class="fa fa-location-arrow"></i>
                                 <span class="location">Seattle</span>
-                            </div>
+                            </div>-->
+                            
                             <div>
                                 <div class="profile-numbers">
-                                    <span class="header">Views</span>
-                                    <span class="number">381</span>
+                                    <span class="header">Regalos</span>
+                                    <span class="number">#{giftHome.giftCount}</span>
                                 </div>
                                 <div class="profile-numbers">
-                                    <span class="header">Followers</span>
-                                    <span class="number">492</span>
-                                </div>
-                                <div class="profile-numbers">
-                                    <span class="header">Likes</span>
-                                    <span class="number">1,395</span>
+                                    <span class="header">Compartidos</span>
+                                    <span class="number">#{giftHome.sharedGiftCount}</span>
                                 </div>
                             </div>
                         </div>
                     </p:panel>
-                        
-                    <p:panel header="Mis últimas compras" styleClass="timeline">
+
+                    <p:panel header="#{i18n['MisUltimasCompras']}" styleClass="timeline">
                         <ul>
+                            <ui:repeat value="#{invoiceHome.myLastlastInvoicesByOwner}" var="entity">
                             <li>
                                 <div class="date-indicator">
                                     <span class="date">today</span>
-                                    <span class="time">08:32</span>
+                                    <span class="time">#{entity.createdOn}</span>
                                 </div>
                                 <div class="activity-link"></div>
                                 <i class="fa fa-circle success"></i>
                                 <div class="timeline-subject">
-                                    <span class="timeline-header">Emporio Lojano</span>
-                                    <span class="timeline-subheader">Café y empanadas</span>
+                                    <span class="timeline-header">#{entity.establishment.name}</span>
+<!--                                    <span class="timeline-subheader">#{ui.truncateString(entity.summary)}</span>-->
+                                    <span class="timeline-subheader">#{of:abbreviate(entity.summary, settingHome.getValue("app.gift.summary.length", "28") )}</span>
                                 </div>
                                 <i class="fa fa-laptop device success"></i>
                             </li>
-                            <li>
-                                <div class="date-indicator">
-                                    <span class="date">Lunes</span>
-                                    <span class="time">13h00</span>
-                                </div>
-                                <div class="activity-link"></div>
-                                <i class="fa fa-circle success"></i>
-                                <div class="timeline-subject">
-                                    <span class="timeline-header">Almuerzo</span>
-                                    <span class="timeline-subheader">Repe y Cecina Lojana</span>
-                                </div>
-                                <i class="fa fa-tablet device success"></i>
-                            </li>
+                            </ui:repeat>
+                            
                         </ul>
                     </p:panel>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-8">
                     <p:panel header="Recientes regalos obtenidos" styleClass="inbox">
                         <ul>
-                            <li>
-                                <div class="image-container">
-                                    <p:graphicImage name="images/avatar-maggie.png" library="ecuador-layout" />
-                                </div>
-                                <div class="seperator"></div>
-                                <div class="message-box">
-                                    <span class="messager">Maggie Walker</span>
-                                    <span class="time">23 mins</span>   
-                                    <span class="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribu…</span>       
-                                </div>
-                                <div class="message-status">
-                                    <i class="fa fa-circle"></i>
-                                    <span>562</span>
-                                </div>    
-                            </li>
-                            <li>
-                                <div class="image-container">
-                                    <p:graphicImage name="images/avatar-brooke.png" library="ecuador-layout" />
-                                </div>
-                                <div class="seperator"></div>
-                                <div class="message-box">
-                                    <span class="messager">Brooke Wright</span>
-                                    <span class="time">5 hours</span>   
-                                    <span class="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</span>       
-                                </div>
-                                <div class="message-status">
-                                    <i class="fa fa-circle"></i>
-                                    <span>149</span>
-                                </div>
-                            </li>               
-                            <li>
-                                <div class="image-container">
-                                    <p:graphicImage name="images/avatar-tom.png" library="ecuador-layout" />
-                                </div>
-                                <div class="seperator"></div>
-                                <div class="message-box">
-                                    <span class="messager">Tom Baker</span>
-                                    <span class="time">19 hours</span>   
-                                    <span class="message">It is a long established fact that a reader will be distracted by the readable content.</span>       
-                                </div>
-                                <div class="message-status">
-                                    <i class="fa fa-circle unread"></i>
-                                    <span>74</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="image-container">
-                                    <p:graphicImage name="images/avatar-lucas.png" library="ecuador-layout" />
-                                </div>
-                                <div class="seperator"></div>
-                                <div class="message-box">
-                                    <span class="messager">Lucas Fox</span>
-                                    <span class="time">1 day</span>   
-                                    <span class="message">It is a long established fact that a reader will be distracted by the readable contentof a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal.</span>       
-                                </div>
-                                <div class="message-status">
-                                    <i class="fa fa-circle unread"></i>
-                                    <span>250</span>
-                                </div>
-                            </li>
+                            <ui:repeat value="#{giftHome.giftsFromOthers}" var="entity">
+                                <li>
+                                    <div class="image-container">
+                                        <p:graphicImage name="#{not empty entity.photo ? ui.translateImageFromDB(entity.photo) : 'images/default-profile.jpg'}"
+                                                        library="ecuador-layout" class="profile-image"/>
+                                    </div>
+                                    <div class="seperator"></div>
+                                    <div class="message-box">
+                                        <span class="messager">#{entity.fullName}</span>
+                                        <span class="time">#{entity.createdOn}</span>   
+<!--                                        <span class="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribu…</span>       -->
+                                    </div>
+                                    <div class="message-status">
+                                        <i class="fa fa-circle"></i>
+                                        <span>#{giftHome.getGiftCountByOnwer(entity.owner)}</span>
+                                    </div>    
+                                </li>
+                            </ui:repeat>
                         </ul>
                     </p:panel>
                     <p:panel id="gift-image-panel" header="Disfruta tu descuento directo" styleClass="profile">

@@ -116,6 +116,10 @@
         <error-code>500</error-code>
         <location>/error.jsf</location>
     </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/404.jsf</location>
+    </error-page>
     <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>

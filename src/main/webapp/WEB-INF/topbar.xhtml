@@ -12,13 +12,13 @@
             <input type="text"></input>
         </div>
 
-        <h:link outcome="dashboard" styleClass="logo-container">
+        <h:link outcome="home" styleClass="logo-container">
             <p:graphicImage name="images/appsventas.png" library="appsventas" />
         </h:link>
 
         <a id="topbar-profile-menu-button" href="#">
             <span>#{subject.fullName}</span>
-            <p:graphicImage name="images/if_20.Photos_290130.png" library="ecuador-layout" rendered="#{empty subject.photo}"/>
+            <p:graphicImage name="images/default-profile.jpg" library="ecuador-layout" rendered="#{empty subject.photo}"/>
             <p:graphicImage value="#{ui.translateImageFromDB(subject.photo)}" rendered="#{not empty subject.photo}"/>
             <i class="fa fa-angle-down"></i>
         </a>

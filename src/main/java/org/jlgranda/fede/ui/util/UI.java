@@ -40,6 +40,7 @@ import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Setting;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.omnifaces.el.functions.Strings;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -302,6 +303,10 @@ public class UI {
     public TimeZone getTimeZone() {
         TimeZone timeZone = TimeZone.getDefault();
         return timeZone;
+    }
+    
+    public String truncateString(String string){
+        return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.gift.summary.length", "28")));
     }
     
     public static void main(String[] args) {
