@@ -26,11 +26,11 @@
                 background-image: url('#{facesContext.externalContext.requestContextPath}/images/dynamic/?uuid=#{giftHome.uuid}&amp;type=png') !important; 
                 height: 360px !important;
             }
-            
-        .bg-image {
-           /*background-image: url('#{not empty subject.photo ? ui.translateImageFromDB(subject.photo) : '/appsventas-web/javax.faces.resource/images/if_20.Photos_290130.png.jsf?ln=ecuador-layout'}') !important;*/ 
-           background-image: url('/appsventas-web/javax.faces.resource/images/emporio-login-2019.jpg.jsf?ln=ecuador-layout') !important; 
-        }
+
+            .bg-image {
+                /*background-image: url('#{not empty subject.photo ? ui.translateImageFromDB(subject.photo) : '/appsventas-web/javax.faces.resource/images/if_20.Photos_290130.png.jsf?ln=ecuador-layout'}') !important;*/ 
+                background-image: url('/appsventas-web/javax.faces.resource/images/emporio-login-2019.jpg.jsf?ln=ecuador-layout') !important; 
+            }
         </style>
     </ui:define>
 
@@ -52,7 +52,7 @@
                                 <i class="fa fa-location-arrow"></i>
                                 <span class="location">Seattle</span>
                             </div>-->
-                            
+
                             <div>
                                 <div class="profile-numbers">
                                     <span class="header">Regalos</span>
@@ -69,22 +69,22 @@
                     <p:panel header="#{i18n['MisUltimasCompras']}" styleClass="timeline">
                         <ul>
                             <ui:repeat value="#{invoiceHome.myLastlastInvoicesByOwner}" var="entity">
-                            <li>
-                                <div class="date-indicator">
-                                    <span class="date">today</span>
-                                    <span class="time">#{entity.createdOn}</span>
-                                </div>
-                                <div class="activity-link"></div>
-                                <i class="fa fa-circle success"></i>
-                                <div class="timeline-subject">
-                                    <span class="timeline-header">#{entity.establishment.name}</span>
-<!--                                    <span class="timeline-subheader">#{ui.truncateString(entity.summary)}</span>-->
-                                    <span class="timeline-subheader">#{of:abbreviate(entity.summary, settingHome.getValue("app.gift.summary.length", "28") )}</span>
-                                </div>
-                                <i class="fa fa-laptop device success"></i>
-                            </li>
+                                <li>
+                                    <div class="date-indicator">
+                                        <span class="date">today</span>
+                                        <span class="time">#{entity.createdOn}</span>
+                                    </div>
+                                    <div class="activity-link"></div>
+                                    <i class="fa fa-circle success"></i>
+                                    <div class="timeline-subject">
+                                        <span class="timeline-header">#{entity.establishment.name}</span>
+    <!--                                    <span class="timeline-subheader">#{ui.truncateString(entity.summary)}</span>-->
+                                        <span class="timeline-subheader">#{of:abbreviate(entity.summary, settingHome.getValue("app.gift.summary.length", "28") )}</span>
+                                    </div>
+                                    <i class="fa fa-laptop device success"></i>
+                                </li>
                             </ui:repeat>
-                            
+
                         </ul>
                     </p:panel>
                 </div>
@@ -95,17 +95,17 @@
                                 <li>
                                     <div class="image-container">
                                         <p:graphicImage name="#{not empty entity.photo ? ui.translateImageFromDB(entity.photo) : 'images/default-profile.jpg'}"
-                                                        library="ecuador-layout" class="profile-image"/>
+                                                        class="profile-image"/>
                                     </div>
                                     <div class="seperator"></div>
                                     <div class="message-box">
                                         <span class="messager">#{entity.fullName}</span>
                                         <span class="time">#{entity.createdOn}</span>   
-<!--                                        <span class="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribu…</span>       -->
+                                        <!--                                        <span class="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribu…</span>       -->
                                     </div>
                                     <div class="message-status">
                                         <i class="fa fa-circle"></i>
-                                        <span>#{giftHome.getGiftCountByOnwer(entity.owner)}</span>
+                                        <span>#{giftHome.getCountGiftByOwner(entity)}</span>
                                     </div>    
                                 </li>
                             </ui:repeat>

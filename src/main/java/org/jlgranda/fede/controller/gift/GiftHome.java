@@ -46,32 +46,31 @@ import org.primefaces.event.SelectEvent;
  */
 @Named
 @RequestScoped
-public class GiftHome extends FedeController implements Serializable{
+public class GiftHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     String uuid;
-    
+
     @Inject
     private Subject subject;
-    
+
     private LazyGiftDataModel lazyGiftDataModel;
-    
+
     @EJB
     private GiftService giftService;
-    
+
     @Inject
     private SettingHome settingHome;
-    
+
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
-    
-    
+
     @PostConstruct
     private void init() {
         setStart(Dates.minimumDate(Dates.addDays(Dates.now(), -5)));
         setEnd(Dates.maximumDate(Dates.now()));
     }
-    
+
     public String getUuid() {
         return uuid;
     }
@@ -79,37 +78,37 @@ public class GiftHome extends FedeController implements Serializable{
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
+
     /**
      * Executa el Servlet de generación de imagenes de cupón
      */
-    public void print(){
+    public void print() {
 
-        try{
+        try {
             String code = subject.getCode();
-            String email =subject.getEmail();
+            String email = subject.getEmail();
             String name = subject.getFirstname() + " " + subject.getSurname();
-            String mobileNumber =subject.getMobileNumber();
+            String mobileNumber = subject.getMobileNumber();
             String uuId = UUID.randomUUID().toString();
-            String baseImage ="emporio-lojano-billete.jpg";
-            
+            String baseImage = "emporio-lojano-billete.jpg";
+
             //Ejecutar servlet
-            redirectTo("/giftServlet/?code=" + code + "&email=" + email +
-                    "&name=" + name + "&mobileNumber=" + mobileNumber +
-                    "&uuid="+ uuId + "&baseImage=" + baseImage);            
-            
+            redirectTo("/giftServlet/?code=" + code + "&email=" + email
+                    + "&name=" + name + "&mobileNumber=" + mobileNumber
+                    + "&uuid=" + uuId + "&baseImage=" + baseImage);
+
             GiftEntity giftEntity = giftService.createInstance();
             giftEntity.setUuid(uuId);
             giftEntity.setImageBasePath(settingHome.getValue("app.gift.baseImagePath", "/var/opt/appsventas/img/") + baseImage);
             giftEntity.setOwner(subject);
             giftEntity.setAuthor(subject);
             giftService.save(giftEntity);
-            
+
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(GiftHome.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
     @Override
     public void handleReturn(SelectEvent event) {
 
@@ -130,11 +129,10 @@ public class GiftHome extends FedeController implements Serializable{
         return new LinkedList<>();
     }
 
-    public void clear(){
-           filter();
+    public void clear() {
+        filter();
     }
-    
-    
+
     public LazyGiftDataModel getLazyGiftDataModel() {
 
         filter();
@@ -145,13 +143,12 @@ public class GiftHome extends FedeController implements Serializable{
     public void setLazyGiftDataModel(LazyGiftDataModel lazyGiftDataModel) {
         this.lazyGiftDataModel = lazyGiftDataModel;
     }
-    
-    
+
     /**
      * Filtro para llenar el Lazy Datamodel
      */
     public void filter() {
-        
+
         if (lazyGiftDataModel == null) {
             lazyGiftDataModel = new LazyGiftDataModel(giftService);
         }
@@ -160,7 +157,7 @@ public class GiftHome extends FedeController implements Serializable{
         lazyGiftDataModel.setStart(getStart());
         lazyGiftDataModel.setEnd(getEnd());
 
-       /* if (getKeyword() != null && getKeyword().startsWith("label:")) {
+        /* if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
                 lazyGiftDataModel.setTags(parts[1]);
@@ -170,26 +167,26 @@ public class GiftHome extends FedeController implements Serializable{
             lazyGiftDataModel.setTags(getTags());
             lazyGiftDataModel.setFilterValue(getKeyword());
         }*/
-    }    
-    
-    public Long getGiftCount(){
-       // return giftService.count("gift.countGiftByOwner", subject);
-       return getGiftCountByOnwer(subject);
     }
-    
-    public Long getGiftCountByOnwer(Subject _subject){
+
+    public Long getGiftCount() {
+        // return giftService.count("gift.countGiftByOwner", subject);
+        return getCountGiftByOwner(subject);
+    }
+
+    public Long getCountGiftByOwner(Subject _subject) {
         return giftService.count("gift.countGiftByOwner", _subject);
     }
-    
-    public Long getSharedGiftCount(){
+
+    public Long getSharedGiftCount() {
         return giftService.count("gift.countGiftSharedByOwner", subject);
     }
-    
-    public List<GiftEntity> getGiftsFromOthers(){
+
+    public List<GiftEntity> getGiftsFromOthers() {
 //        return giftService.findUniqueByNamedQuery("gift.giftsFromOtherUsers", subject, getStart(), getEnd());
         return giftService.findByNamedQuery("gift.giftsFromOtherUsers", subject, getStart(), getEnd());
-    } 
-    
+    }
+
     /*public Long getGiftsCountByUserId(Long id){
         return giftService.count("gift.countGitfsByOwnerIdAndDates",id, getStart(), getEnd());
     } */
