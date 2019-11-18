@@ -5,10 +5,10 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:of="http://omnifaces.org/functions"
-                template="/WEB-INF/template.xhtml"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="/WEB-INF/template.xhtml">
 
-    <ui:define name="title">#{i18n['common.dashboard']} - #{subject.fullName}</ui:define>
+    <ui:define name="title">#{i18n['common.welcome']} - #{subject.fullName}</ui:define>
 
     <ui:define name="head"></ui:define>
     <ui:define name="params">
@@ -17,19 +17,23 @@
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li><p:link outcome="dashboard">#{i18n['common.dashboard']} - #{subject.fullName}</p:link></li>
+        <li><p:link outcome="home">#{i18n['common.welcome']} - #{subject.fullName}</p:link></li>
     </ui:define>
 
     <ui:define name="style" rendered="#{!request.isUserInRole('USER')}">
         <style type="text/css">
-            .uuid-bg-image {
-                background-image: url('#{facesContext.externalContext.requestContextPath}/images/dynamic/?uuid=#{giftHome.uuid}&amp;type=png') !important; 
-                height: 360px !important;
-            }
-
+            
             .bg-image {
-                /*background-image: url('#{not empty subject.photo ? ui.translateImageFromDB(subject.photo) : '/appsventas-web/javax.faces.resource/images/if_20.Photos_290130.png.jsf?ln=ecuador-layout'}') !important;*/ 
-                background-image: url('/appsventas-web/javax.faces.resource/images/emporio-login-2019.jpg.jsf?ln=ecuador-layout') !important; 
+                background-image: url('#{facesContext.externalContext.requestContextPath}#{not empty giftHome.uuid ? '/images/dynamic/?uuid='.concat(giftHome.uuid).concat('&amp;type=png') : '/javax.faces.resource/images/emporiolojano-portada-01.jpg.jsf?ln=ecuador-layout'}') !important;
+                height: 190px !important;
+                width: 100%;
+                background-size: cover;
+            }
+            
+            .layout-content .layout-dashboard .profile .ui-panel-content .profile-info span {
+                font-size: 15px;
+                color: #fff;
+                font-weight: 700;
             }
         </style>
     </ui:define>
@@ -42,8 +46,9 @@
                         <div class="bg-image">
                         </div>
                         <div class="profile-info">
-                            <p:graphicImage name="#{not empty subject.photo ? ui.translateImageFromDB(subject.photo) : 'images/default-profile.jpg'}" library="ecuador-layout" class="profile-image"/>
-                            <span class="name">#{subject.fullName}</span>
+                            <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
+                                                class="profile-image"/>
+                            <span class="name">#{subjectHome.signup.fullName}</span>
                             <!-- <div>
                                 <i class="fa fa-briefcase"></i>
                                 <span class="job">Human Resource Manager</span>
@@ -63,25 +68,39 @@
                                     <span class="number">#{giftHome.sharedGiftCount}</span>
                                 </div>
                             </div>
+                            <div class="">
+                                <p:commandButton id="print-button" value="#{i18n['get.gift']}" ajax="false" 
+                                                 icon="fa fa-dollar"
+                                                 styleClass="danger-btn rounded-btn" 
+                                                 style="margin-bottom: 10px; background-color:#85bb65;border-color:#85bb65;"
+                                                 actionListener="#{giftHome.print()}"
+                                                 type="submit" >
+                                </p:commandButton>
+                            </div>
                         </div>
                     </p:panel>
-
-                    <p:panel header="#{i18n['MisUltimasCompras']}" styleClass="timeline">
+                    <p:panel header="#{i18n['app.gifts.MyLastGifts']}" styleClass="timeline">
                         <ul>
-                            <ui:repeat value="#{invoiceHome.myLastlastInvoicesByOwner}" var="entity">
+                            <ui:repeat value="#{giftHome.lastGitfs}" var="entity">
                                 <li>
-                                    <div class="date-indicator">
-                                        <span class="date">today</span>
-                                        <span class="time">#{entity.createdOn}</span>
+<!--                                    <div class="date-indicator ui-lg-3 ui-md-3">
+                                        <span class="date">
+                                            
+                                        </span>
+                                    </div>-->
+<!--                                    <div class="activity-link"></div>
+                                    <i class="fa fa-circle code"></i>-->
+                                    <div class="timeline-subject ui-lg-9 ui-md-9">
+                                        <span class="timeline-header">#{i18n['common.caducaEn']} <h:outputText value="#{entity.expirationTime}" styleClass="">
+                                                <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
+                                            </h:outputText></span>
+                                        <span class="timeline-subheader" style="display: inline-block; width: 90%;">
+                                            <h:outputText value="#{entity.summary}"
+                                                          escape="false">
+                                            </h:outputText>
+                                        </span>
                                     </div>
-                                    <div class="activity-link"></div>
-                                    <i class="fa fa-circle success"></i>
-                                    <div class="timeline-subject">
-                                        <span class="timeline-header">#{entity.establishment.name}</span>
-    <!--                                    <span class="timeline-subheader">#{ui.truncateString(entity.summary)}</span>-->
-                                        <span class="timeline-subheader">#{of:abbreviate(entity.summary, settingHome.getValue("app.gift.summary.length", "28") )}</span>
-                                    </div>
-                                    <i class="fa fa-laptop device success"></i>
+                                    <i class="fa fa-coffee device success" style="color:red;"></i>
                                 </li>
                             </ui:repeat>
 
@@ -89,13 +108,54 @@
                     </p:panel>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-8">
-                    <p:panel header="Recientes regalos obtenidos" styleClass="inbox">
+                    <p:panel header="#{i18n['MisUltimasCompras']}" styleClass="timeline ShowOnDesktop ShowOnDesktop">
+                        <ul>
+                            <p:panel rendered="#{empty invoiceHome.myLastlastInvoicesByOwner}">
+                                <li>
+                                    <div class="date-indicator">
+                                        <span class="date">
+                                            <h:outputText value="#{Dates.now()}" styleClass="">
+                                                <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
+                                            </h:outputText>
+                                        </span>
+                                    </div>
+                                    <div class="activity-link"></div>
+                                    <i class="fa fa-circle success"></i>
+                                    <div class="timeline-subject ui-md-9">
+                                        <span class="timeline-header">#{i18n['TiempoBuenCafe']} #{'Te sugerimos el Emporio Lojano'}</span>
+                                        <span class="timeline-subheader">#{''}</span>
+                                    </div>
+                                    <i class="fa fa-coffee device success" style="color:red;"></i>
+                                </li>
+                            </p:panel>
+                            <ui:repeat value="#{invoiceHome.myLastlastInvoicesByOwner}" var="entity">
+                                <li>
+                                    <div class="date-indicator">
+                                        <span class="date">
+                                            <h:outputText value="#{entity.createdOn}" styleClass="">
+                                                <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
+                                            </h:outputText>
+                                        </span>
+                                    </div>
+                                    <div class="activity-link"></div>
+                                    <i class="fa fa-circle success"></i>
+                                    <div class="timeline-subject ui-md-9">
+                                        <span class="timeline-header">#{entity.establishment.name}</span>
+                                        <span class="timeline-subheader">#{of:abbreviate(entity.summary, settingHome.getValue("app.gift.summary.length", "84") )}</span>
+                                    </div>
+                                    <i class="fa fa-coffee device success" style="color:gray;"></i>
+                                </li>
+                            </ui:repeat>
+
+                        </ul>
+                    </p:panel>
+                    <p:panel header="#{i18n['app.gifts.RecentGiftFromOther']}" styleClass="inbox">
                         <ul>
                             <ui:repeat value="#{giftHome.giftsFromOthers}" var="entity">
                                 <li>
                                     <div class="image-container">
-                                        <p:graphicImage name="#{not empty entity.photo ? ui.translateImageFromDB(entity.photo) : 'images/default-profile.jpg'}"
-                                                        class="profile-image"/>
+                                        <o:graphicImage value="#{images.getContent(entity.id)}" 
+                                                class="profile-image"/>
                                     </div>
                                     <div class="seperator"></div>
                                     <div class="message-box">
@@ -111,20 +171,6 @@
                             </ui:repeat>
                         </ul>
                     </p:panel>
-                    <p:panel id="gift-image-panel" header="Disfruta tu descuento directo" styleClass="profile">
-                        <p:panel id="gift-image-render" visible="#{not empty giftHome.uuid}">
-                            <div id="gift-image" class="bg-image uuid-bg-image">
-                            </div>
-                        </p:panel>
-                        <p:panel id="gift-controls" rendered="#{true}" styleClass="resolution-center">
-                            <p:commandButton id="print-button" value="#{i18n['get.gift']}" ajax="false" 
-                                             icon="fa fa-dollar"
-                                             styleClass="danger-btn"
-                                             actionListener="#{giftHome.print()}"
-                                             type="submit" >
-                            </p:commandButton>
-                        </p:panel>
-                    </p:panel>
                 </div>
 
                 <div class="ui-g-12 ui-md-12 ui-lg-12">
@@ -135,5 +181,4 @@
             </div>
         </div>
     </ui:define>   
-
 </ui:composition>

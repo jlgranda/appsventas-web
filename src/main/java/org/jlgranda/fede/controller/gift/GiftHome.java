@@ -19,11 +19,14 @@ package org.jlgranda.fede.controller.gift;
 import com.jlgranda.fede.ejb.gifts.GiftService;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -31,10 +34,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.model.gifts.GiftEntity;
-import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.ui.model.LazyGiftDataModel;
 import org.jpapi.model.Group;
+import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 //import org.primefaces.PrimeFaces;
@@ -62,12 +66,13 @@ public class GiftHome extends FedeController implements Serializable {
 
     @Inject
     private SettingHome settingHome;
-
-    private List<Invoice> myLastlastInvoices = new ArrayList<>();
+    
+    @Inject
+    private TemplateHome templateHome;
 
     @PostConstruct
     private void init() {
-        setStart(Dates.minimumDate(Dates.addDays(Dates.now(), -5)));
+        setStart(Dates.minimumDate(Dates.addDays(Dates.now(), -7)));
         setEnd(Dates.maximumDate(Dates.now()));
     }
 
@@ -85,24 +90,36 @@ public class GiftHome extends FedeController implements Serializable {
     public void print() {
 
         try {
-            String code = subject.getCode();
-            String email = subject.getEmail();
-            String name = subject.getFirstname() + " " + subject.getSurname();
-            String mobileNumber = subject.getMobileNumber();
-            String uuId = UUID.randomUUID().toString();
-            String baseImage = "emporio-lojano-billete.jpg";
+            if (getCountGiftByOwner(subject) < 3){
+                String code = subject.getCode();
+                String name = subject.getFirstname() + " " + subject.getSurname();
+                String uuId = UUID.randomUUID().toString();
+                String baseImage = "emporio-lojano-billete.jpg";
 
-            //Ejecutar servlet
-            redirectTo("/giftServlet/?code=" + code + "&email=" + email
-                    + "&name=" + name + "&mobileNumber=" + mobileNumber
-                    + "&uuid=" + uuId + "&baseImage=" + baseImage);
+                //Ejecutar servlet
+                redirectTo("/giftServlet/?code=" + code + "&name=" + name 
+                        + "&uuid=" + uuId + "&baseImage=" + baseImage);
 
-            GiftEntity giftEntity = giftService.createInstance();
-            giftEntity.setUuid(uuId);
-            giftEntity.setImageBasePath(settingHome.getValue("app.gift.baseImagePath", "/var/opt/appsventas/img/") + baseImage);
-            giftEntity.setOwner(subject);
-            giftEntity.setAuthor(subject);
-            giftService.save(giftEntity);
+                //Enviar a la base de datos
+                GiftEntity giftEntity = giftService.createInstance();
+                giftEntity.setUuid(uuId);
+                giftEntity.setImageBasePath(settingHome.getValue("app.gift.baseImagePath", "/var/opt/appsventas/img/") + baseImage);
+                giftEntity.setOwner(subject);
+                giftEntity.setAuthor(subject);
+                giftEntity.setDescription(settingHome.getValue("app.gift.defaultDescription", "Cupón de descuento válido para consumos señalados en la imagen dentro del local participante."));
+                giftService.save(giftEntity);
+                //Notificar via correo
+                if (true){ //TODO alguna condición
+                    Map<String, Object> values = new HashMap<>();
+                    values.put("subject", subject);
+                    values.put("summary", giftEntity.getSummary()); //El resumen directo
+                    values.put("url", "http://emporiolojano.com:8080/appsventas-web/home.jsf");
+                    values.put("url_title", "Dolar directo");
+                    sendNotification(templateHome, settingHome, subject, values, "app.mail.template.gift.notify", false);
+                }
+            } else {
+                this.addWarningMessage("¡No te pierdas tus regalos!", "Aún tiene regalos sin efectivizar.");
+            }
 
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(GiftHome.class.getName()).log(Level.SEVERE, null, ex);
@@ -169,25 +186,31 @@ public class GiftHome extends FedeController implements Serializable {
         }*/
     }
 
+    
     public Long getGiftCount() {
         // return giftService.count("gift.countGiftByOwner", subject);
         return getCountGiftByOwner(subject);
     }
 
+    public List<GiftEntity> getLastGitfs(){
+        return getLastGiftsFromOwner(this.subject, this.getStart(), this.getEnd());
+    }
+    
     public Long getCountGiftByOwner(Subject _subject) {
-        return giftService.count("gift.countGiftByOwner", _subject);
+        return giftService.count("gift.countGiftByOwner", _subject, StatusType.ACTIVE.toString());
     }
 
     public Long getSharedGiftCount() {
-        return giftService.count("gift.countGiftSharedByOwner", subject);
+        return giftService.count("gift.countGiftSharedByOwner", subject, StatusType.ACTIVE.toString());
     }
 
     public List<GiftEntity> getGiftsFromOthers() {
-//        return giftService.findUniqueByNamedQuery("gift.giftsFromOtherUsers", subject, getStart(), getEnd());
-        return giftService.findByNamedQuery("gift.giftsFromOtherUsers", subject, getStart(), getEnd());
+        List<GiftEntity> gifts = giftService.findByNamedQuery("gift.giftsFromOtherUsers", subject, getStart(), getEnd(), StatusType.ACTIVE.toString());
+        List<GiftEntity> collect = gifts.stream().limit(Long.valueOf(settingHome.getValue("app.gift.others.list.size", "5"))).collect(Collectors.toList()); // truncate to first 10 elements
+        return collect;
     }
-
-    /*public Long getGiftsCountByUserId(Long id){
-        return giftService.count("gift.countGitfsByOwnerIdAndDates",id, getStart(), getEnd());
-    } */
+    
+    public List<GiftEntity> getLastGiftsFromOwner(Subject _subject, Date _start, Date _end) {
+        return giftService.findByNamedQuery("gift.giftsFromOwner", _subject, _start, _end, StatusType.ACTIVE.toString());
+    }
 }

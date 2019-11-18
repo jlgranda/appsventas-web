@@ -12,6 +12,8 @@
                 <h:form id="menuform">
                     <div class="layout-menu-title">#{i18n['common.menu.main']}</div>
                     <pe:menu widgetVar="me">
+                        <p:menuitem id="om_home" value="#{i18n['common.home']}" icon="fa fa-fw fa-home" outcome="home"  rendered="#{request.isUserInRole('USER') or request.isUserInRole('CHECKER')}"/>
+                        <p:menuitem id="om_profile" value="#{i18n['profile']}" icon="fa fa-fw fa-user" outcome="/pages/fede/gifts/profile.jsf"  rendered="#{request.isUserInRole('USER')}"/>
                         <p:menuitem id="om_dashboard" value="#{i18n['common.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                         <!-- <p:menuitem id="rm_mysales" value="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" url="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/> -->
                         <p:submenu id="om_mysales" label="#{i18n['app.fede.allmysales']}" icon="fa fa-fw fa-cutlery" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}">
@@ -36,9 +38,11 @@
                             <p:menuitem id="om_resumen_ventas_productos" value="Resumen de ventas por productos" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/products.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                             <p:menuitem id="om_resumen_ventas_compras" value="Resumen de ventas/compras" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/summary.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
+                        <p:submenu id="om_templates" label="Plantillas" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN')}">
+                            <p:menuitem id="om_templates_management" value="Plantillas" icon="fa fa-fw fa-bars" outcome="/pages/fede/admin/template/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                        </p:submenu>
                         
-                        <p:menuitem id="om_home_ini" value="#{i18n['common.home']}" icon="fa fa-fw fa-dashboard" outcome="home"  rendered="#{request.isUserInRole('USER')}"/>
-                        <p:menuitem id="om_gifts" value="#{i18n['My.Gifts']}" icon="fa fa-fw fa-cog" outcome="/pages/fede/gifts/gifts.jsf" rendered="#{request.isUserInRole('USER')}"/>
+                        <!--<p:menuitem id="om_gifts" value="#{i18n['My.Gifts']}" icon="fa fa-fw fa-cog" outcome="/pages/fede/gifts/gifts.jsf" rendered="#{request.isUserInRole('USER')}"/>-->
                         
 <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="fa fa-fw fa-cog">
                             <p:menuitem id="om_customization_mode_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.setLightMenu(true)}" ajax="false" />

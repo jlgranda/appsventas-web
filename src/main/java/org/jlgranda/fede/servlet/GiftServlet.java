@@ -16,14 +16,14 @@
 package org.jlgranda.fede.servlet;
 
 import java.io.IOException;
-import java.util.UUID;
-import javax.servlet.RequestDispatcher;
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.jlgranda.fede.controller.SettingHome;
 
 /**
  *
@@ -33,6 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 public class GiftServlet extends HttpServlet {
 
     private static final long serialVersionUID = -2987738476456412232L;
+    
+    @Inject
+    private SettingHome settingHome;
 
 // Initializes the servlet.
     @Override
@@ -63,23 +66,22 @@ public class GiftServlet extends HttpServlet {
 
             //codigo appsventas
             String code = request.getParameter("code");
-            String email = request.getParameter("email");
-            String name = request.getParameter("name").replace(" ", "%20");
-            String mobileNumber = request.getParameter("mobileNumber");
+            String name = request.getParameter("name");
             String uuid = request.getParameter("uuid");
             String baseImage = request.getParameter("baseImage");
 
-            String ar0 = "/var/opt/appsventas/img/" + baseImage;
+            String ar0 = settingHome.getValue("app.gift.baseImagePath", "/var/opt/appsventas/img/") + baseImage; //TODO injectar controlador 
             String ar1 = "/tmp/" + uuid + ".png";
-            String ar2 = "http://emporiolojano.com:8080/appsventas-web/gift.jsf?code=" + uuid;
-            String ar3 = code + "," + name + "," + mobileNumber + "," + email;
+            String ar2 = "http://emporiolojano.com:8080/appsventas-web/gift.jsf?giftuuid=" + uuid;
+            String ar3 = code + " - " + name; // + "," + mobileNumber + "," + email; 2019-11-12 sólo se imprime C.I y nombres
+            ar3 = ar3.replace(" ", "%20");
 
             String command = "java -jar /var/opt/workspace/appsventas-gifts-single-jar.jar "
                     + ar0 + " " + ar1 + " " + ar2 + " " + ar3;
-
+            
             Runtime.getRuntime().exec(command);
 
-            page = request.getContextPath() + "/pages/dashboard.jsf?giftuuid=" + uuid + "&faces-redirect=true";
+            page = request.getContextPath() + "/pages/home.jsf?giftuuid=" + uuid + "&faces-redirect=true";
 
         } catch (IOException e) {
             page = "/404.jsf";
@@ -91,7 +93,8 @@ public class GiftServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request servlet
+     * @throws javax.servlet.ServletException request
      * @param response servlet response
      */
     @Override

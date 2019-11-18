@@ -78,6 +78,8 @@ public abstract class FedeController {
     protected Map<String, String> selectedTriStateGroups = new LinkedHashMap<>();
     
     protected List<Group> groups = new ArrayList<>();
+    
+    protected boolean validated;
 
     public List<BussinesEntity> getSelectedBussinesEntities() {
         return selectedBussinesEntities;
@@ -352,6 +354,7 @@ public abstract class FedeController {
 
     public void closeDialog(Object data) {
         RequestContext.getCurrentInstance().closeDialog(data);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>> ventana cerrada!");
         //logger.info("Popup '{}' cerrado, con data {}. Context: {}", "activo", data, RequestContext.getCurrentInstance());
     }
 
@@ -405,6 +408,14 @@ public abstract class FedeController {
     public void setTags(String tags) {
         this.tags = tags;
     }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
+    }
     
     public void setDefaultGroup(Group defaultGroup) {
         this.defaultGroup = defaultGroup;
@@ -456,7 +467,6 @@ public abstract class FedeController {
     
     public void sendNotification(TemplateHome templateHome, SettingHome settingHome, Subject subject, Map<String, Object> values, String templateName, boolean displayMessage) {
         if (templateHome != null) {
-
             if (templateHome.sendEmail(subject, settingHome.getValue(templateName, templateName), values)){
                 if (displayMessage) addDefaultSuccessMessage();
             } else {

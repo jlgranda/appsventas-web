@@ -59,6 +59,12 @@
         <param-name>primefaces.UPLOADER</param-name>
         <param-value>auto</param-value>
     </context-param>
+     
+    <!--https://stackoverflow.com/questions/17368093/com-sun-el-parser-parseexception-encountered-at-line-when-running-selenium-->   
+    <context-param>
+        <param-name>com.sun.faces.expressionFactory</param-name>
+        <param-value>com.sun.el.ExpressionFactoryImpl</param-value>
+    </context-param>
     <listener>
         <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
     </listener>
@@ -96,6 +102,10 @@
         <servlet-name>FedeServlet</servlet-name>
         <servlet-class>org.jlgranda.fede.servlet.FedeServlet</servlet-class>
     </servlet>
+    <servlet-mapping>
+        <servlet-name>FedeServlet</servlet-name>
+        <url-pattern>/FedeServlet/*</url-pattern>
+    </servlet-mapping>    
     <servlet>
         <servlet-name>DynamicImageServlet</servlet-name>
         <servlet-class>org.jlgranda.fede.servlet.DynamicImageServlet</servlet-class>

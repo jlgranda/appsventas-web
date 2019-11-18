@@ -137,7 +137,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>signin</from-outcome>
-            <to-view-id>/public/signin.jsf</to-view-id>
+            <to-view-id>/signin.jsf</to-view-id>
             <redirect />
         </navigation-case>
     </navigation-rule>

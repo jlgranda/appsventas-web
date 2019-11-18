@@ -19,17 +19,18 @@
     <h:body styleClass="login-body">
         <div class="login-topbar">
             <h:link outcome="home" class="logo">
-                <h:graphicImage name="images/appsventas.png" library="appsventas" title="#{i18n['app.name']} #{i18n['app.version']}" style="width:40%; max-width:200px;"/>
+                <h:graphicImage name="images/dolardirecto.png" library="appsventas" title="#{i18n['app.name']} #{i18n['app.version']}"/>
             </h:link>
         </div>
 
         <div style="height: 100%;
-            background: url(#{resource['ecuador-layout:images/emporio-login-2019.jpg']}) no-repeat;
-            background-size: cover;
-            background-position: center;">
+             background: url(#{resource['ecuador-layout:images/emporiolojano-portada-01.jpg']}) no-repeat;
+             background-size: cover;
+             background-position: center;">
             <div class="login-panel">
                 <h:form id="appsventas-login-form">
-                    <p:graphicImage name="images/appsventas-orange-logo.png" library="appsventas"/>
+                    <p:graphicImage name="images/dolardirecto.png" library="appsventas"  style="margin-bottom: 8px;"/>
+                    <h2>#{i18n['app.registrarse']}</h2>
                     <p:inputText id="j_username" placeholder="#{i18n['common.email']}" required="true"/>
                     <p:inputText id="j_password" type="password" placeholder="#{i18n['common.password']}" required="true"/>
                     <div class="checkbox-container">
@@ -45,12 +46,13 @@
                     <a href="#" class="subinfo">
                         <span>#{i18n['signin.password.forget']}</span>
                     </a>
-                    <h:link outcome="signin" >
-                        <span>#{i18n['Registrarse']}</span>
+                    <br/>
+                    <h:link outcome="signin" style="color:red;">
+                        <span>#{i18n['app.registrarse']}</span>
                     </h:link>
-                    
+
                 </h:form>
-                
+
             </div>
         </div>
         <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="ecuador-layout" />

@@ -26,9 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.UserTransaction;
@@ -41,6 +43,7 @@ import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,16 +54,18 @@ import org.slf4j.LoggerFactory;
  * @author jlgranda
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class SubjectHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -1007161141552849702L;
 
     Logger logger = LoggerFactory.getLogger(SubjectHome.class);
 
-    Subject loggedIn = new Subject();
-
-    Subject signup = null;
+    @Inject
+    Subject subject; //La instancia Subject de la sessión activa
+    
+    
+    Subject signup = null; //El objeto para edición
 
     @EJB
     SubjectService subjectService;
@@ -81,17 +86,32 @@ public class SubjectHome extends FedeController implements Serializable {
     private TemplateHome templateHome;
     
     PasswordService svc = new DefaultPasswordService();
-
-    public boolean isLoggedIn() {
-        return loggedIn != null && loggedIn.getId() != null;
+    
+    private boolean handledPhotoUpload;
+    
+    private byte[] photo;
+    
+    @PostConstruct
+    public void init() {
+        setHandledPhotoUpload(false);
     }
 
+    public boolean isLoggedIn() {
+        return this.signup != null && this.signup.getId() != null;
+    }
+
+    public void save(){
+        if (isHandledPhotoUpload()){
+            getSignup().setPhoto(getPhoto()); //Guardar la foto cargada
+        }
+        save(getSignup());
+    }
     /**
      * Guardar la instancia <tt>Subject</tt> en el medio de almacenamiento persistente
-     * @param subject la instancia a guardar
+     * @param _subject la instancia a guardar
      */
-    public void save(Subject subject) {
-        subjectService.save(subject.getId(), subject);
+    public void save(Subject _subject) {
+        subjectService.save(_subject.getId(), _subject); 
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
     }
 
@@ -102,13 +122,29 @@ public class SubjectHome extends FedeController implements Serializable {
 
     public Subject getSignup() {
         if (signup == null) {
-            signup = subjectService.createInstance();
+            signup = subjectService.find(subject.getId()); //Obtener una copia del objeto en sessión
         }
         return signup;
     }
 
     public void setSignup(Subject signup) {
         this.signup = signup;
+    }
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
+    public boolean isHandledPhotoUpload() {
+        return handledPhotoUpload;
+    }
+
+    public void setHandledPhotoUpload(boolean handledPhotoUpload) {
+        this.handledPhotoUpload = handledPhotoUpload;
     }
 
     /**
@@ -134,6 +170,7 @@ public class SubjectHome extends FedeController implements Serializable {
      * Procesa la creación de una cuenta en fede para el usuario dado
      * @param _signup el objeto <tt>Subject</tt> a agregar
      * @param owner el propietario del objeto a agregar
+     * @param roles
      */
     public void processSignup(Subject _signup, Subject owner, String roles, boolean setupRoles) {
         if (_signup != null) {
@@ -141,12 +178,40 @@ public class SubjectHome extends FedeController implements Serializable {
             try {
 
                 //separar nombres
-                if (Strings.isNullOrEmpty(_signup.getSurname())){
+                if (Strings.isNullOrEmpty(_signup.getSurname()) 
+                        && !Strings.isNullOrEmpty(_signup.getFirstname())){
+                   
                     List<String> names = Strings.splitNamesAt(_signup.getFirstname());
 
                     if (names.size() > 1) {
                         _signup.setFirstname(names.get(0));
                         _signup.setSurname(names.get(1));
+                    }
+                } else if (!Strings.isNullOrEmpty(_signup.getDescription()) 
+                        && Strings.isNullOrEmpty(_signup.getFirstname())
+                        && Strings.isNullOrEmpty(_signup.getSurname())){
+                    
+                    List<String> names = Strings.splitNamesAt(_signup.getDescription());
+
+                    switch (names.size()) {
+                        case 1:
+                            _signup.setFirstname(names.get(0));
+                            _signup.setSurname("");
+                            break;
+                        case 2:
+                            _signup.setFirstname(names.get(0));
+                            _signup.setSurname(names.get(1));
+                            break;
+                        case 3:
+                            _signup.setFirstname(names.get(0) + names.get(1));
+                            _signup.setSurname(names.get(2));
+                            break;
+                        case 4: 
+                            _signup.setFirstname(names.get(0) + names.get(1));
+                            _signup.setSurname(names.get(2)  + names.get(3));
+                            break;
+                        default:
+                            break;
                     }
                 }
                 //Más valores de autenticación
@@ -161,16 +226,19 @@ public class SubjectHome extends FedeController implements Serializable {
                 //Finalmente crear en fede
                 _signup.setUuid(UUID.randomUUID().toString());
                 _signup.setSubjectType(Subject.Type.NATURAL);
-                _signup.setOwner(owner);
-                _signup.setAuthor(owner);
-                _signup.setConfirmed(true);
+                
+                //No cambiar owner y author si ya es persistente
+                if (!_signup.isPersistent()){
+                    _signup.setOwner(owner);
+                    _signup.setAuthor(owner);
+                }
+                
                 _signup.setActive(true);
                 
                 //crypt password
                 _signup.setPassword(svc.encryptPassword(_signup.getPassword()));
                 
                 subjectService.save(_signup);
-                
                 if (setupRoles){
                     //Asignar roles
                     UsersRoles shiroUsersRoles = new UsersRoles();
@@ -190,7 +258,6 @@ public class SubjectHome extends FedeController implements Serializable {
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
      * @param _signup el objeto <tt>Subject</tt> a agregar
-     * @param owner el propietario del objeto a agregar
      */
     public void processChangePassword(Subject _signup) {
 
@@ -267,26 +334,17 @@ public class SubjectHome extends FedeController implements Serializable {
     public List<org.jpapi.model.Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    public static void main(String[] args) {
-        
-        PasswordService svc = new DefaultPasswordService();
-         
-        //RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        //Object salt = rng.nextBytes();
-
-        // Now hash the plain-text password with the random salt and multiple
-        // iterations and then Base64-encode the value (requires less space than Hex):
-        //String hashedPasswordBase64 = new Sha256Hash("sin password", salt, 1024).toBase64();
-
-        //System.out.println("hashedPasswordBase64: " + hashedPasswordBase64);
-        //System.out.println("sal: " + salt.toString());
-        System.out.println("sv: " + svc.encryptPassword("1104499049"));
-        //user.setSalt(salt.toString());
-    }
-
+  
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void handlePhotoUpload(FileUploadEvent event) {
+        setPhoto(event.getFile().getContents());
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.getExternalContext().getSessionMap().put("photoUser", getPhoto()); //Para cargar desde memoria
+        addSuccessMessage(I18nUtil.getMessages("subject.upload.photo"), I18nUtil.getMessages("subject.upload.photo"));
+        setHandledPhotoUpload(true);
     }
 }

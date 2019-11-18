@@ -11,13 +11,12 @@
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
-            <f:viewParam name="giftuuid" value="#{giftHome.uuid}" />
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
         <li><p:link outcome="dashboard">#{i18n['common.dashboard']} - #{subject.fullName}</p:link></li>
     </ui:define>
-    <ui:define name="content" rendered="#{!request.isUserInRole('USER')}">
+    <ui:define name="content" rendered="#{true}">
         <div class="layout-dashboard">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-6 ui-lg-6">
@@ -190,88 +189,4 @@
             </div>
         </div>
     </ui:define>
-
-    <ui:define name="style" rendered="#{!request.isUserInRole('USER')}">
-        <style type="text/css">
-        .uuid-bg-image {
-           background-image: url('#{facesContext.externalContext.requestContextPath}/images/dynamic/?uuid=#{giftHome.uuid}&amp;type=png') !important; 
-           height: 360px !important;
-        }
-        </style>
-    </ui:define>
-    
-    <ui:define name="content" rendered="#{request.isUserInRole('USER')}">
-<!--        <o:onloadScript>
-            var element = document.getElementById('gift-image');
-            var n = document.createTextNode(' ');
-            //var disp = element.style.display;  // don't worry about previous display style
-            var backgroundImage = element.style.display.backgroundImage;  // don't worry about previous display style
-
-            element.appendChild(n);
-            element.style.display.backgroundImage = 'none';
-
-            setTimeout(function(){
-                element.style.display.backgroundImage = backgroundImage;
-                n.parentNode.removeChild(n);
-            }, 20); // you can play with this timeout to make it as short as possible
-            
-            
-            console.log("jlgranda.com >> reload " + element.style.backgroundImage);
-        </o:onloadScript>-->
-        <div class="layout-dashboard">
-            <div class="ui-g">
-                <div class="ui-g-12 ui-md-6 ui-lg-4">
-                    <p:panel styleClass="profile">
-                        <div class="bg-image">
-                        </div>
-                        <div class="profile-info">
-                            <p:graphicImage name="images/avatar-jeniffer.png" library="ecuador-layout" class="profile-image" />
-
-                            <span class="name">#{subject.fullName}</span>
-                            <div>
-                                <i class="fa fa-briefcase"></i>
-                                <span class="job">Human Resource Manager</span>
-                            </div>
-                            <div>
-                                <i class="fa fa-location-arrow"></i>
-                                <span class="location">Seattle</span>
-                            </div>
-                            <div>
-                                <div class="profile-numbers">
-                                    <span class="header">Views</span>
-                                    <span class="number">381</span>
-                                </div>
-                                <div class="profile-numbers">
-                                    <span class="header">Followers</span>
-                                    <span class="number">492</span>
-                                </div>
-                                <div class="profile-numbers">
-                                    <span class="header">Likes</span>
-                                    <span class="number">1,395</span>
-                                </div>
-                            </div>
-                        </div>
-                    </p:panel>
-
-                </div>
-                <div class="ui-g-12 ui-md-12 ui-lg-8">
-                    <p:outputPanel id="gift-image-panel" header="Disfruta tu descuento directo" styleClass="profile">
-                        <p:panel id="gift-image-render" visible="#{not empty giftHome.uuid}">
-                            <div id="gift-image" class="bg-image uuid-bg-image">
-                            </div>
-                        </p:panel>
-                        <p:panel id="gift-controls" rendered="#{true}" styleClass="resolution-center">
-                            <p:commandButton id="print-button" value="#{i18n['get.gift']}" ajax="false" 
-                                             icon="fa fa-dollar"
-                                             styleClass="danger-btn"
-                                             actionListener="#{giftHome.print()}"
-                                             type="submit" >
-                            </p:commandButton>
-                        </p:panel>
-                    </p:outputPanel>
-                </div>
-            </div>
-        </div>
-    </ui:define>   
-
 </ui:composition>

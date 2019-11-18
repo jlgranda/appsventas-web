@@ -60,7 +60,9 @@
                         </div>
                         <!-- SUB TOPBAR END -->
                         <h:form id="form">
-                            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                            <p:messages id="messages" showDetail="true" showDetail="true" closable="true" >
+                                <p:autoUpdate></p:autoUpdate>
+                            </p:messages>
                             <ui:insert name="content">
                                 Template
                             </ui:insert>

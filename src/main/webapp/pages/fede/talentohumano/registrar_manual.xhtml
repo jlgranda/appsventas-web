@@ -71,19 +71,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <h1 class="SoftGray BigTopic">#{i18n['app.fede.talentohumano.registrar']}</h1>
                 <div class="ui-g-12">
-                    <div class="ui-g-4">
-                        <p:calendar value="#{journalHome.journal.beginTime}" pattern="dd/MM/yyyy HH:mm:ss" mode="inline"></p:calendar>
+                    <div class="ui-g-6">
+                        <div class="ui-g-6">
+                        <p:calendar id="beginTime" value="#{journalHome.journal.beginTime}" pattern="dd/MM/yyyy HH:mm" 
+                                    mode="inline" showHour="true" showMinute="true" showSecond="true"></p:calendar>
+                        </div>
+                        <div class="ui-g-6">
+                        <p:calendar id="endTime" value="#{journalHome.journal.endTime}" pattern="dd/MM/yyyy HH:mm" 
+                                    mode="inline" showHour="true" showMinute="true" showSecond="true"
+                                    disabled="#{not journalHome.checkEndTime}"></p:calendar>
+                        
+                        <p:selectBooleanCheckbox value="#{journalHome.checkEndTime}">
+                            <p:ajax update="endTime" listener="#{journalHome.updateCheckEndTime()}" />
+                        </p:selectBooleanCheckbox> #{'Marcar salida'}
+                        </div>
+                        <jlgranda:input id="observation" name="description" type="textarea" label="#{i18n['common.observation']}" 
+                                        value="#{journalHome.journal.description}" required="false" inlinehelp="#{messages['common.observation.inlinehelp']}" 
+                                        render="observation"/>
                         <p:commandButton id="add-btn" value="#{i18n['Add']}" actionListener="#{journalHome.add()}" 
-                                         action="#{journalHome.redirect()}" icon="fa fa-check" >
+                                         icon="fa fa-check" >
                             <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
                         </p:commandButton>
-                        <p:commandButton id="add-rest" value="#{i18n['Add']} #{i18n['common.rest']}" actionListener="#{journalHome.addRest()}" 
-                                         action="#{journalHome.redirect()}" icon="fa fa-check" styleClass="warning-btn" >
-                            <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
-                        </p:commandButton>
-                         <p:defaultCommand target="add-btn" />
+
+                        <p:defaultCommand target="add-btn" />
                     </div>
-                    <div class="ui-g-8">
+                    <div class="ui-g-6">
                         <p:dataTable var="journal" 
                                      value="#{journalHome.employeeSelected.journals}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 

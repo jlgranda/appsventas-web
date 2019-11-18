@@ -26,11 +26,11 @@ public class GuestPreferences implements Serializable {
         
     private String menuMode = "layout-menu-static";
 
-    private String theme = "indigo";
+    private String theme = "yellow";
 
-    private String layout = "indigo";
+    private String layout = "yellow";
 
-    private boolean lightMenu = true;
+    private boolean lightMenu = false;
                             
 	public String getTheme() {		
 		return theme;

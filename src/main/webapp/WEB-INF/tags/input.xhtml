@@ -37,7 +37,7 @@ limitations under the License.
     <c:set var="decimalPlaces" value="#{not empty decimalPlaces ? decimalPlaces : '3'}" />   
     <c:set var="requiredMessage" value="#{not empty requiredMessage ? requiredMessage : 'Ingrese un valor'}" />   
     <c:set var="listener" value="#{not empty listener ? listener : 'none'}" />   
-
+    
     <c:if test="#{rendered == 'true'}">
 
         <c:if test="#{mode == 'read'}">
@@ -56,7 +56,9 @@ limitations under the License.
                         <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
                                      required="#{required}" disabled="#{disabled}"
                                      class="#{class}">
-                            <f:validator validatorId="#{validator}"/>
+                            <c:if test="#{validator != 'none'}">
+                                <f:validator validatorId="#{validator}"/>
+                            </c:if>
                             <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
                         </p:inputText>
                     </c:when>
@@ -138,7 +140,9 @@ limitations under the License.
                                 <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
                                              required="#{required}" disabled="#{disabled}"
                                              class="#{class}">
-                                    <f:validator validatorId="#{validator}"/>
+                                    <c:if test="#{validator != 'none'}">
+                                        <f:validator validatorId="#{validator}"/>
+                                    </c:if>
                                     <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
                                 </p:inputText>
                             </c:when>

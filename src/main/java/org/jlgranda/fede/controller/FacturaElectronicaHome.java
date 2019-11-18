@@ -151,7 +151,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     /**
      * Lista de facturas electrónicas a usar el dashboard y/o widgets
      */
-    private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<FacturaElectronica>());
+    private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<>());
     
     private Payment payment; //Para editar pagos
 

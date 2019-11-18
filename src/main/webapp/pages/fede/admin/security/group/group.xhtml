@@ -20,7 +20,9 @@
             <h:form id="form" enctype="multipart/form-data" >
                 <div class="Container100">
                     <div class="ContainerIndent">
-                        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:messages id="messages" showDetail="true" showDetail="true" closable="true" >
+                            <p:autoUpdate></p:autoUpdate>
+                        </p:messages>
                         <div class="Card ShadowEffect ui-fluid">
                             <jlgranda:input id="name" name="name" type="text" label="#{i18n['common.name']}"
                                             value="#{securityGroupHome.group.name}" render="name" required="true" 

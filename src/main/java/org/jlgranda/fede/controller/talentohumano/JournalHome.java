@@ -21,7 +21,9 @@ import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import com.jlgranda.fede.ejb.talentohumano.JournalService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -102,6 +104,7 @@ public class JournalHome extends FedeController implements Serializable {
     private boolean showNavigation = true;
 
     private boolean showCurrentDay = false;
+    private boolean checkEndTime = false; //El usuario marca si pica la salida
 
     @PostConstruct
     private void init() {
@@ -271,6 +274,14 @@ public class JournalHome extends FedeController implements Serializable {
         return showCurrentDay;
     }
 
+    public boolean isCheckEndTime() {
+        return checkEndTime;
+    }
+
+    public void setCheckEndTime(boolean checkEndTime) {
+        this.checkEndTime = checkEndTime;
+    }
+
     public void setLazyEmployeeDataModel(LazyEmployeeDataModel lazyDataModel) {
         this.lazyEmployeeDataModel = lazyDataModel;
     }
@@ -333,18 +344,36 @@ public class JournalHome extends FedeController implements Serializable {
     }
 
     public void add() throws IOException {
-        getJournal().setName(calculeEvent(getEmployeeSelected()));
-        getJournal().setEndTime(getJournal().getBeginTime()); //tiempo igual al de inicio
-        getJournal().setLastUpdate(Dates.now());
-        getJournal().setOwner(getEmployeeSelected().getOwner());
-        getJournal().setAuthor(this.subject); //el admin
-        getJournal().setEmployeeId(getEmployeeSelected().getId());
-        getJournal().setDescription("Ingresado por " + this.subject.getFullName());
+        
+        if (getEmployeeSelected() == null) {
+            addDefaultErrorMessage();
+        } else {
+            Journal begin = buildJournal("REGISTRO", getJournal().getBeginTime(), this.subject, getEmployeeSelected(), getJournal().getDescription());
+            journalService.save(begin.getId(), begin);
 
-        journalService.save(getJournal().getId(), getJournal());
+            if (isCheckEndTime()) {
+                Journal end = buildJournal("REGISTRO", getJournal().getEndTime(), this.subject, getEmployeeSelected(), getJournal().getDescription());
 
-        //setOutcome("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + getEmployeeSelected().getId());
-        redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + +getEmployeeSelected().getId());
+                journalService.save(end.getId(), end);
+            }
+
+            redirectTo("/pages/fede/talentohumano/registrar_manual.jsf?employeeSelectedId=" + +getEmployeeSelected().getId());
+        }
+    }
+    
+    public Journal buildJournal(String name, Date dateTime, Subject _subject, Employee employee, String observacion){
+        Journal _journal = journalService.createInstance();
+        
+        _journal.setName(name);
+        _journal.setBeginTime(dateTime); //tiempo igual al de inicio
+        _journal.setEndTime(dateTime); //tiempo igual al de inicio
+        _journal.setLastUpdate(Dates.now());
+        _journal.setOwner(employee.getOwner());
+        _journal.setAuthor(_subject); //el admin o usuario con privilegios
+        _journal.setEmployeeId(employee.getId());
+        _journal.setDescription(observacion + "\nIngresado por " + this.subject.getFullName());
+        
+        return _journal;
     }
 
     public void addRest() throws IOException {
@@ -536,5 +565,9 @@ public class JournalHome extends FedeController implements Serializable {
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+    }
+    
+    public void updateCheckEndTime(){
+        //dummy
     }
 }

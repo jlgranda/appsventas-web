@@ -1,5 +1,8 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui">
 
     <div class="layout-topbar">
         <a href="#" id="topbar-menu-button">
@@ -7,31 +10,31 @@
             <i class="fa fa-angle-up mobile"></i>
         </a>
 
-        <div class="search-input">
+<!--        <div class="search-input">
             <i class="fa fa-search icon-search"></i>
             <input type="text"></input>
-        </div>
+        </div>-->
 
         <h:link outcome="home" styleClass="logo-container">
-            <p:graphicImage name="images/appsventas.png" library="appsventas" />
+            <p:graphicImage name="images/dolardirecto.png" library="appsventas" />
         </h:link>
 
         <a id="topbar-profile-menu-button" href="#">
             <span>#{subject.fullName}</span>
-            <p:graphicImage name="images/default-profile.jpg" library="ecuador-layout" rendered="#{empty subject.photo}"/>
-            <p:graphicImage value="#{ui.translateImageFromDB(subject.photo)}" rendered="#{not empty subject.photo}"/>
+            <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
+                                                class="profile-image"/>
             <i class="fa fa-angle-down"></i>
         </a>
 
         <ul id="topbar-usermenu">
             <li>
-                <a href="#">
+                <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/gifts/profile.jsf">
                     <i class="fa fa-fw fa-user"></i>
-                    <span class="topbar-item-name">Profile</span>
+                    <span class="topbar-item-name">#{i18n['profile']}</span>
                     <span class="topbar-submenuitem-badge">4</span>
                 </a>
             </li>
-            <li>
+<!--            <li>
                 <a href="#">
                     <i class="fa fa-fw fa-cog"></i>
                     <span class="topbar-item-name">Settings</span>
@@ -63,7 +66,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li>-->
 <!--            <li>
                 <a href="#">
                     <i class="fa fa-fw fa-envelope-o"></i>

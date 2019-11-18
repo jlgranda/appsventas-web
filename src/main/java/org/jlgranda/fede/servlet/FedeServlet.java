@@ -170,29 +170,30 @@ public class FedeServlet extends HttpServlet {
 //                    response.getOutputStream().close();
                     break;
                 case "subject":
-////                    if (entityId == null) {
-////                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-////                        return;
-////                    }
-////                    if (entityId.equalsIgnoreCase("")) {
-////                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-////                        return;
-////                    }
-////                    Subject subject = subjectService.find(Long.parseLong(entityId));
+//                    if (entityId == null) {
+//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+//                        return;
+//                    }
+//                    if (entityId.equalsIgnoreCase("")) {
+//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+//                        return;
+//                    }
+////                    Subject subject = SubjectService.find(Long.parseLong(entityId));
 ////                    if (subject == null) {
 ////                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
 ////                        return;
 ////                    }
-//                    byte[] photo = (byte[]) request.getSession().getAttribute("photoUser");
-//
-//                    if (photo == null) {
-//                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-//                        return;
-//                    }
-//                    response.reset();
-//                    response.setContentType("/image/png");
-//                    response.getOutputStream().write(photo);
-//                    response.getOutputStream().close();
+                    byte[] photo = (byte[]) request.getSession().getAttribute("photoUser");
+
+                    if (photo == null) {
+                        System.out.println(">>>>>>>>>>>> No se encontro contenido de photoUser!");
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+                    response.reset();
+                    response.setContentType("/image/png");
+                    response.getOutputStream().write(photo);
+                    response.getOutputStream().close();
                     break;
             }
         } catch (IOException e) {

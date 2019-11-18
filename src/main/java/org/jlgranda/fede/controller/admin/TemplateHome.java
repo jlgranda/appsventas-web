@@ -62,6 +62,7 @@ public class TemplateHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(TemplateHome.class);
 
+    @Inject
     private Subject subject;
 
     @EJB
@@ -87,14 +88,8 @@ public class TemplateHome extends FedeController implements Serializable {
 
     @PostConstruct
     public void init() {
-        int amount = 0;
-        try {
-            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
-        } catch (java.lang.NumberFormatException nfe) {
-            amount = 30;
-        }
-        setEnd(Dates.now());
-        setStart(Dates.addDays(getEnd(), -1 * amount));
+        
+         setStart(null); //Marcar para ignorar rango de fechas
         setOutcome("admin-template");
 
         setTemplate(templateService.createInstance()); //Siempre listo para recibir la petición de creación
@@ -179,7 +174,7 @@ public class TemplateHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/admin/template/template.jsf?templateId=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/fede/admin/template/template.jsf?templateId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
@@ -234,7 +229,7 @@ public class TemplateHome extends FedeController implements Serializable {
             logger.warn(I18nUtil.getMessages("app.mail.template.404", templateId));
         } else {
 
-            String _from = settingHome.getValue("mail.smtps.from", "AppsVentas <consiguemas@jlgranda.com>");
+            String _from = settingHome.getValue("mail.smtps.from", "DolarDirecto <dolardirecto@jlgranda.com>");
             String title;
             String body;
             String txt;

@@ -16,10 +16,14 @@
  */
 package org.jlgranda.fede.controller.admin;
 
+import com.google.common.base.Strings;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
+import com.jlgranda.shiro.UsersRoles;
+import com.jlgranda.shiro.UsersRolesPK;
+import com.jlgranda.shiro.ejb.UsersRolesFacade;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,6 +36,8 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.GroupHome;
 import org.jlgranda.fede.controller.SettingHome;
@@ -88,6 +94,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private String confirmarClave;
     private String clave;
     private boolean cambiarClave;
+    
+    @EJB
+    UsersRolesFacade usersRolesFacade;
+    
+    PasswordService svc = new DefaultPasswordService();
 
     public SubjectAdminHome() {
         this.grupos = new ArrayList<>();
@@ -203,26 +214,27 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return this.defaultGroup;
     }
 
+    /**
+     * Registrar personas en el sistema
+     * @return 
+     */
+    @Deprecated
     public String validateAndSave() {
         //Realizar signup
         try {
-            if (!getSubjectEdit().isPersistent()) {
+            if (!getSubjectEdit().isPersistent() 
+                    || (getSubjectEdit().isPersistent() && !getSubjectEdit().isConfirmed())) {
+                
                 if (!StringValidations.isPassword(clave)) {
-                    addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidMsg"));
-                    return "";
+                    addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "7"));
+                    setOutcome("signin");
+                    return getOutcome();
                 }
-                if (!this.clave.equals(this.confirmarClave)) {
-                    addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
-                    return "";
-                }
-
-                getSubjectEdit().setPassword(this.clave);
-                subjectHome.processSignup(getSubjectEdit(), subject); //El propietario es el administrador actual
-                addDefaultSuccessMessage();
-            } else {
-                //Solo actualizar
-                subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
-                addDefaultSuccessMessage();
+//                if (!this.clave.equals(this.confirmarClave)) {
+//                    addErrorMessage(I18nUtil.getMessages("passwordsDontMatch"), I18nUtil.getMessages("passwordsDontMatch"));
+//                    return "";
+//                }
+                return save();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -230,9 +242,35 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
         return getOutcome();
     }
+    
+    public void validate() {
+        setValidated(true);
+        int length = Integer.valueOf(settingHome.getValue("app.security.password.length", "5"));
+        if (!StringValidations.isPassword(getClave(), length)) {
+            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", ""+length));
+            setValidated(false);
+        }
+    }
 
+    public String saveValidado(){
+        //La validación se hace en la vista
+        return save(true);
+    }
+    
     public String save() {
-        return save("USER");
+        
+        return save(isValidated());
+    }
+    
+    public String save(boolean _validated) {
+        
+        if (_validated){
+            return save("USER");
+        } else {
+            setOutcome(""); //quedarse en el mismo lugar
+            addErrorMessage(I18nUtil.getMessages("validation.general"), I18nUtil.getMessages("validation.general.detail"));
+            return ""; 
+        }
     }
 
     public String save(String role) {
@@ -244,15 +282,21 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                     subject = subjectService.find(9L); //ID del usuario ADMIN
                 }
                 boolean setupRoles = "admin".equalsIgnoreCase(subject.getUsername());
-                getSubjectEdit().setPassword(getClave()); //Establece la clave desde la vista
+                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())) //Preguntar si no se estableció desde fuera
+                    getSubjectEdit().setPassword(getClave()); //Establece la clave desde la vista
                 subjectHome.processSignup(getSubjectEdit(), subject, role, setupRoles); //El propietario es el administrador actual y se asigna con un rol
                 addDefaultSuccessMessage();
 
+            } else if (getSubjectEdit().isPersistent() && !getSubjectEdit().isConfirmed()){
+                processSigupForExistentSubject(getSubjectEdit());
+                addDefaultSuccessMessage();
             } else {
                 //Solo actualizar
                 subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
                 addDefaultSuccessMessage();
             }
+            
+            setOutcome("home");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             addErrorMessage(I18nUtil.getMessages("error.persistence"), e.getMessage());
@@ -260,6 +304,38 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
 
         return getOutcome();
+    }
+    
+    /**
+     * Procesa la creación de una cuenta en fede para el usuario dado
+     * @param _signup el objeto <tt>Subject</tt> a agregar
+     */
+    public void processSigupForExistentSubject(Subject _signup) {
+
+//
+        if (_signup != null) {
+            //Crear la identidad para acceso al sistema
+            try {
+                //crypt password
+                _signup.setPassword(svc.encryptPassword(getClave()));
+                _signup.setConfirmed(true);
+                //actualizar directamente
+                subjectService.save(_signup.getId(), _signup);
+                if (true){
+                    //Asignar roles
+                    UsersRoles shiroUsersRoles = new UsersRoles();
+                    UsersRolesPK usersRolesPK = new UsersRolesPK(_signup.getUsername(), "USER");
+                    shiroUsersRoles.setUsersRolesPK(usersRolesPK);
+                    if (null == usersRolesFacade.find(usersRolesPK)){
+                        usersRolesFacade.create(shiroUsersRoles);
+                    }
+                    
+                }
+            } catch (SecurityException | IllegalStateException e) {
+                throw new RuntimeException("Could not create default security entities.", e);
+            }
+        }
+
     }
 
     public void confirm(boolean force) {
@@ -289,6 +365,25 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             this.addWarningMessage("Las contraseñas no coinciden! Intente nuevamente.", "");
         }
 
+    }
+    
+    /**
+     * Probar si el código ingresado por el usario pertenece aun usuario inactivo o registrado por el operador
+     * Si el usuario existe, cargar los datos y dejar listo para confirmar.
+     */
+    public void tryForExistentSubject(){
+        String code = getSubjectEdit().getCode();
+        Subject _subject = subjectService.findUniqueByNamedQuery("Subject.findByCode", code);
+        if (null != _subject && !_subject.isConfirmed()){
+            setSubjectId(_subject.getId()); //alista para cargar el objeto desde el home
+            setSubjectEdit(subjectService.createInstance()); //Cargar en memoria para edición
+            getSubjectEdit().setDescription(getSubjectEdit().getFullName());
+            addWarningMessage("Hola " + _subject.getFirstname(), "¡Bienvenido denuevo, actualice sus datos y consiga más en dolar directo!");
+        } else if (null != _subject && _subject.isConfirmed()){
+            setSubjectEdit(subjectService.createInstance());
+            addWarningMessage("Hola " + _subject.getFirstname(), "¡Prueba iniciar una sesión y conseguir más en dolar directo!");
+        } 
+        
     }
 
     public Subject getSubjectEdit() {

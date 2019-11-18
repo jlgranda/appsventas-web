@@ -34,7 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect ui-fluid">
-                        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                        <p:messages id="messages" showDetail="true" showDetail="true" closable="true" >
+                            <p:autoUpdate></p:autoUpdate>
+                        </p:messages>
                         <h:outputLabel for="menu" value="Location:" />
                         <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.gruposSeleccionados}"  label="Grupos"
                                               filter="true" filterMatchMode="startsWith" panelStyle="width:250px">

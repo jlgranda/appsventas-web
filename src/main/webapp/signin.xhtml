@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>#{i18n['app.name']} - #{i18n['app.registrarse']}</title>
+    </h:head>
+
+    <h:body styleClass="login-body">
+        <div class="login-topbar">
+            <h:link outcome="home" class="logo">
+                <h:graphicImage name="images/dolardirecto.png" library="appsventas" title="#{i18n['app.name']} #{i18n['app.version']}" style="width:40%; max-width:200px;"/>
+            </h:link>
+        </div>
+
+        <div style="height: 100%;
+             background: url(#{resource['ecuador-layout:images/emporiolojano-portada-01.jpg']}) no-repeat;
+             background-size: cover;
+             background-position: center;">
+            <div class="login-panel" style="height: auto;">
+                <h:form id="form"  enctype="multipart/form-data">
+                    <p:messages id="messages" showDetail="true" closable="true" globalOnly="false">
+                        <p:autoUpdate />
+                    </p:messages>
+                    <p:graphicImage name="images/dolardirecto.png" library="appsventas" style="margin-bottom: 8px;"/>
+                    <h2>#{i18n['app.registrarse']}</h2>
+                    <p:inputText id="code" 
+                                    value="#{subjectAdminHome.subjectEdit.code}" validator="ciValidator"
+                                    required="true" placeholder="#{i18n['subject.code']}" 
+                                    requiredMessage=""
+                                 class="form-control" rendered="#{true}">
+                        <f:validator validatorId="ciValidator"/>
+                        <p:ajax event="blur" partialSubmit="true" update="@form" listener="#{subjectAdminHome.tryForExistentSubject}"/>
+                    </p:inputText>
+                    
+                    <jlgranda:input id="description" name="description" type="text" label="#{i18n['common.fullName']}" 
+                                    value="#{subjectAdminHome.subjectEdit.description}" 
+                                    required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true"
+                                    inlinehelp="#{messages['common.fullName.inlinehelp']}" execute="@this save" render="description"/>
+                    <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['phone']}" 
+                                    value="#{subjectAdminHome.subjectEdit.mobileNumber}"
+                                    required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
+                                    execute="@this save" render="mobileNumber"/>
+                    <div class="separator"></div>
+                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                                    value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                    required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
+                                    execute="@this save" render="email"/>
+                    <p:password id="contrasenia1" value="#{subjectAdminHome.clave}" match="contrasenia2" 
+                                required="true" placeholder="#{i18n['common.password']}" 
+                                validatorMessage="#{i18n['passwordsDontMatch']}" />
+                    <p:password id="contrasenia2" value="#{subjectAdminHome.clave}" 
+                                required="true" placeholder="#{i18n['common.confirm.password']}"/>
+
+                    <p:commandButton id="save" value="#{i18n['app.gifts.begin']}" 
+                                     ajax="true" 
+                                     actionListener="#{subjectAdminHome.validate}" 
+                                     action="#{subjectAdminHome.save}"
+                                     style="width: auto !important;"
+                                     type="submit"/>
+                </h:form>
+            </div>
+        </div>
+
+        <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="ecuador-layout" />
+    </h:body>
+
+</html>

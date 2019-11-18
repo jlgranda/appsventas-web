@@ -20,7 +20,9 @@
                             <p:tooltip />
 
                             <h:form>
-                                <p:messages showDetail="true" autoUpdate="true" closable="true" />
+                                <p:messages showDetail="true" showDetail="true" closable="true" >
+                                    <p:autoUpdate></p:autoUpdate>
+                                </p:messages>
 
                                 <p:commandButton value="Info" actionListener="#{messagesView.info}" styleClass="RaisedButton"/>
                                 <p:commandButton value="Warn" actionListener="#{messagesView.warn}" styleClass="OrangeButton RaisedButton"/>

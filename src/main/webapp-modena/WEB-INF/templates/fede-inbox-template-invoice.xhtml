@@ -47,7 +47,9 @@
                                 <ui:insert name="sidebar"></ui:insert>
                             </div>
                             <div class="Container90 Responsive100">
-                                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                                <p:messages id="messages" showDetail="true" showDetail="true" closable="true" >
+                                    <p:autoUpdate></p:autoUpdate>
+                                </p:messages>
                                 <ui:insert name="content">
                                     Template
                                 </ui:insert>

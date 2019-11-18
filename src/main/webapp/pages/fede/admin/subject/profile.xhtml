@@ -35,10 +35,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
+                    <h1>#{subjectAdminHome.subjectEdit.fullName}</h1>
+                    <hr/>
                     <div class="Card">
                         <div class="Container90">
                             <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
-                                            value="#{subjectAdminHome.subjectEdit.code}" validator="ciValidator"
+                                            value="#{subjectAdminHome.subjectEdit.code}" validator="#{subjectAdminHome.subjectEdit.nonnative ? 'safeTextUTF8Validator' : 'ciValidator'}"
                                             required="#{!subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
                             <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
                                             value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
@@ -99,7 +101,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <f:facet name="left">
                                 <p:commandButton id="save" value="#{i18n['Save']}" 
                                                  ajax="true" 
-                                                 actionListener="#{subjectAdminHome.save()}" 
+                                                 actionListener="#{subjectAdminHome.saveValidado()}" 
                                                  action="#{subjectAdminHome.getOutcome()}"
                                                  style="width: auto !important;"
                                                  type="submit"/>
@@ -126,7 +128,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                       header="#{i18n['common.password.change']}" 
                       modal="true" draggable="true" position="center" closable="false" >
                 <div class="Container100">
-                    <p:messages id="messagesDlg" showDetail="true" autoUpdate="true" closable="true" />
+                    <p:messages id="messagesDlg" showDetail="true" closable="true" >
+                        <p:autoUpdate></p:autoUpdate>
+                    </p:messages>
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 

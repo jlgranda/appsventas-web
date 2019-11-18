@@ -36,19 +36,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             #{templateHome.templateId == null ? i18n['New_a'].concat(' ').concat(i18n['Template']).concat(': ') : i18n['common.edit'].concat(': ')} #{templateHome.template.title}
         </ui:define>
         <ui:define name="content">
-            <h:form>
-                <div class="Container100">
-                    <div class="ContainerIndent">
-                        <div class="Card ShadowEffect ui-fluid">
-                            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+            <div class="layout-dashboard">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-lg-9">
+                        <!-- Left Side -->
+                        <div class="card card-w-title">
+                            <h1>#{templateHome.template.title}</h1>
+                            <div class="EmptyBox10"></div>
                             <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}" 
                                             value="#{templateHome.template.code}"
-                                            required="#{!templateHome.template.persistent}" placeholder="true" execute="@this save" render="code"/>
+                                            required="#{!templateHome.template.persistent}" placeholder="false" render="code"/>
                             <jlgranda:input id="title" name="title" type="text" label="#{i18n['app.mail.template.title']}" 
                                             value="#{templateHome.template.title}"
-                                            required="#{!templateHome.template.persistent}" placeholder="true" execute="@this save" render="title"/>
+                                            required="#{!templateHome.template.persistent}" placeholder="false" render="title"/>
                             <jlgranda:input id="body" name="body" type="richtext" label="#{i18n['app.mail.template.body']}" 
-                                            value="#{templateHome.template.body}" execute="@this save" render="body" 
+                                            value="#{templateHome.template.body}" render="body" 
                                             required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
                                             container="none"/>
 
@@ -77,7 +79,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                     </div>
                 </div>
-            </h:form>
+            </div>
             <!--/.panel-body -->
 
         </ui:define>

@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -51,11 +52,13 @@ import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
+import org.jlgranda.fede.controller.gift.GiftHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
+import org.jlgranda.fede.model.gifts.GiftEntity;
 import org.jlgranda.fede.model.sales.Detail;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -146,6 +149,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private boolean useDefaultEmail;
     
+    private boolean nonnative;
+    
     private boolean busquedaAvanzada;
     
     private boolean busquedaEjecutada;
@@ -173,6 +178,12 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private Long interval; //Intervalo de tiempo
     
+    /**
+     * Aplicación regalos
+     */
+    @Inject
+    private GiftHome giftHome;
+    
     @PostConstruct
     private void init() {
         
@@ -185,8 +196,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         setStart(Dates.minimumDate(Dates.now()));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
-        setUseDefaultCustomer(true); //Usar consumidor final por ahora
+        setUseDefaultCustomer(false); //Usar consumidor final por ahora
         setUseDefaultEmail(false); //Usar consumidor final por ahora
+        setNonnative(false); //Es extrangero
         setBusquedaEjecutada(!Strings.isNullOrEmpty(getKeyword()));
         updateDefaultEmail();
         
@@ -316,6 +328,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         else
             this.subjectAdminHome.getSubjectEdit().setEmail("@");
     }
+    public void updateNonnative(){
+        this.subjectAdminHome.getSubjectEdit().setNonnative(nonnative);
+    }
 
     public void setCustomer(Subject customer) {
         this.customer = customer;
@@ -336,6 +351,15 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void setUseDefaultEmail(boolean useDefaultEmail) {
         this.useDefaultEmail = useDefaultEmail;
     }
+
+    public boolean isNonnative() {
+        return nonnative;
+    }
+
+    public void setNonnative(boolean nonnative) {
+        this.nonnative = nonnative;
+    }
+
 
     public boolean isBusquedaAvanzada() {
         return busquedaAvanzada;
@@ -387,8 +411,18 @@ public class InvoiceHome extends FedeController implements Serializable {
         return getMyLastlastInvoices(true);
     }
     
+    /**
+     * Lista de Invoices por propietario, se usa en vistas de tipo social, se oculta la cantidad
+     * @return 
+     */
     public List<Invoice> getMyLastlastInvoicesByOwner() {
-        return getMyLastlastInvoices(false);
+        List<Invoice> invoices = getMyLastlastInvoices(false);
+        invoices.forEach((_invoice) -> {
+            _invoice.getDetails().forEach((detail) -> {
+                detail.setShowAmountInSummary(false);
+            });
+        });
+        return invoices;
     }
         
     protected List<Invoice> getMyLastlastInvoices(boolean byAuthor) {
@@ -521,6 +555,8 @@ public class InvoiceHome extends FedeController implements Serializable {
      * Guarda la entidad marcandola como INVOICE y generando un secuencial
      * valido TODO debe generar también una factura electrónica
      *
+     * @param documentType
+     * @param status
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
@@ -588,7 +624,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         String outcome = "preinvoices";
         this.setInvoiceId(invoiceId);
         //Marcar invoice como atendido, sólo si no esta
-        if (getInvoice().isPersistent() && ! StatusType.ATTEND.equals(getInvoice().getStatus())){
+        if (getInvoice().isPersistent() && ! StatusType.ATTEND.toString().equals(getInvoice().getStatus())){
             getInvoice().setStatus(StatusType.ATTEND.toString());
             getInvoice().setExpirationTime(Dates.now()); //Fecha de cierre de servicio
             save(true);
@@ -665,10 +701,18 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public void saveCustomer(){
+        System.out.println(">>>>> invocando guardar");
+        //Algunos valores de inicialización @dolardirecto
+        getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
+        getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
+        
+        getSubjectAdminHome().setValidated(true); //La validación se realiza en pantalla
+        
         if (!"failed".equalsIgnoreCase(getSubjectAdminHome().save())){ //Guardar profile
             setCustomer(getSubjectAdminHome().getSubjectEdit());
             closeDialog(getCustomer());
         } 
+        
     }
     
     /**
@@ -887,9 +931,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void setOrderByCode(boolean orderByCode) {
         this.orderByCode = orderByCode;
     }
-    
-    
-    
     
     /////////////////////////////////////////////////////////////////////////
     // Chart data model

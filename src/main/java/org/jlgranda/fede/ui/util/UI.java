@@ -18,19 +18,18 @@
 package org.jlgranda.fede.ui.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
@@ -49,8 +48,9 @@ import org.primefaces.model.StreamedContent;
  *
  * @author jlgranda
  */
-@ManagedBean(name = "ui")
-@RequestScoped
+//@ManagedBean(name = "ui")
+@Named (value = "ui")// Or @ManagedBean
+@ApplicationScoped
 public class UI {
     
     @Inject
@@ -279,21 +279,23 @@ public class UI {
         //TODO Aplicar template via velocity
         return entity.getFullName() + ", " + entity.getCode() + ", " + entity.getDescription();
     }
-    
+    /**
+     * https://stackoverflow.com/questions/8207325/display-dynamic-image-from-database-or-remote-source-with-pgraphicimage-and-str
+     * @param image
+     * @return
+     * @throws IOException 
+     */
     public static StreamedContent translateImageFromDB(byte[] image) throws IOException {
-        
         if (image != null) {
             FacesContext context = FacesContext.getCurrentInstance();
 
             if (context.getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-                return new DefaultStreamedContent();
-            } else {
-
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
+                // So, we're rendering the HTML. Return a stub StreamedContent so that it will generate right URL.
                 return new DefaultStreamedContent(new ByteArrayInputStream(image),
                         "image/png");
-
+            } else {
+                return new DefaultStreamedContent(new ByteArrayInputStream(image),
+                        "image/png");
             }
         } else {
             return new DefaultStreamedContent();
