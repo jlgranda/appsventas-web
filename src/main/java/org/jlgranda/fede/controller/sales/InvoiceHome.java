@@ -58,7 +58,6 @@ import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
-import org.jlgranda.fede.model.gifts.GiftEntity;
 import org.jlgranda.fede.model.sales.Detail;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -196,7 +195,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setStart(Dates.minimumDate(Dates.now()));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
-        setUseDefaultCustomer(false); //Usar consumidor final por ahora
+        setUseDefaultCustomer(true); //Usar consumidor final por defecto
         setUseDefaultEmail(false); //Usar consumidor final por ahora
         setNonnative(false); //Es extrangero
         setBusquedaEjecutada(!Strings.isNullOrEmpty(getKeyword()));
