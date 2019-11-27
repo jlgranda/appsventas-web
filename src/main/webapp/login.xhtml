@@ -28,7 +28,7 @@
              background-size: cover;
              background-position: center;">
             <div class="login-panel">
-                <h:form id="appsventas-login-form">
+                <h:form id="appsventas-login-form"  class="form-signin">
                     <p:graphicImage name="images/dolardirecto.png" library="appsventas"  style="margin-bottom: 8px;"/>
                     <h2>#{i18n['app.registrarse']}</h2>
                     <p:inputText id="j_username" placeholder="#{i18n['common.email']}" required="true"/>
@@ -38,7 +38,7 @@
                             <p:selectBooleanCheckbox id="rememberMe"/>
                             <span>#{i18n['signin.rememberme']}</span>
                         </div>
-                        <p:commandButton value="#{i18n['Login']}" />
+                        <p:commandButton id="submit" value="#{i18n['Login']}" ajax="false" type="submit"/>
                     </div>
 
                     <div class="separator"></div>

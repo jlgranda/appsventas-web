@@ -19,6 +19,7 @@ package org.jlgranda.fede.controller.talentohumano;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -34,6 +35,8 @@ import org.jlgranda.fede.ui.model.LazyEmployeeDataModel;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.QueryData;
+import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,5 +206,21 @@ public class EmployeeHome extends FedeController implements Serializable {
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /**
+     * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
+     * usernae, firstname, surname
+     * @param keyword
+     * @return una lista de objetos <tt>Subject</tt> que coinciden con la palabra clave dada.
+     */
+    public List<Employee> find(String keyword) {
+        keyword = "%" + keyword.trim() + "%";
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("code", keyword);
+        filters.put("firstname", keyword);
+        filters.put("surname", keyword);
+        QueryData<Employee> queryData = employeeService.find("Employee.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
     }
 }

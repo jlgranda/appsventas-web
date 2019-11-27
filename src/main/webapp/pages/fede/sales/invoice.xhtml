@@ -108,7 +108,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <div class="ui-g-4">
                                         <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="fade" 
                                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
-                                                        completeMethod="#{subjectHome.find}"
+                                                        completeMethod="#{invoiceHome.find}"
                                                         var="entidad" itemValue="#{entidad}" 
                                                         itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
                                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 

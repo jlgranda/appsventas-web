@@ -354,8 +354,37 @@ public abstract class FedeController {
 
     public void closeDialog(Object data) {
         RequestContext.getCurrentInstance().closeDialog(data);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>> ventana cerrada!");
+        
         //logger.info("Popup '{}' cerrado, con data {}. Context: {}", "activo", data, RequestContext.getCurrentInstance());
+    }
+    
+    //Manejo de parametros de sessión
+    public void setSessionParameter(String name, Object value) {
+        //Se concatena popup_ para evitar colisiones
+        FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .put("popup_" + name, value);
+
+    }
+
+    public boolean existsSessionParameter(String name) {
+        return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("popup_" + name);
+    }
+
+    public Object getSessionParameter(String name) {
+        Object value = null;
+        if (existsSessionParameter(name)) {
+            value = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("popup_" + name);
+        }
+
+        return value;
+    }
+    
+    public void removeSessionParameter(String name) {
+        if (existsSessionParameter(name)) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("popup_" + name);
+        }
     }
 
     public void redirectTo(String url) throws IOException {

@@ -309,17 +309,17 @@ public class SubjectHome extends FedeController implements Serializable {
     /**
      * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
      * usernae, firstname, surname
-     * @param keyword
+     * @param _keyword
      * @return una lista de objetos <tt>Subject</tt> que coinciden con la palabra clave dada.
      */
-    public List<Subject> find(String keyword) {
-        keyword = keyword.trim();
+    public List<Subject> find(String _keyword) {
+        _keyword = _keyword.trim();
         Map<String, Object> filters = new HashMap<>();
         Map<String, String> columns = new HashMap<>();
-        columns.put("username", keyword);
-        columns.put("code", keyword);
-        columns.put("firstname", keyword);
-        columns.put("surname", keyword);
+        columns.put("username", _keyword);
+        columns.put("code", _keyword);
+        columns.put("firstname", _keyword);
+        columns.put("surname", _keyword);
         filters.put("dummy", columns);
         QueryData<Subject> queryData = subjectService.find(-1, -1, "surname, firstname", QuerySortOrder.ASC, filters);
         return queryData.getResult();

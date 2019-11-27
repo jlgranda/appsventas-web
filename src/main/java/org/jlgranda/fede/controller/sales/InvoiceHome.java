@@ -50,6 +50,7 @@ import javax.inject.Inject;
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.controller.SubjectHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.gift.GiftHome;
@@ -72,6 +73,8 @@ import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.QueryData;
+import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.SortOrder;
@@ -101,6 +104,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     @Inject
     private SettingHome settingHome;
+    
+    @Inject
+    private SubjectHome subjectHome;
 
     /** Para almacemar la cantidad en el formulario de pedido rápido */
     private Long amount;
@@ -700,16 +706,20 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public void saveCustomer(){
-        System.out.println(">>>>> invocando guardar");
-        //Algunos valores de inicialización @dolardirecto
-        getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
-        getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
-        
-        getSubjectAdminHome().setValidated(true); //La validación se realiza en pantalla
-        
-        if (!"failed".equalsIgnoreCase(getSubjectAdminHome().save())){ //Guardar profile
+        boolean success = false;
+        if (!getSubjectAdminHome().getSubjectEdit().isPersistent()){
+            getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
+            getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
+
+            getSubjectAdminHome().setValidated(true); //La validación se realiza en pantalla
+            success = !"failed".equalsIgnoreCase(getSubjectAdminHome().save());
+        } else {
+            getSubjectAdminHome().update();
+            success = true;
+        }
+        if (success) { //Guardar profile
             setCustomer(getSubjectAdminHome().getSubjectEdit());
-            closeDialog(getCustomer());
+            closeFormularioProfile(getCustomer());
         } 
         
     }
@@ -906,6 +916,18 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     /**
+     * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
+     * usernae, firstname, surname
+     * @param _keyword
+     * @return una lista de objetos <tt>Subject</tt> que coinciden con la palabra clave dada.
+     */
+    public List<Subject> find(String _keyword) {
+        setKeyword(_keyword);
+        super.setSessionParameter("KEYWORD", getKeyword()); //Enviar parametro de sessión
+        return subjectHome.find(_keyword);
+    }
+    
+    /**
      * Mostrar el formulario para edición de clientes
      * @param params
      * @return 
@@ -920,7 +942,31 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public boolean mostrarFormularioProfile() {
+        
+        setUseDefaultCustomer(false); //Implica que se agregará un nuevo usuario
+        if (getCustomer() != null 
+                && getCustomer().isPersistent() 
+                && !"9999999999999".equals(getCustomer().getCode())){
+            super.setSessionParameter("CUSTOMER", getCustomer());
+        }
         return mostrarFormularioProfile(null);
+    }
+    
+    public void closeFormularioProfile(Object data) {
+        removeSessionParameter("KEYWORD");
+        removeSessionParameter("CUSTOMER");
+        super.closeDialog(data);
+    }
+    
+    public void loadSessionParameters(){
+        
+        if (existsSessionParameter("CUSTOMER")){
+            this.subjectAdminHome.setSubjectEdit((Subject) getSessionParameter("CUSTOMER"));
+        } else if (existsSessionParameter("KEYWORD")){
+            Subject _subject = subjectService.createInstance();
+            _subject.setCode((String) getSessionParameter("KEYWORD"));
+            this.subjectAdminHome.setSubjectEdit(_subject);
+        }
     }
 
     public boolean isOrderByCode() {

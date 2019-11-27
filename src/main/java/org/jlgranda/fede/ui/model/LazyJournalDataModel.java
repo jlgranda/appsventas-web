@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Serializable {
     
-    private static final int MAX_RESULTS = 5;
+    private static final int MAX_RESULTS = 100;
     private static final long serialVersionUID = 4204366822715059908L;
     
     Logger  logger = LoggerFactory.getLogger(LazyJournalDataModel.class);
@@ -96,8 +96,8 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
 
     public List<Journal> getResultList() {
         logger.info("load BussinesEntitys");
-        if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
-            resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
+        if (resultList.isEmpty()) {
+            resultList = load(0, MAX_RESULTS, null, SortOrder.ASCENDING, null);
         }
         return resultList;
     }
@@ -250,10 +250,11 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
         
-        _filters.putAll(filters);
+        if (filters != null)
+            _filters.putAll(filters);
         
         if (sortField == null){
-            sortField = Journal_.createdOn.getName();
+            sortField = Journal_.beginTime.getName(); //ordenar por fecha de registro
         }
 
         QueryData<Journal> qData = bussinesEntityService.find(first, end, sortField, order, _filters);

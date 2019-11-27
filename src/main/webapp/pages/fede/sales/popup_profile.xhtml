@@ -29,7 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:param name="title" value="#{i18n['Profile']}" />
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="subjectId" value="#{invoiceHome.subjectAdminHome.subjectId}" />       
+                <f:viewParam name="subjectId" value="#{invoiceHome.subjectAdminHome.subjectId}" />    
+                <f:viewAction action="#{invoiceHome.loadSessionParameters}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
@@ -117,9 +118,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <f:facet name="right">
 
                             <p:commandButton ajax="true" disabled="false" immediate="true"
-                                             actionListener="#{invoiceHome.closeDialog(null)}"
+                                             actionListener="#{invoiceHome.closeDialog(invoiceHome.subjectAdminHome.subjectEdit)}"
                                              action="#{invoiceHome.redirect}"
-                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                         </f:facet>
                     </p:toolbar>

@@ -19,8 +19,6 @@ package org.jlgranda.fede.ui.converter;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import org.jpapi.model.BussinesEntity;
-import org.jpapi.model.PersistentObject;
 import org.omnifaces.converter.SelectItemsConverter;
 
 /**

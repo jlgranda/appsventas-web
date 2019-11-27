@@ -306,6 +306,12 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         return getOutcome();
     }
     
+    public void update() {
+        //Solo actualizar
+        subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
+        addDefaultSuccessMessage();
+    }
+    
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
      * @param _signup el objeto <tt>Subject</tt> a agregar
