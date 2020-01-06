@@ -384,7 +384,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             setSubjectId(_subject.getId()); //alista para cargar el objeto desde el home
             setSubjectEdit(subjectService.createInstance()); //Cargar en memoria para edición
             getSubjectEdit().setDescription(getSubjectEdit().getFullName());
-            addWarningMessage("Hola " + _subject.getFirstname(), "¡Bienvenido denuevo, actualice sus datos y consiga más en dolar directo!");
+            addWarningMessage("Hola " + _subject.getFirstname(), "¡Bienvenido de nuevo, actualice sus datos y consiga más en dolar directo!");
         } else if (null != _subject && _subject.isConfirmed()){
             setSubjectEdit(subjectService.createInstance());
             addWarningMessage("Hola " + _subject.getFirstname(), "¡Prueba iniciar una sesión y conseguir más en dolar directo!");
