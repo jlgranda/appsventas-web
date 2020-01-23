@@ -27,153 +27,137 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="params">
+        employeeSelectedId
         <f:metadata>
-            <f:viewParam name="showCurrentDay" value="#{journalHome.showCurrentDay}" />
-            <f:viewParam name="employeeId" value="#{journalHome.employeeId}" />
+            <f:viewParam name="employeeSelectedId" value="#{journalHome.employeeSelectedId}" />
         </f:metadata>
     </ui:define>
 
-    <ui:define name="title">#{i18n['common.report.journal']}</ui:define>
+    <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['common.report.journal']}</li>
+        <li>#{i18n['app.fede.talentohumano.registrar']}</li>
+    </ui:define>
+    <ui:define name="head">
+        <style>
+        </style>
     </ui:define>
 
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12">
-                <h1 class="BigTopic Red">#{i18n['common.report.journal']}</h1>
+                <h1 class="BigTopic">#{i18n['app.fede.talentohumano.employee']}</h1>
                 <div class="ui-g-12">
-                    <h1 class="BigTopic">#{i18n['app.fede.talentohumano.employee']}</h1>
-                    <div class="ui-g-12">
-                        <div class="ui-g-5">
-                            <label class="Gray Wid10">#{i18n['app.fede.talentohumano.employee']}&nbsp;</label>
-                            <p:autoComplete id="customer" value="#{journalHome.employee}" effect="fade" 
-                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
-                                            completeMethod="#{employeeHome.find}"
-                                            var="entidad" itemValue="#{entidad}" 
-                                            itemLabel="#{entidad.owner.code} #{entidad.owner.fullName}" multiple="false" 
-                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                            converter="org.jlgranda.fede.ui.converter.EmployeeConverter" 
-                                            forceSelection="true" required="true" disabled="#{false}"
-                                            placeholder="#{i18n['app.fede.talentohumano.employee']}"
-                                            styleClass="Wid100" inputStyleClass="Wid100">
-                                <p:column>
-                                    <h:outputText value="#{ui.renderer('', entidad.owner)}"/>
-                                </p:column>
-                                <p:ajax event="itemSelect" update="@form" partialSubmit="true" listener="#{journalHome.clear()}"></p:ajax>
-                            </p:autoComplete>
-                        </div>
-                        <div class="ui-g-7">
-                            <div class="ui-g-12">
-                                <div class="ui-g-4">
-                                    <label class="Gray">#{i18n['Start']}&nbsp;</label>
-                                    <p:calendar value="#{journalHome.start}" class="input-sm">
-                                        <p:ajax event="dateSelect" listener="#{journalHome.clear()}" 
-                                                update="@form"/>
-                                    </p:calendar>
-                                </div>
-                                <div class="ui-g-4">
-                                    <label class="Gray">#{i18n['End']}&nbsp;</label>
-                                    <p:calendar value="#{journalHome.end}" class="input-sm">
-                                        <p:ajax event="dateSelect" listener="#{journalHome.clear()}" update="@form" /> 
-                                    </p:calendar>
-                                </div>
-                                <div class="ui-g-4">
-                                    <label class="Gray">#{i18n['common.report.journal.month']}&nbsp;</label>
-                                    <p:calendar value="#{journalHome.monthSelected}" class="input-sm"
-                                                navigator="true" mode="popup" >
-                                        <p:ajax event="dateSelect" listener="#{journalHome.onMonthSelected()}" update="@form" /> 
-                                    </p:calendar>
-                                </div>
+                    <div class="ui-g-5">
+                        <label class="Gray Wid10">#{i18n['app.fede.talentohumano.employee']}&nbsp;</label>
+                        <p:autoComplete id="customer" value="#{journalHome.employeeSelected}" effect="fade" 
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        completeMethod="#{employeeHome.find}"
+                                        var="entidad" itemValue="#{entidad}" 
+                                        itemLabel="#{entidad.owner.code} #{entidad.owner.fullName}" multiple="false" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        converter="org.jlgranda.fede.ui.converter.EmployeeConverter" 
+                                        forceSelection="true" required="true" disabled="#{false}"
+                                        placeholder="#{i18n['app.fede.talentohumano.employee']}"
+                                        styleClass="Wid100" inputStyleClass="Wid100">
+                            <p:column>
+                                <h:outputText value="#{ui.renderer('', entidad.owner)}"/>
+                            </p:column>
+                            <p:ajax event="itemSelect" update="@form" partialSubmit="true" listener="#{journalHome.clear()}"></p:ajax>
+                        </p:autoComplete>
+                    </div>
+                    <div class="ui-g-7">
+                        <div class="ui-g-12">
+                            <div class="ui-g-4">
+                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <p:calendar value="#{journalHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" listener="#{journalHome.clear()}" 
+                                            update="@form"/>
+                                </p:calendar>
+                            </div>
+                            <div class="ui-g-4">
+                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <p:calendar value="#{journalHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" listener="#{journalHome.clear()}" update="@form" /> 
+                                </p:calendar>
+                            </div>
+                            <div class="ui-g-4">
+                                <label class="Gray">#{i18n['common.report.journal.month']}&nbsp;</label>
+                                <p:calendar value="#{journalHome.monthSelected}" class="input-sm"
+                                            navigator="true" mode="popup" >
+                                    <p:ajax event="dateSelect" listener="#{journalHome.onMonthSelected()}" update="@form" /> 
+                                </p:calendar>
+
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="ui-g-12">
+                    <h1>#{journalHome.employeeSelected.owner.id} #{journalHome.employeeSelected.owner.fullName}</h1>
                     <div class="ui-g-12">
+                        <p:commandButton value="#{i18n['common.refresh']}" id="check-btn" 
+                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="true"
+                                         update="@form:dataTableJournal">
+                        </p:commandButton>
                         <h:commandLink>
                             <p:graphicImage name="images/icons8-ms-excel-50.png" library="appsventas"  width="50"/>
                             <p:dataExporter type="xls" target="dataTableJournal" fileName="dolardirecto-registro-trabajo-#{journalHome.employee.owner.fullName}" />
                         </h:commandLink>
                     </div>
                     <div class="ui-g-12">
-                        <p:commandButton value="#{i18n['common.refresh']}" id="check-btn" 
-                                         icon="fa fa-handshake-o" ajax="true"
-                                         update="@form:dataTableJournal">
-                        </p:commandButton>
-                    </div>
-                    <div class="ui-g-12">
-                        <p:panel id="employeePanel" rendered="#{not empty journalHome.employee}">
-                            <div class="ui-g-12">
-                                <h1 class="BigTopic Red">#{'Se registró para'} <span style="color:000;">#{journalHome.employee.owner.fullName}</span></h1>
-                                <p class=" Gray">#{journalHome.employee.owner.code} - #{journalHome.employee.owner.fullName}</p>
-                            </div>
-                            <div class="ui-g-12">
-                                <p:dataTable var="journal" 
-                                             value="#{journalHome.journalsRulesApplied}" 
-                                             paginator="true" 
-                                             paginatorAlwaysVisible="true"
-                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                             sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'ASCENDING')}"
-                                             reflow="true" selection="#{journalHome.selectedBussinesEntities}" 
-                                             rowKey="#{journal.id}" 
-                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                             id="dataTableJournal" widgetVar="dataTable_j" lazy="false"
-                                             rowStyleClass="#{journal.name eq 'REGISTRO' ? 'Red just' : ''}">
-                                    
-                                    <p:ajax event="rowSelect" listener="#{journalHome.onRowSelect}"/>
+                        <p:dataTable id="dataTableJournal" var="journal" 
+                                     value="#{journalHome.journalsRulesApplied}" 
+                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'ASCENDING')}"
+                                     reflow="true" 
+                                     rowKey="#{journal.id}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                     widgetVar="dataTable_j" lazy="true"
+                                     editable="true" editMode="cell"
+                                     rendered="#{not empty journalHome.employeeSelected.id}"
+                                     rowStyleClass="#{journal.name eq 'REGISTRO' ? 'Red just' : ''}">
+                            
+                            <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
+                                <h:outputText value="#{journal.id}" />
+                            </p:column>
 
-                                    <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
-                                        <h:outputText value="#{journal.id}" />
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.dayOfMonth']}">
-                                        <h:outputText value="#{journal.dayOfMonth}" />
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.dayOfWeek']}">
-                                        <h:outputText value="#{journal.dayOfWeek}" />
-                                    </p:column>
-                                    <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
-                                        <h:outputText value="#{journal.name}" />
-                                    </p:column>
-                                    <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
-                                               styleClass="text-right">
-                                        <h:outputText value="#{journal.beginTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}" timeZone="#{ui.timeZone}"/>
-                                        </h:outputText>
-                                    </p:column>                    
-                                    <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
-                                               styleClass="text-right">
-                                        <h:outputText value="#{journal.beginTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
-                                        </h:outputText>
-                                    </p:column>                    
-                                    <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm.reglamento']}" sortBy="#{journal.endTime}"
-                                               styleClass="text-right">
-                                        <h:outputText value="#{journal.endTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
-                                        </h:outputText>
-                                    </p:column>                    
-                                </p:dataTable>
-                            </div>
-                            <div class="ui-g-12">
-                                <p>#{journalHome.journalSummary}</p>
-                            </div>
-                        </p:panel>
-                    </div>
-                    <div class="ui-g-12">
-                        <h:commandLink>
-                            <p:graphicImage name="images/icons8-ms-excel-50.png" library="appsventas"  width="50"/>
-                            <p:dataExporter type="xls" target="dataTableJournal" fileName="registro_trabajo_#{journalHome.employee.owner.fullName}" />
-                        </h:commandLink>
-<!--                        <p:commandButton value="#{i18n['app.fede.talentohumano.jornada.calcular']}" id="check-btn" 
-                                         actionListener="#{journalHome.calcular()}" icon="fa fa-handshake-o" ajax="true"
-                                         update="@form">
-                            <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
-                        </p:commandButton>-->
+                            <p:column headerText="#{i18n['common.dayOfMonth']}">
+                                <h:outputText value="#{journal.dayOfMonth}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.dayOfWeek']}">
+                                <h:outputText value="#{journal.dayOfWeek}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                                <h:outputText value="#{journal.name}" />
+                            </p:column>
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
+                                       styleClass="text-right">
+
+                                <h:outputText value="#{journal.beginTime}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{journal.beginTime}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                </h:outputText>
+                            </p:column>                    
+                            <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm.reglamento']}" sortBy="#{journal.endTime}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{journal.endTime}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                </h:outputText>
+                            </p:column>       
+                        </p:dataTable>
                     </div>
                 </div>
+
             </div>
         </div>
+
     </ui:define>
     <ui:define name="script">
+
         <script type="text/javascript">
             //<![CDATA[
 

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -405,21 +406,58 @@ public class JournalHome extends FedeController implements Serializable {
         }
     }
     
-    public void addAccees(Journal _journal) throws IllegalAccessException, InvocationTargetException{
-        add(_journal, -240); //4 horas
-        
+    Journal journalAccess = null;
+    Journal journalEgress = null;
+
+    public Journal getJournalAccess() {
+        return journalAccess;
     }
-    public void addEgress(Journal _journal) throws IllegalAccessException, InvocationTargetException{
-        add(_journal, 240); //4 horas
+
+    public void setJournalAccess(Journal journalAccess) {
+        
+        try {
+            this.journalAccess = addAccees(journalAccess);
+        } catch (IllegalAccessException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(JournalHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public Journal getJournalEgress() {
+        return journalEgress;
+    }
+
+    public void setJournalEgress(Journal journalEgress) {
+        try {
+            this.journalEgress = addEgress(journalEgress);
+        } catch (IllegalAccessException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(JournalHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    public void add(Journal _journal,int minutes) throws IllegalAccessException, InvocationTargetException{
-        Journal _journalCopy = journalService.createInstance();
-        BeanUtils.copyProperties(_journalCopy, _journal);
-        _journalCopy.setId(null);
-        _journalCopy.setBeginTime(Dates.addMinutes(_journalCopy.getBeginTime(), minutes));
-        
-        journalService.save(_journalCopy);
+    public Journal addAccees(Journal _journal) throws IllegalAccessException, InvocationTargetException{
+        return add(_journal, -240); //4 horas
+    }
+    
+    public Journal addEgress(Journal _journal) throws IllegalAccessException, InvocationTargetException{
+        return add(_journal, 240); //4 horas
+    }
+    
+    public Journal add(Journal _journal,int minutes) throws IllegalAccessException, InvocationTargetException{
+        Journal journal_ = journalService.createInstance();
+        BeanUtils.copyProperties(journal_, _journal);
+        journal_.setId(null);
+        journal_.setBeginTime(Dates.addMinutes(journal_.getBeginTime(), minutes));
+        return journal_;
+    }
+    
+    public void put(){
+        if (journalAccess != null){
+            journalService.save(journalAccess);
+            journalAccess = null;
+        } else if (journalEgress != null){
+            journalService.save(journalEgress);
+            journalEgress = null;
+        }
     }
     
     public void delete(Journal _journal) throws IOException {
@@ -655,13 +693,6 @@ public class JournalHome extends FedeController implements Serializable {
         //Separar en grupos
         Map<String, List<Journal>> journalMap 
                 = journals.stream().collect(Collectors.groupingBy(Journal::getDayHour));
-
-        //LinkedHashMap<String, List<Journal>> sortedMap = new LinkedHashMap<>();
- 
-//        journalMap.entrySet()
-//            .stream()
-//            .sorted(Map.Entry.comparingByKey())
-//            .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
         
         journalSummary.setTotalDays(Long.valueOf(journalMap.size())); //Total de dias agrupados
         
@@ -684,7 +715,13 @@ public class JournalHome extends FedeController implements Serializable {
                 for (Journal j : journalMap.get(key)) {
                     if (i % 2 != 0) {//entrada
                         j.setName("ENTRADA");
-                        inicio = Dates.minimumDateHour(j.getBeginTime());
+                        //Desde Diciembre en la mañana se ingresa a las 07h30
+                        if (Dates.get(j.getBeginTime(), Calendar.HOUR_OF_DAY) == 7){
+                            inicio = Dates.addMinutes(Dates.minimumDateHour(j.getBeginTime()), 30); //07H30
+                        } else {
+                            inicio = Dates.minimumDateHour(j.getBeginTime());
+                        }
+                        
                         fin = Dates.addMinutes(inicio, 11);
                         if (Dates.isInRange(inicio, fin, j.getBeginTime())) {
                             j.setEndTime(j.getBeginTime()); //Entra dentro del rago de 27 minutos

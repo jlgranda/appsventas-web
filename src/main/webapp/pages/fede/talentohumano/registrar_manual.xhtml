@@ -135,7 +135,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:dataTable id="dataTableJournal" var="journal" 
                                      value="#{journalHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'ASCENDING')}"
                                      reflow="true" 
                                      rowKey="#{journal.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
@@ -143,9 +143,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      editable="true" editMode="cell"
                                      rendered="#{not empty journalHome.employeeSelected.id}"
                                      rowStyleClass="#{journal.justCreated ? 'Red just' : ''}">
-
-                            <p:ajax event="cellEdit" listener="#{journalHome.onCellEdit}" update="@this" />
-
+                            
                             <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
                                 <h:outputText value="#{journal.id}" />
                             </p:column>
@@ -162,37 +160,70 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
                                        styleClass="text-right">
 
-                                <p:cellEditor>
-                                    <f:facet name="output">
-                                        <h:outputText value="#{journal.beginTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
-                                        </h:outputText>
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:calendar id="endTime" value="#{journal.beginTime}" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" 
-                                                    showHour="true" showMinute="true" showSecond="false">
-                                        </p:calendar>
-                                    </f:facet>
-                                </p:cellEditor>
+                                <h:outputText value="#{journal.beginTime}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
+                                </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.delete']}" styleClass="Wid30">
-                                <p:commandButton value="#{i18n['common.add']} #{i18n['common.access']}" id="add-access-btn" 
-                                                 actionListener="#{journalHome.addAccees(journal)}" icon="fa fa-times" ajax="true"
-                                                 update="@form" class="help-btn">
-                                    <p:confirm header="#{i18n['common.confirm']} #{i18n['common.access']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
+                                       styleClass="text-right">
+                                <h:outputText value="#{journal.beginTime}">
+                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                </h:outputText>
+                            </p:column>                    
+                            <p:column headerText="#{i18n['common.accion']}" styleClass="Wid10" exportable="false">
+                                <p:commandButton update=":form:addJournalAcces" 
+                                                 oncomplete="PF('addJournalAcces').show('#{component.clientId}')" 
+                                                 icon="fa fa-hourglass-start" title="#{i18n['common.add']} #{i18n['common.access']}">
+                                    <f:setPropertyActionListener value="#{journal}" target="#{journalHome.journalAccess}" />
                                 </p:commandButton>
-                                <p:commandButton value="#{i18n['common.add']} #{i18n['common.egress']}" id="add-egress-btn" 
-                                                 actionListener="#{journalHome.addEgress(journal)}" icon="fa fa-times" ajax="true"
-                                                 update="@form" class="raised-btn">
-                                    <p:confirm header="#{i18n['common.confirm']} #{i18n['common.egress']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                <p:commandButton update=":form:addJournalEgress" 
+                                                 oncomplete="PF('addJournalEgress').show('#{component.clientId}')" 
+                                                 icon="fa fa-hourglass-end" title="#{i18n['common.add']} #{i18n['common.egress']}">
+                                    <f:setPropertyActionListener value="#{journal}" target="#{journalHome.journalEgress}" />
                                 </p:commandButton>
                                 <p:commandButton value="#{i18n['common.delete']}" id="delete-btn" 
-                                                 actionListener="#{journalHome.delete(journal)}" icon="fa fa-times" ajax="true"
+                                                 actionListener="#{journalHome.delete(journal)}" icon="fa fa-eraser " ajax="true"
                                                  update="@form" class="danger-btn">
                                     <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                 </p:commandButton>
                             </p:column>
                         </p:dataTable>
+                        <p:overlayPanel widgetVar="addJournalAcces" showEffect="fade" hideEffect="fade" dismissable="false" showCloseIcon="true">
+                            <p:outputPanel id="addJournalAcces" style="text-align:center;">
+                                <p:panelGrid  columns="2" rendered="#{not empty journalHome.journalAccess}" columnClasses="label,value">
+                                    <f:facet name="header">
+                                        Agregar entrada
+                                    </f:facet>
+
+                                    <p:calendar id="accessTime" value="#{journalHome.journalAccess.beginTime}" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" 
+                                                showHour="true" showMinute="true" showSecond="false">
+                                    </p:calendar>
+                                    <p:commandButton value="#{i18n['common.save']}" id="put-btn-access" 
+                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
+                                                     update="@form" class="danger-btn" onclick="PF('addJournalAcces').hide()">
+                                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                    </p:commandButton>
+                                </p:panelGrid>
+                            </p:outputPanel>
+                        </p:overlayPanel>
+                        <p:overlayPanel widgetVar="addJournalEgress" showEffect="fade" hideEffect="fade" dismissable="false" showCloseIcon="true">
+                            <p:outputPanel id="addJournalEgress" style="text-align:center;">
+                                <p:panelGrid  columns="2" rendered="#{not empty journalHome.journalEgress}" columnClasses="label,value">
+                                    <f:facet name="header">
+                                        Agregar salida
+                                    </f:facet>
+
+                                    <p:calendar id="egressTime" value="#{journalHome.journalEgress.beginTime}" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" 
+                                                showHour="true" showMinute="true" showSecond="false">
+                                    </p:calendar>
+                                    <p:commandButton value="#{i18n['common.save']}" id="put-btn-egress" 
+                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
+                                                     update="@form" class="danger-btn" onclick="PF('addJournalEgress').hide()">
+                                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                    </p:commandButton>
+                                </p:panelGrid>
+                            </p:outputPanel>
+                        </p:overlayPanel>
                     </div>
                 </div>
 

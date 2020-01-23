@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">#{i18n['app.fede.inventory.products']}</ui:define>
+
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li><p:link outcome="dashboard">#{i18n['app.fede.inventory.products']}</p:link></li>
+    </ui:define>
+    <ui:define name="content" rendered="#{true}">
+        <div class="layout-dashboard">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                    <p:panel header="#{i18n['common.statistics']}" styleClass="statistics ui-g">
+                        <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
+                            <!--                            <i class="fa fa-level-up"></i>
+                                                        <span class="icon-label">Mejora</span>
+                                                        <span>$ 85,397</span>
+                                                        <div class="statsbar">
+                                                            <div class="statsbar-value" style="width: 50%"></div>
+                                                        </div>-->
+                            <i class="fa fa-usd"></i>
+                            <!--30 días-->
+                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.date.range.month", "30")} #{i18n['common.days']}</span>
+                            <span>
+                                <h:outputText value="#{summaryHome.calculeProfitRateAverage(30)}">
+                                    <f:convertNumber type="percent" />
+                                </h:outputText>
+                            </span>
+                            <div class="statsbar">
+                                <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(30) * 100}%"></div>
+                            </div>
+                            <!--7 días-->
+                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.date.range.week", "7")} #{i18n['common.days']}</span>
+                            <span>
+                                <h:outputText value="#{summaryHome.calculeProfitRateAverage(7)}">
+                                    <f:convertNumber type="percent" />
+                                </h:outputText>
+                            </span>
+                            <div class="statsbar">
+                                <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(7) * 100}%"></div>
+                            </div>
+
+                            <!-- Ayer -->
+                            <span class="icon-label">#{i18n['app.date,yesterday']}</span>
+                            <span>
+                                <h:outputText value="#{summaryHome.calculeProfitRateAverage(1)}">
+                                    <f:convertNumber type="percent" />
+                                </h:outputText>
+                            </span>
+                            <div class="statsbar">
+                                <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(1) * 100}%"></div>
+                            </div>
+                            <!--                            <i class="fa fa-history"></i>
+                                                        <span class="icon-label">Tiempo faltante</span>
+                                                        <span>16:01:53</span>
+                                                        <div class="statsbar">
+                                                            <div class="statsbar-value" style="width: 25%"></div>
+                                                        </div>-->
+                        </div>
+                        <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
+                            <!--                            <div>
+                                                            <i class="fa fa-level-up"></i>
+                                                            <span>50%</span>
+                                                            <i class="fa fa-usd"></i>
+                                                            <span>75%</span>
+                                                            <i class="fa fa-history"></i>
+                                                            <span>25%</span>
+                                                        </div>-->
+                            <div class="knob-container">
+                                <div class="knob">
+                                    <h:outputText value="#{summaryHome.calculeProfitRate()}">
+                                        <f:convertNumber type="percent" />
+                                    </h:outputText>
+                                </div>
+                            </div>
+                            <div class="details">
+                                <h:link outcome="/pages/fede/sales/summary.jsf">
+                                    <span>#{i18n['VerDetalles']}</span>
+                                    <i class="fa fa-chevron-right"></i>
+                                </h:link>
+                            </div>
+                        </div>
+                    </p:panel>
+                </div>
+                <!-- Listado de clientes recientes -->
+                <div class="ui-g-12 ui-md-12 ui-lg-6">
+                    <p:panel header="#{i18n['app.fede.inventory.product.stocks']}" styleClass="contacts">
+                        <ul>
+                            <ui:repeat value="#{subjectAdminHome.lazyDataModel.resultList}" var="entity">
+                                <li>
+                                    <p:graphicImage name="images/if_20.Photos_290130.png" library="ecuador-layout" rendered="#{empty entity.photo}"/>
+                                    <p:graphicImage value="#{ui.translateImageFromDB(entity.photo)}" rendered="#{not empty entity.photo}"/>
+                                    <div class="seperator"></div>
+                                    <div class="team-box">
+                                        <span class="team-member">#{entity.fullName}</span>
+                                        <div>
+                                            <i class="fa fa-envelope"></i>
+                                            <span class="team-member-mail">#{entity.email}</span>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-map-pin"></i>
+                                            <span class="team-member-address">#{entity.mobileNumber}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </p:panel>
+                </div>
+                <!--Detalle de pedidos recientes -->
+                <div class="ui-g-12 ui-md-12 ui-lg-6">
+                    <p:panel styleClass="tasks">
+                        <f:facet name="header">
+                            #{i18n['PreInvoices']}
+                            <p:button icon="fa fa-plus" title="#{i18n['PreInvoice']}" styleClass="secondary-button" outcome="/pages/fede/sales/invoice.jsf"/>
+                        </f:facet>
+                        <ul>
+                            <ui:repeat value="#{invoiceHome.myLastlastPreInvoices}" var="entity">
+                                <li>
+                                    <span>#{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i></span> 
+                                    <div class="Fright">
+                                        <p:button title="#{i18n['app.fede.collect']}" 
+                                                  icon="fa fa-dollar"
+                                                  styleClass="secondary-button"
+                                                  outcome="/pages/fede/sales/invoice.jsf?invoiceId=#{entity.id}"
+                                                  rendered="true"/>
+                                    </div>
+                                    <!--                                     <div class="time-badge">
+                                                                             <span>#{entity.boardNumber}</span>
+                                                                         </div>-->
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </p:panel>
+                </div>
+
+                <!--                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                    <p:panel header="#{i18n['common.uncomming.events']}" style="height:100%">
+                                        <p:schedule value="#{scheduleView.eventModel}"/>
+                                    </p:panel>
+                                </div>-->
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

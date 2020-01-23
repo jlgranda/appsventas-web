@@ -51,7 +51,12 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>dashboard</from-outcome>
-            <to-view-id>/pages/dashboard.jsf</to-view-id>
+            <to-view-id>/pages/fede/smart/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>products</from-outcome>
+            <to-view-id>/pages/fede/smart/products.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
