@@ -19,7 +19,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with DynamicReports. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.jlgranda.fede.controller.sales.report;
 
 import static net.sf.dynamicreports.report.builder.DynamicReports.*;
@@ -39,13 +38,15 @@ import net.sf.dynamicreports.report.constant.PageType;
 import net.sf.dynamicreports.report.constant.VerticalTextAlignment;
 import net.sf.dynamicreports.report.definition.ReportParameters;
 import org.jlgranda.fede.model.sales.Invoice;
+import org.jpapi.model.TaxType;
 import org.omnifaces.el.functions.Dates;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
  */
 public class Templates {
-	 /**
+
+    /**
      * Constant <code>rootStyle</code>
      */
     public static final StyleBuilder rootStyle;
@@ -138,57 +139,65 @@ public class Templates {
         TableOfContentsCustomizerBuilder tableOfContentsCustomizer = tableOfContentsCustomizer().setHeadingStyle(0, stl.style(rootStyle).bold());
 
         reportTemplate = template().setPageFormat(PageType.HALF_A5_EMPORIO)
-                                   .setLocale(Locale.ENGLISH)
-                                   .setColumnStyle(columnStyle)
-                                   .setColumnTitleStyle(columnTitleStyle)
-                                   .setGroupStyle(groupStyle)
-                                   .setGroupTitleStyle(groupStyle)
-                                   .setSubtotalStyle(subtotalStyle)
-                                   .setCrosstabGroupStyle(crosstabGroupStyle)
-                                   .setCrosstabGroupTotalStyle(crosstabGroupTotalStyle)
-                                   .setCrosstabGrandTotalStyle(crosstabGrandTotalStyle)
-                                   .setCrosstabCellStyle(crosstabCellStyle)
-                                   .setTableOfContentsCustomizer(tableOfContentsCustomizer);
+                .setLocale(Locale.ENGLISH)
+                .setColumnStyle(columnStyle)
+                .setColumnTitleStyle(columnTitleStyle)
+                .setGroupStyle(groupStyle)
+                .setGroupTitleStyle(groupStyle)
+                .setSubtotalStyle(subtotalStyle)
+                .setCrosstabGroupStyle(crosstabGroupStyle)
+                .setCrosstabGroupTotalStyle(crosstabGroupTotalStyle)
+                .setCrosstabGrandTotalStyle(crosstabGrandTotalStyle)
+                .setCrosstabCellStyle(crosstabCellStyle)
+                .setTableOfContentsCustomizer(tableOfContentsCustomizer);
 
         currencyType = new CurrencyType();
 
         //footerComponent = cmp.pageXofY().setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
         //footerComponent = cmp.text("AppsVentas por jlgranda.com").setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
-        footerComponent = cmp.text("Buen café a mejor precio cafesdeloja.com").setStyle(stl.style(footerStyle).setTopBorder(stl.pen1Point()));
+        footerComponent = cmp.text("De Loja a domicilio www.cafesdeloja.com").setStyle(stl.style(footerStyle).setTopBorder(stl.pen1Point()));
     }
 
     /**
-     * Creates custom component which is possible to add to any report band component
+     * Creates custom component which is possible to add to any report band
+     * component
      *
      * @param label a {@link java.lang.String} object.
-     * @return a {@link net.sf.dynamicreports.report.builder.component.ComponentBuilder} object.
+     * @return a
+     * {@link net.sf.dynamicreports.report.builder.component.ComponentBuilder}
+     * object.
      */
     public static ComponentBuilder<?, ?> createTitleComponent(String label) {
         return cmp.horizontalList()
-                  .add(cmp.text(label).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
-                  .newRow()
-                  .add(cmp.line())
-                  .newRow()
-                  .add(cmp.verticalGap(6));
+                .add(cmp.text(label).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                .newRow()
+                .add(cmp.line())
+                .newRow()
+                .add(cmp.verticalGap(6));
     }
 
     /**
-     * <p>createCurrencyValueFormatter.</p>
+     * <p>
+     * createCurrencyValueFormatter.</p>
      *
      * @param label a {@link java.lang.String} object.
-     * @return a {@link net.sf.dynamicreports.examples.Templates.CurrencyValueFormatter} object.
+     * @return a
+     * {@link net.sf.dynamicreports.examples.Templates.CurrencyValueFormatter}
+     * object.
      */
     public static CurrencyValueFormatter createCurrencyValueFormatter(String label) {
         return new CurrencyValueFormatter(label);
     }
 
     private static String corregirCorreoElectronico(String email) {
-        if (email.endsWith("@emporiolojano.com"))
+        if (email.endsWith("@emporiolojano.com")) {
             return "-";
+        }
         return email;
     }
 
     public static class CurrencyType extends BigDecimalType {
+
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -198,6 +207,7 @@ public class Templates {
     }
 
     private static class CurrencyValueFormatter extends AbstractValueFormatter<String, Number> {
+
         private static final long serialVersionUID = 1L;
 
         private String label;
@@ -211,35 +221,72 @@ public class Templates {
             return label + currencyType.valueToString(value, reportParameters.getLocale());
         }
     }
-    
+
     /**
-	 * Creates custom component which is possible to add to any report band component
+     * Creates custom component which is possible to add to any report band
+     * component
+     *
+     * @param invoice
      * @param settings
-	 */
-	public static ComponentBuilder<?, ?> createInvoiceHeaderComponent(Invoice invoice, Map<String, String> settings) {
-                if (settings.containsKey("app.fede.report.invoice.fontName"))
-                    rootStyle.setFontName(settings.get("app.fede.report.invoice.fontName"));
-                if (settings.containsKey("app.fede.report.invoice.fontSize"))
-                    rootStyle.setFontSize(Integer.valueOf(settings.get("app.fede.report.invoice.fontSize")));
-                if (settings.containsKey("app.fede.report.invoice.fontStyle") && "bold".equalsIgnoreCase(settings.get("app.fede.report.invoice.fontStyle")))
-                    rootStyle.bold();
-                
-		return cmp.horizontalList()
-		        .add(cmp.verticalGap(Integer.valueOf(settings.get("app.fede.report.invoice.startLine"))))
-                        .newRow()
-                        .add(cmp.text("Cliente: " + invoice.getOwner().getFullName()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                        .newRow()
-                        .add(cmp.text("C.I/RUC: " + invoice.getOwner().getCode()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                        .newRow()
-                        .add(cmp.text("Dirección: " + invoice.getOwner().getDescription()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                        .newRow()
-                        .add(cmp.text("Teléfono: " + invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                        .newRow()
-                        .add(cmp.text("Correo: " + corregirCorreoElectronico(invoice.getOwner().getEmail())).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                        .newRow()
-                        .add(cmp.text("Fecha: " + Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm")).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                        .newRow()
-                        .add(cmp.text("Mesa: "  + invoice.getBoardNumber() + " / Comanda: " + invoice.getCode() + " / Servicio: " + invoice.getAuthor().getFirstname()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                        .add(cmp.verticalGap(5));
-	}
+     * @return
+     */
+    public static ComponentBuilder<?, ?> createInvoiceHeaderComponent(Invoice invoice, Map<String, String> settings) {
+        if (settings.containsKey("app.fede.report.invoice.fontName")) {
+            rootStyle.setFontName(settings.get("app.fede.report.invoice.fontName"));
+        }
+        if (settings.containsKey("app.fede.report.invoice.fontSize")) {
+            rootStyle.setFontSize(Integer.valueOf(settings.get("app.fede.report.invoice.fontSize")));
+        }
+        if (settings.containsKey("app.fede.report.invoice.fontStyle") && "bold".equalsIgnoreCase(settings.get("app.fede.report.invoice.fontStyle"))) {
+            rootStyle.bold();
+        }
+
+        return cmp.horizontalList()
+                .add(cmp.verticalGap(Integer.valueOf(settings.get("app.fede.report.invoice.startLine"))))
+                .newRow()
+                .add(cmp.text("Cliente: " + invoice.getOwner().getFullName()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .newRow()
+                .add(cmp.text("C.I/RUC: " + invoice.getOwner().getCode()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .newRow()
+                .add(cmp.text("Dirección: " + invoice.getOwner().getDescription()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .newRow()
+                .add(cmp.text("Teléfono: " + invoice.getOwner().getMobileNumber()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .newRow()
+                .add(cmp.text("Correo: " + corregirCorreoElectronico(invoice.getOwner().getEmail())).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .newRow()
+                .add(cmp.text("Fecha: " + Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm")).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .newRow()
+                .add(cmp.text("Mesa: " + invoice.getBoardNumber() + " / Comanda: " + invoice.getCode() + " / Servicio: " + invoice.getAuthor().getFirstname()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .add(cmp.verticalGap(5));
+    }
+    /**
+     * Creates custom component which is possible to add to any report band
+     * component
+     *
+     * @param invoice
+     * @param settings
+     * @return
+     */
+    public static ComponentBuilder<?, ?> createInvoiceSummary(Invoice invoice, Map<String, String> settings) {
+        if (settings.containsKey("app.fede.report.invoice.fontName")) {
+            rootStyle.setFontName(settings.get("app.fede.report.invoice.fontName"));
+        }
+        if (settings.containsKey("app.fede.report.invoice.fontSize")) {
+            rootStyle.setFontSize(Integer.valueOf(settings.get("app.fede.report.invoice.fontSize")));
+        }
+        if (settings.containsKey("app.fede.report.invoice.fontStyle") && "bold".equalsIgnoreCase(settings.get("app.fede.report.invoice.fontStyle"))) {
+            rootStyle.bold();
+        }
+
+//        report.summary(cmp.text(this.invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 12%:")));
+//            report.summary(cmp.text(this.invoice.getTotal().add(this.invoice.getTotalTax(TaxType.IVA))).setValueFormatter(Templates.createCurrencyValueFormatter("Total a pagar:")));
+//            
+        return cmp.horizontalList()
+                .add(cmp.verticalGap(Integer.valueOf(settings.get("app.fede.report.invoice.startLine"))))
+                .newRow()
+                .add(cmp.text(invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 12%: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                .newRow()
+                .add(cmp.text(invoice.getTotal().add(invoice.getTotalTax(TaxType.IVA))).setValueFormatter(Templates.createCurrencyValueFormatter("Total a pagar: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                .newRow();
+    }
 }

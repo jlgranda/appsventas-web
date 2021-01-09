@@ -259,7 +259,7 @@ public class InventoryHome extends FedeController implements Serializable {
      */
     public List<Product> find(String keyword) {
         
-        return productCache.lookup(keyword);
+        return productCache.lookup(keyword, ProductType.PRODUCT); //sólo productos
 //        keyword = keyword.trim();
 //        Map<String, Object> filters = new HashMap<>();
 //        Map<String, String> columns = new HashMap<>();

@@ -123,7 +123,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     private List<Detail> candidateDetails = new ArrayList<>();
     
-    private Set<Product> recents = new HashSet<Product>();
+    private Set<Product> recents = new HashSet<>();
     
     private Payment payment;
     
@@ -586,10 +586,10 @@ public class InvoiceHome extends FedeController implements Serializable {
             collect(StatusType.PRINTED.toString());
             //Forzar actualizar invoice para generación correcta del reporte
             setInvoice(invoiceService.createInstance());
-            getInvoice(); //recargar
+            getInvoice(); //recargar la instancia actual
             //Imprimir reporte
             Map<String, String> settings = new HashMap<>();
-            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "60"));
+            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "48"));
             //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
             settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "8"));
             settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));
@@ -852,8 +852,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         getCandidateDetail().setInvoice(getInvoice());
         if (this.candidateDetails.contains(getCandidateDetail())) {
             int index = this.candidateDetails.indexOf(getCandidateDetail());
-            float amount = this.candidateDetails.get(index).getAmount() + candidateDetail.getAmount();
-            this.candidateDetails.get(index).setAmount(amount);
+            float amount_ = this.candidateDetails.get(index).getAmount() + candidateDetail.getAmount();
+            this.candidateDetails.get(index).setAmount(amount_);
         } else {
             this.candidateDetails.add(getCandidateDetail());
         }

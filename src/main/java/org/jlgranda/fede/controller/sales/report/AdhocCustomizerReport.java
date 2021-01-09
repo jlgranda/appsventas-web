@@ -30,8 +30,6 @@ import net.sf.dynamicreports.adhoc.AdhocManager;
 import net.sf.dynamicreports.adhoc.configuration.AdhocCalculation;
 import net.sf.dynamicreports.adhoc.configuration.AdhocColumn;
 import net.sf.dynamicreports.adhoc.configuration.AdhocConfiguration;
-import net.sf.dynamicreports.adhoc.configuration.AdhocGroup;
-import net.sf.dynamicreports.adhoc.configuration.AdhocGroupHeaderLayout;
 import net.sf.dynamicreports.adhoc.configuration.AdhocReport;
 import net.sf.dynamicreports.adhoc.configuration.AdhocSubtotal;
 import net.sf.dynamicreports.adhoc.configuration.AdhocSubtotalPosition;
@@ -45,8 +43,10 @@ import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.dynamicreports.report.definition.datatype.DRIDataType;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
-import org.jlgranda.fede.model.sales.Detail;
 import org.jlgranda.fede.model.sales.Invoice;
+import org.jpapi.model.TaxType;
+
+import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
@@ -64,7 +64,7 @@ public class AdhocCustomizerReport {
         AdhocReport report = new AdhocReport();
         configuration.setReport(report);
 
-        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth()-30;
+        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth() - 20;
         
         //columns
         AdhocColumn column = new AdhocColumn();
@@ -72,22 +72,25 @@ public class AdhocCustomizerReport {
         column.setTitle("Cant.");
         column.setWidth(calculePorcentaje(pageWidth, 14));
         report.addColumn(column);
+        
         column = new AdhocColumn();
         column.setName("descripcion");
         column.setTitle("Descripción");
         column.setWidth(calculePorcentaje(pageWidth, 56));
         report.addColumn(column);
+        
         column = new AdhocColumn();
         column.setName("preciounitario");
         column.setTitle("P.U.");
         column.setWidth(calculePorcentaje(pageWidth, 14));
         report.addColumn(column);
+        
         column = new AdhocColumn();
         column.setName("subtotal");
         column.setTitle("Subtotal");
         column.setWidth(calculePorcentaje(pageWidth, 16));
         report.addColumn(column);
-
+        
 	//groups
         //AdhocGroup group = new AdhocGroup();
         //group.setName("invoice");
@@ -101,10 +104,11 @@ public class AdhocCustomizerReport {
         AdhocSubtotal subtotal = new AdhocSubtotal();
         subtotal.setCalculation(AdhocCalculation.SUM);
         subtotal.setName("subtotal");
+
         //subtotal.setGroupName("invoice");
         subtotal.setPosition(AdhocSubtotalPosition.SUMMARY);
-        report.addSubtotal(subtotal);
-            
+        report.addSubtotal(subtotal);        
+        
 //		//sorts
 //		AdhocSort sort = new AdhocSort();
 //		sort.setName("item");
@@ -115,7 +119,7 @@ public class AdhocCustomizerReport {
             AdhocManager adhocManager = AdhocManager.getInstance(new AdhocToXmlTransform(), new XmlToAdhocTransform());
             JasperReportBuilder reportBuilder = adhocManager.createReport(configuration.getReport(), new ReportCustomizer(invoice, settings));
             reportBuilder.setDataSource(createDataSource(invoice));
-            
+            //reportBuilder.summary(cmp.text(invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 12%:")));
             
             
             //PDF
@@ -164,9 +168,10 @@ public class AdhocCustomizerReport {
 
     private JRDataSource createDataSource(Invoice invoice) {
         DRDataSource dataSource = new DRDataSource("cantidad", "descripcion", "preciounitario", "subtotal");
-        for (Detail detail : invoice.getDetails()) {
-            dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount())));
-        }
+        invoice.getDetails().forEach(detail -> {
+            BigDecimal subtotal = detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount()));
+            dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), subtotal);
+        });
         //Agregar el descuento como item
         if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){
             BigDecimal discount = invoice.getPaymentsDiscount().multiply(BigDecimal.valueOf(-1));
@@ -209,6 +214,7 @@ public class AdhocCustomizerReport {
             //Header
             report.addPageHeader(Templates.createInvoiceHeaderComponent(this.invoice, this.settings));
             
+            report.summary(Templates.createInvoiceSummary(this.invoice, this.settings));
             //a fixed page footer that user cannot change, this customization is not stored in the xml file
             report.pageFooter(Templates.footerComponent);
         }

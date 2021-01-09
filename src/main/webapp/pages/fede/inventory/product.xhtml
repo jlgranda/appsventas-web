@@ -66,6 +66,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <jlgranda:input id="price" name="price" type="number" label="#{i18n['app.fede.inventory.product.price']}" 
                                     value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
+                    
+                    <div class="Container100 Responsive50">
+                        <div class="ContainerIndent">
+                            <h2 class="BigTopic">#{i18n['common.taxType']}&nbsp;</h2>
+                            <p:selectOneMenu value="#{inventoryHome.product.taxType}" effect="fade"
+                                             required="#{true}" immediate="true"> 
+                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@form" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
 
                 </div>
                 <div class="EmptyBox10"></div>

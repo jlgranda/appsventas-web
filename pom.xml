@@ -175,7 +175,7 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
-            <version>7.0</version>
+            <version>8.0.1</version>
             <scope>compile</scope>
         </dependency>
 
@@ -213,7 +213,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.2.4.Final</version>
+            <version>${hibernate.version}</version>
             <scope>runtime</scope>
             <exclusions>
                 <exclusion>
@@ -240,7 +240,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <version>5.2.4.Final</version>
+            <version>${hibernate.version}</version>
             <scope>runtime</scope>
         </dependency>
          
@@ -322,7 +322,7 @@
         <dependency>
             <groupId>org.omnifaces</groupId>
             <artifactId>omnifaces</artifactId>
-            <version>2.6.9</version>
+            <version>3.9</version>
         </dependency>
         
         <dependency>
@@ -384,7 +384,7 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.4.0</version>
+            <version>6.16.0</version>
             <scope>compile</scope>
         </dependency>
         
@@ -392,12 +392,12 @@
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
             <artifactId>dynamicreports-core</artifactId>
-            <version>6.1.1-SNAPSHOT</version>
+            <version>6.12.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
             <artifactId>dynamicreports-adhoc</artifactId>
-            <version>6.1.1-SNAPSHOT</version>
+            <version>6.12.0-SNAPSHOT</version>
         </dependency>
         <!--        <dependency>
             <groupId>org.jlgranda</groupId>

@@ -37,6 +37,7 @@ import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Setting;
+import org.jpapi.model.TaxType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.omnifaces.el.functions.Strings;
@@ -77,6 +78,10 @@ public class UI {
         return EmissionType.values();
     }
     
+    public TaxType[] getTaxTypes() {
+        return TaxType.values();
+    }
+    
     public List<SelectItem> getDocumentTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -91,6 +96,16 @@ public class UI {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         for (ProductType t : getProductTypes()) {
+            item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+            items.add(item);
+        }
+        return items;
+    }
+    
+    public List<SelectItem> getTaxTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (TaxType t : getTaxTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
             items.add(item);
         }
