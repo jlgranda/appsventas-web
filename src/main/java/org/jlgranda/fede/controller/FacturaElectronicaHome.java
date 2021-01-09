@@ -64,9 +64,10 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
+import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.sales.Payment;
-import org.jlgranda.fede.sri.factura.v110.Factura;
+import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.SourceType;
@@ -165,7 +166,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             //amount = Integer.valueOf(settingService.findByName(SettingNames.DASHBOARD_RANGE).getValue());
             amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
         } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
             amount = 30;
         }
 
@@ -173,7 +173,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setStart(Dates.addDays(getEnd(), -1 * amount));
         
         setFacturaElectronica(facturaElectronicaService.createInstance());
-        setSupplier(getDefaultSupplier());
         setUseDefaultSupplier(false); //TODO desde configuraciones
         
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
@@ -355,7 +354,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public BigDecimal countRowsByTag(String tag) {
-        BigDecimal total = new BigDecimal(0);
+        BigDecimal total = BigDecimal.ZERO;
         if ("all".equalsIgnoreCase(tag)) {
             total = new BigDecimal(facturaElectronicaService.count());
         } else if ("own".equalsIgnoreCase(tag)) {
@@ -374,8 +373,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public boolean mostrarFormularioDescargaFacturaElectronica(Map<String, List<String>> params) {
-        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
         super.openDialog(SettingNames.POPUP_DESCARGAR_FACTURA_ELECTRONICA, width, height, true, params);
         return true;
     }
@@ -693,7 +692,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
         facturaElectronica.setFilename(null);
         facturaElectronica.setContenido(null);
-        facturaElectronica.setTotalSinImpuestos(facturaElectronica.getImporteTotal());
         facturaElectronica.setMoneda("DOLAR");
 
         facturaElectronica.setClaveAcceso(null);
@@ -716,10 +714,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
         return procesarFactura(fr.getFactura(), fr.getXml(), fr.getFileName(), sourceType);
     }
-
+    
     @Override
     public void handleReturn(SelectEvent event) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setSupplier((Subject) event.getObject());
     }
 
     @Override
@@ -918,5 +916,83 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Inject
+    private SubjectAdminHome subjectAdminHome; //para administrar proveedores en factura de compra
+
+    public SubjectAdminHome getSubjectAdminHome() {
+        return subjectAdminHome;
+    }
+
+    public void setSubjectAdminHome(SubjectAdminHome subjectAdminHome) {
+        this.subjectAdminHome = subjectAdminHome;
+    }
+    
+    
+    /**
+     * Mostrar el formulario para edición de clientes
+     * @param params
+     * @return 
+     */
+    public boolean mostrarFormularioProfile(Map<String, List<String>> params) {
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
+        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
+        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, left, top, true, params);
+        return true;
+    }
+    
+    public boolean mostrarFormularioProfile() {
+        
+        setUseDefaultSupplier(false); //Implica que se agregará un nuevo usuario
+        setSupplier(subjectService.createInstance()); //Nueva instancia
+        if (getSupplier() != null 
+                && getSupplier().isPersistent() 
+                && !"9999999999999".equals(getSupplier().getCode())){
+            super.setSessionParameter("SUPPLIER", getSupplier());
+        }
+        return mostrarFormularioProfile(null);
+    }
+    
+    public void closeFormularioProfile(Object data) {
+        removeSessionParameter("KEYWORD");
+        removeSessionParameter("SUPPLIER");
+        super.closeDialog(data);
+    }
+    
+    public void loadSessionParameters(){
+        
+        if (existsSessionParameter("SUPPLIER")){
+            this.subjectAdminHome.setSubjectEdit((Subject) getSessionParameter("SUPPLIER"));
+        } else if (existsSessionParameter("KEYWORD")){
+            Subject _subject = subjectService.createInstance();
+            _subject.setCode((String) getSessionParameter("KEYWORD"));
+            this.subjectAdminHome.setSubjectEdit(_subject);
+        }
+    }
+    
+    public void saveSupplier(){
+        boolean success = false;
+        if (!getSubjectAdminHome().getSubjectEdit().isPersistent()){
+            getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
+            getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
+
+            getSubjectAdminHome().setValidated(true); //La validación se realiza en pantalla
+            success = !"failed".equalsIgnoreCase(getSubjectAdminHome().save());
+        } else {
+            getSubjectAdminHome().update();
+            success = true;
+        }
+        if (success) { //Guardar profile
+            setSupplier(getSubjectAdminHome().getSubjectEdit());
+            closeFormularioProfile(getSupplier());
+        } 
+        
+    }
+    
+    public void updateDefaultSupplier(){
+        this.facturaElectronica.setAuthor(getDefaultSupplier());
     }
 }

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template_popup.xhtml">
+        <ui:param name="sitename" value="#{i18n['Sitename']}" />
+        <ui:param name="title" value="#{i18n['Profile']}" />
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="subjectId" value="#{facturaElectronicaHome.subjectAdminHome.subjectId}" />    
+                <f:viewAction action="#{facturaElectronicaHome.loadSessionParameters}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="subheader">
+
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.name']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/fede/sales/popup_profile.jsf">#{facturaElectronicaHome.subjectAdminHome.subjectId == null ? i18n['New'].concat(' ').concat(i18n['Profile']).concat(': ') : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="Container100">
+                        <div class="ui-g-12">
+                            <div class="ui-g-4">
+                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" rendered="true"
+                                                value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.code}" 
+                                                validator="#{'ciValidator'}"
+                                                required="#{!facturaElectronicaHome.subjectAdminHome.subjectEdit.persistent}" 
+                                                execute="@this save" render="code"/>
+                            </div>
+                            <div class="ui-g-4">
+                                <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
+                                                value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.firstname}" required="#{!facturaElectronicaHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                            </div>
+                            <div class="ui-g-4">
+                                <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
+                                                value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.surname}" required="#{!facturaElectronicaHome.subjectAdminHome.subjectEdit.persistent}"
+                                                inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-4">
+                                <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['phone']}" 
+                                        value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.mobileNumber}"
+                                        required="#{!facturaElectronicaHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        execute="@this save" render="phone"/>
+                            </div>
+                            <div class="ui-g-8">
+                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                                        value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                        required="#{!facturaElectronicaHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        execute="@this save" render="email"/>
+                            </div>
+                        </div>
+                        
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
+                                        value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                        inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
+                            </div>
+                            <div class="ui-g-6">
+                                <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
+                                        value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                        execute="@this save" render="bio"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                                <p:outputLabel for="contactable" value="¿Quiere participar de mejores promociones y descuentos?:" />
+                                <p:selectBooleanCheckbox id="contactable" value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.contactable}" />
+                            </h:panelGrid>
+                        </div>
+                    </div>
+                    <div class="EmptyBox10"></div>
+
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:commandButton id="save" value="#{i18n['Save']}" 
+                                             ajax="false" 
+                                             actionListener="#{facturaElectronicaHome.saveSupplier()}" 
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                        </f:facet>
+                        <f:facet name="right">
+
+                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                                             actionListener="#{facturaElectronicaHome.closeDialog(facturaElectronicaHome.subjectAdminHome.subjectEdit)}"
+                                             action="#{facturaElectronicaHome.redirect}"
+                                             icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+            </div>
+            <!--/.panel-body -->
+
+        </ui:define>
+        <ui:define name="script">
+
+        </ui:define>
+    </ui:composition>
+</html>

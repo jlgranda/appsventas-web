@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 Copyright 2015 jlgranda.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
      http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,10 +22,10 @@ limitations under the License.
     <c:set var="required" value="#{not empty required and required}" />
     <c:set var="validator" value="#{not empty validator ? validator : 'safeTextUTF8Validator'}" />
     <c:set var="rendered" value="#{not empty rendered ? rendered : true}" />
-    <c:set var="converter" value="#{not empty converter ? converter : omnifaces.SelectItemsConverter}" />    
+    <c:set var="converter" value="#{not empty converter ? converter : 'omnifaces.SelectItemsConverter'}" />    
     <c:set var="disabled" value="#{not empty disabled ? disabled : 'false'}" />
     <c:set var="placeholder" value="#{not empty placeholder ? placeholder : 'false'}" />  
-    <c:set var="class" value="#{not empty class ? class : 'form-control'}" />   
+    <c:set var="class" value="#{not empty class ? class : ''}" />   
     <c:set var="inlinehelp" value="#{not empty inlinehelp ? inlinehelp : ''}" /> 
     <c:set var="container" value="#{not empty container ? container : '100'}" /> 
     <c:set var="defaultrender" value="#{not empty render ? ''.concat(render) : (not empty id ? ''.concat(id) : ''.concat(mame))}" />
@@ -37,188 +34,200 @@ limitations under the License.
     <c:set var="decimalPlaces" value="#{not empty decimalPlaces ? decimalPlaces : '3'}" />   
     <c:set var="requiredMessage" value="#{not empty requiredMessage ? requiredMessage : 'Ingrese un valor'}" />   
     <c:set var="listener" value="#{not empty listener ? listener : 'none'}" />   
-    
+    <c:set var="style" value="#{not empty style ? style : 'text-transform: uppercase;'}" />   
+    <c:set var="mindate" value="#{not empty mindate ? mindate : ''}" />   
+    <c:set var="maxdate" value="#{not empty maxdate ? maxdate : 'ui.now()'}" />   
+    <c:set var="cache" value="#{not empty name ?  settingHome.getValue(name, 'Ingrese un valor para el campo ') : ''}" />
+    <c:set var="maxlength" value="#{not empty maxlength ? maxlength : '256' }" />
+    <c:set var="rows" value="#{not empty rows ? rows : 3 }" />
+    <c:set var="onkeypress" value="#{not empty onkeypress ? onkeypress : true }" />
+
     <c:if test="#{rendered == 'true'}">
 
         <c:if test="#{mode == 'read'}">
-            <div class="Container100 Responsive100">
+            <div class="form-group">
                 <!--<h:outputText value="#{label}" />-->
-                <h2 class="BigTopic">#{label}</h2>
+                <p:outputLabel for="#{name}" value="Message:" />   
                 #{value}
             </div>
         </c:if>
         <c:if test="#{mode == 'write'}">
-            <c:if test="#{container == 'default'}">
-
-                <c:set var="render" value="#{defaultrender}" />
-                <c:choose>
-                    <c:when test="#{type == 'java.lang.String' or type == 'text'}">
-                        <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                     required="#{required}" disabled="#{disabled}"
-                                     class="#{class}">
-                            <c:if test="#{validator != 'none'}">
-                                <f:validator validatorId="#{validator}"/>
-                            </c:if>
-                            <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
-                        </p:inputText>
-                    </c:when>
-                    <c:when test="#{type == 'password'}">
-                        <p:password id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                    required="#{required}" disabled="#{disabled}" autocomplete="off"
-                                    class="#{class}" rendered="#{rendered}" redisplay="true">
-                            <f:validator validatorId="#{validator}"/>
-                            <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
-                        </p:password>
-                    </c:when>
-                    <c:when test="#{type == 'java.util.Date' or type == 'calendar'}">
-                        <p:calendar value="#{value}" id="#{name}" navigator="true" label="#{label}" disabled="false" class="#{class}">
-                            <f:validator validatorId="#{validator}"/>        
-                            <p:ajax event="dateSelect" update="#{render}" partialSubmit="true"/>
-                        </p:calendar>  
-                    </c:when>
-                    <c:when test="#{type == 'java.lang.Boolean' or type == 'checkbox'}">
-                        <h:selectBooleanCheckbox value="#{value}" id="#{name}" required="#{required}" label="#{label}">
-                            <f:ajax execute="#{execute}" render="#{render}"  />
-                        </h:selectBooleanCheckbox>
-                        <span>#{inlinehelp}</span>
-                    </c:when>
-                    <c:when test="#{type == 'java.lang.MultiLineString' or type == 'textarea'}">
-                        <p:inputTextarea value="#{value}" id="#{name}"
-                                         required="#{required}" label="#{label}" autoResize="false" class="#{class}" rows="3">
-                            <p:ajax update="#{render}" partialSubmit="true"/>
-                        </p:inputTextarea>
-                    </c:when>
-                    <c:when test="#{type == 'richtext'}">
-                        <p:editor id="#{name}" value="#{value}" 
-                                  required="#{required}" class="#{class}">
-                        </p:editor>
-                    </c:when>
-                    <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
-                        <p:selectOneMenu value="#{value}" effect="fade"
-                                         required="#{required}" requiredMessage="#{requiredMessage}" class="#{class}"
-                                         onchange="#{onchange == null ? '' : onchange}"> 
-                            <f:converter converterId="#{converter}"  />
-                            <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
-                            <f:selectItems value="#{values}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>  
-                            <c:if test="#{listener != 'none'}">
-                                <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
-                            </c:if>
-                        </p:selectOneMenu>   
-                    </c:when>
-                    <c:when test="#{type == 'number'}">
-                        <p:inputNumber id="#{name}" value="#{value}" required="#{required}" 
-                                       rendered="#{rendered}" disabled="#{disabled}"
-                                       placeholder="#{placeholder == 'true' ? label :  ''}"
-                                       styleClass="#{class}" requiredMessage="#{requiredMessage}"
-                                       decimalSeparator="." thousandSeparator="," decimalPlaces="#{decimalPlaces}">
-                            <c:if test="#{listener != 'none'}">
-                                <p:ajax listener="#{listener}" update="#{render}"/>
-                            </c:if>
-                            <c:if test="#{validator != 'none'}">
-                                <f:validator validatorId="#{validator}"/>
-                            </c:if>
-                        </p:inputNumber>
-                    </c:when>
-                    <c:otherwise>
-                        <h:inputText value="#{value}" id="#{name}" required="#{required}" label="#{label}" class="#{class}">
-                            <f:ajax execute="#{execute}" render="#{render}"  />
-                        </h:inputText>
-                    </c:otherwise>
-                </c:choose>
-
-            </c:if>
             <c:if test="#{container != 'default'}">
 
-                <div class="#{container == 'none' ? '' : 'Container'.concat(container).concat(' Responsive50')}">
-                    <h:panelGroup id="panel-group-#{id}" layout="block" class="" rendered="#{rendered}">
-                        <c:if test="#{placeholder == 'false' and rendered == 'true'}">
-                            <h2 class="BigTopic">#{label}</h2>
-                            <!--<h:outputText value="#{label}" />-->
-                        </c:if>
-                        <c:choose>
-                            <c:when test="#{type == 'java.lang.String' or type == 'text'}">
-                                <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                             required="#{required}" disabled="#{disabled}"
-                                             class="#{class}">
-                                    <c:if test="#{validator != 'none'}">
-                                        <f:validator validatorId="#{validator}"/>
-                                    </c:if>
-                                    <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
-                                </p:inputText>
-                            </c:when>
-                            <c:when test="#{type == 'password'}">
-                                <p:password id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                            required="#{required}"  disabled="#{disabled}" autocomplete="off"
-                                            class="#{class}" redisplay="true">
+                    <c:if test="#{placeholder == 'false' and rendered == 'true'}">
+                        <h:panelGroup id="panel-group-label-#{id}" rendered="#{rendered}" styleClass="ui-panelgrid-cell ui-g-12 ui-md-12">
+                            <p:outputLabel for="#{name}" value="#{label}" />
+                        </h:panelGroup>
+                        <!--<label>#{label}</label>-->
+                    </c:if>
+                    <!--<h:panelGroup id="panel-group-#{id}" layout="block" class="form-group" rendered="#{rendered}">-->
+                    <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}" styleClass="ui-panelgrid-cell ui-g-12 ui-md-12">
+                    <c:choose>
+                        <c:when test="#{type == 'text' or type == 'number' }">
+                            <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}" maxlength="#{maxlength}"
+                                         required="#{required}" disabled="#{disabled}" type="#{type}" requiredMessage="#{label}: #{cache}"
+                                         class="#{class}" title="#{cache}" style="#{style}"
+                                         onblur="value=value.toUpperCase()" onkeypress="#{onkeypress}">
+                                <c:if test="#{not empty validator}">
                                     <f:validator validatorId="#{validator}"/>
-                                    <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
-                                </p:password>
-                            </c:when>
-                            <c:when test="#{type == 'java.util.Date' or type == 'calendar'}">
-                                <p:calendar value="#{value}" id="#{name}" navigator="true" label="#{label}" disabled="false" class="#{class}">
-                                    <f:validator validatorId="#{validator}"/>        
-                                    <p:ajax event="dateSelect" update="#{render}" partialSubmit="true"/>
-                                </p:calendar>  
-                            </c:when>
-                            <c:when test="#{type == 'java.lang.Boolean' or type == 'checkbox'}">
-                                <h:selectBooleanCheckbox value="#{value}" id="#{name}" required="#{required}" label="#{label}">
-                                    <f:ajax execute="#{execute}" render="#{render}"  />
-                                </h:selectBooleanCheckbox>
-                                <span>#{inlinehelp}</span>
-                            </c:when>
-                            <c:when test="#{type == 'java.lang.MultiLineString' or type == 'textarea'}">
-                                <p:inputTextarea value="#{value}" id="#{name}"
-                                                 required="#{required}" label="#{label}" autoResize="false" class="#{class}" rows="3">
-                                    <p:ajax update="#{render}" partialSubmit="true"/>
-                                </p:inputTextarea>
-                            </c:when>
-                            <c:when test="#{type == 'richtext'}">
-                                <p:editor id="#{name}" value="#{value}" 
-                                          required="#{required}" class="#{class}">
-                                </p:editor>
-                            </c:when>
-                            <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
-                                <p:selectOneMenu value="#{value}" effect="fade"
-                                                 required="#{required}" requiredMessage="#{requiredMessage}" class="#{class}"
-                                                 onchange="#{onchange == null ? '' : onchange}"> 
-                                    <f:converter converterId="#{converter}"  />
-                                    <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
-                                    <f:selectItems value="#{values}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>  
-                                    <c:if test="#{listener != 'none'}">
-                                        <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
-                                    </c:if>
-                                </p:selectOneMenu>  
-                            </c:when>
-                            <c:when test="#{type == 'number'}">
-                                <!--p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                             required="#{required}" disabled="#{disabled}"
-                                             class="#{class}" type="#{type}">
+                                </c:if>
+                                <c:if test="#{not empty event and not empty process}">
+                                    <p:ajax event="#{event}" process="#{process}"/>
+                                </c:if>
+                            </p:inputText>
+                        </c:when>
+                        <c:when test="#{type == 'text-lowercase'}">
+                            <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
+                                         required="#{required}" disabled="#{disabled}" type="#{type}" requiredMessage="#{label}: #{cache}"
+                                         class="#{class}" title="#{cache}"
+                                         onblur="value=value.toLowerCase()">
+                                <c:if test="#{not empty validator}">
                                     <f:validator validatorId="#{validator}"/>
-                                    <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
-                                </p:inputText -->
-                                <p:inputNumber id="#{name}" value="#{value}" required="#{required}" rendered="#{rendered}" disabled="#{disabled}"
-                                               styleClass="#{class}" requiredMessage="#{requiredMessage}"
-                                               decimalSeparator="." thousandSeparator="," decimalPlaces="#{decimalPlaces}">
-                                    <c:if test="#{listener != 'none'}">
-                                        <p:ajax listener="#{listener}" update="#{render}" partialSubmit="true"/>
-                                    </c:if>
-                                    <c:if test="#{validator != 'none'}">
-                                        <f:validator validatorId="#{validator}"/>
-                                    </c:if>
-                                </p:inputNumber>
-                            </c:when>
-                            <c:otherwise>
-                                <h:inputText value="#{value}" id="#{name}" required="#{required}" label="#{label}" class="#{class}">
-                                    <f:ajax execute="#{execute}" render="#{render}"  />
-                                </h:inputText>
-                            </c:otherwise>
-                        </c:choose>
-                        <c:if test="#{inlinehelp != ''}">
-                            <p class="help-block">#{inlinehelp}</p>
-                        </c:if>
-                    </h:panelGroup>  
-                </div>
-
+                                </c:if>
+                                <c:if test="#{not empty event and not empty process}">
+                                    <p:ajax event="#{event}" process="#{process}"/>
+                                </c:if>
+                            </p:inputText>
+                        </c:when>
+                        <c:when test="#{type == 'password'}">
+                            <p:password id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
+                                        required="#{required}" 
+                                        disabled="#{disabled}" autocomplete="off"
+                                        class="#{class}" redisplay="true" title="#{cache}">
+                                <c:if test="#{not empty validator}">
+                                    <f:validator validatorId="#{validator}"/>
+                                </c:if>
+                                <!--<p:ajax event="blur" update="#{render}" partialSubmit="true"/>-->
+                            </p:password>
+                        </c:when>
+                        <c:when test="#{type == 'java.util.Date' or type == 'calendar'}">
+                            <p:calendar value="#{value}" id="#{name}" navigator="true" label="#{label}" 
+                                        disabled="#{disabled}" 
+                                        required="#{required}" 
+                                        requiredMessage="#{label}: #{cache}"
+                                        title="#{cache}"
+                                        maxdate="#{maxdate}" mindate="#{mindate}"
+                                        pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}">
+                                <f:validator validatorId="#{validator}"/>        
+                                <!--<p:ajax event="dateSelect" update="#{render}" partialSubmit="true"/>-->
+                            </p:calendar>  
+                        </c:when>
+                        <c:when test="#{type == 'java.lang.Boolean' or type == 'checkbox'}">
+                            <br />
+                            <h:selectBooleanCheckbox value="#{value}" id="#{name}" required="#{required}" label="#{label}">
+                                <!--<f:ajax execute="#{execute}" render="#{render}"  />-->
+                            </h:selectBooleanCheckbox>
+                            <span>#{inlinehelp}</span>
+                        </c:when>
+                        <c:when test="#{type == 'java.lang.MultiLineString' or type == 'textarea'}">
+                            <p:inputTextarea value="#{value}" id="#{name}" title="#{cache}" maxlength="#{maxlength}" disabled="#{disabled}"
+                                             required="#{required}" label="#{label}" autoResize="false" class="#{class}" rows="#{rows}"
+                                             onchange="value=value.toUpperCase()" style="#{style}">
+                                <!--<p:ajax update="#{render}" partialSubmit="true"/>-->
+                                <c:if test="#{not empty event and not empty process}">
+                                    <p:ajax event="#{event}" process="#{process}"/>
+                                </c:if>
+                            </p:inputTextarea>
+                        </c:when>
+                        <c:when test="#{type == 'richtext'}">
+                            <p:editor id="#{name}" value="#{value}" 
+                                      required="#{required}" class="#{class}">
+                            </p:editor>
+                        </c:when>
+                        <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
+                            <p:selectOneMenu value="#{value}" effect="fade" id="#{name}"
+                                             required="#{required}" requiredMessage="#{label}: #{cache}" 
+                                             class="#{empty class ? 'ui-selectcheckboxmenu-label ui-corner-all' : class}"
+                                             title="#{cache}" disabled="#{disabled}">
+                                <f:converter converterId="#{converter}"  />
+                                <f:selectItem itemLabel = "" noSelectionOption="true" itemValue="#{null}"/> 
+                                 <!--<f:selectItem itemLabel="#{etiquetas['common.seleccioneuno']}" noSelectionOption="true"></f:selectItem>-->
+                                <f:selectItems value="#{values}" var="v" itemLabel="#{itemLabel}" itemValue="#{itemValue}"  itemDescription="#{v.descripcion}"/>  
+                                <c:if test="#{listener != 'none'}">
+                                    <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                                </c:if>
+                            </p:selectOneMenu>  
+                        </c:when>
+                        <c:when test="#{type == 'tel'}">
+                            <p:inputMask id="#{name}" value="#{value}" title="#{cache}"
+                                         required="#{required}" disabled="#{disabled}" autocomplete="off"
+                                         class="#{class}" rendered="#{rendered}" mask="(99) 999-9999">
+                                <c:if test="#{not empty event and not empty process}">
+                                    <p:ajax event="#{event}" process="#{process}"/>
+                                </c:if>
+                            </p:inputMask>
+                        </c:when>
+                        <c:when test="#{type == 'mobil'}">
+                            <p:inputMask id="#{name}" value="#{value}" title="#{cache}"
+                                         required="#{required}" disabled="#{disabled}" autocomplete="off"
+                                         class="#{class}" rendered="#{rendered}" mask="(999) 999-9999">
+                                <c:if test="#{not empty event and not empty process}">
+                                    <p:ajax event="#{event}" process="#{process}"/>
+                                </c:if>
+                            </p:inputMask>
+                        </c:when>
+                        <!-- <c:when test="#{type == 'number'}">-->
+                            <!--p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
+                                         required="#{required}" disabled="#{disabled}"
+                                         class="#{class}" type="#{type}">
+                                <f:validator validatorId="#{validator}"/>
+                                <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
+                            </p:inputText -->
+                            <!--<p:inputNumber id="#{name}" value="#{value}" required="#{required}" rendered="#{rendered}" disabled="#{disabled}"
+                                           styleClass="#{class}" requiredMessage="#{requiredMessage}"
+                                           title="#{title}"
+                                           decimalSeparator="." thousandSeparator="," decimalPlaces="#{decimalPlaces}" style="border: none !important; padding:0px;">
+                                <c:if test="#{listener != 'none'}">
+                                    <p:ajax listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                                </c:if>
+                                <c:if test="#{validator != 'none'}">
+                                    <f:validator validatorId="#{validator}"/>
+                                </c:if>
+                            </p:inputNumber>
+                        </c:when>-->
+                        <c:otherwise>
+                            <h:inputText value="#{value}" title="#{cache}"
+                                         id="#{name}" required="#{required}"
+                                         label="#{label}" class="#{class}">
+                                <!--<f:ajax execute="#{execute}" render="#{render}"  />--> 
+                            </h:inputText>
+                        </c:otherwise>
+                    </c:choose>
+                    <c:if test="#{type != 'select'}">
+                        <p:tooltip  for="#{name}" showEvent="focus" hideEvent="blur" />
+                    </c:if>
+                </h:panelGroup>
+                <!--</div>-->
+            </c:if>
+            <c:if test="#{type == 'calendar'}">
+                <script>
+                    PrimeFaces.locales["es"] = {
+                        closeText: "Cerrar",
+                        prevText: "Anterior",
+                        nextText: "Siguiente",
+                        monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                        monthNamesShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                        dayNames: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                        dayNamesShort: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
+                        dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+                        weekHeader: "Semana",
+                        firstDay: 0,
+                        isRTL: false,
+                        showMonthAfterYear: false,
+                        yearSuffix: "",
+                        timeOnlyTitle: "Solo hora",
+                        timeText: "Tiempo",
+                        hourText: "Hora",
+                        minuteText: "Minuto",
+                        secondText: "Segundo",
+                        currentText: "Fecha actual",
+                        ampm: false,
+                        month: "Mes",
+                        week: "Semana",
+                        day: "Día",
+                        allDayText: "Todo el día"
+                    };
+                </script>
             </c:if>
         </c:if>
     </c:if>

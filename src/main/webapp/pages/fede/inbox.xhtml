@@ -49,6 +49,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
                         <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
+                        <p:commandButton id="commandAddFromFile" value="#{i18n['Upload']} desde archivo"
+                                         styleClass="secondary-button" style="margin-bottom:10px;"
+                                         actionListener="#{facturaElectronicaHome.mostrarFormularioCargaFacturaElectronica()}">
+                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{facturaElectronicaHome.handleReturn}">
+                            </p:ajax>
+                        </p:commandButton>
+                        <p:commandButton id="commandAddFromURL" value="#{i18n['Download']} desde #{i18n['URL']}"
+                                         styleClass="secondary-button" style="margin-bottom:10px;"
+                                         actionListener="#{facturaElectronicaHome.mostrarFormularioDescargaFacturaElectronica()}">
+                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{facturaElectronicaHome.handleReturn}">
+                            </p:ajax>
+                        </p:commandButton>
                     </div>
                     <div class="card">
                         <!-- /.row -->
@@ -67,7 +81,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
                             <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author.initials}">
-                                <h:outputText value="#{facturaElectronica.author.initials}" />
+                                <h:outputText value="#{facturaElectronica.author.fullName}" />
                             </p:column>
                             <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}" sortBy="#{facturaElectronica.author.initials}">
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />

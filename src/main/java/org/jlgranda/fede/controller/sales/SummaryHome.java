@@ -165,15 +165,15 @@ public class SummaryHome  extends FedeController implements Serializable {
         
     }
     public void  calculeSummary(Date _start, Date _end) {
-       
+        
         this.costTotal = BigDecimal.ZERO;
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", 0, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
         objects.stream().forEach((Object[] object) -> {
             this.grossSalesTotal = (BigDecimal) object[0];
             this.discountTotal = (BigDecimal) object[1];
             this.salesTotal = (BigDecimal) object[2];
         });        
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalBetween", 0, this.subject, _start, _end);
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalBetween", Integer.MAX_VALUE, this.subject, _start, _end);
         objects.stream().forEach((Object object) -> {
             this.purchaseTotal = (BigDecimal) object;
         });  

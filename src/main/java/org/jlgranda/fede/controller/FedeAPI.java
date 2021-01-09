@@ -22,7 +22,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import org.jlgranda.fede.util.FacturaUtil;
 import org.jlgranda.fede.model.document.FacturaElectronica;
-import org.jlgranda.fede.sri.factura.v110.Factura;
+import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jpapi.model.TaxRateIVAType;
 import org.jpapi.model.TaxType;
 import org.jpapi.util.Strings;

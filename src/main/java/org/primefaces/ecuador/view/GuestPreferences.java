@@ -15,55 +15,60 @@
  */
 package org.primefaces.ecuador.view;
 
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
+
+/**
+ *
+ * @author jlgranda
+ */
 @ManagedBean
 @SessionScoped
 public class GuestPreferences implements Serializable {
-        
+    
+    
+
     private String menuMode = "layout-menu-static";
 
-    private String theme = "yellow";
+    private String theme = "indigo";
 
-    private String layout = "yellow";
+    private String layout = "indigo";
 
     private boolean lightMenu = false;
-                            
-	public String getTheme() {		
-		return theme;
-	}
-    
-	public void setTheme(String theme) {
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
         this.theme = theme;
     }
 
-    public String getLayout() {		
-		return layout;
-	}
-    
-	public void setLayout(String layout) {
+    public String getLayout() {
+        return layout;
+    }
+
+    public void setLayout(String layout) {
         this.layout = layout;
     }
 
     public String getMenuMode() {
         String mode = menuMode;
-        if(this.isLightMenu()) {
+        if (this.isLightMenu()) {
             mode = mode + " layout-menu-light";
         }
 
-		return mode;
+        return mode;
     }
-    
+
     public void changeTheme(String value) {
         this.theme = value;
 
-        if(value.indexOf("-") != -1) {
+        if (value.contains("-")) {
             this.layout = value.split("-")[0];
-        }
-        else {
+        } else {
             this.layout = value;
         }
     }
@@ -74,9 +79,9 @@ public class GuestPreferences implements Serializable {
 
     public void setLightMenu(boolean lightMenu) {
         this.lightMenu = lightMenu;
-    } 
-    
-	public void setMenuMode(String menuMode) {
-		this.menuMode = menuMode;
-	}
+    }
+
+    public void setMenuMode(String menuMode) {
+        this.menuMode = menuMode;
+    }
 }
