@@ -282,8 +282,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                     subject = subjectService.find(9L); //ID del usuario ADMIN
                 }
                 boolean setupRoles = "admin".equalsIgnoreCase(subject.getUsername());
-                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())) //Preguntar si no se estableció desde fuera
+                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())){ //Preguntar si no se estableció desde fuera
                     getSubjectEdit().setPassword(getClave()); //Establece la clave desde la vista
+                }
                 subjectHome.processSignup(getSubjectEdit(), subject, role, setupRoles); //El propietario es el administrador actual y se asigna con un rol
                 addDefaultSuccessMessage();
 
@@ -292,6 +293,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 addDefaultSuccessMessage();
             } else {
                 //Solo actualizar
+                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())){ //Preguntar si no se estableció desde fuera
+                    getSubjectEdit().setPassword("UNSET"); //Establece la clave desde la vista
+                }
                 subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
                 addDefaultSuccessMessage();
             }
@@ -323,6 +327,10 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             //Crear la identidad para acceso al sistema
             try {
                 //crypt password
+                //Solo actualizar
+                if (Strings.isNullOrEmpty(getClave())){ //Preguntar si no se estableció desde fuera
+                    setClave("UNSET"); //Establece la clave desde la vista
+                }
                 _signup.setPassword(svc.encryptPassword(getClave()));
                 _signup.setConfirmed(true);
                 //actualizar directamente

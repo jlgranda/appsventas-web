@@ -34,10 +34,10 @@ limitations under the License.
     <c:set var="decimalPlaces" value="#{not empty decimalPlaces ? decimalPlaces : '3'}" />   
     <c:set var="requiredMessage" value="#{not empty requiredMessage ? requiredMessage : 'Ingrese un valor'}" />   
     <c:set var="listener" value="#{not empty listener ? listener : 'none'}" />   
-    <c:set var="style" value="#{not empty style ? style : 'text-transform: uppercase;'}" />   
+    <c:set var="style" value="#{not empty style ? style : 'text-transform: none;'}" />   
     <c:set var="mindate" value="#{not empty mindate ? mindate : ''}" />   
     <c:set var="maxdate" value="#{not empty maxdate ? maxdate : 'ui.now()'}" />   
-    <c:set var="cache" value="#{not empty name ?  settingHome.getValue(name, 'Ingrese un valor para el campo ') : ''}" />
+    <c:set var="cache" value="#{not empty name ?  settingHome.getValue(name, 'Ingrese un valor válido') : ''}" />
     <c:set var="maxlength" value="#{not empty maxlength ? maxlength : '256' }" />
     <c:set var="rows" value="#{not empty rows ? rows : 3 }" />
     <c:set var="onkeypress" value="#{not empty onkeypress ? onkeypress : true }" />
@@ -67,7 +67,7 @@ limitations under the License.
                             <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}" maxlength="#{maxlength}"
                                          required="#{required}" disabled="#{disabled}" type="#{type}" requiredMessage="#{label}: #{cache}"
                                          class="#{class}" title="#{cache}" style="#{style}"
-                                         onblur="value=value.toUpperCase()" onkeypress="#{onkeypress}">
+                                         onkeypress="#{onkeypress}">
                                 <c:if test="#{not empty validator}">
                                     <f:validator validatorId="#{validator}"/>
                                 </c:if>

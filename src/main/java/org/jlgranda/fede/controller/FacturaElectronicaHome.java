@@ -700,7 +700,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
     
-        facturaElectronica.setAuthor(getSupplier());
+        //facturaElectronica.setAuthor(getSupplier());
         facturaElectronica.setOwner(subject);
         
         //Establecer un codigo por defecto
@@ -898,8 +898,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      */
     public void addPayment(){
         
-        System.out.println(">>> 1. getPayment: " + getPayment());
-        
         this.getPayment().setCash(getPayment().getAmount());
         
         Payment p = paymentService.createInstance();
@@ -907,10 +905,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         p.setCash(getPayment().getAmount());
         p.setDiscount(getPayment().getDiscount());
         this.getFacturaElectronica().addPayment(p);
-        System.out.println(">>> p: " + p);
         
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
-        System.out.println(">>> 2. getPayment: " + getPayment());
     }
 
     @Override

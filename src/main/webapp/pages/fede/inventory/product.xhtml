@@ -41,10 +41,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.sales.ProductType" />
-        <div class="ui-g">
-            <div class="ui-g-12">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <h1 class="BigTopic">#{i18n['app.fede.inventory.product']} </h1>
-                <div class="ui-g">
+                <div class="ui-g ui-lg-12">
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}" 
                                     value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
                     <div class="Container100 Responsive50">
@@ -58,6 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                     </div>
+                    
                     <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
                                     value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
 
