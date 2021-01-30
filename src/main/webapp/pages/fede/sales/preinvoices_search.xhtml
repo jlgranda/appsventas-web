@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">#{i18n['app.name']}</ui:define>
-    
+
     <ui:define name="viewname">
         <li>#{i18n['app.name']}</li>
         <li>/</li>
@@ -64,50 +64,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:selectBooleanCheckbox>
                     <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
                     </p:commandButton>
-                    <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
+                    <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=preinvoices_search"/>
                 </div>
                 <div class="card">
-                    <p:panel style="margin:-20px; border:1px gray solid">
-                        <!--Busqueda-->
-                        <p:tab title="#{i18n['Search']}">
-                            <div class="ui-g">
-                                <div class="Container100">
-                                    <div class="Container100 Responsive100">
-                                        <div class="ContainerIndent">
-                                            <ui:repeat value="#{invoiceHome.myAllInvoices}" var="entity">
-                                                <div class="Container70 Fs50 FontRobotoLight Orange">
-                                                    <span class="Fs20 DispBlock">
-                                                    #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
-                                                    </span>
-    <!--                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
-                                                            <f:convertNumber type="currency"/>
-                                                        </h:outputText>
-                                                    </span>-->
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
-                                                </div>
-                                                <div class="Container30">
-                                                    <p:commandButton title="#{i18n['app.fede.sales.invoice.rollback']}" 
-                                                                     icon="fa fa-undo"
-                                                                     styleClass="GrayButton Fright"
-                                                                     action="#{invoiceHome.reopen(entity.id)}"
-                                                                     ajax="false"
-                                                                     immediate="true">
-                                                    </p:commandButton>
-                                                </div>
-                                                <div class="EmptyBox10"></div>
-                                                <div class="Separator"></div>
-                                            </ui:repeat>
+                    <!--Busqueda-->
+                    <div class="ui-g">
+                        <div class="Container100">
+                            <div class="Container100 Responsive100">
+                                <div class="ContainerIndent">
+                                    <ui:repeat value="#{invoiceHome.myAllInvoices}" var="entity">
+                                        <div class="Container60 DispBlock">
+                                            <span class="Fs16 DispBlock">
+                                                #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
+                                            </span>
+                                            <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                            <hr></hr>
                                         </div>
-                                    </div>
+                                        <div class="Container40">
+                                            <p:commandButton title="#{i18n['app.fede.sales.invoice.rollback']}" 
+                                                             icon="fa fa-undo"
+                                                             styleClass="GrayButton Fright"
+                                                             action="#{invoiceHome.reopen(entity.id)}"
+                                                             ajax="false"
+                                                             immediate="true">
+                                            </p:commandButton>
+                                        </div>
+                                        <div class="EmptyBox10"></div>
+                                        <div class="Separator"></div>
+                                    </ui:repeat>
                                 </div>
                             </div>
-                        </p:tab>
-                        <!-- Busqueda -->
-                    </p:panel>
+                        </div>
+                    </div>
+                    <!-- Busqueda -->
                 </div>
             </div>
         </div>

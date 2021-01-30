@@ -80,6 +80,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>preinvoices_search</from-outcome>
+            <to-view-id>/pages/fede/sales/preinvoices_search.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>overdues</from-outcome>
             <to-view-id>/pages/fede/sales/overdues.jsf</to-view-id>
             <redirect />

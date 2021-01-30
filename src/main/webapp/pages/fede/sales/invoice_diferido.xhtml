@@ -95,7 +95,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <!-- sección de formulario -->
                     <div class="ui-g">
                         <div class="ui-g-12">
-                            <div class="ui-g-8">
+                            <div class="ui-g-6">
                                 <h2>#{i18n['app.fede.sales.invoice.header']}</h2>
                                 <div class="ui-g-12">
                                     <div class="ui-g-4">
@@ -137,9 +137,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </div>
                                 </div>
                             </div>
-                            <div class="ui-g-4">
+                            <div class="ui-g-6">
                                 <div class="ui-g-12">
-                                    <div class="ui-g-6">
+                                    <div class="ui-g-4">
                                         <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
                                                         execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
                                                         validator="comandaValidator" placeholder="false"
@@ -151,12 +151,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                         placeholder="false"
                                                         decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
                                     </div>
-                                    <div class="ui-g-6">
+                                    <div class="ui-g-4">
                                         <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
                                                         execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
                                                         required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
                                                         placeholder="false"
                                                         decimalPlaces="0" container="none" rendered="true"/>
+                                    </div>
+                                    <div class="ui-g-4">
+                                        <h:panelGroup id="panel-group-label-emissionOn" rendered="true" styleClass="ui-panelgrid-cell ui-g-12 ui-md-12">
+                                            <p:outputLabel for="emissionOn" value="#{i18n['FechaEmision']}" />
+                                        </h:panelGroup>
+                                        <h:panelGroup id="panel-group-emissionOn" rendered="true" styleClass="ui-panelgrid-cell ui-g-12 ui-md-12">
+                                            <p:calendar value="#{invoiceHome.invoice.emissionOn}" class="input-sm" id="emissionOn">
+                                                <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> 
+                                            </p:calendar>
+                                        </h:panelGroup>
                                     </div>
                                 </div>
                             </div>
@@ -343,7 +353,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <f:facet name="right">
                                             <p:commandButton ajax="true" disabled="false" immediate="true"
                                                              actionListener="#{invoiceHome.closeDialog(null)}" 
-                                                             action="preinvoices"
+                                                             action="preinvoices_search"
                                                              icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
                                                              />
                                             <p:menuButton value="#{i18n['common.options']}"  styleClass="secondary-button">
@@ -374,9 +384,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                                              style="width: auto !important;"
                                                              type="submit"/>
-                                            <span class="ui-separator">
-                                                <span class="fa fa-ellipsis-v SoftGray" />
-                                            </span>
                                             <p:commandButton icon="fa fa-save Fs14 Black" ajax="true" styleClass="info-btn"
                                                              actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}" disabled="false" 
                                                              type="submit"/>

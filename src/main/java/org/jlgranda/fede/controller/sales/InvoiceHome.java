@@ -211,6 +211,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         setOrderByCode(false);
         
+        setBusquedaAvanzada(true);
+        
+        setEnd(Dates.now()); //El día de hoy
+        setStart(Dates.addDays(getEnd(), -7));
+        
     }
 
     public Long getInvoiceId() {
@@ -451,10 +456,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     // --Obtener todas mis facturas 
     public List<Invoice> getMyAllInvoices() {
-        Date _end = Dates.maximumDate(Dates.now()); //El día de hoy
-        Date _start = Dates.addDays(_end, -30);
         if (myAllInvoices.isEmpty()){
-            filter(subject, Dates.minimumDate(_start), Dates.maximumDate(_end), DocumentType.INVOICE, getKeyword(), getTags());
+            filter(subject, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
             myAllInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()),true);
         }
         return myAllInvoices;
@@ -640,8 +643,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     /**
      * Reabrir la factura como PRE-INVOICE
-     * @param invoiceId
-     * @return 
+     * @param invoiceId 
      * @throws java.io.IOException 
      */
     public void reopen(Long invoiceId) throws IOException{
