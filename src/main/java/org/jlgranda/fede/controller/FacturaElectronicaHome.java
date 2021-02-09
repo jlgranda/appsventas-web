@@ -689,6 +689,16 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     
     public void save() {
         
+        //TODO: Validar sumatoria equivalente al Importe Total
+        BigDecimal sumaImporteComparar = facturaElectronica.getTotalSinImpuestos().add(facturaElectronica.getTotalIVA0()).add(facturaElectronica.getTotalIVA12());
+        sumaImporteComparar = sumaImporteComparar.subtract(facturaElectronica.getTotalDescuento());
+        if(facturaElectronica.getImporteTotal().compareTo(sumaImporteComparar)!=0){
+            setOutcome("");
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("importe.invalid"));
+            return;
+        }
+        //----------------------------------------------------------------------
+        
         facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
         facturaElectronica.setFilename(null);
         facturaElectronica.setContenido(null);
