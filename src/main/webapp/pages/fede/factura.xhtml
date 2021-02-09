@@ -88,7 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     container="none"/>
                     <jlgranda:input id="imptsi" name="imptsi" type="number" label="#{i18n['ride.infoFactura.totalSinImpuestos']}" 
                                     execute="none" render="imptsi" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" required="true"
-                                    container="none"/>
+                                    container="none" event="blur" listener="#{facturaElectronicaHome.calcularIVA12()}" update="imptiva12"/>
                     <jlgranda:input id="imptiva0" name="imptiva0" type="number" label="#{i18n['ride.infoFactura.totalIVA0']}" 
                                     execute="none" render="imptiva0" value="#{facturaElectronicaHome.facturaElectronica.totalIVA0}" required="true"
                                     container="none"/>
