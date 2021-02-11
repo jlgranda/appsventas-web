@@ -689,6 +689,16 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     
     public void save() {
         
+        //TODO: Validar sumatoria equivalente al Importe Total
+        BigDecimal sumaImporteComparar = facturaElectronica.getTotalSinImpuestos().add(facturaElectronica.getTotalIVA0()).add(facturaElectronica.getTotalIVA12());
+        sumaImporteComparar = sumaImporteComparar.subtract(facturaElectronica.getTotalDescuento());
+        if(facturaElectronica.getImporteTotal().compareTo(sumaImporteComparar)!=0){
+            setOutcome("");
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("ride.infoFactura.importeTotal.invalid"));
+            return;
+        }
+        //----------------------------------------------------------------------
+        
         facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
         facturaElectronica.setFilename(null);
         facturaElectronica.setContenido(null);
@@ -990,5 +1000,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     
     public void updateDefaultSupplier(){
         this.facturaElectronica.setAuthor(getDefaultSupplier());
+    }
+    
+    public void calcularIVA12(){
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 1");
+        this.facturaElectronica.setTotalSinImpuestos(BigDecimal.ONE);
+        if (this.facturaElectronica.getTotalSinImpuestos() != null){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 2");
+            this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
+        } 
     }
 }
