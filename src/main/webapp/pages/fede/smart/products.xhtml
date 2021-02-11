@@ -20,16 +20,30 @@
         <div class="layout-dashboard">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                    <h:panelGroup>
+                        <h:panelGroup>
+                            <label class="Gray">#{i18n['Start']}</label>
+                            <p:calendar value="#{summaryHome.start}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar1 control-bar2"/> <!-- oncomplete="form.submit();" --> 
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <label class="Gray">#{i18n['End']}</label>
+                            <p:calendar value="#{summaryHome.end}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar1 control-bar2" /> 
+                            </p:calendar>                            
+                        </h:panelGroup>
+                    </h:panelGroup>
                     <p:panel header="#{i18n['common.statistics.products.amounts']}" styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
                             <!--BARCHARTMODEL: Listado de Productos más vendidos: Cantidad-->     
-                            <p:chart type="bar" model="#{summaryHome.barModelAmount}" style=" font-family:sans-serif; width: 90%; height: 500px;"/>                            
+                            <p:chart id="control-bar1" type="bar" model="#{summaryHome.barModelAmount}" style=" font-family:sans-serif; width: 90%; height: 500px;"/>                            
                         </div>                        
                     </p:panel>
                     <p:panel header="#{i18n['common.statistics.products.sales']}" styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
                             <!--BARCHARTMODEL: Listado de Productos más vendidos: Precio-->     
-                            <p:chart type="bar" model="#{summaryHome.barModelSales}" style=" font-family:sans-serif; width: 90%; height: 500px;"/>                            
+                            <p:chart id="control-bar2" type="bar" model="#{summaryHome.barModelSales}" style=" font-family:sans-serif; width: 90%; height: 500px;"/>                            
                         </div>                        
                     </p:panel>
                 </div>                           
