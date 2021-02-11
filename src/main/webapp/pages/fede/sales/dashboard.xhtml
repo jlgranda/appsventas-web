@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
-                template="/WEB-INF/templates/fede_template.xhtml">
+                template="/WEB-INF/template.xhtml">
     <ui:define name="head">
         <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
         <style type="text/css">
@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <h:form>
-                            <p:poll interval="#{settingHome.getValue('app.fede.sales.dashboard.refreshtime', '3600')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
+                            <p:poll interval="#{settingHome.getValue('', '3600')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
                             <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
                             <div class="SeparatorFull"></div>
                             <div class="Card HeiAutoOnMobile">

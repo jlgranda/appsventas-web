@@ -828,7 +828,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     public Group getDefaultGroup() {
         return null; //las facturas no se etiquetan aún
     }
-
     private void loadCandidateDetails(List<Detail> details) {
         if (details != null) {
             this.candidateDetails.clear();
