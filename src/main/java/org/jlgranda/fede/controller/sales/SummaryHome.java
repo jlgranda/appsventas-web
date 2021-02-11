@@ -108,7 +108,6 @@ public class SummaryHome  extends FedeController implements Serializable {
         setProfilTotal(BigDecimal.ZERO);
         
         setOutcome("dashboard");
-
         calculeSummary();
         createBarModelAmount();
         createbarModelSales();
@@ -192,8 +191,7 @@ public class SummaryHome  extends FedeController implements Serializable {
         
         if (this.discountTotal == null) {
             this.discountTotal = BigDecimal.ZERO;
-        } 
-        
+        }        
         
         if (this.salesTotal == null) {
             this.salesTotal = BigDecimal.ZERO;
@@ -276,8 +274,7 @@ public class SummaryHome  extends FedeController implements Serializable {
     public void refresh() {
         clear();
         calculeSummary();
-    }
-        
+    }        
     /**
      * Refrescar para un grupo de fechas
      */
@@ -286,8 +283,7 @@ public class SummaryHome  extends FedeController implements Serializable {
         setStart(grupoFechas);
         setEnd(grupoFechas);
         calculeSummary();
-    }
-    
+    }    
     public void clearBarModel(){
         setBarModelAmount(null);
         setBarModelSales(null);
