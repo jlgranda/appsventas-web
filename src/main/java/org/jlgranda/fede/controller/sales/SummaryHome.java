@@ -269,8 +269,7 @@ public class SummaryHome  extends FedeController implements Serializable {
         setPurchaseTotal(BigDecimal.ZERO);
         setCostTotal(BigDecimal.ZERO);
         setProfilTotal(BigDecimal.ZERO);
-    }
-    
+    }    
     /**
      * Refrescar la vista y calculos
      */
@@ -289,14 +288,10 @@ public class SummaryHome  extends FedeController implements Serializable {
         calculeSummary();
     }
     
-    // -------------------------------------------------------------------------
-    //    BAR MODELS
     public void clearBarModel(){
         setBarModelAmount(null);
         setBarModelSales(null);
     }
-    
-    // -------------------------------------------------------------------------
     private BarChartModel barModelAmount;
     private BarChartModel barModelSales; 
     public BarChartModel getBarModelAmount(){
@@ -317,28 +312,18 @@ public class SummaryHome  extends FedeController implements Serializable {
     public void setBarModelSales(BarChartModel barModelSales){
         this.barModelSales = barModelSales;
     }
-    
-    // -------------------------------------------------------------------------
     private BarChartModel createBarModelAmount(){
         BarChartModel model = new BarChartModel();        
         ChartSeries product = new ChartSeries();        
         product.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.label"));        
-        //TODO: Consulta de los productos más vendidos en cantidad, según fechas
-        //        Date _start = getStart();
-        //        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
-        //            int range = 15; //Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
-        //            _start = Dates.addDays(getStart(), -1 * range);
-        //        }
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
-        //List<Product> result = new ArrayList<>();
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
             if (_product != null){
                 _product.getStatistics().setCount((Double) object[1]);
                 product.set(_product.getName(),_product.getStatistics().getCount());
                 System.out.println(_product.getName() +" cantidades "+_product.getStatistics().getCount());
-                //result.add(_product);
             }
         });        
         model.addSeries(product);        
@@ -356,28 +341,19 @@ public class SummaryHome  extends FedeController implements Serializable {
         
         return model;
     }
-    
-    // -------------------------------------------------------------------------
+
     private BarChartModel createbarModelSales(){        
         BarChartModel model = new BarChartModel();        
         ChartSeries product = new ChartSeries();        
-        product.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.label"));        
-        //TODO: Consulta de los productos más vendidos en precio, según fechas
-        //        Date _start = getStart();
-        //        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
-        //            int range = 15; //Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
-        //            _start = Dates.addDays(getStart(), -1 * range);
-        //        }        
+        product.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.label"));              
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetweenPrice", top, getStart(), getEnd());
-        //List<Product> result = new ArrayList<>();
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
             if (_product != null){
                 _product.getStatistics().setCount((Double) object[1]);
                 product.set(_product.getName(), _product.getStatistics().getCount());                
                 System.out.println(_product.getName() +" ventas: "+_product.getStatistics().getCount());
-                //result.add(_product);
             }
         });        
         model.addSeries(product);        
@@ -400,7 +376,6 @@ public class SummaryHome  extends FedeController implements Serializable {
     protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            //range = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD__SUMMARY_RANGE, "0"));
             range = Integer.valueOf(settingHome.getValue("fede.dashboard.summary.range", "0"));
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
