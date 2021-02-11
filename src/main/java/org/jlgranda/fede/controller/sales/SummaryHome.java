@@ -323,7 +323,6 @@ public class SummaryHome  extends FedeController implements Serializable {
             if (_product != null){
                 _product.getStatistics().setCount((Double) object[1]);
                 product.set(_product.getName(),_product.getStatistics().getCount());
-                System.out.println(_product.getName() +" cantidades "+_product.getStatistics().getCount());
             }
         });        
         model.addSeries(product);        
@@ -353,7 +352,6 @@ public class SummaryHome  extends FedeController implements Serializable {
             if (_product != null){
                 _product.getStatistics().setCount((Double) object[1]);
                 product.set(_product.getName(), _product.getStatistics().getCount());                
-                System.out.println(_product.getName() +" ventas: "+_product.getStatistics().getCount());
             }
         });        
         model.addSeries(product);        
