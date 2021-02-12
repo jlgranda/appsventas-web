@@ -413,42 +413,42 @@ public class JournalHome extends FedeController implements Serializable {
         return journalAccess;
     }
 
-    public void setJournalAccess(Journal journalAccess) {
-        
-        try {
-            this.journalAccess = addAccees(journalAccess);
-        } catch (IllegalAccessException | InvocationTargetException ex) {
-            java.util.logging.Logger.getLogger(JournalHome.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+//    public void setJournalAccess(Journal journalAccess) {
+//        
+//        try {
+//            this.journalAccess = addAccees(journalAccess);
+//        } catch (IllegalAccessException | InvocationTargetException ex) {
+//            java.util.logging.Logger.getLogger(JournalHome.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
 
     public Journal getJournalEgress() {
         return journalEgress;
     }
 
-    public void setJournalEgress(Journal journalEgress) {
-        try {
-            this.journalEgress = addEgress(journalEgress);
-        } catch (IllegalAccessException | InvocationTargetException ex) {
-            java.util.logging.Logger.getLogger(JournalHome.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+//    public void setJournalEgress(Journal journalEgress) {
+//        try {
+//            this.journalEgress = addEgress(journalEgress);
+//        } catch (IllegalAccessException | InvocationTargetException ex) {
+//            java.util.logging.Logger.getLogger(JournalHome.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
     
-    public Journal addAccees(Journal _journal) throws IllegalAccessException, InvocationTargetException{
-        return add(_journal, -240); //4 horas
-    }
+//    public Journal addAccees(Journal _journal) throws IllegalAccessException, InvocationTargetException{
+//        return add(_journal, -240); //4 horas
+//    }
+//    
+//    public Journal addEgress(Journal _journal) throws IllegalAccessException, InvocationTargetException{
+//        return add(_journal, 240); //4 horas
+//    }
     
-    public Journal addEgress(Journal _journal) throws IllegalAccessException, InvocationTargetException{
-        return add(_journal, 240); //4 horas
-    }
-    
-    public Journal add(Journal _journal,int minutes) throws IllegalAccessException, InvocationTargetException{
-        Journal journal_ = journalService.createInstance();
-        BeanUtils.copyProperties(journal_, _journal);
-        journal_.setId(null);
-        journal_.setBeginTime(Dates.addMinutes(journal_.getBeginTime(), minutes));
-        return journal_;
-    }
+//    public Journal add(Journal _journal,int minutes) throws IllegalAccessException, InvocationTargetException{
+//        Journal journal_ = journalService.createInstance();
+//        BeanUtils.copyProperties(journal_, _journal);
+//        journal_.setId(null);
+//        journal_.setBeginTime(Dates.addMinutes(journal_.getBeginTime(), minutes));
+//        return journal_;
+//    }
     
     public void put(){
         if (journalAccess != null){
@@ -529,59 +529,59 @@ public class JournalHome extends FedeController implements Serializable {
     /**
      * Registrar registro de jornada.
      */
-    private void register() {
-        if (isCheckable()) {
-            getJournal().setName(calculeEvent(getEmployee()));
-            getJournal().setBeginTime(Dates.now());
-            getJournal().setEndTime(Dates.now());
-            getJournal().setEmployeeId(getEmployee().getId());
-            save();
-        } else {
-            addErrorMessage("Acaba de registrarse!", "Vuelva a intentar más tarde.");
-        }
-    }
+//    private void register() {
+//        if (isCheckable()) {
+//            getJournal().setName(calculeEvent(getEmployee()));
+//            getJournal().setBeginTime(Dates.now());
+//            getJournal().setEndTime(Dates.now());
+//            getJournal().setEmployeeId(getEmployee().getId());
+//            save();
+//        } else {
+//            addErrorMessage("Acaba de registrarse!", "Vuelva a intentar más tarde.");
+//        }
+//    }
 
-    public void check() throws IOException {
-        if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
-            register();
-        } else {
-            addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
-        }
-        redirectTo("/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true");
-    }
+//    public void check() throws IOException {
+//        if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
+//            register();
+//        } else {
+//            addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
+//        }
+//        redirectTo("/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true");
+//    }
 
-    public void quickCheck() throws IOException {
+//    public void quickCheck() throws IOException {
+//
+//        if (!Strings.isNullOrEmpty(getPassword())) {
+//            //Cargar Empleado dado el código rápido
+//            try {
+//                Employee _employee = employeeService.find(Long.valueOf(getPassword()));
+//                setEmployee(_employee);
+//                setEmployeeId(_employee.getId());
+//                register();
+//            } catch (NumberFormatException nfe) {
+//                addWarningMessage("El código es un número!", "Vuelva a intentar.");
+//            }
+//        } else {
+//            addWarningMessage("Indique un código válido!", "Vuelva a intentar.");
+//        }
+//
+//        redirectTo("/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true&employeeId=" + getEmployeeId()); //volver a carga la vista para el usuario en registro
+//    }
 
-        if (!Strings.isNullOrEmpty(getPassword())) {
-            //Cargar Empleado dado el código rápido
-            try {
-                Employee _employee = employeeService.find(Long.valueOf(getPassword()));
-                setEmployee(_employee);
-                setEmployeeId(_employee.getId());
-                register();
-            } catch (NumberFormatException nfe) {
-                addWarningMessage("El código es un número!", "Vuelva a intentar.");
-            }
-        } else {
-            addWarningMessage("Indique un código válido!", "Vuelva a intentar.");
-        }
-
-        redirectTo("/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true&employeeId=" + getEmployeeId()); //volver a carga la vista para el usuario en registro
-    }
-
-    public boolean isCheckable() {
-
-        List<Journal> journals = journalService.findByNamedQueryWithLimit("Journal.findLastForOwner", 1, getEmployee().getOwner());
-
-        if (journals.isEmpty()) {
-            return true;
-        }
-
-        Journal lastJournal = journals.get(0);
-        int limit = Integer.parseInt(settingHome.getValue("app.fede.talentohumano.check.gap", "10"));
-        long diffTime = Dates.calculateNumberOfMinutesBetween(Dates.now(), lastJournal.getBeginTime());
-        return !(diffTime >= 0 && diffTime < limit); //
-    }
+//    public boolean isCheckable() {
+//
+//        List<Journal> journals = journalService.findByNamedQueryWithLimit("Journal.findLastForOwner", 1, getEmployee().getOwner());
+//
+//        if (journals.isEmpty()) {
+//            return true;
+//        }
+//
+//        Journal lastJournal = journals.get(0);
+//        int limit = Integer.parseInt(settingHome.getValue("app.fede.talentohumano.check.gap", "10"));
+//        long diffTime = Dates.calculateNumberOfMinutesBetween(Dates.now(), lastJournal.getBeginTime());
+//        return !(diffTime >= 0 && diffTime < limit); //
+//    }
 
     public void checkRest() throws IOException {
         Journal salida13h = journalService.createInstance();
@@ -683,78 +683,78 @@ public class JournalHome extends FedeController implements Serializable {
      * Aplica reglamento sobre la lista de registros
      * @return la lista de Journal modificadas segun el reglamento.
      */
-    public List<Journal> getJournalsRulesApplied() {
-
-        journalSummary = new JournalSummary();
-        
-        List<Journal> journals = getLazyDataModel().getResultList();
-        List<Journal> journalsReglamentarios = new ArrayList<>();
-
-        //Separar en grupos
-        Map<String, List<Journal>> journalMap 
-                = journals.stream().collect(Collectors.groupingBy(Journal::getDayHour));
-        
-        journalSummary.setTotalDays(Long.valueOf(journalMap.size())); //Total de dias agrupados
-        
-        //Contar días trabajados
-        java.util.Map<String, Long> daysCounting = journals.stream().collect(Collectors.groupingBy(Journal::getDayOfWeek, Collectors.counting()));
-        daysCounting.forEach((name, count) -> {
-           journalSummary.agregar(name, count);
-        });
-        
-        
-        //Recorrido para aplicar reglas y calculo
-        Date inicio = null;
-        Date fin = null;
-        int i = 1;
-        
-        for (String key : journalMap.keySet()) {
-            if (journalMap.get(key).size() % 2 == 0) {//Número par
-                //Corregir hora conforme a reglas de negocio
-                i = 1;
-                for (Journal j : journalMap.get(key)) {
-                    if (i % 2 != 0) {//entrada
-                        j.setName("ENTRADA");
-                        //Desde Diciembre en la mañana se ingresa a las 07h30
-                        if (Dates.get(j.getBeginTime(), Calendar.HOUR_OF_DAY) == 7){
-                            inicio = Dates.addMinutes(Dates.minimumDateHour(j.getBeginTime()), 30); //07H30
-                        } else {
-                            inicio = Dates.minimumDateHour(j.getBeginTime());
-                        }
-                        
-                        fin = Dates.addMinutes(inicio, 11);
-                        if (Dates.isInRange(inicio, fin, j.getBeginTime())) {
-                            j.setEndTime(j.getBeginTime()); //Entra dentro del rago de 27 minutos
-                        } else if (j.getBeginTime().before(inicio)) {
-                            j.setEndTime(inicio); //Entra a tiempo
-                        } else if (j.getBeginTime().after(fin)) {
-                            j.setEndTime(org.omnifaces.el.functions.Dates.addHours(inicio, 1)); //la siguiente hora
-                        }
-                    } else {//salida
-                        j.setName("SALIDA");
-                        inicio = Dates.minimumDateHour(j.getBeginTime());
-                        fin = Dates.addMinutes(inicio, 28);
-                        if (Dates.isInRange(inicio, fin, j.getBeginTime())) {
-                            j.setEndTime(inicio);
-                        } else if (j.getBeginTime().before(inicio)) {//salio antes
-                            j.setEndTime(j.getBeginTime());
-                        } else if (j.getBeginTime().after(fin)) {//salio más tarde
-                            j.setEndTime(j.getBeginTime()); //marcar el máximo
-                        }
-                    }
-                    i += 1;
-                }
-            } else {
-                //TODO implementar tratamiento de jornadas impares
-                //System.out.println(">>>>>>>>>>>>>> registros impares");
-            }
-            
-            journalsReglamentarios.addAll(journalMap.get(key)); //Agregar correcciones
-        }
-        
-        Collections.sort(journalsReglamentarios);
-        return journalsReglamentarios;
-    }
+//    public List<Journal> getJournalsRulesApplied() {
+//
+//        journalSummary = new JournalSummary();
+//        
+//        List<Journal> journals = getLazyDataModel().getResultList();
+//        List<Journal> journalsReglamentarios = new ArrayList<>();
+//
+//        //Separar en grupos
+//        Map<String, List<Journal>> journalMap 
+//                = journals.stream().collect(Collectors.groupingBy(Journal::getDayHour));
+//        
+//        journalSummary.setTotalDays(Long.valueOf(journalMap.size())); //Total de dias agrupados
+//        
+//        //Contar días trabajados
+//        java.util.Map<String, Long> daysCounting = journals.stream().collect(Collectors.groupingBy(Journal::getDayOfWeek, Collectors.counting()));
+//        daysCounting.forEach((name, count) -> {
+//           journalSummary.agregar(name, count);
+//        });
+//        
+//        
+//        //Recorrido para aplicar reglas y calculo
+//        Date inicio = null;
+//        Date fin = null;
+//        int i = 1;
+//        
+//        for (String key : journalMap.keySet()) {
+//            if (journalMap.get(key).size() % 2 == 0) {//Número par
+//                //Corregir hora conforme a reglas de negocio
+//                i = 1;
+//                for (Journal j : journalMap.get(key)) {
+//                    if (i % 2 != 0) {//entrada
+//                        j.setName("ENTRADA");
+//                        //Desde Diciembre en la mañana se ingresa a las 07h30
+//                        if (Dates.get(j.getBeginTime(), Calendar.HOUR_OF_DAY) == 7){
+//                            inicio = Dates.addMinutes(Dates.minimumDateHour(j.getBeginTime()), 30); //07H30
+//                        } else {
+//                            inicio = Dates.minimumDateHour(j.getBeginTime());
+//                        }
+//                        
+//                        fin = Dates.addMinutes(inicio, 11);
+//                        if (Dates.isInRange(inicio, fin, j.getBeginTime())) {
+//                            j.setEndTime(j.getBeginTime()); //Entra dentro del rago de 27 minutos
+//                        } else if (j.getBeginTime().before(inicio)) {
+//                            j.setEndTime(inicio); //Entra a tiempo
+//                        } else if (j.getBeginTime().after(fin)) {
+//                            j.setEndTime(org.omnifaces.el.functions.Dates.addHours(inicio, 1)); //la siguiente hora
+//                        }
+//                    } else {//salida
+//                        j.setName("SALIDA");
+//                        inicio = Dates.minimumDateHour(j.getBeginTime());
+//                        fin = Dates.addMinutes(inicio, 28);
+//                        if (Dates.isInRange(inicio, fin, j.getBeginTime())) {
+//                            j.setEndTime(inicio);
+//                        } else if (j.getBeginTime().before(inicio)) {//salio antes
+//                            j.setEndTime(j.getBeginTime());
+//                        } else if (j.getBeginTime().after(fin)) {//salio más tarde
+//                            j.setEndTime(j.getBeginTime()); //marcar el máximo
+//                        }
+//                    }
+//                    i += 1;
+//                }
+//            } else {
+//                //TODO implementar tratamiento de jornadas impares
+//                //System.out.println(">>>>>>>>>>>>>> registros impares");
+//            }
+//            
+//            journalsReglamentarios.addAll(journalMap.get(key)); //Agregar correcciones
+//        }
+//        
+//        Collections.sort(journalsReglamentarios);
+//        return journalsReglamentarios;
+//    }
     
     public void onCellEdit(CellEditEvent event) {
         

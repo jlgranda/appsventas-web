@@ -687,9 +687,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return instancia;
     }
     
-    public void save() {
-        
-        //TODO: Validar sumatoria equivalente al Importe Total
+    public void save() {        
+        //TODO: Validar que la sumatoria del subtotal, iva y descuento sea equivalente al Importe Total
         BigDecimal sumaImporteComparar = facturaElectronica.getTotalSinImpuestos().add(facturaElectronica.getTotalIVA0()).add(facturaElectronica.getTotalIVA12());
         sumaImporteComparar = sumaImporteComparar.subtract(facturaElectronica.getTotalDescuento());
         if(facturaElectronica.getImporteTotal().compareTo(sumaImporteComparar)!=0){
@@ -1003,11 +1002,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
     
     public void calcularIVA12(){
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 1");
+        //Calcular el iva del 12 % ALERTA!! REVISAR
         this.facturaElectronica.setTotalSinImpuestos(BigDecimal.ONE);
         if (this.facturaElectronica.getTotalSinImpuestos() != null){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 2");
             this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
-        } 
+        }
     }
 }
