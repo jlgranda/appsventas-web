@@ -329,20 +329,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private BarChartModel createBarModelAmount() {
         
         BarChartModel model = new BarChartModel();
-        ChartSeries product = new ChartSeries();
-        product.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"));
-
-        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
-
-        objects.stream().forEach((Object[] object) -> {
-            Product _product = productCache.lookup((Long) object[0]);
-            if (_product != null) {
-                _product.getStatistics().setCount((Double) object[1]);
-                product.set(_product.getName(), _product.getStatistics().getCount());
-            }
-        });
-
+        ChartSeries product = createProducsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween");
         model.addSeries(product);
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) +
                 " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));        
@@ -367,20 +354,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
     private BarChartModel createbarModelSales() {
         BarChartModel model = new BarChartModel();
-        ChartSeries product = new ChartSeries();
-        product.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"));
-
-        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetweenPrice", top, getStart(), getEnd());
-        
-        objects.stream().forEach((Object[] object) -> {
-            Product _product = productCache.lookup((Long) object[0]);
-            if (_product != null) {
-                _product.getStatistics().setCount((Double) object[1]);
-                product.set(_product.getName(), _product.getStatistics().getCount());
-            }
-        });
-
+        ChartSeries product = createProducsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice");
         model.addSeries(product);
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
@@ -450,7 +424,7 @@ public class SummaryHome extends FedeController implements Serializable {
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()));
         
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
