@@ -424,7 +424,7 @@ public class SummaryHome extends FedeController implements Serializable {
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()));
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
         
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
@@ -446,9 +446,7 @@ public class SummaryHome extends FedeController implements Serializable {
             nfe.printStackTrace();
             range = 1;
         }
-//      setEnd(Dates.maximumDate(Dates.now()));
-//      setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        setEnd(Dates.now());
-        setStart(Dates.addDays(getEnd(), -1 * range));
+      setEnd(Dates.maximumDate(Dates.now()));
+      setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
 }
