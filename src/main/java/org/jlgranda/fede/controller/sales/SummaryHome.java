@@ -328,6 +328,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
+
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
             if (_product != null) {
@@ -364,6 +365,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetweenPrice", top, getStart(), getEnd());
+        
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
             if (_product != null) {
