@@ -38,26 +38,36 @@
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['Start']}</label>
                                 <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar1 control-bar2"/> <!-- oncomplete="form.submit();" --> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2"/> <!-- oncomplete="form.submit();" --> 
                                 </p:calendar>
                             </h:panelGroup>
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['End']}</label>
                                 <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar1 control-bar2" /> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2" /> 
                                 </p:calendar>                            
                             </h:panelGroup>
                         </h:panelGroup>
                     </div>  
-                    <p:panel id="control-bar1" class="card" header="#{i18n['common.statistics.products.amount']}" 
-                             rendered="#{not empty summaryHome.barModelAmount}"
+                    <p:panel id="control-bar0" class="card" header="#{i18n['common.statistics.products.amountvsprices']}" 
+                             rendered="#{not empty summaryHome.horizontalProductsBarModel}"
                              styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
                             <!--Listado de Productos más vendidos: Cantidad-->
                             <p:chart type="bar" 
-                                     model="#{summaryHome.barModelAmount}" 
-                                     rendered="#{not empty summaryHome.barModelAmount}"
+                                     model="#{summaryHome.horizontalProductsBarModel}" 
+                                     rendered="#{not empty summaryHome.horizontalProductsBarModel}"
                                      responsive="true"/>  
+                        </div>                        
+                    </p:panel>
+                    <p:panel id="control-bar1" class="card" header="#{i18n['common.statistics.products.amount']}" 
+                             rendered="#{not empty summaryHome.barModelAmount}"
+                             styleClass="statistics ui-g">                        
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
+                            <!--Listado de Productos más vendidos: Precio-->
+                            <p:chart type="bar" model="#{summaryHome.barModelAmount}" 
+                                     rendered="#{not empty summaryHome.barModelAmount}"
+                                     responsive="true"/>
                         </div>                        
                     </p:panel>
                     <p:panel id="control-bar2" class="card" header="#{i18n['common.statistics.products.price']}" 
