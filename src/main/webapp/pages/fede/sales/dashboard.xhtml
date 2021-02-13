@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
                 template="/WEB-INF/template.xhtml">
+    <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
     <ui:define name="head">
-        <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
         <style type="text/css">
             .jqplot-target, .jqplot-axis {
                 color: #546E7A;
@@ -40,39 +40,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     </ui:define>
 
     <ui:define name="content">
-        <!-- Left Column -->
-        <div class="Container100 Responsive100">
 
-            <!-- Section 1 -->
-            <div class="Container100">
-                <div class="ContainerIndent">
-                    <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
-                        <h:form>
-                            <p:poll interval="#{settingHome.getValue('', '3600')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
-                            <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
-                            <div class="SeparatorFull"></div>
-                            <div class="Card HeiAutoOnMobile">
-                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
-                                <p:calendar value="#{invoiceHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
-                                </p:calendar>
-                                <label class="Gray">#{i18n['End']}&nbsp;</label>
-                                <p:calendar value="#{invoiceHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
-                                </p:calendar>
+        <div class="layout-dashboard">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                    <!-- Section 1 -->
+                    <div class="Container100">
+                        <div class="ContainerIndent">
+                            <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
+                                <h:form>
+                                    <p:poll interval="#{settingHome.getValue('', '3600')}" listener="#{invoiceHome.clear()}" update="@all" widgetVar="pol" oncomplete="refresh();" /> 
+                                    <h2 class="CardTopic">#{i18n['app.fede.chart']}</h2>
+                                    <div class="SeparatorFull"></div>
+                                    <div class="Card HeiAutoOnMobile">
+                                        <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                        <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                            <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
+                                        </p:calendar>
+                                        <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                        <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                            <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{invoiceHome.cleanChartModels()}"/>
+                                        </p:calendar>
+                                    </div>
+                                    <div class="EmptyBox10"></div>
+                                    <h3 class="CardTopic">#{i18n['app.fede.chart.salesvspurchases']}</h3>
+                                    <div class="Container100 Responsive100">
+                                        <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
+                                    </div>
+                                    <div class="SeparatorFull"></div>
+                                    <div class="EmptyBox10"></div>
+                                </h:form>
                             </div>
-                            <div class="EmptyBox10"></div>
-                            <h3 class="CardTopic">#{i18n['app.fede.chart.salesvspurchases']}</h3>
-                            <div class="Container100 Responsive100">
-                                <p:chart type="line" model="#{invoiceHome.balanceLineChartModel}" style="height:300px" responsive="true"/>
-                            </div>
-                            <div class="SeparatorFull"></div>
-                            <div class="EmptyBox10"></div>
-                        </h:form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">
@@ -81,7 +84,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 location.reload(); // refresh page    
 
             }
-            
+
             function skinChart() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
@@ -107,7 +110,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 }
             }
             //]]>
-            
+
         </script>
     </ui:define>
 

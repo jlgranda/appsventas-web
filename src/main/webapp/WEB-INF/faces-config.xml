@@ -60,6 +60,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>trends</from-outcome>
+            <to-view-id>/pages/fede/smart/trends.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>fede-dashboard</from-outcome>
             <to-view-id>/pages/fede/dashboard.jsf</to-view-id>
             <redirect />

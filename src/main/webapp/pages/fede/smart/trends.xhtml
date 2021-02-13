@@ -62,57 +62,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['Start']}</label>
                                 <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2"/> <!-- oncomplete="form.submit();" --> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="chartline1"/> <!-- oncomplete="form.submit();" --> 
                                 </p:calendar>
                             </h:panelGroup>
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['End']}</label>
                                 <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2" /> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="chartline1" /> 
                                 </p:calendar>                            
                             </h:panelGroup>
                         </h:panelGroup>
                     </div>  
                 </div><!-- comment -->
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel id="control-bar0" class="card" header="#{i18n['common.statistics.products.amountvsprices']}" 
+                    <p:panel id="control-bar0" class="card" header="#{i18n['app.fede.trends']}" 
                              rendered="#{not empty summaryHome.horizontalProductsBarModel}"
                              styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
                             <!--Listado de Productos más vendidos: Cantidad-->
-                            <p:chart type="bar" 
-                                     model="#{summaryHome.horizontalProductsBarModel}" 
-                                     rendered="#{not empty summaryHome.horizontalProductsBarModel}"
+                            <p:chart id="chartline1" type="line" 
+                                     model="#{summaryHome.balanceLineChartModel}" 
+                                     rendered="#{not empty summaryHome.balanceLineChartModel}"
                                      responsive="true"/>  
                         </div>                        
                     </p:panel>
-                </div>
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <div class="ui-g-6 ui-md-12 ui-lg-6 ui-xl-6">
-                        <p:panel id="control-bar1" class="card" header="#{i18n['common.statistics.products.amount']}" 
-                                 rendered="#{not empty summaryHome.barModelAmount}"
-                                 styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                                <!--Listado de Productos más vendidos: Precio-->
-                                <p:chart type="bar" model="#{summaryHome.barModelAmount}" 
-                                         rendered="#{not empty summaryHome.barModelAmount}"
-                                         responsive="true"/>
-                            </div>                        
-                        </p:panel>
-                    </div>
-                    <div class="ui-g-6 ui-md-12 ui-lg-6 ui-xl-6">
-
-                        <p:panel id="control-bar2" class="card" header="#{i18n['common.statistics.products.price']}" 
-                                 rendered="#{not empty summaryHome.barModelSales}"
-                                 styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                                <!--Listado de Productos más vendidos: Precio-->
-                                <p:chart type="bar" model="#{summaryHome.barModelSales}" 
-                                         rendered="#{not empty summaryHome.barModelSales}"
-                                         responsive="true"/>
-                            </div>                        
-                        </p:panel>
-                    </div>
                 </div>
             </div>                           
         </div>
@@ -170,8 +143,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
                     tickOptions:{
                             angle: 30,
-                            fontSize: '9px',
-                            formatString: "%'.2f"
+                            fontSize: '9px'
                     }
                 };
                 this.cfg.seriesDefaults = {
@@ -440,7 +412,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             function skinMultiAxis() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
-                this.cfg.seriesColors = ['#e02365', '#2D8EE3'];
+                this.cfg.seriesColors = [#{settingHome.getValue("app.fede.sales.chart.seriesColor", "'#058DC7', '#50B432', '#FFD200', '#FF0000', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#8d83a7', '#6AF9C4', '#936af9'")}];
+                this.cfg.negativeSeriesColors = [#{settingHome.getValue("app.fede.sales.chart.negativeSeriesColors", "'#058DC7', '#50B432', '#FFD200', '#FF0000', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#8d83a7', '#6AF9C4', '#936af9'")}];
                 this.cfg.grid = {
                     background: '#ffffff',
                     borderColor: '#ffffff',

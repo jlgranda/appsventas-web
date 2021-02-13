@@ -223,7 +223,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
     
     public List<FacturaElectronica> getResultList() {
-        return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmisionAndEmissionType", 0, subject, getStart(), getEnd(), EmissionType.PURCHASE_CASH, true);
+        return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmisionAndEmissionType", Integer.MAX_VALUE, subject, getStart(), getEnd(), EmissionType.PURCHASE_CASH, true);
     }
     
 
