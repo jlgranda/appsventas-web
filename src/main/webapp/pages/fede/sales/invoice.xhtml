@@ -333,6 +333,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     container="none"/>
                                 </div>
                                 <div class="ui-g-12">
+                                    <h2>#{i18n['common.alias']}</h2>
+                                    <h:outputText value="   Imprimir como Alias: " />
+                                    <p:selectBooleanCheckbox value="#{invoiceHome.invoice.printAlias}">
+                                    </p:selectBooleanCheckbox>
+                                    <jlgranda:input id="alias" name="alias" type="textarea" placeholder="#{i18n['common.alias']}" 
+                                                    execute="none" render="description" value="#{invoiceHome.invoice.printAliasSummary}" 
+                                                    required="false" requiredMessage="#{i18n['common.alias']}"
+                                                    container="none"/>
+                                </div>
+                                <div class="ui-g-12">
                                     <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
                                         <f:facet name="left">
                                             <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"  styleClass="success-btn"

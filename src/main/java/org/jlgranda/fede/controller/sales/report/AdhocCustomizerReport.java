@@ -44,9 +44,7 @@ import net.sf.dynamicreports.report.definition.datatype.DRIDataType;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.jlgranda.fede.model.sales.Invoice;
-import org.jpapi.model.TaxType;
-
-import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
+import org.jlgranda.fede.model.sales.Detail;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
@@ -168,14 +166,20 @@ public class AdhocCustomizerReport {
 
     private JRDataSource createDataSource(Invoice invoice) {
         DRDataSource dataSource = new DRDataSource("cantidad", "descripcion", "preciounitario", "subtotal");
-        invoice.getDetails().forEach(detail -> {
-            BigDecimal subtotal = detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount()));
-            dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), subtotal);
-        });
-        //Agregar el descuento como item
-        if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){
-            BigDecimal discount = invoice.getPaymentsDiscount().multiply(BigDecimal.valueOf(-1));
-            dataSource.add(1.0f, "Descuento", discount, discount);
+        if ( !Boolean.TRUE.equals(invoice.getPrintAlias()) ){
+            for (Detail detail : invoice.getDetails()){
+                if (detail.getAmount() != 0.0f){
+                    BigDecimal subtotal = detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount()));
+                    dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), subtotal);
+                }
+            }
+            //Agregar el descuento como item
+            if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){
+                BigDecimal discount = invoice.getPaymentsDiscount().multiply(BigDecimal.valueOf(-1));
+                dataSource.add(1.0f, "Descuento", discount, discount);
+            }
+        } else {
+            dataSource.add(1.0f, invoice.getPrintAliasSummary(), invoice.getTotalSinImpuesto(), invoice.getTotalSinImpuesto());
         }
         return dataSource;
     }

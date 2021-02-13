@@ -110,7 +110,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private BarChartModel barModelSales;
     private HorizontalBarChartModel horizontalProductsBarModel;
     private LineChartModel balanceLineChartModel;
-
+    
     @PostConstruct
     private void init() {
 
@@ -125,7 +125,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
         setOutcome("dashboard");
         calculeSummary();
-        
+
     }
 
     public BigDecimal getGrossSalesTotal() {
@@ -528,6 +528,9 @@ public class SummaryHome extends FedeController implements Serializable {
          
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
+        areaModel.setStacked(false);
+        areaModel.setAnimate(false);
+        areaModel.setZoom(true);
         areaModel.setExtender("skinChart");
         //areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
@@ -538,7 +541,7 @@ public class SummaryHome extends FedeController implements Serializable {
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
         yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-500")));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-250")));
         yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.max", "500")));
         
         return areaModel;
