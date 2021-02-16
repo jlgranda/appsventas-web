@@ -757,7 +757,6 @@ public class InvoiceHome extends FedeController implements Serializable {
                 discount = discount.add(payment.getDiscount());
             }
         }
-        System.out.print("|CalculeTotal: " + subtotal.subtract(discount, MathContext.UNLIMITED));
         return subtotal.subtract(discount, MathContext.UNLIMITED);
     }
     
@@ -772,20 +771,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
         //Preestablecer el dinero a recibir
         if (subtotal.compareTo(getPayment().getCash()) > 0) {
-            getPayment().setCash(subtotal.add(calculeIva(calculeCandidateDetailTotal()))); //Asumir que se entregará exacto, si no se ha indicado nada .add(calculeIva(calculeCandidateDetailTotal()))
+            getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada .add(calculeIva(calculeCandidateDetailTotal()))
         }        
-        getPayment().setChange(getPayment().getCash().subtract(subtotal.add(calculeIva(calculeCandidateDetailTotal()))));
+        getPayment().setChange(getPayment().getCash().subtract(subtotal));
         
         //Se modificó el detalle, cambiar a estado abierto
         getInvoice().setStatus(StatusType.OPEN.toString());
         //Valores Impresos
-        System.out.print("\n Detalle de compra: "+calculeCandidateDetailTotal()+"\n");
-        System.out.print("\n I.V.A de compra: "+calculeIva(calculeCandidateDetailTotal())+"\n");
-        System.out.print("\n Pago + Impuestos: "+calculeCandidateDetailTotal().subtract(getPayment().getDiscount()).add(calculeIva(calculeCandidateDetailTotal()))+"\n");
-        System.out.print("\n Descuento: "+getPayment().getDiscount()+"\n");
-        System.out.print("\n Monto recibido: "+getPayment().getCash()+"\n");
-        System.out.print("\n Descuento: "+getPayment().getDiscount()+"\n");
-        System.out.print("\n Vuelto o Cambio: "+getPayment().getChange()+"\n");
+        
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {
