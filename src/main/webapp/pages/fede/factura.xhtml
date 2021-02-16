@@ -85,10 +85,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     container="none"/>
                     <jlgranda:input id="femss" name="femss" type="calendar" label="#{i18n['ride.infoFactura.fechaEmision']}" 
                                     execute="none" render="femss" value="#{facturaElectronicaHome.facturaElectronica.fechaEmision}" required="true"
-                                    container="none"/>
+                                    container="none"/>                  
                     <jlgranda:input id="imptsi" name="imptsi" type="number" label="#{i18n['ride.infoFactura.totalSinImpuestos']}" 
                                     execute="none" render="imptsi" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" required="true"
-                                    container="none" event="blur" listener="#{facturaElectronicaHome.calcularIVA12()}" update="imptiva12"/>
+                                    container="none"/>
                     <jlgranda:input id="imptiva0" name="imptiva0" type="number" label="#{i18n['ride.infoFactura.totalIVA0']}" 
                                     execute="none" render="imptiva0" value="#{facturaElectronicaHome.facturaElectronica.totalIVA0}" required="true"
                                     container="none"/>
@@ -103,13 +103,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     container="none"/>                    
                     <jlgranda:input id="memo" name="memo" type="textarea" label="#{i18n['common.description']}" 
                                     execute="none" render="memo" value="#{facturaElectronicaHome.facturaElectronica.description}" required="true"
-                                    container="none"/>
+                                    container="none"/>                    
                     <div class="ui-g">
                         <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                             <label>#{i18n['common.type']}&nbsp;</label>
                         </div>
                         <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                            
+
                             <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}" effect="fade"
                                              required="#{false}" immediate="true"> 
                                 <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
