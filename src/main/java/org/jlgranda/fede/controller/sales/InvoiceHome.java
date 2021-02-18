@@ -70,6 +70,7 @@ import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.StatusType;
+import org.jpapi.model.TaxType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
@@ -444,7 +445,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     protected List<Invoice> getMyLastlastInvoices(boolean byAuthor) {
         if (myLastlastInvoices.isEmpty()) {
-            filter(subject, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
+            filter(subject, Dates.minimumDate(getEnd()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
             myLastlastInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()), byAuthor);
         }
         return myLastlastInvoices;
@@ -769,6 +770,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void calculeChange() {
         //subtotal = total menos descuento
         BigDecimal subtotal = calculeCandidateDetailTotal().subtract(getPayment().getDiscount());
+        subtotal = subtotal.add(subtotal.multiply(BigDecimal.valueOf(0.12)));
+//        subtotal = subtotal.subtract(getPayment().getDiscount());
         //Preestablecer el dinero a recibir
         if (subtotal.compareTo(getPayment().getCash()) > 0) {
             getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada .add(calculeIva(calculeCandidateDetailTotal()))

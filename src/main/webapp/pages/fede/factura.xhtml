@@ -48,47 +48,65 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g">
                     <h1 class="BigTopic">#{i18n['app.fede.purchase']} </h1>
                 </div>
-                <div class="ui-g Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.purchase.supplier']}</div>
                 <div class="ui-g">
-                    <div class="ui-g ui-g-8">
-                        <p:autoComplete id="supplier" value="#{facturaElectronicaHome.facturaElectronica.author}" effect="fade" 
-                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                        var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
-                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                        forceSelection="true" required="true" disabled="#{facturaElectronicaHome.useDefaultSupplier}">
-                            <p:column>
-                                <h:outputText value="#{entidad.fullName}"/>
-                            </p:column>
-                        </p:autoComplete>
-                    </div>
                     <div class="ui-g ui-g-4">
-                        <h:outputText value=" Proveedor sin factura: " />
-                        <p:selectBooleanCheckbox value="#{facturaElectronicaHome.useDefaultSupplier}">
-                            <p:ajax update="supplier" listener="#{facturaElectronicaHome.updateDefaultSupplier}" />
-                        </p:selectBooleanCheckbox>
-                        <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
-                                         actionListener="#{facturaElectronicaHome.mostrarFormularioProfile()}" ajax="true"
-                                         immediate="true"
-                                         styleClass="RedButton" style="width:30px">
-                            <p:ajax event="dialogReturn" update="@form"
-                                    listener="#{facturaElectronicaHome.handleReturn}">
-                            </p:ajax>
-                        </p:commandButton>
+                        <div class="ui-g ui-panelgrid-cell ui-g-2 ui-md-2">
+                            <label>#{i18n['common.type']}&nbsp;</label>
+                        </div><!-- comment -->
+                        <div class="ui-g ui-panelgrid-cell ui-g-10 ui-md-10">
+                            <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}" effect="fade"
+                                             required="#{false}" immediate="true"> 
+                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@form" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                    <div class="ui-g ui-g-5" style="padding-top: 12px;">
+                        <div class="ui-g ui-panelgrid-cell ui-g-2 ui-md-2">
+                            <label>#{i18n['app.fede.purchase.supplier']}&nbsp;</label>
+                        </div><!-- comment -->
+                        <div class="ui-g ui-panelgrid-cell ui-g-10 ui-md-10">
+                            <p:autoComplete id="supplier" value="#{facturaElectronicaHome.facturaElectronica.author}" effect="fade" 
+                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                            var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
+                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                            converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                            forceSelection="true" required="true" disabled="#{facturaElectronicaHome.useDefaultSupplier}">
+                                <p:column>
+                                    <h:outputText value="#{entidad.fullName}"/>
+                                </p:column>
+                            </p:autoComplete>
+                        </div>
+                    </div>
+                    
+                    <div class="ui-g ui-g-3" style="padding-top: 12px;">
+                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                            <h:outputText value=" Proveedor sin factura: " />
+                            <p:selectBooleanCheckbox value="#{facturaElectronicaHome.useDefaultSupplier}">
+                                <p:ajax update="supplier" listener="#{facturaElectronicaHome.updateDefaultSupplier}" />
+                            </p:selectBooleanCheckbox>
+                            <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
+                                             actionListener="#{facturaElectronicaHome.mostrarFormularioProfile()}" ajax="true"
+                                             immediate="true"
+                                             styleClass="RedButton" style="width:30px">
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{facturaElectronicaHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                        </div>
                     </div>
                 </div>
-                <div class="EmptyBox10"></div>
-                <div class="ui-g Fs22 BoldGray FontRobotoRegular">#{i18n['Details']}</div>
                 <div class="ui-g">
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['ride.no']}" 
                                     execute="none" render="code" value="#{facturaElectronicaHome.facturaElectronica.code}" required="false"
                                     container="none"/>
                     <jlgranda:input id="femss" name="femss" type="calendar" label="#{i18n['ride.infoFactura.fechaEmision']}" 
                                     execute="none" render="femss" value="#{facturaElectronicaHome.facturaElectronica.fechaEmision}" required="true"
-                                    container="none"/>                  
-                    <jlgranda:input id="imptsi" name="imptsi" type="number" label="#{i18n['ride.infoFactura.totalSinImpuestos']}" 
-                                    execute="none" render="imptsi" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" required="true"
                                     container="none"/>
+                    <jlgranda:input id="imptsi" name="imptsi" type="number" label="#{i18n['ride.infoFactura.totalSinImpuestos']}" 
+                                    execute="none" render="imptsi" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" 
+                                    required="true" container="none"/>
                     <jlgranda:input id="imptiva0" name="imptiva0" type="number" label="#{i18n['ride.infoFactura.totalIVA0']}" 
                                     execute="none" render="imptiva0" value="#{facturaElectronicaHome.facturaElectronica.totalIVA0}" required="true"
                                     container="none"/>
@@ -103,21 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     container="none"/>                    
                     <jlgranda:input id="memo" name="memo" type="textarea" label="#{i18n['common.description']}" 
                                     execute="none" render="memo" value="#{facturaElectronicaHome.facturaElectronica.description}" required="true"
-                                    container="none"/>                    
-                    <div class="ui-g">
-                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                            <label>#{i18n['common.type']}&nbsp;</label>
-                        </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-
-                            <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}" effect="fade"
-                                             required="#{false}" immediate="true"> 
-                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
-                                <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@form" />
-                            </p:selectOneMenu>
-                        </div>
-                    </div>
+                                    container="none"/>
                 </div>
                 <div class="EmptyBox10"></div>
                 <!-- Lista de pagos para facturas a crédito -->

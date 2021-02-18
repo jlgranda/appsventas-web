@@ -78,6 +78,7 @@ import org.primefaces.event.UnselectEvent;
 
 /**
  * Controlador de aplicaciones de factura electrónica
+ *
  * @author jlgranda
  */
 @ViewScoped
@@ -105,7 +106,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     @EJB
     private OrganizationService organizacionService;
-    
+
     @EJB
     private PaymentService paymentService;
 
@@ -123,27 +124,27 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private LazyFacturaElectronicaDataModel lazyDataModel;
 
     private FacturaElectronica ultimafacturaElectronica;
-    
+
     /**
      * Instancia de entidad <tt>FacturaElectronica</tt> para edición manual
      */
     private FacturaElectronica facturaElectronica;
-    
+
     /**
      * Instancia de entidad <tt>Factura</tt> para edición manual
      */
     private Factura factura;
-    
+
     /**
      * Id de la actura electrónica en edición
      */
     private Long facturaElectronicaId;
-    
+
     /**
      * Instancia <tt>Subject</tt> para registro de proveedor
      */
     private Subject supplier;
-    
+
     /**
      * Bandera de activación de uso de proveedor por defecto.
      */
@@ -153,7 +154,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * Lista de facturas electrónicas a usar el dashboard y/o widgets
      */
     private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<>());
-    
+
     private Payment payment; //Para editar pagos
 
     public FacturaElectronicaHome() {
@@ -171,10 +172,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         setEnd(Dates.now());
         setStart(Dates.addDays(getEnd(), -1 * amount));
-        
+
         setFacturaElectronica(facturaElectronicaService.createInstance());
         setUseDefaultSupplier(false); //TODO desde configuraciones
-        
+
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         setOutcome("fede-inbox");
     }
@@ -221,11 +222,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return sampleResultList;
     }
-    
+
     public List<FacturaElectronica> getResultList() {
         return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmisionAndEmissionType", Integer.MAX_VALUE, subject, getStart(), getEnd(), EmissionType.PURCHASE_CASH, true);
     }
-    
 
     public void setSampleResultList(List<FacturaElectronica> sampleResultList) {
         this.sampleResultList = sampleResultList;
@@ -325,16 +325,18 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         return facturaElectronicaService.findByNamedQuery("BussinesEntity.findByIds", buildListIds());
     }
-    
-    private List<Long> buildListIds(){
+
+    private List<Long> buildListIds() {
         List<Long> ids = new ArrayList<>();
-        
-        if (Strings.isNullOrEmpty(getKeys())) return ids; 
-        
+
+        if (Strings.isNullOrEmpty(getKeys())) {
+            return ids;
+        }
+
         for (String s : getKeys().split(KEY_SEPARATOR)) {
             ids.add(Long.valueOf(s.trim()));
         }
-        
+
         return ids;
     }
 
@@ -364,7 +366,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return total;
     }
-    
+
     public boolean mostrarFormularioCargaFacturaElectronica(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
@@ -380,21 +382,22 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public boolean mostrarFormularioCargaFacturaElectronica() {
-        return  mostrarFormularioCargaFacturaElectronica(null);
+        return mostrarFormularioCargaFacturaElectronica(null);
     }
 
     public boolean mostrarFormularioDescargaFacturaElectronica() {
         return mostrarFormularioDescargaFacturaElectronica(null);
     }
+
     public boolean mostrarFormularioActualizacionFacturaElectronica(String origen) {
         boolean flag = false;
         Map<String, List<String>> params = new HashMap<>();
         List<String> values = new ArrayList<>();
         values.add(keys);
-	
+
         params.put("key", values);
-        
-        if ("file".equalsIgnoreCase(origen)){
+
+        if ("file".equalsIgnoreCase(origen)) {
             flag = mostrarFormularioCargaFacturaElectronica(params);
         } else {
             flag = mostrarFormularioDescargaFacturaElectronica(params);
@@ -521,14 +524,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private FacturaElectronica procesarFactura(Factura factura, String xml, String filename, SourceType sourceType) throws FacturaXMLReadException {
         FacturaElectronica instancia = null;
 
-        if (buildListIds().isEmpty()){
+        if (buildListIds().isEmpty()) {
             instancia = procesarAgregarFactura(factura, xml, filename, sourceType);
         } else {
             instancia = procesarActualizarFactura(factura, xml, filename, sourceType);
         }
         return instancia;
     }
-    
+
     private FacturaElectronica procesarAgregarFactura(Factura factura, String xml, String filename, SourceType sourceType) throws FacturaXMLReadException {
         FacturaElectronica instancia = null;
 
@@ -539,7 +542,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         //CodeType codeType = CodeType.encode(factura.getInfoFactura().getTipoIdentificacionComprador());
         //logger.info("IdentificacionComprador {}, CodeType {}", factura.getInfoFactura().getIdentificacionComprador(), codeType);
-
         if (!(factura.getInfoFactura().getIdentificacionComprador().startsWith(subject.getCode())
                 || subject.getCode().startsWith(factura.getInfoFactura().getIdentificacionComprador()))) {
             addErrorMessage(I18nUtil.getMessages("xml.read.forbidden"), I18nUtil.getMessages("xml.read.forbidden.detail"));
@@ -594,7 +596,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
                 author = subjectService.save(author);
                 logger.info("Added new Subject as author. RUC {}, CodeType {}", factura.getInfoTributaria().getRuc(), CodeType.RUC);
-            
 
             }
 
@@ -609,7 +610,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         return instancia;
     }
-    
+
     private FacturaElectronica procesarActualizarFactura(Factura factura, String xml, String filename, SourceType sourceType) throws FacturaXMLReadException {
         FacturaElectronica instancia = null;
 
@@ -630,7 +631,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         codigo.append(factura.getInfoTributaria().getPtoEmi());
         codigo.append("-");
         codigo.append(factura.getInfoTributaria().getSecuencial());
-        for (Long _facturaElectronicaId : buildListIds()){
+        for (Long _facturaElectronicaId : buildListIds()) {
             if ((instancia = facturaElectronicaService.find(_facturaElectronicaId)) != null) { //Funciona en el caso que solo hay un id seleccionado
 
                 instancia.setCode(codigo.toString());
@@ -672,7 +673,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                     author = subjectService.save(author);
                     logger.info("Added new Subject as author. RUC {}, CodeType {}", factura.getInfoTributaria().getRuc(), CodeType.RUC);
 
-
                 }
 
                 instancia.setAuthor(author);
@@ -686,44 +686,42 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return instancia;
     }
-    
-    public void save() {        
-        //TODO: Validar que la sumatoria del subtotal, iva y descuento sea equivalente al Importe Total
-        BigDecimal sumaImporteComparar = facturaElectronica.getTotalSinImpuestos().add(facturaElectronica.getTotalIVA0()).add(facturaElectronica.getTotalIVA12());
-        sumaImporteComparar = sumaImporteComparar.subtract(facturaElectronica.getTotalDescuento());
-        if(facturaElectronica.getImporteTotal().compareTo(sumaImporteComparar)!=0){
+
+    public void save() {
+        //Validar que la sumatoria del subtotal, iva y descuento sea equivalente al Importe Total
+        BigDecimal sumaImporteComparar = facturaElectronica.getTotalSinImpuestos().add(facturaElectronica.getTotalIVA0()).add(facturaElectronica.getTotalIVA12().subtract(facturaElectronica.getTotalDescuento()));
+        if (facturaElectronica.getImporteTotal().compareTo(sumaImporteComparar) != 0) {
             setOutcome("");
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("ride.infoFactura.importeTotal.invalid"));
-            return;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("ride.infoFactura.importeTotal.invalid"));
+        } else {            
+            setOutcome("fede-inbox");
+            facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
+            facturaElectronica.setFilename(null);
+            facturaElectronica.setContenido(null);
+            facturaElectronica.setMoneda("DOLAR");
+
+            facturaElectronica.setClaveAcceso(null);
+            facturaElectronica.setFechaAutorizacion(null);
+            facturaElectronica.setNumeroAutorizacion(null);
+
+            facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
+
+            //facturaElectronica.setAuthor(getSupplier());
+            facturaElectronica.setOwner(subject);
+
+            //Establecer un codigo por defecto
+            if (Strings.isNullOrEmpty(facturaElectronica.getCode())) {
+                facturaElectronica.setCode(UUID.randomUUID().toString());
+            }
+
+            facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
         }
-        //----------------------------------------------------------------------
-        
-        facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
-        facturaElectronica.setFilename(null);
-        facturaElectronica.setContenido(null);
-        facturaElectronica.setMoneda("DOLAR");
-
-        facturaElectronica.setClaveAcceso(null);
-        facturaElectronica.setFechaAutorizacion(null);
-        facturaElectronica.setNumeroAutorizacion(null);
-
-        facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
-    
-        //facturaElectronica.setAuthor(getSupplier());
-        facturaElectronica.setOwner(subject);
-        
-        //Establecer un codigo por defecto
-        if (Strings.isNullOrEmpty(facturaElectronica.getCode())){
-            facturaElectronica.setCode(UUID.randomUUID().toString());
-        }
-
-        facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
     }
 
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
         return procesarFactura(fr.getFactura(), fr.getXml(), fr.getFileName(), sourceType);
     }
-    
+
     @Override
     public void handleReturn(SelectEvent event) {
         setSupplier((Subject) event.getObject());
@@ -749,7 +747,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return _keys;
     }
-    
+
     public Long getFacturaElectronicaIdFromSelectedKeys() {
         Long id = 0L;
         if (getSelectedBussinesEntities() != null && !getSelectedBussinesEntities().isEmpty()) {
@@ -784,7 +782,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * Filtro para llenar el Lazy Datamodel
      */
     public void filter() {
-        
+
         if (lazyDataModel == null) {
             lazyDataModel = new LazyFacturaElectronicaDataModel(facturaElectronicaService);
         }
@@ -834,12 +832,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
             facturaElectronicaService.save(fe.getId(), (FacturaElectronica) fe);
         }
-        
-        
-        if (!addedGroups.isEmpty()){
+
+        if (!addedGroups.isEmpty()) {
             this.addSuccessMessage("Agregar grupos", "Algunas facturas se agregaron a " + Lists.toString(addedGroups));
         }
-        if (!removedGroups.isEmpty()){
+        if (!removedGroups.isEmpty()) {
             this.addSuccessMessage("Remover grupos", "Algunas facturas se removieron de " + Lists.toString(removedGroups));
         }
 
@@ -874,9 +871,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         return new Group("null", "null");
     }
- 
+
     /**
      * Retorna los grupos para este controlador
+     *
      * @return
      */
     @Override
@@ -892,7 +890,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private Subject getDefaultSupplier() {
         return subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", "proveedorsinfactura");
     }
-    
+
     public BigDecimal calculeTotal(List<FacturaElectronica> list) {
         BigDecimal total = new BigDecimal(0);
         for (FacturaElectronica i : list) {
@@ -901,20 +899,20 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         return total;
     }
-    
+
     /**
      * Agrega o actualiza el pago de la factura.
      */
-    public void addPayment(){
-        
+    public void addPayment() {
+
         this.getPayment().setCash(getPayment().getAmount());
-        
+
         Payment p = paymentService.createInstance();
         p.setAmount(getPayment().getAmount());
         p.setCash(getPayment().getAmount());
         p.setDiscount(getPayment().getDiscount());
         this.getFacturaElectronica().addPayment(p);
-        
+
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
     }
 
@@ -922,7 +920,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar proveedores en factura de compra
 
@@ -933,12 +931,12 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     public void setSubjectAdminHome(SubjectAdminHome subjectAdminHome) {
         this.subjectAdminHome = subjectAdminHome;
     }
-    
-    
+
     /**
      * Mostrar el formulario para edición de clientes
+     *
      * @param params
-     * @return 
+     * @return
      */
     public boolean mostrarFormularioProfile(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
@@ -948,39 +946,39 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, left, top, true, params);
         return true;
     }
-    
+
     public boolean mostrarFormularioProfile() {
-        
+
         setUseDefaultSupplier(false); //Implica que se agregará un nuevo usuario
         setSupplier(subjectService.createInstance()); //Nueva instancia
-        if (getSupplier() != null 
-                && getSupplier().isPersistent() 
-                && !"9999999999999".equals(getSupplier().getCode())){
+        if (getSupplier() != null
+                && getSupplier().isPersistent()
+                && !"9999999999999".equals(getSupplier().getCode())) {
             super.setSessionParameter("SUPPLIER", getSupplier());
         }
         return mostrarFormularioProfile(null);
     }
-    
+
     public void closeFormularioProfile(Object data) {
         removeSessionParameter("KEYWORD");
         removeSessionParameter("SUPPLIER");
         super.closeDialog(data);
     }
-    
-    public void loadSessionParameters(){
-        
-        if (existsSessionParameter("SUPPLIER")){
+
+    public void loadSessionParameters() {
+
+        if (existsSessionParameter("SUPPLIER")) {
             this.subjectAdminHome.setSubjectEdit((Subject) getSessionParameter("SUPPLIER"));
-        } else if (existsSessionParameter("KEYWORD")){
+        } else if (existsSessionParameter("KEYWORD")) {
             Subject _subject = subjectService.createInstance();
             _subject.setCode((String) getSessionParameter("KEYWORD"));
             this.subjectAdminHome.setSubjectEdit(_subject);
         }
     }
-    
-    public void saveSupplier(){
+
+    public void saveSupplier() {
         boolean success = false;
-        if (!getSubjectAdminHome().getSubjectEdit().isPersistent()){
+        if (!getSubjectAdminHome().getSubjectEdit().isPersistent()) {
             getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
             getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
 
@@ -993,18 +991,18 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         if (success) { //Guardar profile
             setSupplier(getSubjectAdminHome().getSubjectEdit());
             closeFormularioProfile(getSupplier());
-        } 
-        
+        }
+
     }
-    
-    public void updateDefaultSupplier(){
+
+    public void updateDefaultSupplier() {
         this.facturaElectronica.setAuthor(getDefaultSupplier());
     }
-    
-    public void calcularIVA12(){
+
+    public void calcularIVA12() {
         //Calcular el iva del 12 % ALERTA!! REVISAR
         this.facturaElectronica.setTotalSinImpuestos(BigDecimal.ONE);
-        if (this.facturaElectronica.getTotalSinImpuestos() != null){
+        if (this.facturaElectronica.getTotalSinImpuestos() != null) {
             this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
         }
     }
