@@ -445,7 +445,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     protected List<Invoice> getMyLastlastInvoices(boolean byAuthor) {
         if (myLastlastInvoices.isEmpty()) {
-            filter(subject, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
+            filter(subject, Dates.minimumDate(getEnd()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
             myLastlastInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()), byAuthor);
         }
         return myLastlastInvoices;
