@@ -243,8 +243,9 @@ public class InvoiceHome extends FedeController implements Serializable {
             setCustomer(this.invoice.getOwner());
             calculeChange();//Prellenar formulario de pago
             setUseDefaultCustomer(this.invoice.getOwner() == null || Long.valueOf(511).equals(this.invoice.getOwner().getId()));
+            //OJO
             //Establecer nuevo número de comanda
-            this.invoice.setSequencial(settingHome.getValue("app.fede.sales.invoice.comanda.sequence", ""));
+//            this.invoice.setSequencial(settingHome.getValue("app.fede.sales.invoice.comanda.sequence", ""));
             if (!this.invoice.getPayments().isEmpty()) {
                 setPayment(this.invoice.getPayments().get(0)); //Cargar el pago guardado
             }
