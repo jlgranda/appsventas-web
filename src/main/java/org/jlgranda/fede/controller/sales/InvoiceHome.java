@@ -192,14 +192,14 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @PostConstruct
     private void init() {
-
+        
+        initializeDateInterval();
+        
         setAmount(0L); //Sólo si se establece un valor
         setInvoice(invoiceService.createInstance());
         setCandidateDetail(detailService.createInstance(1));
         setPayment(paymentService.createInstance());
 
-        setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.now()));
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por defecto
@@ -213,10 +213,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setOrderByCode(false);
 
         setBusquedaAvanzada(true);
-
-        setEnd(Dates.now()); //El día de hoy
-        setStart(Dates.addDays(getEnd(), -7));
-
+        
     }
 
     public Long getInvoiceId() {
@@ -445,8 +442,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     protected List<Invoice> getMyLastlastInvoices(boolean byAuthor) {
-        if (myLastlastInvoices.isEmpty()) {
-            filter(subject, Dates.minimumDate(getEnd()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
+        if (myLastlastInvoices.isEmpty()) {         
+            filter(subject, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
             myLastlastInvoices = getLazyDataModel().load(null, SortOrder.valueOf(getSortOrder()), byAuthor);
         }
         return myLastlastInvoices;
@@ -775,7 +772,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 //        subtotal = subtotal.subtract(getPayment().getDiscount());
         //Preestablecer el dinero a recibir
         if (subtotal.compareTo(getPayment().getCash()) > 0) {
-            getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada .add(calculeIva(calculeCandidateDetailTotal()))
+            getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
         }        
         getPayment().setChange(getPayment().getCash().subtract(subtotal));
         
@@ -1105,7 +1102,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public BarChartModel buildProductTopBarChartModel() {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
         inventoryHome.setEnd(Dates.maximumDate(getEnd()));
-        return inventoryHome.getTopBarChartModel();
+        return inventoryHome.getTopBarChartModel();        
     }
     public LineChartModel buildProductLineBarChartModel() {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
@@ -1113,27 +1110,38 @@ public class InvoiceHome extends FedeController implements Serializable {
         return inventoryHome.buildLineBarChartModel(getSelectedBussinesEntities(), "skinChart");
     }
 
+//    @Override
+//    protected void initializeDateInterval() {
+//        int range = 0; //Rango de fechas para visualiar lista de entidades
+//        try {
+//            if (null == getInterval()) {
+//                range = 0; //El día de hoy
+//            }
+//
+//            switch (getInterval().intValue()) {
+//                case -1:
+//                    range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
+//                    break;
+//                default:
+//                    range = getInterval().intValue();
+//                    break;
+//            }
+//        } catch (java.lang.NumberFormatException nfe) {
+//            range = 7;
+//        }
+//        setEnd(Dates.maximumDate(Dates.now()));
+//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+//    }
     @Override
     protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            if (null == getInterval()) {
-                range = 0; //El día de hoy
-            }
-
-            switch (getInterval().intValue()) {
-                case -1:
-                    range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
-                    break;
-                default:
-                    range = getInterval().intValue();
-                    break;
-            }
+            range = Integer.valueOf(settingHome.getValue("fede.preinvoices.range", "0"));
         } catch (java.lang.NumberFormatException nfe) {
-            range = 7;
+            nfe.printStackTrace();
+            range = 1;
         }
-        setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+      setEnd(Dates.maximumDate(Dates.now()));
+      setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
-
 }
