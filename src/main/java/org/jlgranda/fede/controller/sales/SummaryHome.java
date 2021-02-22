@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 public class SummaryHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = 145155795064685887L;
-    
+
     private static final int TICKANGLE = 30;
 
     Logger logger = LoggerFactory.getLogger(SummaryHome.class);
@@ -105,12 +105,13 @@ public class SummaryHome extends FedeController implements Serializable {
      * Selector de grupos de fechas
      */
     private Date grupoFechas;
-    
+
     private BarChartModel barModelAmount;
     private BarChartModel barModelSales;
     private HorizontalBarChartModel horizontalProductsBarModel;
+    private HorizontalBarChartModel horizontalPurchasesBarModel;
     private LineChartModel balanceLineChartModel;
-    
+
     @PostConstruct
     private void init() {
 
@@ -236,7 +237,7 @@ public class SummaryHome extends FedeController implements Serializable {
         BigDecimal profitRate = this.getProfilTotal().divide(goal);
         return profitRate;
     }
-    
+
     public BigDecimal calculeProfitRateToday() {
         BigDecimal goal = BigDecimal.valueOf(Long.valueOf(settingHome.getValue("app.fede.sales.goal", "500")));
         clear();
@@ -319,10 +320,10 @@ public class SummaryHome extends FedeController implements Serializable {
     public void clearBarModel() {
         setBarModelAmount(null);
         setBarModelSales(null);
-        setHorizontalProductsBarModel(null);
         setBalanceLineChartModel(null);
+        setHorizontalProductsBarModel(null);
+        setHorizontalPurchasesBarModel(null);
     }
-    
 
     public BarChartModel getBarModelAmount() {
         if (barModelAmount == null) {
@@ -346,19 +347,70 @@ public class SummaryHome extends FedeController implements Serializable {
         this.barModelSales = barModelSales;
     }
 
+    public LineChartModel getBalanceLineChartModel() {
+        if (balanceLineChartModel == null) {
+            setBalanceLineChartModel(createLineChartModel());
+        }
+        return balanceLineChartModel;
+    }
+
+    public void setBalanceLineChartModel(LineChartModel balanceLineChartModel) {
+        this.balanceLineChartModel = balanceLineChartModel;
+    }
+
+    public HorizontalBarChartModel getHorizontalProductsBarModel() {
+        if (horizontalProductsBarModel == null) {
+            this.horizontalProductsBarModel = createHorizontalBarModel();
+        }
+        return horizontalProductsBarModel;
+    }
+
+    public void setHorizontalProductsBarModel(HorizontalBarChartModel horizontalProductsBarModel) {
+        this.horizontalProductsBarModel = horizontalProductsBarModel;
+    }
+
+    public HorizontalBarChartModel getHorizontalPurchasesBarModel() {
+        if (horizontalPurchasesBarModel == null) {
+            setHorizontalPurchasesBarModel(createHorizontalPurchasesBarModel());
+        }
+        return horizontalPurchasesBarModel;
+    }
+
+    public void setHorizontalPurchasesBarModel(HorizontalBarChartModel horizontalPurchasesBarModel) {
+        this.horizontalPurchasesBarModel = horizontalPurchasesBarModel;
+    }
+
+    private ChartSeries createProducsSeries(String label, String queryNamed) {
+        ChartSeries chartSerie = new ChartSeries();
+        chartSerie.setLabel(label);
+
+        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
+
+        objects.stream().forEach((Object[] object) -> {
+            Product _product = productCache.lookup((Long) object[0]);
+            if (_product != null) {
+                _product.getStatistics().setCount((Double) object[1]);
+                chartSerie.set(_product.getName(), _product.getStatistics().getCount());
+            }
+        });
+
+        return chartSerie;
+    }
+
     private BarChartModel createBarModelAmount() {
-        
         BarChartModel model = new BarChartModel();
         ChartSeries product = createProducsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween");
+
         model.addSeries(product);
-        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) +
-                " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));        
+        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
+                + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
         model.setStacked(false);
         model.setAnimate(true);
         model.setShowPointLabels(false);
         model.setExtender("skinBar");
-        
+
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.barchart.sales.axis"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
@@ -377,6 +429,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private BarChartModel createbarModelSales() {
         BarChartModel model = new BarChartModel();
         ChartSeries product = createProducsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice");
+
         model.addSeries(product);
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
@@ -384,6 +437,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setAnimate(true);
         model.setShowPointLabels(false);
         model.setExtender("skinBar2");
+
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.barchart.sales.axis"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
@@ -399,24 +453,87 @@ public class SummaryHome extends FedeController implements Serializable {
         return model;
     }
 
-    public HorizontalBarChartModel getHorizontalProductsBarModel() {
-        if (horizontalProductsBarModel == null){
-            this.horizontalProductsBarModel = createHorizontalBarModel();
+    private LineChartModel createLineChartModel() {
+        LineChartModel areaModel = new LineChartModel();
+
+        boolean fillSeries = true;
+
+        LineChartSeries fixedCosts = new LineChartSeries();
+        fixedCosts.setFill(!fillSeries);
+        fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
+        fixedCosts.setShowMarker(false);
+        fixedCosts.setSmoothLine(false);
+
+        LineChartSeries sales = new LineChartSeries();
+        sales.setFill(fillSeries);
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+
+        LineChartSeries purchases = new LineChartSeries();
+        purchases.setFill(fillSeries);
+        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+
+        LineChartSeries profits = new LineChartSeries();
+        profits.setFill(fillSeries);
+        profits.setLabel(I18nUtil.getMessages("common.profit"));
+
+        Date _start = getStart();
+        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
+            int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
+            _start = Dates.addDays(getStart(), -1 * range);
         }
-        return horizontalProductsBarModel;
+        Date _step = _start;
+        String label = "";
+        BigDecimal _salesTotal;
+        BigDecimal purchasesTotal;
+        BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "50"));
+        for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
+            label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
+            _salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
+            sales.set(label, _salesTotal);
+
+            facturaElectronicaHome.setStart(Dates.minimumDate(_step));
+            facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
+            purchasesTotal = facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList());
+
+            fixedCosts.set(label, fixedCost);
+            purchases.set(label, purchasesTotal);
+            profits.set(label, _salesTotal.subtract(purchasesTotal)); //Utilidad bruta
+
+            _step = Dates.addDays(_step, 1); //Siguiente día
+        }
+
+        areaModel.addSeries(sales);
+        areaModel.addSeries(profits);
+        areaModel.addSeries(purchases);
+        areaModel.addSeries(fixedCosts);
+
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
+        areaModel.setStacked(false);
+        areaModel.setAnimate(false);
+        areaModel.setZoom(true);
+        areaModel.setExtender("skinChart");
+        //areaModel.setExtender("chartExtender");
+        areaModel.setAnimate(false);
+        areaModel.setShowPointLabels(false);
+
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        xAxis.setTickAngle(SummaryHome.TICKANGLE);
+        areaModel.getAxes().put(AxisType.X, xAxis);
+        Axis yAxis = areaModel.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-250")));
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.max", "500")));
+
+        return areaModel;
     }
 
-    public void setHorizontalProductsBarModel(HorizontalBarChartModel horizontalProductsBarModel) {
-        this.horizontalProductsBarModel = horizontalProductsBarModel;
-    }
-    
-    
     private HorizontalBarChartModel createHorizontalBarModel() {
         HorizontalBarChartModel model = new HorizontalBarChartModel();
 
         model.addSeries(createProducsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween"));
         model.addSeries(createProducsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice"));
-        
+
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
         model.setStacked(false);
@@ -424,7 +541,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setShadow(false);
         model.setShowPointLabels(true);
         model.setExtender("skinHorizontalBar");
-        
+
         Axis xAxis = model.getAxis(AxisType.X);
         xAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.label.amount") + "/" + I18nUtil.getMessages("app.fede.barchart.sales.price.axis"));
         xAxis.setMin(0);
@@ -435,118 +552,56 @@ public class SummaryHome extends FedeController implements Serializable {
         }
 
         Axis yAxis = model.getAxis(AxisType.Y);
-       
+
         yAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.axis"));
         yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.sales.min", "0")));
 
-        //model.getAxes().put(AxisType.X, xAxis);
         return model;
     }
-    
-    private ChartSeries createProducsSeries(String label, String queryNamed){
+
+    private ChartSeries createPurchasesSeries(String label, String queryNamed) {
         ChartSeries chartSerie = new ChartSeries();
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
-        
+        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
-            Product _product = productCache.lookup((Long) object[0]);
-            if (_product != null) {
-                _product.getStatistics().setCount((Double) object[1]);
-                chartSerie.set(_product.getName(), _product.getStatistics().getCount());
+            if (object[1] == null) {
+                object[1] = object[0];
             }
+            chartSerie.set(object[1], ((BigDecimal) object[2]).doubleValue());
         });
-        
+
         return chartSerie;
     }
 
-    public LineChartModel getBalanceLineChartModel() {
-        if (balanceLineChartModel == null){
-            setBalanceLineChartModel(createLineChartModel());
+    private HorizontalBarChartModel createHorizontalPurchasesBarModel() {
+        HorizontalBarChartModel model = new HorizontalBarChartModel();
+        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalProviderIdsBetween"));
+
+        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
+        model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
+        model.setStacked(false);
+        model.setAnimate(true);
+        model.setShadow(false);
+        model.setShowPointLabels(true);
+        model.setExtender("skinHorizontalBar");
+
+        Axis xAxis = model.getAxis(AxisType.X);
+        xAxis.setLabel(I18nUtil.getMessages("ride.infoFactura.importeTotal"));
+        xAxis.setMin(0);
+        double scale; //Aumentar un poco más la escala
+        if (!model.getSeries().get(0).getData().isEmpty()) {
+            scale = (double) model.getSeries().get(0).getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
+            xAxis.setMax(scale);
         }
-        return balanceLineChartModel;
+        Axis yAxis = model.getAxis(AxisType.Y);
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.axis.provider"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.sales.min", "0")));
+
+        return model;
     }
 
-    public void setBalanceLineChartModel(LineChartModel balanceLineChartModel) {
-        this.balanceLineChartModel = balanceLineChartModel;
-    }
-    
-    private LineChartModel createLineChartModel() {
-        LineChartModel areaModel = new LineChartModel();
-        
-        boolean fillSeries = true;
-//        
-        LineChartSeries fixedCosts = new LineChartSeries();
-        fixedCosts.setFill(!fillSeries);
-        fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
-        fixedCosts.setShowMarker(false);
-        fixedCosts.setSmoothLine(false);
- 
-        LineChartSeries sales = new LineChartSeries();
-        sales.setFill(fillSeries);
-        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
-        
-        LineChartSeries purchases = new LineChartSeries();
-        purchases.setFill(fillSeries);
-        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
-        
-        LineChartSeries profits = new LineChartSeries();
-        profits.setFill(fillSeries);
-        profits.setLabel(I18nUtil.getMessages("common.profit"));
-        
-        Date _start = getStart();
-        if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1){
-            int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
-            _start = Dates.addDays(getStart(), -1 * range);
-        }
-        Date _step = _start;
-        String label = "";
-        BigDecimal _salesTotal;
-        BigDecimal purchasesTotal;
-        BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "50"));
-        for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++){
-            label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
-            _salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
-            sales.set(label, _salesTotal);
-            
-            facturaElectronicaHome.setStart(Dates.minimumDate(_step));
-            facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
-            purchasesTotal = facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList());
-            
-            fixedCosts.set(label, fixedCost);
-            purchases.set(label, purchasesTotal);
-            profits.set(label, _salesTotal.subtract(purchasesTotal)); //Utilidad bruta
-            
-            _step = Dates.addDays(_step, 1); //Siguiente día
-        }
-        
-        areaModel.addSeries(sales);
-        areaModel.addSeries(profits);
-        areaModel.addSeries(purchases);
-        areaModel.addSeries(fixedCosts);
-         
-        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
-        areaModel.setStacked(false);
-        areaModel.setAnimate(false);
-        areaModel.setZoom(true);
-        areaModel.setExtender("skinChart");
-        //areaModel.setExtender("chartExtender");
-        areaModel.setAnimate(false);
-        areaModel.setShowPointLabels(false);
-        
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
-        xAxis.setTickAngle(SummaryHome.TICKANGLE);
-        areaModel.getAxes().put(AxisType.X, xAxis);
-        Axis yAxis = areaModel.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-250")));
-        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.max", "500")));
-        
-        return areaModel;
-    }
-    
     @Override
     protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
@@ -556,28 +611,29 @@ public class SummaryHome extends FedeController implements Serializable {
             nfe.printStackTrace();
             range = 1;
         }
-      setEnd(Dates.maximumDate(Dates.now()));
-      setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setEnd(Dates.maximumDate(Dates.now()));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
-    
-    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end){   
-        if (author == null){ //retornar todas
+
+    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
+        if (author == null) { //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
         } else {
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndAuthor", limit, documentType, author, true, start, end);
         }
     }
-    
+
     public BigDecimal calculeTotal(List<Invoice> list) {
-        
+
         BigDecimal subtotal = new BigDecimal(0);
         BigDecimal discount = new BigDecimal(0);
         Payment payment = null;
         for (Invoice i : list) {
             subtotal = subtotal.add(i.getTotal());
             payment = i.getPayments().isEmpty() ? null : i.getPayments().get(0);
-            if (payment != null )
+            if (payment != null) {
                 discount = discount.add(payment.getDiscount());
+            }
         }
 
         return subtotal.subtract(discount, MathContext.UNLIMITED);
