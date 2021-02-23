@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:o="http://omnifaces.org/ui"
                 template="/WEB-INF/template.xhtml">
 
-    <ui:define name="title">#{i18n['app.fede.inventory.products']}</ui:define>
+    <ui:define name="title">#{i18n['common.purchases']}</ui:define>
     <ui:define name="head">
     </ui:define>
     <ui:define name="params">
@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li><p:link outcome="dashboard">#{i18n['app.fede.inventory.products']}</p:link></li>
+        <li><p:link outcome="dashboard">#{i18n['common.purchases']}</p:link></li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -53,6 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </style>
     </ui:define>
 
+
     <ui:define name="content" rendered="#{true}">
         <div class="layout-dashboard">
             <div class="ui-g">
@@ -62,60 +63,41 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['Start']}</label>
                                 <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2"/> <!-- oncomplete="form.submit();" --> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> <!-- oncomplete="form.submit();" --> 
                                 </p:calendar>
                             </h:panelGroup>
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['End']}</label>
                                 <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2" /> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> 
                                 </p:calendar>                            
                             </h:panelGroup>
                         </h:panelGroup>
                     </div>  
                 </div><!-- comment -->
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel id="control-bar0" class="card" header="#{i18n['common.statistics.products.amountvsprices']}" 
+                    <p:panel id="control-bar2" class="card"
+                             header="#{i18n['common.statistics.products.provider']}" 
                              rendered="#{not empty summaryHome.horizontalProductsBarModel}"
                              styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                            <!--Listado de Productos más vendidos: Cantidad-->
-                            <p:chart type="bar" 
-                                     model="#{summaryHome.horizontalProductsBarModel}" 
-                                     rendered="#{not empty summaryHome.horizontalProductsBarModel}"
-                                     responsive="true"/>  
+                            <!--Listado de Proveedores: Compras-->
+                            <p:chart id="barModelPurchases" type="bar"
+                                     model="#{summaryHome.horizontalPurchasesBarModel}" 
+                                     rendered="#{not empty summaryHome.horizontalPurchasesBarModel}"
+                                     responsive="true"/>
                         </div>                        
                     </p:panel>
-                </div>
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <div class="ui-g-6 ui-md-12 ui-lg-6 ui-xl-6">
-                        <p:panel id="control-bar1" class="card" header="#{i18n['common.statistics.products.amount']}" 
-                                 rendered="#{not empty summaryHome.barModelAmount}"
-                                 styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                                <!--Listado de Productos más vendidos: Precio-->
-                                <p:chart type="bar" model="#{summaryHome.barModelAmount}" 
-                                         rendered="#{not empty summaryHome.barModelAmount}"
-                                         responsive="true"/>
-                            </div>                        
-                        </p:panel>
-                    </div>
-                    <div class="ui-g-6 ui-md-12 ui-lg-6 ui-xl-6">
-                        <p:panel id="control-bar2" class="card" header="#{i18n['common.statistics.products.price']}" 
-                                 rendered="#{not empty summaryHome.barModelSales}"
-                                 styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                                <!--Listado de Productos más vendidos: Precio-->
-                                <p:chart type="bar" model="#{summaryHome.barModelSales}" 
-                                         rendered="#{not empty summaryHome.barModelSales}"
-                                         responsive="true"/>
-                            </div>                        
-                        </p:panel>
-                    </div>
                 </div>
             </div>                           
         </div>
     </ui:define>
+
+
+
+
+
+
     <ui:define name="script">
         <script type="text/javascript">
             //<![CDATA[
@@ -166,18 +148,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     rendererOptions: {
                         textColor: '#434560'
                     },
-                    tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-                    tickOptions:{
-                            angle: 30,
-                            fontSize: '9px',
-                            formatString: "%'.2f"
+                    tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                    tickOptions: {
+                        angle: 30,
+                        fontSize: '9px',
+                        formatString: "%'.2f"
                     }
                 };
                 this.cfg.seriesDefaults = {
                     shadow: false,
                     lineWidth: 1,
                     renderer: $.jqplot.BarRenderer,
-                    pointLabels: { show: true, formatString: '%.2f' },
+                    pointLabels: {show: true, formatString: '%.2f'},
                     markerOptions: {
                         shadow: false,
                         size: 5,
@@ -185,7 +167,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     }
                 }
             }
-            
+
             function skinBar2() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
@@ -203,18 +185,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     rendererOptions: {
                         textColor: '#434560'
                     },
-                    tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-                    tickOptions:{
-                            angle: 30,
-                            fontSize: '9px',
-                            formatString: "%'.2f"
+                    tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                    tickOptions: {
+                        angle: 30,
+                        fontSize: '9px',
+                        formatString: "%'.2f"
                     }
                 };
                 this.cfg.seriesDefaults = {
                     shadow: false,
                     lineWidth: 1,
                     renderer: $.jqplot.BarRenderer,
-                    pointLabels: { show: true, formatString: '$%.2f' },
+                    pointLabels: {show: true, formatString: '$%.2f'},
                     markerOptions: {
                         shadow: false,
                         size: 5,
@@ -244,7 +226,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     shadow: false,
                     lineWidth: 1,
                     renderer: $.jqplot.BarRenderer,
-                    pointLabels: { show: true, formatString: '%.2f' },
+                    pointLabels: {show: true, formatString: '%.2f'},
                     rendererOptions: {
                         barDirection: 'horizontal'
                     },
@@ -394,7 +376,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             function skinBarAndLine() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
-                this.cfg.seriesColors = ['#2D8EE3','#e02365' ];
+                this.cfg.seriesColors = ['#2D8EE3', '#e02365'];
                 this.cfg.grid = {
                     background: '#ffffff',
                     borderColor: '#ffffff',
