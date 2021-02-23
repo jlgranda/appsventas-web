@@ -58,7 +58,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                     </div>
-                    
+                    <div class="Container100 Responsive50">
+                        <div class="ContainerIndent">
+                            <h4>#{i18n['common.category']}&nbsp;</h4>
+                            <p:selectOneMenu value="#{inventoryHome.groupSelected}" effect="fade"
+                                             required="#{true}" immediate="true"
+                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
+                                <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@form" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
                     <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
                                     value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
 
@@ -67,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <jlgranda:input id="price" name="price" type="number" label="#{i18n['app.fede.inventory.product.price']}" 
                                     value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
-                    
+
                     <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
                             <h2 class="BigTopic">#{i18n['common.taxType']}&nbsp;</h2>

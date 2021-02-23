@@ -36,6 +36,7 @@ import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
+import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
 import org.jpapi.model.TaxType;
 import org.jpapi.model.profile.Subject;
@@ -72,7 +73,7 @@ public class UI {
     public ProductType[] getProductTypes() {
         return ProductType.values();
     }
-    
+        
     
     public EmissionType[] getEmissionTypes() {
         return EmissionType.values();
@@ -98,6 +99,21 @@ public class UI {
         for (ProductType t : getProductTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
             items.add(item);
+        }
+        return items;
+    }
+    
+    public SelectItem[] getGroupTypesAsSelectItem(List<Group> entities){
+        boolean selectOne = true;
+        int size = selectOne ? entities.size() + 1 : entities.size();
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        for (Group x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
         }
         return items;
     }

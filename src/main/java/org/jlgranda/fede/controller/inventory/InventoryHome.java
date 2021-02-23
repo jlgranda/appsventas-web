@@ -71,9 +71,9 @@ import org.slf4j.LoggerFactory;
 public class InventoryHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -21640696368253046L;
-    
+
     Logger logger = LoggerFactory.getLogger(InventoryHome.class);
-    
+
     @Inject
     private SettingHome settingHome;
 
@@ -81,27 +81,29 @@ public class InventoryHome extends FedeController implements Serializable {
     private GroupService groupService;
 
     private Long productId;
-    
+
     private Product lastProduct;
-    
+
     private Product product;
-    
+
     private ProductType productType;
-    
+
     private List<Product> lastProducts = new ArrayList<>();
-    
+
     private LazyProductDataModel lazyDataModel;
-    
+
     @EJB
-    private ProductService productService; 
-    
+    private ProductService productService;
+
     @EJB
     private ProductCache productCache;
-    
+
     @Inject
     private Subject subject;
-    
+
     private String mode;
+
+    private Group groupSelected;
 
     @PostConstruct
     private void init() {
@@ -114,11 +116,11 @@ public class InventoryHome extends FedeController implements Serializable {
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        
+
         setProduct(productService.createInstance());
         getProduct().setProductType(ProductType.PRODUCT);
         setProductType(ProductType.PRODUCT);
-        
+
         //Lista de productos a gráficar por defecto
         List<BussinesEntity> defaultProducts = new ArrayList<>();
         defaultProducts.add(productCache.lookup(80L)); //Queso
@@ -135,11 +137,11 @@ public class InventoryHome extends FedeController implements Serializable {
         //defaultProducts.add(productService.find(416L)); //Jugos
         //defaultProducts.add(productService.find(39640L)); //Frapuchino
         //defaultProducts.add(productService.find(39527L)); //Helado
-        
+
         setSelectedBussinesEntities(defaultProducts);
-        
+
         setMode("app.fede.chart.gap.total");
-        
+
         setOutcome("inventory-inbox");
     }
 
@@ -158,9 +160,9 @@ public class InventoryHome extends FedeController implements Serializable {
     public void setProductType(ProductType productType) {
         this.productType = productType;
     }
-    
+
     public Product getLastProduct() {
-        if (lastProduct == null){
+        if (lastProduct == null) {
             List<Product> obs = productService.findByNamedQuery("Product.findLastProduct", 1);
             lastProduct = obs.isEmpty() ? new Product() : (Product) obs.get(0);
         }
@@ -188,11 +190,12 @@ public class InventoryHome extends FedeController implements Serializable {
 
     public List<Product> getLastProducts() {
         int limit = Integer.parseInt(settingHome.getValue("app.fede.sales.dashboard.lasts.list.length", "10"));
-        if (lastProducts.isEmpty())
+        if (lastProducts.isEmpty()) {
             lastProducts = productService.findByNamedQuery("Product.findLastProducts", limit);
+        }
         return lastProducts;
     }
-    
+
     public String getSelectedKeys() {
         String _keys = "";
         if (getSelectedBussinesEntities() != null && !getSelectedBussinesEntities().isEmpty()) {
@@ -201,26 +204,37 @@ public class InventoryHome extends FedeController implements Serializable {
         return _keys;
     }
 
+    public Group getGroupSelected() {
+        return groupSelected;
+    }
+
+    public void setGroupSelected(Group groupSelected) {
+        this.groupSelected = groupSelected;
+    }
+
     public boolean mostrarFormularioProducto() {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "550");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "480");
         super.openDialog(settingHome.getValue("app.fede.inventory.popup", "popup_producto"), width, height, true);
         return true;
     }
-    
+
     @Override
     public void handleReturn(SelectEvent event) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    public void save(){
-        if (product.isPersistent()){
+
+    public void save() {
+
+        if (product.isPersistent()) {
             product.setLastUpdate(Dates.now());
         } else {
             product.setAuthor(this.subject);
             product.setOwner(this.subject);
         }
         productService.save(product.getId(), product);
+        product.add(groupSelected); //Añadir el ggroup (tipo) seleccionado al producto
+        productService.save(product.getId(),product); //Volver a guardar el producto para almacenar el ggroup
     }
 
     @Override
@@ -230,6 +244,7 @@ public class InventoryHome extends FedeController implements Serializable {
 
     /**
      * Retorna los grupos para este controlador
+     *
      * @return
      */
     @Override
@@ -250,15 +265,17 @@ public class InventoryHome extends FedeController implements Serializable {
     public void setLazyDataModel(LazyProductDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-    
+
     /**
      * Busca objetos <tt>Product</tt> para la clave de búsqueda en las columnas
      * name y code
+     *
      * @param keyword
-     * @return una lista de objetos <tt>Product</tt> que coinciden con la palabra clave dada.
+     * @return una lista de objetos <tt>Product</tt> que coinciden con la
+     * palabra clave dada.
      */
     public List<Product> find(String keyword) {
-        
+
         return productCache.lookup(keyword, ProductType.PRODUCT); //sólo productos
 //        keyword = keyword.trim();
 //        Map<String, Object> filters = new HashMap<>();
@@ -270,10 +287,12 @@ public class InventoryHome extends FedeController implements Serializable {
 //        QueryData<Product> queryData = productService.find(-1, -1, "code, name", QuerySortOrder.ASC, filters);
 //        return queryData.getResult();
     }
+
     /**
      * TODO obtener el top 10 de productos, esta implementación es ineficiente
      * recupera los objetos de uno en uno.
-     * @return 
+     *
+     * @return
      */
     public List<Product> findTop() {
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "15"));
@@ -281,14 +300,14 @@ public class InventoryHome extends FedeController implements Serializable {
         List<Product> result = new ArrayList<>();
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
-            if (_product != null){
+            if (_product != null) {
                 _product.getStatistics().setCount((Double) object[1]);
                 result.add(_product);
             }
         });
         return result;
     }
-   
+
     public List<Product> findLastProductsByType(String type) {
         Map<String, Object> filters = new HashMap<>();
         Map<String, String> columns = new HashMap<>();
@@ -297,14 +316,14 @@ public class InventoryHome extends FedeController implements Serializable {
         QueryData<Product> queryData = productService.find(-1, -1, "name", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
-    
+
     private Double countProduct(Long id, Date minimumDate, Date maximumDate) {
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProduct", 0, id, minimumDate, maximumDate);
         Double result = Double.valueOf(0);
-        for (Object[] object : objects){
+        for (Object[] object : objects) {
             result = (Double) object[1];
         }
-                
+
         return result;
     }
 
@@ -315,14 +334,14 @@ public class InventoryHome extends FedeController implements Serializable {
     public void setMode(String mode) {
         this.mode = mode;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////
     //Charts
     ////////////////////////////////////////////////////////////////////////////
     private BarChartModel topBarChartModel;
 
     public BarChartModel getTopBarChartModel() {
-        if (topBarChartModel == null){
+        if (topBarChartModel == null) {
             setTopBarChartModel(createBarModel());
         }
         return topBarChartModel;
@@ -331,29 +350,29 @@ public class InventoryHome extends FedeController implements Serializable {
     public void setTopBarChartModel(BarChartModel topBarChartModel) {
         this.topBarChartModel = topBarChartModel;
     }
-    
+
     private BarChartModel createBarModel() {
         BarChartModel barModel = initBarModel();
-         
+
         barModel.setTitle(settingHome.getValue("app.fede.chart.top.products", "Lo más vendido"));
         barModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "nw"));
         barModel.setExtender("skinBarChart");
         barModel.setAnimate(false);
         barModel.setShowPointLabels(false);
-         
+
         Axis xAxis = barModel.getAxis(AxisType.X);
         xAxis.setLabel(settingHome.getValue("app.fede.chart.top.products.xaxis.label", "Productos"));
-         
+
         Axis yAxis = barModel.getAxis(AxisType.Y);
         yAxis.setLabel(settingHome.getValue("app.fede.chart.top.products.yaxis.label", "Cantidad"));
         yAxis.setMin(0);
         //yAxis.setMax(settingHome.getValue("app.fede.chart.sales.scale.max", "200"));
         return barModel;
     }
-    
+
     private BarChartModel initBarModel() {
         BarChartModel model = new BarChartModel();
- 
+
         ChartSeries products = new ChartSeries();
         products.setLabel(settingHome.getValue("app.fede.chart.top.units", "Cantidad"));
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
@@ -362,25 +381,25 @@ public class InventoryHome extends FedeController implements Serializable {
             products.set(object[0], (Number) object[1]);
         });
         model.addSeries(products);
-         
+
         return model;
     }
 
     public LineChartModel buildLineBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
         return createLineChartModel(selectedBussinesEntities, skinChart);
     }
-    
+
     public BarChartModel buildBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
         return createBarChartModel(selectedBussinesEntities, skinChart);
     }
-    
+
     private LineChartModel createLineChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
         LineChartModel areaModel = new LineChartModel();
-        
-        if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
-            return  areaModel;
+
+        if (selectedBussinesEntities == null || selectedBussinesEntities.isEmpty()) {
+            return areaModel;
         }
- 
+
         LineChartSeries product = null;
         Date _start = getStart();
         Date _step = null;
@@ -390,8 +409,8 @@ public class InventoryHome extends FedeController implements Serializable {
             int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
-        
-        for (BussinesEntity entity: selectedBussinesEntities){
+
+        for (BussinesEntity entity : selectedBussinesEntities) {
             product = new LineChartSeries();
             product.setFill(false);
             product.setLabel(entity.getName());
@@ -412,37 +431,36 @@ public class InventoryHome extends FedeController implements Serializable {
         areaModel.setExtender(skinChart);
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
-        
-         
+
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
         yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
         yAxis.setMin(0);
-        
+
         return areaModel;
     }
-    
+
     private BarChartModel createBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart, String mode) {
         BarChartModel areaModel = new BarChartModel();
-        
-        if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
-            return  areaModel;
+
+        if (selectedBussinesEntities == null || selectedBussinesEntities.isEmpty()) {
+            return areaModel;
         }
- 
+
         BarChartSeries product = null;
         Date _start = getStart();
         Date _step = null;
         String label = "";
         Double total;
         int gap = Integer.parseInt(settingHome.getValue(getMode(), "7"));
-        
+
         if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
             int range = Integer.parseInt(settingHome.getValue(getMode(), "7"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
-        
-        for (BussinesEntity entity: selectedBussinesEntities){
+
+        for (BussinesEntity entity : selectedBussinesEntities) {
             product = new BarChartSeries();
             //product.setFill(false);
             product.setLabel(entity.getName());
@@ -463,41 +481,40 @@ public class InventoryHome extends FedeController implements Serializable {
         areaModel.setExtender(skinChart);
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
-        
-         
+
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
         yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
         yAxis.setMin(0);
-        
+
         return areaModel;
     }
-    
+
     private BarChartModel createBarChartModel(List<BussinesEntity> selectedBussinesEntities, String skinChart) {
         return createBarChartModel(selectedBussinesEntities, skinChart, "journal");
     }
-    
+
     private BarChartModel createProductBarChartModel(String skinChart) {
         BarChartModel areaModel = new BarChartModel();
-        
-        if (selectedBussinesEntities==null || selectedBussinesEntities.isEmpty()){
-            return  areaModel;
+
+        if (selectedBussinesEntities == null || selectedBussinesEntities.isEmpty()) {
+            return areaModel;
         }
- 
+
         BarChartSeries product = null;
         Date _start = getStart();
         Date _step = null;
         String label = "";
         Double total;
         int gap = Integer.parseInt(settingHome.getValue(getMode(), "7"));
-        
+
         if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
             int range = Integer.parseInt(settingHome.getValue(getMode(), "7"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
-        
-        for (BussinesEntity entity: selectedBussinesEntities){
+
+        for (BussinesEntity entity : selectedBussinesEntities) {
             product = new BarChartSeries();
             //product.setFill(false);
             product.setLabel(entity.getName());
@@ -518,14 +535,13 @@ public class InventoryHome extends FedeController implements Serializable {
         areaModel.setExtender(skinChart);
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
-        
-         
+
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
         yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
         yAxis.setMin(0);
-        
+
         return areaModel;
     }
 
@@ -549,7 +565,7 @@ public class InventoryHome extends FedeController implements Serializable {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
         }
-        
+
     }
 
     public void onRowSelect(SelectEvent event) {
@@ -563,25 +579,25 @@ public class InventoryHome extends FedeController implements Serializable {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
         }
     }
-    
-    public void cleanChartModels(){
+
+    public void cleanChartModels() {
         //dummy
     }
-    
+
     /**
      * Limpiar para refrescar vista
      */
-    public void clear(){
+    public void clear() {
         filter();
     }
-    
+
     public BarChartModel buildProductBarChartModel() {
         setStart(Dates.minimumDate(getStart()));
         setEnd(Dates.maximumDate(getEnd()));
         return buildBarChartModel(getSelectedBussinesEntities(), "skinBarChart");
     }
-    
-    public SelectItem[] getModesAsSelectItem(){
+
+    public SelectItem[] getModesAsSelectItem() {
         return UI.getSettingAsSelectItems(settingHome.findSettings("app.fede.chart.gap."), true);
     }
 
