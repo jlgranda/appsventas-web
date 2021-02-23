@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.jpapi.model.Group;
+import static org.jpapi.model.Group.Type.PRODUCT;
 import org.jpapi.model.profile.Subject;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -46,6 +48,8 @@ public class GroupHome extends FedeController implements Serializable {
     
     @EJB
     GroupService groupService;
+    @Inject
+    private SettingHome settingHome;
     
 
     @Override
@@ -117,4 +121,9 @@ public class GroupHome extends FedeController implements Serializable {
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+     public List<Group> getGroupsTypeProduct(){        
+        return groupService.findByType(Group.Type.PRODUCT);
+    }
+     
 }
