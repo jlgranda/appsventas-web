@@ -234,7 +234,7 @@ public class InventoryHome extends FedeController implements Serializable {
         }
         productService.save(product.getId(), product);
         product.add(groupSelected); //Añadir el ggroup (tipo) seleccionado al producto
-        productService.save(product.getId(),product); //Volver a guardar el producto para almacenar el ggroup
+        productService.save(product.getId(), product); //Volver a guardar el producto para almacenar el ggroup
     }
 
     @Override
@@ -333,6 +333,58 @@ public class InventoryHome extends FedeController implements Serializable {
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public SelectItem[] getModesAsSelectItem() {
+        return UI.getSettingAsSelectItems(settingHome.findSettings("app.fede.chart.gap."), true);
+    }
+
+    /**
+     * Filtro que llena el Lazy Datamodel
+     */
+    private void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyProductDataModel(productService);
+        }
+        lazyDataModel.setOwner(subject);
+        lazyDataModel.setProductType(getProductType());
+        lazyDataModel.setStart(this.getStart());
+        lazyDataModel.setEnd(this.getEnd());
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
+
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                Product p = (Product) event.getObject();
+                redirectTo("/pages/fede/inventory/product.jsf?productId=" + p.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+        }
+    }
+
+    public void cleanChartModels() {
+        //dummy
+    }
+
+    /**
+     * Limpiar para refrescar vista
+     */
+    public void clear() {
+        filter();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -545,60 +597,10 @@ public class InventoryHome extends FedeController implements Serializable {
         return areaModel;
     }
 
-    /**
-     * Filtro que llena el Lazy Datamodel
-     */
-    private void filter() {
-        if (lazyDataModel == null) {
-            lazyDataModel = new LazyProductDataModel(productService);
-        }
-        lazyDataModel.setOwner(subject);
-        lazyDataModel.setProductType(getProductType());
-
-        if (getKeyword() != null && getKeyword().startsWith("label:")) {
-            String parts[] = getKeyword().split(":");
-            if (parts.length > 1) {
-                lazyDataModel.setTags(parts[1]);
-            }
-            lazyDataModel.setFilterValue(null);//No buscar por keyword
-        } else {
-            lazyDataModel.setTags(getTags());
-            lazyDataModel.setFilterValue(getKeyword());
-        }
-
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        try {
-            //Redireccionar a RIDE de objeto seleccionado
-            if (event != null && event.getObject() != null) {
-                Product p = (Product) event.getObject();
-                redirectTo("/pages/fede/inventory/product.jsf?productId=" + p.getId());
-            }
-        } catch (IOException ex) {
-            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
-        }
-    }
-
-    public void cleanChartModels() {
-        //dummy
-    }
-
-    /**
-     * Limpiar para refrescar vista
-     */
-    public void clear() {
-        filter();
-    }
-
     public BarChartModel buildProductBarChartModel() {
         setStart(Dates.minimumDate(getStart()));
         setEnd(Dates.maximumDate(getEnd()));
         return buildBarChartModel(getSelectedBussinesEntities(), "skinBarChart");
-    }
-
-    public SelectItem[] getModesAsSelectItem() {
-        return UI.getSettingAsSelectItems(settingHome.findSettings("app.fede.chart.gap."), true);
     }
 
     @Override

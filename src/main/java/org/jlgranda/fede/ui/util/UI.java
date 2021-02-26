@@ -51,38 +51,41 @@ import org.primefaces.model.StreamedContent;
  * @author jlgranda
  */
 //@ManagedBean(name = "ui")
-@Named (value = "ui")// Or @ManagedBean
+@Named(value = "ui")// Or @ManagedBean
 @ApplicationScoped
 public class UI {
-    
+
     @Inject
     private SettingHome settingHome;
 
     @PostConstruct
     public void init() {
     }
-    
+
     public Organization.Type[] getOrganizationTypes() {
         return Organization.Type.values();
     }
-    
+
     public DocumentType[] getDocumentTypes() {
         return DocumentType.values();
     }
-    
+
     public ProductType[] getProductTypes() {
         return ProductType.values();
     }
-        
-    
+
+    public Group.Type[] getGroupTypes() {
+        return Group.Type.values();
+    }
+
     public EmissionType[] getEmissionTypes() {
         return EmissionType.values();
     }
-    
+
     public TaxType[] getTaxTypes() {
         return TaxType.values();
     }
-    
+
     public List<SelectItem> getDocumentTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -92,7 +95,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public List<SelectItem> getProductTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -102,8 +105,18 @@ public class UI {
         }
         return items;
     }
-    
-    public SelectItem[] getGroupTypesAsSelectItem(List<Group> entities){
+
+    public List<SelectItem> getGroupTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (Group.Type t : getGroupTypes()) {
+            item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+            items.add(item);
+        }
+        return items;
+    }
+
+    public SelectItem[] getGroupTypesAsSelectItem(List<Group> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
         SelectItem[] items = new SelectItem[size];
@@ -117,7 +130,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public List<SelectItem> getTaxTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -127,6 +140,7 @@ public class UI {
         }
         return items;
     }
+
     public List<SelectItem> getEmisionTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -136,7 +150,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public List<SelectItem> getOrganizationTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -146,8 +160,8 @@ public class UI {
         }
         return items;
     }
-    
-     public static SelectItem[] getSelectItems(List<?> entities, boolean selectOne) {
+
+    public static SelectItem[] getSelectItems(List<?> entities, boolean selectOne) {
         int size = selectOne ? entities.size() + 1 : entities.size();
         SelectItem[] items = new SelectItem[size];
         int i = 0;
@@ -160,7 +174,7 @@ public class UI {
         }
         return items;
     }
-     
+
     public static SelectItem[] getSettingAsSelectItems(List<Setting> entities, boolean selectOne) {
         int size = selectOne ? entities.size() + 1 : entities.size();
         SelectItem[] items = new SelectItem[size];
@@ -174,7 +188,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public List<SelectItem> getJobRoleAsSelectItems(List<JobRole> values) {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -187,6 +201,7 @@ public class UI {
 
         return items;
     }
+
     public List<SelectItem> getPaymentMethodsAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -198,10 +213,9 @@ public class UI {
         items.add(item);
         item = new SelectItem("TARJETA DEBITO", "TARJETA DEBITO");
         items.add(item);
-        
+
         return items;
     }
-    
 
     public List<SelectItem> getValuesAsSelectItem(List<Object> values) {
         List<SelectItem> items = new ArrayList<>();
@@ -215,26 +229,27 @@ public class UI {
 
         return items;
     }
-    
+
     /**
-     * Calcula el tamaño de contenedor para el tamaño de elementos 
-     * identificado por size
+     * Calcula el tamaño de contenedor para el tamaño de elementos identificado
+     * por size
+     *
      * @param size
      * @return el contenedor adecuado para size
      */
-    public int calculeContainer(long size){
+    public int calculeContainer(long size) {
         return (int) (100 / size);
     }
 
     private Object cleanValue(Object value) {
-        
+
         if (value == null) {
             return null;
         }
-        if (!(value instanceof String)){
+        if (!(value instanceof String)) {
             return value;
         }
-        
+
         String cleaned = value.toString();
 
         if (cleaned.contains("*")) {
@@ -243,78 +258,86 @@ public class UI {
 
         return cleaned;
     }
-    
+
     /**
      * Imprime emoticons para ocultar la cantidad factor
+     *
      * @param total
      * @param gap
-     * @return 
+     * @return
      */
-    public String calculeEmoticon(BigDecimal total, int gap){
+    public String calculeEmoticon(BigDecimal total, int gap) {
         String emoticon = "<i class=\"fa  fa-flag-o\"></i>";
         int half_gap = gap / 2;
-        if (total.compareTo(BigDecimal.valueOf(gap)) > 0){
+        if (total.compareTo(BigDecimal.valueOf(gap)) > 0) {
             int factor;
             factor = total.intValue() / gap;
             emoticon = "";
-            for (int i=0; i < factor; i++){
+            for (int i = 0; i < factor; i++) {
                 emoticon = emoticon + "<i class=\"fa fa-flag\"></i>";
             }
-            
+
             BigDecimal excedente = total.subtract(new BigDecimal(factor * gap));
-            if (excedente.compareTo(BigDecimal.valueOf(half_gap)) > 0){
+            if (excedente.compareTo(BigDecimal.valueOf(half_gap)) > 0) {
                 emoticon = emoticon + "<i class=\"fa fa-flag-checkered\"></i>";
             } else {
                 emoticon = emoticon + "<i class=\"fa fa-flag-o\"></i>";
             }
-        } else if (total.compareTo(BigDecimal.valueOf(half_gap)) > 0){
+        } else if (total.compareTo(BigDecimal.valueOf(half_gap)) > 0) {
             emoticon = "<i class=\"fa fa-flag-checkered\"></i>";
-        } 
+        }
         return emoticon;
     }
-    /**Verifica que se haya cumplido con el salto dado para notificación de cumplimiento de totales
+
+    /**
+     * Verifica que se haya cumplido con el salto dado para notificación de
+     * cumplimiento de totales
+     *
      * @param total
      * @param gap
-     * @return true si se ha completa la mitad y/o el total, falso en caso contrario
+     * @return true si se ha completa la mitad y/o el total, falso en caso
+     * contrario
      */
-    public static boolean isOver(BigDecimal total, int gap){
+    public static boolean isOver(BigDecimal total, int gap) {
         boolean isOver = false;
         int half_gap = gap / 2;
         int factor;
-        if (total.compareTo(BigDecimal.valueOf(gap)) > 0){
+        if (total.compareTo(BigDecimal.valueOf(gap)) > 0) {
             factor = total.intValue() % gap;
             isOver = factor == 0;
-        } else if (total.compareTo(BigDecimal.valueOf(half_gap)) > 0){
+        } else if (total.compareTo(BigDecimal.valueOf(half_gap)) > 0) {
             factor = total.intValue() % half_gap;
             isOver = factor == 0;
-        } 
+        }
         return isOver;
     }
 
-
     public static Integer calculePorcentaje(int pageWidth, int porcentaje) {
-        
+
         double factor = (porcentaje / (double) 100);
         int valor = (int) (pageWidth * factor);
         //System.out.println(">>> pageWidth: " + pageWidth + ", pocentaje:" + porcentaje + ", factor" + factor+ ", valor " + valor);
         return valor;
     }
-    
+
 //    public String renderer(String templete, BussinesEntity entity){
 //        //TODO Aplicar template via velocity
 //        return entity.getName() + ", " + entity.getCode() + ", " + entity.getDescription();
 //    }
-    
-    public String renderer(String template, Subject entity){
-        if (entity == null) return "";
+    public String renderer(String template, Subject entity) {
+        if (entity == null) {
+            return "";
+        }
         //TODO Aplicar template via velocity
         return entity.getFullName() + ", " + entity.getCode() + ", " + entity.getDescription();
     }
+
     /**
      * https://stackoverflow.com/questions/8207325/display-dynamic-image-from-database-or-remote-source-with-pgraphicimage-and-str
+     *
      * @param image
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public static StreamedContent translateImageFromDB(byte[] image) throws IOException {
         if (image != null) {
@@ -332,19 +355,19 @@ public class UI {
             return new DefaultStreamedContent();
         }
     }
-    
+
     public TimeZone getTimeZone() {
         TimeZone timeZone = TimeZone.getDefault();
         return timeZone;
     }
-    
-    public String truncateString(String string){
+
+    public String truncateString(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.gift.summary.length", "28")));
     }
-    
+
     public static void main(String[] args) {
         System.out.println(new org.apache.commons.codec.digest.Crypt().crypt("f3d3"));
-        
+
         UI.calculePorcentaje(297, 10);
         UI.calculePorcentaje(297, 60);
         UI.calculePorcentaje(297, 15);

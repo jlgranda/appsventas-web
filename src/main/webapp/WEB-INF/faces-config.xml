@@ -85,6 +85,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>inventory-inbox</from-outcome>
+            <to-view-id>/pages/fede/inventory/group_items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>preinvoices</from-outcome>
             <to-view-id>/pages/fede/sales/preinvoices.jsf</to-view-id>
             <redirect />
