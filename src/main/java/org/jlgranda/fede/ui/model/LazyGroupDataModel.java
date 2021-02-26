@@ -16,7 +16,6 @@
  */
 package org.jlgranda.fede.ui.model;
 
-import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jlgranda.fede.model.sales.Product;
-import org.jlgranda.fede.model.sales.ProductType;
-import org.jlgranda.fede.model.sales.Product_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
+import com.jlgranda.fede.ejb.GroupService;
+import org.jpapi.model.Group;
+import org.jpapi.model.Group_;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
@@ -42,16 +41,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-public class LazyProductDataModel extends LazyDataModel<Product> implements Serializable {
+public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
     private static final long serialVersionUID = -3989947588787365293L;
 
-    Logger logger = LoggerFactory.getLogger(LazyProductDataModel.class);
+    Logger logger = LoggerFactory.getLogger(LazyGroupDataModel.class);
 
-    private ProductService bussinesEntityService;
+    private GroupService bussinesEntityService;
 
-    private List<Product> resultList;
+    private List<Group> resultList;
     private int firstResult = 0;
 
     private BussinesEntityType type;
@@ -74,7 +73,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
 
     /**
      */
-    private ProductType productType;
+    private Group.Type groupType;
 
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
@@ -82,7 +81,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
 
     private String filterValue;
 
-    public LazyProductDataModel(ProductService bussinesEntityService) {
+    public LazyGroupDataModel(GroupService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
         this.bussinesEntityService = bussinesEntityService;
@@ -92,7 +91,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     public void init() {
     }
 
-    public List<Product> getResultList() {
+    public List<Group> getResultList() {
         logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
@@ -145,12 +144,12 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         this.end = end;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public Group.Type getGroupType() {
+        return groupType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setGroupType(Group.Type groupType) {
+        this.groupType = groupType;
     }
 
     public String getFilterValue() {
@@ -195,17 +194,17 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     }
 
     @Override
-    public Product getRowData(String rowKey) {
+    public Group getRowData(String rowKey) {
         return bussinesEntityService.find(Long.valueOf(rowKey));
     }
 
     @Override
-    public Object getRowKey(Product entity) {
+    public Object getRowKey(Group entity) {
         return entity.getId();
     }
 
     @Override
-    public List<Product> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<Group> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
 
         int end = first + pageSize;
 
@@ -223,18 +222,18 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()) {
-            _filters.put(Product_.createdOn.getName(), range); //Filtro de fecha inicial
+        if (!range.isEmpty()){
+            _filters.put(Group_.createdOn.getName(), range); //Filtro de fecha inicial
         }
 
-        _filters.put(Product_.owner.getName(), getOwner()); //Filtro por defecto
-
+        _filters.put(Group_.owner.getName(), getOwner()); //Filtro por defecto
+        
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
 
-        if (getProductType() != null) {
-            _filters.put("productType", getProductType()); //Filtro de tipo de producto
+        if (getGroupType() != null) {
+            _filters.put("groupType", getGroupType()); //Filtro de tipo de grupo
         }
 
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
@@ -243,11 +242,10 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
 
         _filters.putAll(filters);
 
-        if (sortField == null) {
-            sortField = Product_.createdOn.getName();
+        if (sortField == null){
+            sortField = Group_.createdOn.getName();
         }
-
-        QueryData<Product> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<Group> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
@@ -268,3 +266,4 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
 }
+ 

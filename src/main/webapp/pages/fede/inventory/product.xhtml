@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['module.stocklist']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.inventory.product']}</p:link></li>
+        <li><p:link outcome="/pages/fede/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['New'] : i18n['common.edit']} #{i18n['app.fede.inventory.product']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              required="#{true}" immediate="true"> 
                                 <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@form" />
+                                <!--<p:ajax update="@form" />-->
                             </p:selectOneMenu>
                         </div>
                     </div>
@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
                                 <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@form" />
+                                <!--<p:ajax update="@form" />-->
                             </p:selectOneMenu>
                         </div>
                     </div>
@@ -109,14 +109,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         <p:commandButton ajax="true" disabled="false" immediate="true"
                                          actionListener="#{inventoryHome.closeDialog(null)}" 
-                                         action="home"
+                                         action="items"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                          />
-                        <!--p:menuButton value="#{i18n['common.options']}">
+<!--                        <p:menuButton value="#{i18n['common.options']}">
                             <p:menuitem value="#{i18n['Save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                         immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
-                        </p:menuButton-->
+                        </p:menuButton>-->
                     </f:facet>
 
                 </p:toolbar>
