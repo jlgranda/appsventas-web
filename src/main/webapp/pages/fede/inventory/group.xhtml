@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <ui:define name="params">
         <f:metadata>
-            <f:viewParam name="groupId" value="#{groupHome.groupId}"/>
+            <f:viewParam name="groupId" value="#{groupInventoryHome.groupId}"/>
         </f:metadata>
     </ui:define>
 
@@ -36,7 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['common.admin']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupHome.groupId == null ? i18n['New'] : i18n['common.edit']} #{i18n['app.fede.inventory.group']}</p:link></li>
+        <li>#{i18n['app.fede.inventory']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupInventoryHome.groupId == null ? i18n['New'] : i18n['common.edit']} #{i18n['app.fede.inventory.group']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -46,34 +48,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <h1 class="BigTopic">#{i18n['app.fede.inventory.group']}</h1> <!--Sección 1: Título-->
                 <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}"
-                                    value="#{groupHome.group.name}" required="true"
+                                    value="#{groupInventoryHome.group.name}" required="true"
                                     inlinehelp="#{messages['app.fede.inventory.group.name.inlinehelp']}"
                                     execute="@this save" render="nme"/>
-                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}"
-                                    value="#{groupHome.group.icon}" required="true"
-                                    inlinehelp="#{messages['common.icon.inlinehelp']}"
-                                    execute="@this save" render="icon"/>                 
-                    <div class="Container100 Responsive50">
+<!--                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}"
+                                    value="#{groupInventoryHome.group.icon}" required="true"
+                                    inlinehelp="#{messages['common.icon.inlinehelp']}"/>                 -->
+<!--                    <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
                             <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
-                            <p:selectOneMenu value="#{groupHome.group.groupType}" effect="fade"
+                            <p:selectOneMenu value="#{groupInventoryHome.group.groupType}" effect="fade"
                                              required="#{true}" immediate="true">
                                 <f:selectItem itemLabel="#{messages['common.choice']}" itemValue=""/>
                                 <f:selectItems value="#{ui.groupTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <!--<p:ajax update="@form"/>-->
                             </p:selectOneMenu>
                         </div>
-                    </div>
-                    <jlgranda:input id="module" name="module" type="text" label="#{i18n['common.module']}"
-                                    value="#{groupHome.group.module}" required="true"
+                    </div>-->
+<!--                    <jlgranda:input id="module" name="module" type="text" label="#{i18n['common.module']}"
+                                    value="#{groupInventoryHome.group.module}" required="true"
                                     inlinehelp="#{messages['common.module.inlinehelp']}"
-                                    execute="@this save" render="module"/>
-                    <jlgranda:input id="colr" name="colr" type="text" label="#{i18n['common.color']}"
-                                    value="#{groupHome.group.color}" required="false"
+                                    execute="@this save" render="module"/>-->
+<!--                    <jlgranda:input id="colr" name="colr" type="text" label="#{i18n['common.color']}"
+                                    value="#{groupInventoryHome.group.color}" required="false"
                                     inlinehelp="#{messages['common.color.inlinehelp']}"
-                                    execute="@this save" render="colr"/>                    
+                                    execute="@this save" render="colr"/>                    -->
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
-                                    value="#{groupHome.group.description}" required="false"
+                                    value="#{groupInventoryHome.group.description}" required="false"
                                     inlinehelp="#{messages['app.fede.inventory.group.description.inlinehelp']}"
                                     execute="@this save" render="dscrpn"/>
                 </div>
@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
                     <f:facet name="left">
                         <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"
-                                         actionListener="#{groupHome.save()}" action="group_items"
+                                         actionListener="#{groupInventoryHome.save()}" action="group_items"
                                          disabled="#{false}"
                                          style="width: auto !important;"
                                          type="submit"/>
@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
-                                         actionListener="#{groupHome.closeDialog(null)}" action="group_items"
+                                         actionListener="#{groupInventoryHome.closeDialog(null)}" action="group_items"
                                          disabled="false" immediate="true"
                                          styleClass="GrayButton"
                                          type="submit"/>                          

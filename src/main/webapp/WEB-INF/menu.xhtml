@@ -31,8 +31,10 @@
                         <p:menuitem id="rm_inventory_products" value="#{i18n['app.fede.inventory.products']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         <p:submenu id="om_admin" label="Administración" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}">
                             <p:menuitem id="om_subjects" value="Personas" icon="fa fa-fw fa-user" outcome="/pages/fede/admin/subject/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                        </p:submenu>
+                        <p:submenu id="om_admin_inventory" label="Inventario" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}">
                             <p:menuitem id="om_products" value="Productos" icon="fa fa-fw fa-apple" outcome="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
-                            <p:menuitem id="om_groups" value="Grupos" icon="fa fa-fw fa-object-group" outcome="/pages/fede/inventory/group_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_groups" value="Categorías" icon="fa fa-fw fa-object-group" outcome="/pages/fede/inventory/group_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                         </p:submenu>
                         <p:submenu id="om_talento_humano" label="Talento Humano" icon="fa fa-fw fa-clock-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
                             <p:menuitem id="om_talentohumano_registrar" value="Registrar" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('EMPLOYEE')}"/>
