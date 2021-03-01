@@ -39,11 +39,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:inputText>
                         <label class="Gray">#{i18n['Start']}</label>
                         <p:calendar value="#{groupHome.start}" class="input-sm">
-                            <!--<p:ajax event="dateSelect" listener="#{groupHome.clear()}" oncomplete="form.submit();"/>-->
+                            <p:ajax event="dateSelect" listener="#{groupHome.clear()}"/> <!--oncomplete="form.submit();"-->
                         </p:calendar>
                         <label class="Gray">#{i18n['End']}</label>
                         <p:calendar value="#{groupHome.end}" class="input-sm">
-                            <!--<p:ajax event="dateSelect" listener="#{groupHome.clear()}" oncomplete="form.submit();"/>-->
+                            <p:ajax event="dateSelect" listener="#{groupHome.clear()}"/> <!--oncomplete="form.submit();"-->
                         </p:calendar>
                         <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;"
                                          styleClass="raised-btn" actionListener="#{groupHome.clear()}" ajax="false">

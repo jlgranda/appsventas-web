@@ -40,11 +40,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:inputText>
                         <label class="Gray">#{i18n['Start']}&nbsp;</label>
                         <p:calendar value="#{inventoryHome.start}" class="input-sm">
-                            <!--<p:ajax event="dateSelect" listener="#{inventoryHome.clear()}" oncomplete="form.submit();"/>-->
+                            <p:ajax event="dateSelect" listener="#{inventoryHome.clear()}"/> <!--oncomplete="form.submit();"-->
                         </p:calendar>
                         <label class="Gray">#{i18n['End']}&nbsp;</label>
                         <p:calendar value="#{inventoryHome.end}" class="input-sm">
-                            <!--<p:ajax event="dateSelect" listener="#{inventoryHome.clear()}" oncomplete="form.submit();"/>-->
+                            <p:ajax event="dateSelect" listener="#{inventoryHome.clear()}"/> <!--oncomplete="form.submit();"-->
                         </p:calendar>
                         <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{inventoryHome.clear()}" ajax="false">
                         </p:commandButton>
