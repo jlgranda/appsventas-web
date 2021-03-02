@@ -576,10 +576,10 @@ public class SummaryHome extends FedeController implements Serializable {
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
         List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
-            if (object[1] == null) {
-                object[1] = object[0];
+            if (object[0] == null) {
+                object[0] = object[2].toString() + " " + object[3].toString();
             }
-            chartSerie.set(object[1], ((BigDecimal) object[2]).doubleValue());
+            chartSerie.set(object[0], ((BigDecimal) object[1]).doubleValue());
         });
         setListPurchases(objects);
         return chartSerie;
@@ -588,11 +588,8 @@ public class SummaryHome extends FedeController implements Serializable {
     public BigDecimal getImporteSumado() {
         BigDecimal total = new BigDecimal(0);
         for (int i = 0; i < getListPurchases().size(); i++) {
-            total = total.add((BigDecimal)getListPurchases().get(i)[2]);
-            System.out.println("\nValor: " + i + getListPurchases().get(i)[2]);
+            total = total.add((BigDecimal) getListPurchases().get(i)[1]);
         }
-        System.out.println("\nTotal: " + total);
-
         return total;
     }
 

@@ -64,13 +64,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['Start']}</label>
                                 <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="barModelPurchases button-detail"/> <!-- oncomplete="form.submit();" --> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> <!-- oncomplete="form.submit();" --> 
                                 </p:calendar>
                             </h:panelGroup>
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['End']}</label>
                                 <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="barModelPurchases button-detail"/> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> 
                                 </p:calendar>                            
                             </h:panelGroup>
                         </h:panelGroup>
@@ -97,26 +97,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:panel>
                 </div>
             </div>
-            <p:dialog style="width: 50%" 
-                      widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade"
-                      resizable="false">
+            <p:dialog widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade"
+                      resizable="false" class="Container100 Responsive50">
                 <p:outputPanel id="tableDetail" style="text-align:center;"> 
                     <p:dataTable id="dataTable" var="purchases" value="#{summaryHome.listPurchases}">
                         <f:facet name="header">
                             <h:outputText value="#{i18n['common.statistics.products.provider.table']}"/>
                         </f:facet>                    
                         <p:column>
-                            <h:outputText value="#{purchases[1]}"/>
+                            <h:outputText value="#{purchases[0]}"/>
                         </p:column>
                         <p:column>
-                            <h:outputText value="#{purchases[2]}">
+                            <h:outputText value="#{purchases[1]}">
                                 <f:convertNumber type="currency" currencySymbol="$"/>
                             </h:outputText>
                         </p:column>
                         <p:columnGroup type="footer">
                             <p:row>
-                                <p:column colspan="1" style="text-align:right" footerText="#{i18n['common.statistics.products.provider.table.total']}"/>
-                                <p:column style="text-align:center" footerText="$#{summaryHome.getImporteSumado()}"/>
+                                <p:column colspan="1" footerText="#{i18n['common.statistics.products.provider.table.total']}" style="font-weight: bolder;"/>
+                                <p:column footerText="$#{summaryHome.getImporteSumado()}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>
                             </p:row>
                         </p:columnGroup>
                     </p:dataTable>
