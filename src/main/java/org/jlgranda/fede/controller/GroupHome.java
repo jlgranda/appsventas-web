@@ -58,6 +58,8 @@ public class GroupHome extends FedeController implements Serializable {
 
     @Inject
     private Subject subject;
+    
+    private Group lastGroup;
 
     @EJB
     private GroupService groupService;
@@ -80,7 +82,8 @@ public class GroupHome extends FedeController implements Serializable {
             range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+//        setStart(Dates.minimumDate(Dates.addDays(getLastProduct().getCreatedOn(),0)));
         setGroup(groupService.createInstance());//Instancia de Grupo
         //Carga inicial de grupos
         filter();
@@ -160,6 +163,18 @@ public class GroupHome extends FedeController implements Serializable {
 
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
+    }
+    
+    public Group getLastGroup() {
+        if (lastGroup == null) {
+            List<Group> obs = groupService.findByNamedQuery("Group.findLastGroup", 1);
+            lastGroup = obs.isEmpty() ? new Group() : (Group) obs.get(0);
+        }
+        return lastGroup;
+    }
+
+    public void setLastGroup(Group lastGroup) {
+        this.lastGroup = lastGroup;
     }
 
     public Group getGroup() {

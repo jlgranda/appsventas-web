@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -100,6 +101,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private BigDecimal purchaseTotal;
     private BigDecimal costTotal;
     private BigDecimal profilTotal;
+    private List<Object[]> listPurchases;
 
     /**
      * Selector de grupos de fechas
@@ -183,6 +185,14 @@ public class SummaryHome extends FedeController implements Serializable {
 
     public void setGrupoFechas(Date grupoFechas) {
         this.grupoFechas = grupoFechas;
+    }
+
+    public List<Object[]> getListPurchases() {
+        return listPurchases;
+    }
+
+    public void setListPurchases(List<Object[]> listPurchases) {
+        this.listPurchases = listPurchases;
     }
 
     /**
@@ -566,13 +576,21 @@ public class SummaryHome extends FedeController implements Serializable {
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
         List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
-            if (object[1] == null) {
-                object[1] = object[0];
+            if (object[0] == null) {
+                object[0] = object[2].toString() + " " + object[3].toString();
             }
-            chartSerie.set(object[1], ((BigDecimal) object[2]).doubleValue());
+            chartSerie.set(object[0], ((BigDecimal) object[1]).doubleValue());
         });
-
+        setListPurchases(objects);
         return chartSerie;
+    }
+
+    public BigDecimal getImporteSumado() {
+        BigDecimal total = new BigDecimal(0);
+        for (int i = 0; i < getListPurchases().size(); i++) {
+            total = total.add((BigDecimal) getListPurchases().get(i)[1]);
+        }
+        return total;
     }
 
     private HorizontalBarChartModel createHorizontalPurchasesBarModel() {
