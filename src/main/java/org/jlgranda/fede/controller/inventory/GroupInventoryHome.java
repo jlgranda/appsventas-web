@@ -15,8 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package org.jlgranda.fede.controller;
+package org.jlgranda.fede.controller.inventory;
 
+import org.jlgranda.fede.controller.*;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import java.io.IOException;
@@ -32,7 +33,6 @@ import javax.inject.Named;
 import org.jlgranda.fede.ui.model.LazyGroupDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
-import org.jpapi.model.GroupType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
@@ -47,19 +47,17 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @RequestScoped
-public class GroupHome extends FedeController implements Serializable {
+public class GroupInventoryHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -1007161141552849702L;
 
-    Logger logger = LoggerFactory.getLogger(GroupHome.class);
+    Logger logger = LoggerFactory.getLogger(GroupInventoryHome.class);
 
     @Inject
     private SettingHome settingHome;
 
     @Inject
     private Subject subject;
-    
-    private Group lastGroup;
 
     @EJB
     private GroupService groupService;
@@ -82,11 +80,17 @@ public class GroupHome extends FedeController implements Serializable {
             range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));
-//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-//        setStart(Dates.minimumDate(Dates.addDays(getLastProduct().getCreatedOn(),0)));
-        setGroup(groupService.createInstance());//Instancia de Grupo
-        //Carga inicial de grupos
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setGroupType(Group.Type.PRODUCT);
+        if ( Group.Type.PRODUCT.equals(getGroupType()) ) {
+            Group instance = groupService.createInstance(getGroupType());//Instancia de Grupo
+            instance.setColor("panel-primary");
+            instance.setIcon("fa fa-object-group");
+            instance.setModule("inventory");
+            setGroup(instance);//Instancia de Grupo
+        }
         filter();
+        
     }
 
     /**
@@ -164,18 +168,6 @@ public class GroupHome extends FedeController implements Serializable {
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
-    
-    public Group getLastGroup() {
-        if (lastGroup == null) {
-            List<Group> obs = groupService.findByNamedQuery("Group.findLastGroup", 1);
-            lastGroup = obs.isEmpty() ? new Group() : (Group) obs.get(0);
-        }
-        return lastGroup;
-    }
-
-    public void setLastGroup(Group lastGroup) {
-        this.lastGroup = lastGroup;
-    }
 
     public Group getGroup() {
         if(this.groupId != null && !this.group.isPersistent()){
@@ -193,7 +185,6 @@ public class GroupHome extends FedeController implements Serializable {
     }
 
     public void setGroupType(Group.Type groupType) {
-        System.out.println(">>>>>>>>>>>>>>>>>> Group.Type: " + groupType);
         this.groupType = groupType;
     }
 
@@ -220,6 +211,7 @@ public class GroupHome extends FedeController implements Serializable {
         lazyDataModel.setOwner(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
+        lazyDataModel.setGroupType(getGroupType());
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {

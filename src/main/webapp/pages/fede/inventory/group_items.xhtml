@@ -35,37 +35,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12">
                     <div class="card">
                         <label class="Gray">#{i18n['Find']}</label>
-                        <p:inputText value="#{groupHome.keyword}" class="input-sm">
+                        <p:inputText value="#{groupInventoryHome.keyword}" class="input-sm">
                         </p:inputText>
                         <label class="Gray">#{i18n['Start']}</label>
-                        <p:calendar value="#{groupHome.start}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{groupHome.clear()}"/> <!--oncomplete="form.submit();"-->
+                        <p:calendar value="#{groupInventoryHome.start}" class="input-sm">
+                            <!--<p:ajax event="dateSelect" listener="#{groupInventoryHome.clear()}" oncomplete="form.submit();"/>-->
                         </p:calendar>
                         <label class="Gray">#{i18n['End']}</label>
-                        <p:calendar value="#{groupHome.end}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{groupHome.clear()}"/> <!--oncomplete="form.submit();"-->
+                        <p:calendar value="#{groupInventoryHome.end}" class="input-sm">
+                            <!--<p:ajax event="dateSelect" listener="#{groupInventoryHome.clear()}" oncomplete="form.submit();"/>-->
                         </p:calendar>
                         <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;"
-                                         styleClass="raised-btn" actionListener="#{groupHome.clear()}" ajax="false">
+                                         styleClass="raised-btn" actionListener="#{groupInventoryHome.clear()}" ajax="false">
                         </p:commandButton>
                         <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/inventory/group.jsf"/>
                     </div>
                     <div class="card">
                         <p:dataTable var="group"
-                                     value="#{groupHome.lazyDataModel}"
+                                     value="#{groupInventoryHome.lazyDataModel}"
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                      sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{groupHome.selectedBussinesEntities}"
+                                     reflow="true" selection="#{groupInventoryHome.selectedBussinesEntities}"
                                      rowKey="#{group.id}"
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns','true')}"
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                            <p:ajax event="rowSelect" listener="#{groupHome.onRowSelect}"/>
+                            <p:ajax event="rowSelect" listener="#{groupInventoryHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width: 32px; text-align: center"/>
                             <p:column headerText="#{i18n['name']}" sortBy="#{group.name}" styleClass="text-right">
                                 <h:outputText value="#{group.name}"/>                            
                             </p:column>
-                            <p:column headerText="#{i18n['common.icon']}" sortBy="#{group.icon}" styleClass="text-right">
-                                <h:outputText value="#{group.icon}"/>                            
+                            <p:column headerText="#{i18n['common.description']}" sortBy="#{group.descripcion}" styleClass="text-right">
+                                <h:outputText value="#{group.description}"/>                            
                             </p:column>
                             <p:column id="fechaEmision" headerText="#{i18n['common.crationDate']}" sortBy="#{group.createdOn}" styleClass="text-right">
                                 <h:outputText value="#{group.createdOn}">
