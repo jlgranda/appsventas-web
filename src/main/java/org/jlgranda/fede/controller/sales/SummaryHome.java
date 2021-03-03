@@ -37,6 +37,7 @@ import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
+import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
@@ -99,6 +100,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private BigDecimal discountTotal;
     private BigDecimal salesTotal;
     private BigDecimal purchaseTotal;
+    private BigDecimal transferTotal;
     private BigDecimal costTotal;
     private BigDecimal profilTotal;
     private List<Object[]> listPurchases;
@@ -123,6 +125,7 @@ public class SummaryHome extends FedeController implements Serializable {
         setDiscountTotal(BigDecimal.ZERO);
         setSalesTotal(BigDecimal.ZERO);
         setPurchaseTotal(BigDecimal.ZERO);
+        setTransferTotal(BigDecimal.ZERO);
         setCostTotal(BigDecimal.ZERO);
         setProfilTotal(BigDecimal.ZERO);
 
@@ -161,6 +164,14 @@ public class SummaryHome extends FedeController implements Serializable {
 
     public void setPurchaseTotal(BigDecimal purchaseTotal) {
         this.purchaseTotal = purchaseTotal;
+    }
+
+    public BigDecimal getTransferTotal() {
+        return transferTotal;
+    }
+
+    public void setTransferTotal(BigDecimal transferTotal) {
+        this.transferTotal = transferTotal;
     }
 
     public BigDecimal getCostTotal() {
@@ -218,7 +229,12 @@ public class SummaryHome extends FedeController implements Serializable {
         objects.stream().forEach((Object object) -> {
             this.purchaseTotal = (BigDecimal) object;
         });
-
+        System.out.print("\nPurchaseTotal: " + this.purchaseTotal);
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetween", Integer.MAX_VALUE, this.subject, _start, _end, EmissionType.TRANSFER);
+        objects.stream().forEach((Object object) -> {
+            this.transferTotal = (BigDecimal) object;
+        });
+        
         if (this.discountTotal == null) {
             this.discountTotal = BigDecimal.ZERO;
         }
@@ -231,8 +247,12 @@ public class SummaryHome extends FedeController implements Serializable {
             this.purchaseTotal = BigDecimal.ZERO;
         }
 
+        if (this.transferTotal == null) {
+            this.transferTotal = BigDecimal.ZERO;
+        }
+        this.purchaseTotal= this.purchaseTotal.subtract(this.transferTotal);
         this.salesTotal = this.salesTotal.subtract(this.discountTotal);
-        this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
+        this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal).add(this.transferTotal));
 
     }
 
@@ -595,7 +615,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
     private HorizontalBarChartModel createHorizontalPurchasesBarModel() {
         HorizontalBarChartModel model = new HorizontalBarChartModel();
-        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalProviderIdsBetween"));
+        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
 
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
