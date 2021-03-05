@@ -466,7 +466,7 @@
                         <configuration>
                             <server-args>
                                 <server-arg>
-                                    -D jboss.server.base.dir=C:/wildfly-17.0.1.Final/standalone
+                                    -D jboss.server.base.dir=/home/opt/wildfly-13.0.0.Final/standalone
                                 </server-arg>
                             </server-args>
                         </configuration>
