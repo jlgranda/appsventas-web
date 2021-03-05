@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2021 kellypaulinc
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="journalId" value="#{generalJournalHome.journalId}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="title">#{i18n['app.fede.accouting.journal']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['module.stocklist']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/accounting/journal.jsf">#{generalJournalHome.journalId == null ? i18n['New'] : i18n['common.edit']} #{i18n['app.fede.accouting.journal']}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.config.accounting.GeneralJournal"/>
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12 ui-md-12">
+                <h1 class="BigTopic">#{i18n['app.fede.accouting.journal']}</h1> <!--Sección 1: Título-->
+                <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
+                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
+                                    value="#{generalJournalHome.journal.code}" required="true"
+                                    inlinehelp="#{messages['app.fede.accouting.journal.name.inlinehel']}"
+                                    execute="@this save" render="code"/>
+                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}"
+                                    value="#{generalJournalHome.journal.name}" required="true"
+                                    inlinehelp="#{messages['app.fede.accouting.journal.name.inlinehel']}"
+                                    execute="@this save" render="nme"/>
+                    <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
+                                    value="#{generalJournalHome.journal.description}" required="false"
+                                    inlinehelp="#{messages['app.fede.accouting.journal.description.inlinehelp']}"
+                                    execute="@this save" render="dscrpn"/>
+                </div>
+                <div class="EmptyBox10"></div><!--Separador de sección-->
+                <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
+                    <f:facet name="left">
+                        <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"
+                                         actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
+                                         disabled="#{false}"
+                                         style="width: auto !important;"
+                                         type="submit"/>
+                        <span class="ui-separator">
+                            <span class="fa fa-ellipsis-v SoftGray" />
+                        </span>
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
+                                         actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
+                                         disabled="false" immediate="true"
+                                         styleClass="GrayButton"
+                                         type="submit"/>                          
+                    </f:facet>
+                </p:toolbar>
+                
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

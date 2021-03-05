@@ -27,6 +27,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 template="/WEB-INF/template.xhtml">
     <ui:define name="title">#{i18n['app.name']}</ui:define>
 
+    <ui:define name="style">
+        <style type="text/css">
+            .hoverable:hover {
+                color: #007ad9;
+                font-weight: 900;
+            }
+        </style>
+    </ui:define>
+
     <ui:define name="viewname">
         <li>#{i18n['app.name']}</li>
         <li>/</li>
@@ -74,7 +83,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="EmptyBox5"></div>
                         <span class="FontRobotoLight Fs18">#{i18n['app.fede.discountsales']}</span>
                         <div class="EmptyBox10"></div>
-                        <span class="FontRobotoLight Fs24">#{summaryHome.discountTotal}</span>
+                        <span class="FontRobotoLight Fs24 hoverable" 
+                              update=":form:tableDetail" onclick="PF('tableDialog').show()">
+                            #{summaryHome.discountTotal}</span>
                     </div>
                 </div>
                 <div class="EmptyBox20"></div>
@@ -120,6 +131,46 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="SeparatorFull"></div>
                 <div class="EmptyBox10"></div>
             </div>
+            <p:dialog widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade"
+                      resizable="false" class="Container100 Responsive50">
+                <p:outputPanel id="tableDetail">
+                    <p:dataTable id="dataTable" var="discount" value="#{summaryHome.listDiscount}">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
+                        </f:facet>
+                        <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}" styleClass="text-right">
+                            <h:outputText value="#{discount[0]}"/>
+                        </p:column>
+                        <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{discount[1]}" styleClass="text-right">
+                            <h:outputText value="#{discount[1]}"/>
+                        </p:column>
+                        <p:column id="fechaEmision" headerText="#{i18n['common.crationDate']}" sortBy="#{discount[2]}" styleClass="text-right">
+                            <h:outputText value="#{discount[2]}">
+                                <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column id="amount" headerText="#{i18n['app.fede.sales.payment.amount']}" sortBy="#{discount[3]}" styleClass="text-right" style="text-align:center;">
+                            <h:outputText value="#{discount[3]}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column id="numb_dscto" headerText="#{i18n['app.fede.sales.payment.discount']}" sortBy="#{discount[4]}" styleClass="text-right" style="text-align:center;">
+                            <h:outputText value="#{discount[4]}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.report']}" style="text-align:center;">
+                            <p:button value="#{i18n['VerDetalles']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
+                        </p:column>
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column colspan="4" footerText="#{i18n['common.statistics.sales.discount.table.total']}" style="font-weight: bolder;"/>
+                                <p:column footerText="$#{summaryHome.discountSumando}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:outputPanel>
+            </p:dialog>
         </div>
     </ui:define>
     <ui:define name="script">
