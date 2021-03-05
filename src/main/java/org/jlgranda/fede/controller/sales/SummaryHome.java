@@ -213,6 +213,20 @@ public class SummaryHome extends FedeController implements Serializable {
         Date _start = Dates.minimumDate(getStart());
         Date _end = Dates.maximumDate(getEnd());
         calculeSummary(_start, _end);
+        setListDiscount(getListDiscount(_start, _end));
+    }
+
+    public List<Object[]> getListDiscount(Date _start, Date _end) {
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceBussinesSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, BigDecimal.ZERO);
+        return objects;
+    }
+    
+    public BigDecimal getDiscountSumando() {
+        BigDecimal total = new BigDecimal(0);
+        for (int i = 0; i < getListDiscount().size(); i++) {
+            total = total.add((BigDecimal) getListDiscount().get(i)[4]);
+        }
+        return total;
     }
 
     public void calculeSummary(Date _start, Date _end) {
