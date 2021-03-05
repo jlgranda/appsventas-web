@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li>/</li>
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupInventoryHome.groupId == null ? i18n['New'] : i18n['common.edit']} #{i18n['app.fede.inventory.group']}</p:link></li>
+        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupInventoryHome.groupId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.inventory.group']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -54,24 +54,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <!--                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}"
                                     value="#{groupInventoryHome.group.icon}" required="true"
                                     inlinehelp="#{messages['common.icon.inlinehelp']}"/>                 -->
-<!--                    <div class="Container100 Responsive50">
-                        <div class="ContainerIndent">
-                            <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
-                            <p:selectOneMenu value="#{groupInventoryHome.group.groupType}" effect="fade"
-                                             required="#{true}" immediate="true">
-                                <f:selectItem itemLabel="#{messages['common.choice']}" itemValue=""/>
-                                <f:selectItems value="#{ui.groupTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                            </p:selectOneMenu>
-                        </div>
-                    </div>-->
-<!--                    <jlgranda:input id="module" name="module" type="text" label="#{i18n['common.module']}"
-                                    value="#{groupInventoryHome.group.module}" required="true"
-                                    inlinehelp="#{messages['common.module.inlinehelp']}"
-                                    execute="@this save" render="module"/>-->
-<!--                    <jlgranda:input id="colr" name="colr" type="text" label="#{i18n['common.color']}"
-                                    value="#{groupInventoryHome.group.color}" required="false"
-                                    inlinehelp="#{messages['common.color.inlinehelp']}"
-                                    execute="@this save" render="colr"/>                    -->
+                    <!--                    <div class="Container100 Responsive50">
+                                            <div class="ContainerIndent">
+                                                <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
+                                                <p:selectOneMenu value="#{groupInventoryHome.group.groupType}" effect="fade"
+                                                                 required="#{true}" immediate="true">
+                                                    <f:selectItem itemLabel="#{messages['common.choice']}" itemValue=""/>
+                                                    <f:selectItems value="#{ui.groupTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>-->
+                    <!--                    <jlgranda:input id="module" name="module" type="text" label="#{i18n['common.module']}"
+                                                        value="#{groupInventoryHome.group.module}" required="true"
+                                                        inlinehelp="#{messages['common.module.inlinehelp']}"
+                                                        execute="@this save" render="module"/>-->
+                    <!--                    <jlgranda:input id="colr" name="colr" type="text" label="#{i18n['common.color']}"
+                                                        value="#{groupInventoryHome.group.color}" required="false"
+                                                        inlinehelp="#{messages['common.color.inlinehelp']}"
+                                                        execute="@this save" render="colr"/>                    -->
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
                                     value="#{groupInventoryHome.group.description}" required="false"
                                     inlinehelp="#{messages['app.fede.inventory.group.description.inlinehelp']}"
@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
                     <f:facet name="left">
                         <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"
-                                         actionListener="#{groupInventoryHome.save()}" action="group_items"
+                                         actionListener="#{groupInventoryHome.save()}" action="#{groupInventoryHome.getOutcome()}"
                                          disabled="#{false}"
                                          style="width: auto !important;"
                                          type="submit"/>
@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
-                                         actionListener="#{groupInventoryHome.closeDialog(null)}" action="group_items"
+                                         actionListener="#{groupInventoryHome.closeDialog(null)}" action="#{groupInventoryHome.getOutcome()}"
                                          disabled="false" immediate="true"
                                          styleClass="GrayButton"
                                          type="submit"/>                          

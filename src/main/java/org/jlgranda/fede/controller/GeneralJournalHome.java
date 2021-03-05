@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 jlgranda
+ * Copyright (C) 2021 kellypaulinc
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.SettingNames;
-import com.jlgranda.fede.ejb.AccountService;
+import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -27,8 +27,8 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jlgranda.fede.model.config.accounting.Account;
-import org.jlgranda.fede.ui.model.LazyAccountDataModel;
+import org.jlgranda.fede.model.config.accounting.GeneralJournal;
+import org.jlgranda.fede.ui.model.LazyGeneralJournalDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -40,15 +40,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author jlgranda
+ * @author kellypaulinc
  */
 @Named
 @ViewScoped
-public class AccountHome extends FedeController implements Serializable {
+public class GeneralJournalHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -1007161141552849702L;
 
-    Logger logger = LoggerFactory.getLogger(AccountHome.class);
+    Logger logger = LoggerFactory.getLogger(GeneralJournalHome.class);
 
     @Inject
     private Subject subject;
@@ -59,28 +59,29 @@ public class AccountHome extends FedeController implements Serializable {
     @EJB
     private GroupService groupService;
 
-    private LazyAccountDataModel lazyDataModel;
+    private LazyGeneralJournalDataModel lazyDataModel;
 
-    private Account account;
+    private GeneralJournal journal;
 
-    private Long accountId;
+    private Long journalId;
 
     @EJB
-    private AccountService accountService;
+    private GeneralJournalService journalService;
 
     @PostConstruct
     private void init() {
         int range = 0;
         try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.ACCOUNT_TOP_RANGE, "7"));
+            range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_TOP_RANGE, "7"));
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
             range = 7;
         }
+
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        setAccount(accountService.createInstance());//Instancia de Cuenta
-        setOutcome("accounts");
+        setJournal(journalService.createInstance());//Instancia de Cuenta
+        setOutcome("general-journals");
         filter();
     }
 
@@ -103,30 +104,30 @@ public class AccountHome extends FedeController implements Serializable {
         return this.groups;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Long getJournalId() {
+        return journalId;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setJournalId(Long journalId) {
+        this.journalId = journalId;
     }
 
-    public Account getAccount() {
-        if (this.accountId != null && !this.account.isPersistent()) {
-            this.account = accountService.find(accountId);
+    public GeneralJournal getJournal() {
+        if (this.journalId != null && !this.journal.isPersistent()) {
+            this.journal = journalService.find(journalId);
         }
-        return account;
+        return journal;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setJournal(GeneralJournal journal) {
+        this.journal = journal;
     }
 
-    public LazyAccountDataModel getLazyDataModel() {
+    public LazyGeneralJournalDataModel getLazyDataModel() {
         return lazyDataModel;
     }
 
-    public void setLazyDataModel(LazyAccountDataModel lazyDataModel) {
+    public void setLazyDataModel(LazyGeneralJournalDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
 
@@ -136,7 +137,7 @@ public class AccountHome extends FedeController implements Serializable {
 
     public void filter() {
         if (lazyDataModel == null) {
-            lazyDataModel = new LazyAccountDataModel(accountService);
+            lazyDataModel = new LazyGeneralJournalDataModel(journalService);
         }
         lazyDataModel.setOwner(this.subject);
         lazyDataModel.setStart(getStart());
@@ -157,8 +158,8 @@ public class AccountHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                Account p = (Account) event.getObject();
-                redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
+                GeneralJournal p = (GeneralJournal) event.getObject();
+                redirectTo("/pages/fede/accounting/journal.jsf?journalId=" + p.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
@@ -166,13 +167,13 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public void save() {
-        if (account.isPersistent()) {
-            account.setLastUpdate(Dates.now());
+        if (journal.isPersistent()) {
+            journal.setLastUpdate(Dates.now());
         } else {
-            account.setAuthor(this.subject);
-            account.setOwner(this.subject);
+            journal.setAuthor(this.subject);
+            journal.setOwner(this.subject);
         }
-        accountService.save(account.getId(), account);
+        journalService.save(journal.getId(), journal);
     }
 
     @Override

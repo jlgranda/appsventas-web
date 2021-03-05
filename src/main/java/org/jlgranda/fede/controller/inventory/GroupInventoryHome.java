@@ -48,28 +48,28 @@ import org.slf4j.LoggerFactory;
 @Named
 @RequestScoped
 public class GroupInventoryHome extends FedeController implements Serializable {
-
+    
     private static final long serialVersionUID = -1007161141552849702L;
-
+    
     Logger logger = LoggerFactory.getLogger(GroupInventoryHome.class);
-
+    
     @Inject
     private SettingHome settingHome;
-
+    
     @Inject
     private Subject subject;
-
+    
     @EJB
     private GroupService groupService;
-
+    
     private LazyGroupDataModel lazyDataModel;
-
+    
     private Group.Type groupType;
-
+    
     private Group group;
     
     private Long groupId;
-
+    
     @PostConstruct
     private void init() {
         int range = 0;
@@ -82,13 +82,14 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         setGroupType(Group.Type.PRODUCT);
-        if ( Group.Type.PRODUCT.equals(getGroupType()) ) {
+        if (Group.Type.PRODUCT.equals(getGroupType())) {
             Group instance = groupService.createInstance(getGroupType());//Instancia de Grupo
             instance.setColor("panel-primary");
             instance.setIcon("fa fa-object-group");
             instance.setModule("inventory");
             setGroup(instance);//Instancia de Grupo
         }
+        setOutcome("inventory-groups");
         filter();
         
     }
@@ -100,7 +101,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
      * @param subject
      */
     public void createDefaultGroups(Subject subject) {
-
+        
         Map<String, String> props = new HashMap<>();
 
         //email settings
@@ -110,7 +111,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         props.put("educacion", "Educación {4, panel-yellow, fa fa-graduation-cap fa-5x, fede}");
         props.put("vivienda", "Vivienda {5, panel-red, fa fa-home fa-5x, fede}");
         props.put("favorito", "Favoritos {1, panel-red, fa fa-heart-o, " + SettingNames.GENERAL_MODULE + "}");
-
+        
         Group group = null;
         String value = null;
         Short orden = null;
@@ -135,23 +136,23 @@ public class GroupInventoryHome extends FedeController implements Serializable {
             group.setModule(module.trim()); //Marcar con null para el caso de etiquetas generales
             group.setOrden(orden);
             group.setGroupType(Group.Type.LABEL);
-
+            
             groupService.save(group);
 
             //logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
         }
     }
-
+    
     @Override
     public void handleReturn(SelectEvent event) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public Group getDefaultGroup() {
         return this.defaultGroup;
     }
-
+    
     @Override
     public List<Group> getGroups() {
         if (this.groups.isEmpty()) {
@@ -160,50 +161,50 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
         return this.groups;
     }
-
+    
     public Long getGroupId() {
         return groupId;
     }
-
+    
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
-
+    
     public Group getGroup() {
-        if(this.groupId != null && !this.group.isPersistent()){
+        if (this.groupId != null && !this.group.isPersistent()) {
             this.group = groupService.find(groupId);
         }
         return group;
     }
-
+    
     public void setGroup(Group group) {
         this.group = group;
     }
-
+    
     public Group.Type getGroupType() {
         return groupType;
     }
-
+    
     public void setGroupType(Group.Type groupType) {
         this.groupType = groupType;
     }
-
+    
     public LazyGroupDataModel getLazyDataModel() {
         return lazyDataModel;
     }
-
+    
     public void setLazyDataModel(LazyGroupDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-
+    
     public List<Group> getGroupsTypeProduct() {
         return groupService.findByType(Group.Type.PRODUCT);
     }
-
+    
     public void clear() {
         filter();
     }
-
+    
     private void filter() {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyGroupDataModel(groupService);
@@ -224,27 +225,27 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
     }
     
-    public void save(){
-        if(group.isPersistent()){
+    public void save() {
+        if (group.isPersistent()) {
             group.setLastUpdate(Dates.now());
-        }else{
+        } else {
             group.setAuthor(this.subject);
             group.setOwner(this.subject);
         }
-        groupService.save(group.getId(),group);
+        groupService.save(group.getId(), group);
     }
-
+    
     public void onRowSelect(SelectEvent event) {
-        try{
+        try {
             //Redireccioar a RIDE de Objeto Seleccionado
-            if(event != null && event.getObject() !=null){
+            if (event != null && event.getObject() != null) {
                 Group g = (Group) event.getObject();
-                redirectTo("/pages/fede/inventory/group.jsf?groupId="+g.getId());
+                redirectTo("/pages/fede/inventory/group.jsf?groupId=" + g.getId());
             }
-        }catch(IOException ex){
+        } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
         }
-
+        
     }
     
     @Override

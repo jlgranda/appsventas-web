@@ -104,6 +104,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private BigDecimal costTotal;
     private BigDecimal profilTotal;
     private List<Object[]> listPurchases;
+    private List<Object[]> listDiscount;
 
     /**
      * Selector de grupos de fechas
@@ -197,11 +198,19 @@ public class SummaryHome extends FedeController implements Serializable {
         this.listPurchases = listPurchases;
     }
 
+    public List<Object[]> getListDiscount() {
+        return listDiscount;
+    }
+
+    public void setListDiscount(List<Object[]> listDiscount) {
+        this.listDiscount = listDiscount;
+    }
+
     /**
      * Muestra
      */
-    public void calculeSummary() {        
-        Date _start = Dates.minimumDate(getStart());        
+    public void calculeSummary() {
+        Date _start = Dates.minimumDate(getStart());
         Date _end = Dates.maximumDate(getEnd());
         calculeSummary(_start, _end);
     }
@@ -220,6 +229,10 @@ public class SummaryHome extends FedeController implements Serializable {
             this.purchaseTotal = (BigDecimal) object;
         });
 
+        if (this.grossSalesTotal == null) {
+            this.grossSalesTotal = BigDecimal.ZERO;
+        }
+
         if (this.discountTotal == null) {
             this.discountTotal = BigDecimal.ZERO;
         }
@@ -231,7 +244,7 @@ public class SummaryHome extends FedeController implements Serializable {
         if (this.purchaseTotal == null) {
             this.purchaseTotal = BigDecimal.ZERO;
         }
-        
+
         this.salesTotal = this.salesTotal.subtract(this.discountTotal);
         this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
 
@@ -631,7 +644,8 @@ public class SummaryHome extends FedeController implements Serializable {
             range = 1;
         }
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Calendar.DAY_OF_MONTH - 1))));
     }
 
     public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
