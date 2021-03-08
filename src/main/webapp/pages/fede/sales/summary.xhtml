@@ -132,12 +132,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="EmptyBox10"></div>
             </div>
             <p:dialog widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade"
-                      resizable="false" class="Container100 Responsive50">
+                      resizable="false" class="Container100 Responsive50" header="#{i18n['common.statistics.sales.discount.table']}" style="text-align: center">
                 <p:outputPanel id="tableDetail">
                     <p:dataTable id="dataTable" var="discount" value="#{summaryHome.listDiscount}">
-                        <f:facet name="header">
+<!--                        <f:facet name="header">
                             <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
-                        </f:facet>
+                        </f:facet>-->
                         <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}" styleClass="text-right">
                             <h:outputText value="#{discount[0]}"/>
                         </p:column>
@@ -160,7 +160,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </h:outputText>
                         </p:column>
                         <p:column headerText="#{i18n['common.report']}" style="text-align:center;">
-                            <p:button value="#{i18n['VerDetalles']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
+                            <p:button value="#{i18n['VerDetalles']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
                         </p:column>
                         <p:columnGroup type="footer">
                             <p:row>

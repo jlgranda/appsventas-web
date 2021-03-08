@@ -270,14 +270,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 </h:outputText></span>
                                             <div class="EmptyBox5"></div>
                                             <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="SoftGreenBack">
-                                                <p:ajax update="@form:invoice-total, @form:payment-total, @form:payment-panel" listener="#{invoiceHome.calculeChange()}"></p:ajax>
+                                                <p:ajax listener="#{invoiceHome.calculeChange()}" update="@form:invoice-total, @form:payment-total, @form:payment-panel"></p:ajax>
                                             </p:spinner>
                                         </div>
                                     </div>
                                 </ui:repeat>
                             </div>
                             <div class="ui-g-12">                                    
-                                <h2>#{i18n['app.fede.sales.payments']} [<h:outputText id="payment-total" value="#{-(invoiceHome.calculeCandidateDetailTotal() + invoiceHome.calculeIva(invoiceHome.calculeCandidateDetailTotal()) - invoiceHome.payment.discount)}">
+                                <h2>#{i18n['app.fede.sales.payments']} [<h:outputText id="payment-total" value="#{-(invoiceHome.calculeCandidateDetailTotal() - invoiceHome.payment.discount + invoiceHome.calculeIva(invoiceHome.calculeCandidateDetailTotal() - invoiceHome.payment.discount))}">
                                         <f:convertNumber type="currency"/>
                                     </h:outputText>] </h2> 
                                 <p:panel id="payment-panel" class="ui-g" rendered="#{not empty invoiceHome.candidateDetails}">
@@ -300,7 +300,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change, collect-button" partialSubmit="true"></p:ajax>
+                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, collect-button" partialSubmit="true"></p:ajax>
                                                 </p:inputNumber>
                                             </div>
                                         </div>
@@ -312,7 +312,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_change, payment-total" partialSubmit="true"/>
+                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, payment-total" partialSubmit="true"/>
                                                 </p:inputNumber>
                                             </div>
                                         </div>                                            

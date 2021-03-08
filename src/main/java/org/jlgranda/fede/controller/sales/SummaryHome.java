@@ -220,7 +220,7 @@ public class SummaryHome extends FedeController implements Serializable {
         List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceBussinesSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, BigDecimal.ZERO);
         return objects;
     }
-    
+
     public BigDecimal getDiscountSumando() {
         BigDecimal total = new BigDecimal(0);
         for (int i = 0; i < getListDiscount().size(); i++) {
@@ -657,9 +657,9 @@ public class SummaryHome extends FedeController implements Serializable {
             nfe.printStackTrace();
             range = 1;
         }
+        Calendar dayDate = Calendar.getInstance();
         setEnd(Dates.maximumDate(Dates.now()));
-//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Calendar.DAY_OF_MONTH - 1))));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH)-1))));
     }
 
     public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
