@@ -233,11 +233,14 @@ public class InventoryHome extends FedeController implements Serializable {
 
         if (product.isPersistent()) {
             product.setLastUpdate(Dates.now());
+            if(!product.getGroups().isEmpty()){
+                product.remove(product.getGroups().get(0));
+            }            
         } else {
             product.setAuthor(this.subject);
             product.setOwner(this.subject);
+            productService.save(product.getId(), product);
         }
-//        productService.save(product.getId(), product);
         product.add(groupSelected); //Añadir el ggroup (tipo) seleccionado al producto
         productService.save(product.getId(), product); //Volver a guardar el producto para almacenar el ggroup
     }
