@@ -92,7 +92,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:panel id="control-bar1" class="card" header="#{i18n['common.statistics.products.amount']}" 
                                  rendered="#{not empty summaryHome.barModelAmount}"
                                  styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
                                 <!--Listado de Productos más vendidos: Precio-->
                                 <p:chart type="bar" model="#{summaryHome.barModelAmount}" 
                                          rendered="#{not empty summaryHome.barModelAmount}"
@@ -104,7 +104,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:panel id="control-bar2" class="card" header="#{i18n['common.statistics.products.price']}" 
                                  rendered="#{not empty summaryHome.barModelSales}"
                                  styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
                                 <!--Listado de Productos más vendidos: Precio-->
                                 <p:chart type="bar" model="#{summaryHome.barModelSales}" 
                                          rendered="#{not empty summaryHome.barModelSales}"

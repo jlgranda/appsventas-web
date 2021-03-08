@@ -47,7 +47,7 @@
                         </p:submenu>
                         <p:submenu id="om_admin_accounting" label="Contabilidad" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}">
                             <p:menuitem id="om_accounts" value="Cuentas" icon="fa fa-fw fa-percent" outcome="/pages/fede/accounting/account_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
-                            <p:menuitem id="om_journals" value="Diarios" icon="fa fa-fw fa-book" outcome="/pages/fede/accounting/journal_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_journals" value="Libros Diarios" icon="fa fa-fw fa-book" outcome="/pages/fede/accounting/journal_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                         </p:submenu>
                         <p:submenu id="om_reportes" label="Reportes" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN')}">
                             <p:menuitem id="om_resumen_ventas_productos" value="Resumen de ventas por productos" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/products.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>

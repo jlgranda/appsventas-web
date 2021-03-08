@@ -98,12 +98,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div>
             </div>
             <p:dialog widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade"
-                      resizable="false" class="Container100 Responsive50">
+                      resizable="false" class="Container100 Responsive50" header="#{i18n['common.statistics.products.provider.table']}" style="text-align: center">
                 <p:outputPanel id="tableDetail"> 
                     <p:dataTable id="dataTable" var="purchases" value="#{summaryHome.listPurchases}">
-                        <f:facet name="header">
+<!--                        <f:facet name="header">
                             <h:outputText value="#{i18n['common.statistics.products.provider.table']}"/>
-                        </f:facet>                    
+                        </f:facet>                    -->
                         <p:column>
                             <h:outputText value="#{purchases[0]}"/>
                         </p:column>
