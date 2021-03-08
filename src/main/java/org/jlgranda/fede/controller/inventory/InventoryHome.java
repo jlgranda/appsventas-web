@@ -115,7 +115,7 @@ public class InventoryHome extends FedeController implements Serializable {
             range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));
-//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
 //        setStart(Dates.minimumDate(Dates.addDays(getLastProduct().getCreatedOn(),0)));
 
         setProduct(productService.createInstance());
@@ -233,11 +233,14 @@ public class InventoryHome extends FedeController implements Serializable {
 
         if (product.isPersistent()) {
             product.setLastUpdate(Dates.now());
+            if (!product.getGroups().isEmpty()) {
+                product.remove(product.getGroups().get(0));
+            }
         } else {
             product.setAuthor(this.subject);
             product.setOwner(this.subject);
+            productService.save(product.getId(), product);
         }
-//        productService.save(product.getId(), product);
         product.add(groupSelected); //Añadir el ggroup (tipo) seleccionado al producto
         productService.save(product.getId(), product); //Volver a guardar el producto para almacenar el ggroup
     }
@@ -280,7 +283,7 @@ public class InventoryHome extends FedeController implements Serializable {
      * palabra clave dada.
      */
     public List<Product> find(String keyword) {
-
+        
         return productCache.lookup(keyword, ProductType.PRODUCT); //sólo productos
 //        keyword = keyword.trim();
 //        Map<String, Object> filters = new HashMap<>();
