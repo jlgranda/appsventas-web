@@ -67,65 +67,81 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                 <div class="EmptyBox10"></div>
                 <h3 class="CardTopic">#{i18n['app.fede.summary']}</h3>
-                <div class="Container100 Responsive100">
-                    <div class="Card WhiteBlueBack TexAlCenter">
-                        <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
-                        <div class="EmptyBox5"></div>
-                        <span class="FontRobotoLight Fs18">#{i18n['app.fede.grosssales']}</span>
-                        <div class="EmptyBox10"></div>
-                        <span class="FontRobotoLight Fs24">#{summaryHome.grossSalesTotal}</span>
+                
+                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.grosssales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.grossSalesTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.discountsales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24 hoverable" 
+                                  update=":form:tableDetail" onclick="PF('tableDialog').show()">
+                                #{summaryHome.discountTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.salesTotal}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="EmptyBox20"></div>
-                <div class="Container100 Responsive100">
-                    <div class="Card WhiteBlueBack TexAlCenter">
-                        <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
-                        <div class="EmptyBox5"></div>
-                        <span class="FontRobotoLight Fs18">#{i18n['app.fede.discountsales']}</span>
-                        <div class="EmptyBox10"></div>
-                        <span class="FontRobotoLight Fs24 hoverable" 
-                              update=":form:tableDetail" onclick="PF('tableDialog').show()">
-                            #{summaryHome.discountTotal}</span>
+                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-apple Fs50 BoldGray DispBlock"></i> 
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.purchaseTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GreenBorderedBox TexAlCenter">
+                            <i class="fa fa-bank Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.costs.fixed']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.costTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.profit']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.profilTotal}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="EmptyBox20"></div>
-                <div class="Container100 Responsive100">
-                    <div class="Card GrayBack TexAlCenter">
-                        <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
-                        <div class="EmptyBox5"></div>
-                        <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales']}</span>
-                        <div class="EmptyBox10"></div>
-                        <span class="FontRobotoLight Fs24">#{summaryHome.salesTotal}</span>
-                    </div>
-                </div>
-                <div class="EmptyBox20"></div>
-                <div class="Container100 Responsive100">
-                    <div class="Card WhiteBlueBack TexAlCenter">
-                        <i class="fa fa-apple Fs50 BoldGray DispBlock"></i> 
-                        <div class="EmptyBox5"></div>
-                        <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
-                        <div class="EmptyBox10"></div>
-                        <span class="FontRobotoLight Fs24">#{summaryHome.purchaseTotal}</span>
-                    </div>
-                </div>
-                <div class="EmptyBox20"></div>
-                <div class="Container100 Responsive100">
-                    <div class="Card GreenBorderedBox TexAlCenter">
-                        <i class="fa fa-bank Fs50 BoldGray DispBlock"></i>
-                        <div class="EmptyBox5"></div>
-                        <span class="FontRobotoLight Fs18">#{i18n['app.fede.costs.fixed']}</span>
-                        <div class="EmptyBox10"></div>
-                        <span class="FontRobotoLight Fs24">#{summaryHome.costTotal}</span>
-                    </div>
-                </div>
-                <div class="EmptyBox20"></div>
-                <div class="Container100 Responsive100">
-                    <div class="Card GrayBack TexAlCenter">
-                        <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
-                        <div class="EmptyBox5"></div>
-                        <span class="FontRobotoLight Fs18">#{i18n['common.profit']}</span>
-                        <div class="EmptyBox10"></div>
-                        <span class="FontRobotoLight Fs24">#{summaryHome.profilTotal}</span>
+                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
+                    <div class="EmptyBox150"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-users Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.customers']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{summaryHome.paxTotal}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="SeparatorFull"></div>
@@ -135,9 +151,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                       resizable="false" class="Container100 Responsive50" header="#{i18n['common.statistics.sales.discount.table']}" style="text-align: center">
                 <p:outputPanel id="tableDetail">
                     <p:dataTable id="dataTable" var="discount" value="#{summaryHome.listDiscount}">
-<!--                        <f:facet name="header">
-                            <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
-                        </f:facet>-->
+                        <!--                        <f:facet name="header">
+                                                    <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
+                                                </f:facet>-->
                         <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}" styleClass="text-right">
                             <h:outputText value="#{discount[0]}"/>
                         </p:column>
@@ -165,7 +181,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:columnGroup type="footer">
                             <p:row>
                                 <p:column colspan="4" footerText="#{i18n['common.statistics.sales.discount.table.total']}" style="font-weight: bolder;"/>
-                                <p:column footerText="$#{summaryHome.discountSumando}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>
+                                <p:column footerText="$#{summaryHome.getListDiscountTotal()}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>
                             </p:row>
                         </p:columnGroup>
                     </p:dataTable>
