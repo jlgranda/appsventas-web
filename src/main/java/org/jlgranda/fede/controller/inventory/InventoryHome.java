@@ -116,7 +116,6 @@ public class InventoryHome extends FedeController implements Serializable {
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-//        setStart(Dates.minimumDate(Dates.addDays(getLastProduct().getCreatedOn(),0)));
 
         setProduct(productService.createInstance());
         getProduct().setProductType(ProductType.PRODUCT);
@@ -356,7 +355,7 @@ public class InventoryHome extends FedeController implements Serializable {
         }
         lazyDataModel.setOwner(subject);
         lazyDataModel.setProductType(getProductType());
-        lazyDataModel.setStart(this.getStart());
+//        lazyDataModel.setStart(this.getStart());
         lazyDataModel.setEnd(this.getEnd());
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
