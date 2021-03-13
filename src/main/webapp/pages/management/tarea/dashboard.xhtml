@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
+
+            function skinPie() {
+                this.cfg.seriesColors = ['#dae8ef', '#27aae1', '#33ccff', '#9fadb5'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#eaeaea',
+                    gridLineColor: '#e5ebf0',
+                    shadow: false,
+                    borderWidth: 0
+                };
+                this.cfg.seriesDefaults.shadow = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+
+<!--        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>-->
+
+    </ui:define>
+
+    <ui:define name="subheader">
+        #{i18n['Dashboard']}
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- Left Column -->
+        <div class="Container70 Responsive100">
+
+            <!-- Section 1 -->
+            <div class="Container100">
+                <div class="ContainerIndent">
+                    <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
+                        <h:form>
+                            <p:tabView style="margin:-20px; border:none 0px;">
+                                <p:tab title="#{i18n['app.fede.tarea.misTareas']}">
+                                    <div class="Container100">
+                                        <div class="Container100 Responsive100">
+                                            <div class="ContainerIndent">
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttask']}</div>
+                                                <div class="EmptyBox20"></div>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange #{tareaHome.ultimaTareaRecibida.persistent ? '' : 'hide'}">
+                                                    <span class="DispBlock">
+                                                            #{tareaHome.ultimaTareaRecibida.name}
+                                                    </span>
+                                                    <span class="BoldGray Fs12 FontRobotoLight DispBlock">#{tareaHome.ultimaTareaRecibida.instanciaProceso.name}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.author']}: #{tareaHome.ultimaTareaRecibida.author.firstname}, #{tareaHome.ultimaTareaRecibida.author.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaRecibida.createdOn}</span>
+                                                </div>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange #{not tareaHome.ultimaTareaRecibida.persistent ? '' : 'hide'}">
+                                                    <span class="DispBlock">
+                                                            #{i18n['app.document.task.todo.empty']}
+                                                    </span>
+                                                </div>
+                                                <div class="Container40">
+                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
+                                                    <p:button value="#{i18n['app.documents.task.complete']}" styleClass="CyanButton Fright" 
+                                                              outcome="/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=#{tareaHome.ultimaTareaRecibida.instanciaProceso.id}" style="width:75%"
+                                                              rendered="#{tareaHome.ultimaTareaRecibida.persistent}"/>
+                                                </div>
+
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttasks']}</div>
+                                                <div class="EmptyBox10"></div>
+                                                <ui:repeat value="#{tareaHome.misUltimasTareasRecibidas}" var="tarea">
+                                                    <div class="Container60">
+                                                        <h:outputText value="#{tarea.name}" styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
+                                                    </div>
+                                                </ui:repeat>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="TexAlCenter DispBlock">
+                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/management/tarea/inbox.jsf"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p:tab>
+                                <p:tab title="#{i18n['app.fede.tarea.tareasEnviadas']}">
+                                    <div class="Container100">
+                                        <div class="Container100 Responsive100">
+                                            <div class="ContainerIndent">
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttask']}</div>
+                                                <div class="EmptyBox20"></div>
+                                                <div class="Container60 Fs50 FontRobotoLight Orange">
+                                                    <span class="DispBlock">
+                                                        #{tareaHome.ultimaTareaEnviada.name}
+                                                    </span>
+                                                    <span class="BoldGray Fs12 FontRobotoLight DispBlock">#{tareaHome.ultimaTareaEnviada.instanciaProceso.name}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.consignee']}: #{tareaHome.ultimaTareaEnviada.owner.firstname}, #{tareaHome.ultimaTareaEnviada.owner.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaEnviada.createdOn}</span>
+                                                </div>
+                                                <div class="Container40">
+                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
+                                                    <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" 
+                                                              outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaEnviada.id}" style="width:75%"
+                                                              rendered="#{tareaHome.ultimaTareaEnviada.persistent}"/>
+                                                </div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttasks']}</div>
+                                                <div class="EmptyBox10"></div>
+                                                <ui:repeat value="#{tareaHome.misUltimasTareasEnviadas}" var="tarea">
+                                                    <div class="Container60">
+                                                        <h:outputText value="#{tarea.name}" styleClass="Fs20 BoldGray FontRobotoLight"></h:outputText>
+                                                    </div>
+                                                </ui:repeat>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="TexAlCenter DispBlock">
+                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                              styleClass="OrangeButton White Fs14" icon="fa fa-table"
+                                                              outcome="/pages/management/tarea/inbox.jsf"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p:tab>
+
+                            </p:tabView>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+
+        </div>
+
+        <!-- Right Column -->
+        <div class="Container30 Responsive100">
+
+            <!-- Section 1 -->
+            <div class="Container100">
+                <div class="ContainerIndent">
+                    <div class="Card ShadowEffect HeiAutoOnMobile">
+                        <h2 class="CardTopic TexAlCenter">#{i18n['app.fede.applications']}</h2>
+                        <div class="EmptyBox20"></div>
+
+                        <div class="Container50 Responsive50">
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGrayBack TexAlCenter">
+                                    <i class="icon-create Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['app.documents.task']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/tarea/tarea.jsf"/>
+                                </div>
+                            </div> 
+                        </div>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
