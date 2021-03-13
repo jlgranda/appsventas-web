@@ -33,8 +33,8 @@ import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jlgranda.fede.model.config.accounting.Account;
-import org.jlgranda.fede.model.config.accounting.Account_;
+import org.jlgranda.fede.model.accounting.Account;
+import org.jlgranda.fede.model.accounting.Account_;
 
 
 /**

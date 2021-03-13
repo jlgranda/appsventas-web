@@ -27,7 +27,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jlgranda.fede.model.config.accounting.Account;
+import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.ui.model.LazyAccountDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;

@@ -196,9 +196,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
 
-                //TODO leer desde configuración el url destino
-                redirectTo("/pages/fede/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
-//                redirectTo("/pages/fede/admin/subject/profile_summary.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/fede/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId() + "&faces-redirect=true");
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);

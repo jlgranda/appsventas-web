@@ -18,48 +18,45 @@ and open the template in the editor.
         <ui:param name="title" value="#{i18n['app.documents.task']}" />
         <ui:define name="params">
             <f:metadata>
+                <f:viewParam name="organizationId" value="#{organizationHome.organizationId}" />       
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            #{tareaHome.tareaId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
+            #{organizationHome.organizationId == null ? i18n['New_a'].concat(' ').concat(i18n['organization']).concat(': ') : i18n['common.edit'].concat(': ')} #{organizationHome.organization.name}
             <p>#{tareaHome.tarea.description}</p>
         </ui:define>
         <ui:define name="content">
             <h:form enctype="multipart/form-data" >
-                <div class="Container100">
-                    <div class="ContainerIndent">
-                        <div class="Card ShadowEffect ui-fluid">
-                            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
-                            <p:tabView>
-                                <p:tab title="#{i18n['common.basic.data']}" rendered="#{not organizationHome.organization.persistent}">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
+                        <div class="ui-g ui-fluid">
+                            <div class="ui-g ui-fluid">
+                                <div class="ui-g ui-lg-12">
                                     <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['RUC']}" 
-                                        value="#{organizationHome.organization.ruc}" required="true" 
-                                        inlinehelp="#{messages['RUC.inlinehelp']}" execute="@this save" render="ruc"
-                                        container="none"/>
+                                                    value="#{organizationHome.organization.ruc}" required="true" 
+                                                    inlinehelp="#{messages['RUC.inlinehelp']}" execute="@this save" render="ruc"
+                                                    container="none"/>
                                     <jlgranda:input id="nm" name="name" type="text" label="#{i18n['name']}"
-                                        value="#{organizationHome.organization.name}" required="true" 
-                                        inlinehelp="#{messages['name.inlinehelp']}" execute="@this save" render="nm"
-                                        container="none"/>
+                                                    value="#{organizationHome.organization.name}" required="true" 
+                                                    inlinehelp="#{messages['name.inlinehelp']}" execute="@this save" render="nm"
+                                                    container="none"/>
                                     <jlgranda:input id="type" name="type" type="select" label="#{i18n['common.type']}" 
-                                        value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
-                                        converter="omnifaces.SelectItemsConverter"
-                                        required="true" inlinehelp="#{messages['common.type.inlinehelp']}" 
-                                        onchange="return;"
-                                        execute="@this save" render="type"
-                                        container="none"/>
+                                                    value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
+                                                    converter="omnifaces.SelectItemsConverter"
+                                                    required="true" inlinehelp="#{messages['common.type.inlinehelp']}" 
+                                                    onchange="return;"
+                                                    execute="@this save" render="type"
+                                                    container="none"/>
                                     <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['initials']}" 
-                                        value="#{organizationHome.organization.initials}" required="true" 
-                                        inlinehelp="#{messages['initials.inlinehelp']}" execute="@this save" render="intls"
-                                        container="none"/>
+                                                    value="#{organizationHome.organization.initials}" required="true" 
+                                                    inlinehelp="#{messages['initials.inlinehelp']}" execute="@this save" render="intls"
+                                                    container="none"/>
                                     <jlgranda:input id="dsc" name="description" type="textarea" label="#{i18n['common.description']}" 
-                                        value="#{organizationHome.organization.description}" required="false" 
-                                        inlinehelp="#{messages['common.description.inlinehelp']}" execute="@this save" render="dsc"
-                                        container="none"/>
-                                    
-                                </p:tab>
-                                
-                            </p:tabView>
-                            
+                                                    value="#{organizationHome.organization.description}" required="false" 
+                                                    inlinehelp="#{messages['common.description.inlinehelp']}" execute="@this save" render="dsc"
+                                                    container="none"/>
+                                </div>                           
+                            </div>
                             <div class="EmptyBox10"></div>
 
                             <p:toolbar>
@@ -68,7 +65,7 @@ and open the template in the editor.
                                     <p:commandButton value="#{i18n['Save']}" ajax="false" 
                                                      actionListener="#{organizationHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
-                                                     action="#{tareaHome.getOutcome()}" type="submit"/>
+                                                     action="#{organizationHome.getOutcome()}" type="submit"/>
 
                                     <p:commandButton id="addDocumentButton"
                                                      icon="fa fa-paperclip Fs14 Black" styleClass="GrayButton" 

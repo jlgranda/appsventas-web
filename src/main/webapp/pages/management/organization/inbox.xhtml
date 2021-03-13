@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
-    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
+    <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
         <ui:param name="title" value="#{i18n['fede']}" />
         <ui:define name="params">
@@ -153,63 +153,52 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <!-- SUB TOPBAR END -->
         </ui:define>
         <!--./toolbar-->
-        <ui:define name="sidebar">
-            <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/organization/organization.jsf"/>
-            </div>
-            <div class="EmptyBox10"></div>
-            <div class="Container100 Responsive100">
-                <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
-                    <li class="" role="menuitem">
-                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/organization/inbox.jsf" 
-                           class="menulink ripplelink #{organizationHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
-                    </li>
-                    <ui:repeat var="tag" value="#{organizationHome.groups}">
-                        <li class="" role="menuitem">
-                            <a href="#{facesContext.externalContext.requestContextPath}/pages/management/organization/inbox.jsf?tags=#{tag.code}" 
-                               class="menulink ripplelink #{organizationHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
-                        </li>
-                    </ui:repeat>
-                </ul>
-            </div>
-        </ui:define>
         <ui:define name="content">
             <!-- /.row -->
-            <div class="Container100 Responsive100">
-                <div class="Card ShadowEffect">
-                    <div class="dataTable_wrapper">
-                        <p:dataTable var="facturaElectronica" 
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="card">
+                        <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                        <p:inputText value="#{organizationHome.keyword}" class="input-sm">
+                        </p:inputText>
+                        <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="false">
+                        </p:commandButton>
+
+                        <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/management/organization/organization.jsf"/>
+                    </div>
+                    <div class="Card">
+                        <p:dataTable var="organization" 
                                      value="#{organizationHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                      sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
                                      reflow="true" selection="#{organizationHome.selectedBussinesEntities}" 
-                                     rowKey="#{facturaElectronica.id}" 
+                                     rowKey="#{organization.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
 
-                            <p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE :form:labelsOverlayPanel"/>
-                            <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE :form:labelsOverlayPanel"/>
                             <p:ajax event="rowSelect" listener="#{organizationHome.onRowSelect}"/>
+                            <p:ajax event="rowSelectCheckbox" 
+                                    process="dataTable" update="dataTable"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                            <p:column headerText="#{i18n['ride.no']}" sortBy="#{facturaElectronica.code}">
-                                <h:outputText value="#{facturaElectronica.code}" />
+                            <p:column headerText="#{i18n['ride.ruc']}" sortBy="#{organization.ruc}">
+                                <h:outputText value="#{organization.ruc}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author.initials}">
-                                <h:outputText value="#{facturaElectronica.author.initials}" />
+                            <p:column headerText="#{i18n['initials']}" sortBy="#{organization.initials}">
+                                <h:outputText value="#{organization.initials}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{facturaElectronica.importeTotal}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.importeTotal}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{facturaElectronica.fechaEmision}"
-                                       styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.fechaEmision}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                </h:outputText>
+                            <p:column headerText="#{i18n['common.type']}" sortBy="#{organization.organizationType}">
+                                <h:outputText value="#{organization.organizationType}" />
                             </p:column>
                         </p:dataTable>
+                    </div>
+                <!--/.panel--> 
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="Container100 Responsive100">
+                <div class="Card ShadowEffect">
+                    <div class="dataTable_wrapper">
+                        
                     </div>
                     <!--/.panel-body -->
                 </div>

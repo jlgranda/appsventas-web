@@ -57,6 +57,8 @@ public class OrganizationHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(OrganizationHome.class);
     
+    Long organizationId;
+    
     Organization organization;
     
     @EJB
@@ -80,6 +82,7 @@ public class OrganizationHome extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
         setOrganization(organizationService.createInstance());
+        setOutcome("organizations");
     }
     
     @Override
@@ -87,8 +90,19 @@ public class OrganizationHome extends FedeController implements Serializable {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
     public Organization getOrganization() {
-        return organization;
+        if (this.organizationId != null && !this.organization.isPersistent()) {
+            this.organization = organizationService.find(this.organizationId);
+        }
+        return this.organization;
     }
 
     public void setOrganization(Organization organization) {
@@ -194,16 +208,16 @@ public class OrganizationHome extends FedeController implements Serializable {
         rootNode.setExpanded(true);
         organizationNode.setExpanded(true);
 
-        TreeNode macroprocessNode = null;
-        TreeNode processNode = null;
-        TreeNode themeNode = null;
-        TreeNode ownerNode = null;
-
-        for (Membership m : getOrganization().getMemberships()) {
-            ownerNode = new DefaultTreeNode("group", m, organizationNode);
-            ownerNode.setExpanded(true);
-            
-        }
+//        TreeNode macroprocessNode = null;
+//        TreeNode processNode = null;
+//        TreeNode themeNode = null;
+//        TreeNode ownerNode = null;
+//
+//        for (Membership m : getOrganization().getMemberships()) {
+//            ownerNode = new DefaultTreeNode("group", m, organizationNode);
+//            ownerNode.setExpanded(true);
+//            
+//        }
         return rootNode;
     }
     
@@ -244,7 +258,7 @@ public class OrganizationHome extends FedeController implements Serializable {
         try {
             //TODO establecer objeto en edición y levantar popup
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/admin/management/organization/organization.jsf?faces-redirect=true");
+                redirectTo("/pages/management/organization/organization.jsf?organizationId=" + ((Organization) event.getObject()).getId() + "&faces-redirect=true");
             }
         } catch (IOException ex) {
             //java.util.logging.Logger.getLogger(org.picketlink.idm.model.basic.Group.class.getName()).log(Level.SEVERE, null, ex);

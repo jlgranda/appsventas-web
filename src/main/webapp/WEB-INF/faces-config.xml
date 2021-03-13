@@ -142,7 +142,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>organizations</from-outcome>
-            <to-view-id>/pages/management/organization/dashboard.jsf</to-view-id>
+            <to-view-id>/pages/management/organization/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
