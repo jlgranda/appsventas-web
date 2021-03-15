@@ -35,10 +35,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
+                        <label class="Gray">#{i18n['common.category']}&nbsp;</label>
+                        <p:selectOneMenu value="#{inventoryHome.groupSelected}" effect="fade" style="width: 30%;"
+                                         immediate="true"
+                                         converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
+                            <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            <!--<p:ajax update="@form" />-->
+                        </p:selectOneMenu>
                         <label class="Gray">#{i18n['Find']}&nbsp;</label>
-                        <p:inputText value="#{inventoryHome.keyword}" class="input-sm">
+                        <p:inputText value="#{inventoryHome.keyword}" class="input-sm" style="width: 30%;">
                         </p:inputText>
-<!--                        <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                        <!--                        <label class="Gray">#{i18n['Start']}&nbsp;</label>
                         <p:calendar value="#{inventoryHome.start}" class="input-sm">
                             <p:ajax event="dateSelect" listener="#{inventoryHome.clear()}"/> oncomplete="form.submit();"
                         </p:calendar>
@@ -48,7 +55,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:calendar>-->
                         <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{inventoryHome.clear()}" ajax="false">
                         </p:commandButton>
-                        
                         <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/inventory/product.jsf"/>
                     </div>
                     <div class="card">
@@ -64,6 +70,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
                             <p:column headerText="#{i18n['name']}" sortBy="#{product.name}">
                                 <h:outputText value="#{product.name}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.category']}" sortBy="#{product.category}">
+                                <h:outputText value="#{product.category.name}" />
                             </p:column>
                             <p:column headerText="#{i18n['ride.Factura.Detalles.precioUnitario']}" sortBy="#{product.price}"
                                       styleClass="text-right">

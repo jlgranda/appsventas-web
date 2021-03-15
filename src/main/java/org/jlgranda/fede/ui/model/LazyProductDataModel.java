@@ -29,6 +29,8 @@ import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.sales.Product_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
+import org.jpapi.model.Group;
+import org.jpapi.model.Group_;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
@@ -75,6 +77,8 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     /**
      */
     private ProductType productType;
+    
+    private Group groupSelected;
 
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
@@ -193,6 +197,14 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     public boolean isNextExists() {
         return bussinesEntityService.count() > this.getPageSize() + firstResult;
     }
+    
+    public Group getGroupSelected() {
+        return groupSelected;
+    }
+
+    public void setGroupSelected(Group groupSelected) {
+        this.groupSelected = groupSelected;
+    }
 
     @Override
     public Product getRowData(String rowKey) {
@@ -226,6 +238,10 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         if (!range.isEmpty()) {
             _filters.put(Product_.createdOn.getName(), range); //Filtro de fecha inicial
         }
+        
+        if(getGroupSelected() != null){
+            _filters.put("category", getGroupSelected()); //Filtro de categoria
+        }
 
         _filters.put(Product_.owner.getName(), getOwner()); //Filtro por defecto
 
@@ -236,11 +252,11 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         if (getProductType() != null) {
             _filters.put("productType", getProductType()); //Filtro de tipo de producto
         }
-
+        
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-
+        
         _filters.putAll(filters);
 
         if (sortField == null) {
