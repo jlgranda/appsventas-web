@@ -183,9 +183,9 @@ public class InventoryHome extends FedeController implements Serializable {
         if (this.productId != null && !this.product.isPersistent()) {
             this.product = productService.find(productId);
 //            product.add(groupSelected);
-            if (!productService.find(productId).getGroups().isEmpty()) {
-                setGroupSelected(this.product.getGroups().get(0));
-            }
+//            if (!productService.find(productId).getGroups().isEmpty()) {
+//                setGroupSelected(this.product.getGroups().get(0));
+//            }
         }
         return product;
     }
@@ -238,15 +238,16 @@ public class InventoryHome extends FedeController implements Serializable {
 
         if (product.isPersistent()) {
             product.setLastUpdate(Dates.now());
-            if (!product.getGroups().isEmpty()) {
-                product.remove(product.getGroups().get(0));
-            }
+//            if (!product.getGroups().isEmpty()) {
+//                product.remove(product.getGroups().get(0));
+//            }
         } else {
             product.setAuthor(this.subject);
             product.setOwner(this.subject);
             productService.save(product.getId(), product);
         }
-        product.add(groupSelected); //Añadir el ggroup (tipo) seleccionado al producto
+//        product.add(groupSelected); //Añadir el ggroup (tipo) seleccionado al producto
+        product.setCategory(groupSelected);
         productService.save(product.getId(), product); //Volver a guardar el producto para almacenar el ggroup
     }
 
@@ -362,9 +363,10 @@ public class InventoryHome extends FedeController implements Serializable {
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
         //lazyDataModel.setOwner(subject);
         lazyDataModel.setProductType(getProductType());
-        lazyDataModel.setStart(this.getStart());
+//        lazyDataModel.setStart(this.getStart());
         lazyDataModel.setEnd(this.getEnd());
-
+//        lazyDataModel.setGroupSelected(groupSelected);
+        lazyDataModel.setGroupSelected(groupSelected);
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {

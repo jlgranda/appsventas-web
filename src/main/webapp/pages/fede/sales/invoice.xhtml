@@ -85,7 +85,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.allmysales']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/sales/invoice.jsf">#{invoiceHome.invoiceId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)]}</p:link></li>
+        <li><p:link outcome="/pages/fede/sales/invoice.jsf">#{invoiceHome.invoiceId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)+='.lead']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -159,7 +159,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                         decimalPlaces="0" container="none" rendered="true"/>
                                     </div>
                                     <div class="ui-g-4">
-                                        <jlgranda:input id="pax" name="pax" type="text" label="#{i18n['app.fede.sales.invoice.pax']}" 
+                                        <jlgranda:input id="pax" name="pax" type="number" label="#{i18n['app.fede.sales.invoice.pax']}" 
                                                         execute="@this save-button" render="pax" value="#{invoiceHome.invoice.pax}" 
                                                         required="true" requiredMessage="#{i18n['app.fede.sales.invoice.pax.required']}"
                                                         placeholder="false" container="none" rendered="true"/>
