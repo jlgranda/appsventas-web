@@ -32,7 +32,6 @@ import javax.inject.Named;
 import org.jlgranda.fede.ui.model.LazyGroupDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
-import org.jpapi.model.GroupType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;

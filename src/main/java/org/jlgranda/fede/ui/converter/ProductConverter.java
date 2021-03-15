@@ -16,8 +16,10 @@
  */
 package org.jlgranda.fede.ui.converter;
 
-import com.jlgranda.fede.ejb.sales.ProductService;
+import com.jlgranda.fede.ejb.sales.ProductCache;
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -28,6 +30,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.NoResultException;
 import org.jpapi.model.profile.Subject;
+import org.omnifaces.el.functions.Strings;
 
 /**
  *
@@ -40,7 +43,7 @@ public class ProductConverter implements Converter, Serializable {
     private static final long serialVersionUID = -3361609066820809465L;
 
     @EJB
-    private ProductService service;
+    private ProductCache service;
 
     @PostConstruct
     public void setup() {
@@ -56,7 +59,7 @@ public class ProductConverter implements Converter, Serializable {
 
         if (value != null && !value.isEmpty() && service != null) {
             try {
-                return service.find(getKey(value));
+                return service.lookup(getKey(value));
             } catch (NoResultException e) {
                 return new Subject();
             }
@@ -67,7 +70,13 @@ public class ProductConverter implements Converter, Serializable {
     }
 
     private Long getKey(String value) {
-        return Long.valueOf(value.trim());
+        Pattern p = Pattern.compile("\\d+");
+        Matcher m = p.matcher(value);
+        String key = null;
+        while(m.find()) {
+            key = m.group();
+        }
+        return Long.valueOf(key);
     }
 
     @Override

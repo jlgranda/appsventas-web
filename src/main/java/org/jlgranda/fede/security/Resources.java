@@ -19,9 +19,6 @@ import org.jpapi.model.profile.Subject;
  */
 public class Resources {
     
-    //@EJB
-    //SubjectService subjectService;
-    
     @Inject
     LoginSubjectCacheProvider loginSubjectCacheProvider;
     

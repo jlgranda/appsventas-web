@@ -35,7 +35,6 @@ import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.ui.model.LazyOrganizationDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
-import org.jpapi.model.Membership;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
@@ -104,7 +103,7 @@ public class OrganizationHome extends FedeController implements Serializable {
         }
         return this.organization;
     }
-
+    
     public void setOrganization(Organization organization) {
         this.organization = organization;
     }
@@ -274,6 +273,14 @@ public class OrganizationHome extends FedeController implements Serializable {
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public List<Organization> findOrganizations(){
+        return organizationService.getOrganizations();
+    }
+    
+    public List<Organization> findOrganizations(Subject subject) {
+        return organizationService.findByNamedQuery("Organization.findByEmployee", subject);
     }
 
 }

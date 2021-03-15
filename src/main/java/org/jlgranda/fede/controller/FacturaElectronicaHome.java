@@ -105,9 +105,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private FacturaElectronicaMailReader facturaElectronicaMailReader;
 
     @EJB
-    private OrganizationService organizacionService;
-
-    @EJB
     private PaymentService paymentService;
 
     @EJB
@@ -156,6 +153,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<>());
 
     private Payment payment; //Para editar pagos
+    
+    @Inject
+    private OrganizationData organizationData;
 
     public FacturaElectronicaHome() {
     }
@@ -787,7 +787,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             lazyDataModel = new LazyFacturaElectronicaDataModel(facturaElectronicaService);
         }
 
-        lazyDataModel.setOwner(subject);
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+        //lazyDataModel.setOwner(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
 

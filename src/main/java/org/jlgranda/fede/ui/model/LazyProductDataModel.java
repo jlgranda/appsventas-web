@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.sales.Product_;
@@ -81,6 +82,8 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
 
     private String filterValue;
+    
+    private Organization organization;
 
     public LazyProductDataModel(ProductService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -111,6 +114,14 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
 
     public Integer getFirstResult() {
         return firstResult;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     public Subject getOwner() {
@@ -223,11 +234,15 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
                 range.put("end", Dates.now());
             }
         }
+        if (getOwner() != null) {
+            _filters.put(Product_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getOrganization() != null) {
+            _filters.put(Product_.organization.getName(), getOrganization()); //Filtro de fecha inicial
+        }
         if (!range.isEmpty()) {
             _filters.put(Product_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-
-        _filters.put(Product_.owner.getName(), getOwner()); //Filtro por defecto
 
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas

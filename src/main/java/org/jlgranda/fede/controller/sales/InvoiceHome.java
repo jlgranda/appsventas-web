@@ -49,6 +49,7 @@ import javax.inject.Inject;
 
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.SubjectHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
@@ -70,12 +71,9 @@ import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.StatusType;
-import org.jpapi.model.TaxType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import org.jpapi.util.QueryData;
-import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.SortOrder;
@@ -184,12 +182,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     private String sortOrder = "DESCENDING";
 
     private Long interval; //Intervalo de tiempo
-
-    /**
-     * Aplicación regalos
-     */
+    
     @Inject
-    private GiftHome giftHome;
+    private OrganizationData organizationData;
 
     @PostConstruct
     private void init() {
@@ -214,7 +209,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         setOrderByCode(false);
 
         setBusquedaAvanzada(true);
-
     }
 
     public Long getInvoiceId() {
@@ -687,7 +681,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         try {
             getInvoice().setAuthor(subject);
             getInvoice().setOwner(getCustomer()); //Propietario de la factura, la persona que realiza la compra
-            getInvoice().setOrganization(null);
+            getInvoice().setOrganization(this.organizationData.getOrganization());
             getCandidateDetails().stream().forEach((d) -> {
                 if (d.isPersistent()) { //Actualizar la cantidad
                     getInvoice().replaceDetail(d);
@@ -852,15 +846,20 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public boolean addCandidateDetail() {
-
         Product p = candidateDetail.getProduct();
-        touch(candidateDetail.getProduct());
-        //Agregar a lista de últimos agregados desde autocomplete
-        getRecents().add(p);
+        if (touch(p)){
+            //Agregar a lista de últimos agregados desde autocomplete
+            getRecents().add(p);
+        }
         return true;
     }
 
     public boolean touch(Product product) {
+        if (product == null){
+            addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.requiredMessage"));
+            logger.error("No se seleccionó un producto.");
+            return false;
+        }
         setCandidateDetail(detailService.createInstance(1));
         getCandidateDetail().setProduct(product);
         getCandidateDetail().setPrice(candidateDetail.getProduct().getPrice());//Establecer el precio actual

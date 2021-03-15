@@ -36,6 +36,7 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
@@ -104,6 +105,9 @@ public class InventoryHome extends FedeController implements Serializable {
     private String mode;
 
     private Group groupSelected;
+    
+    @Inject
+    private OrganizationData organizationData;
 
     @PostConstruct
     private void init() {
@@ -115,7 +119,8 @@ public class InventoryHome extends FedeController implements Serializable {
             range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        //setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setStart(null);
 //        setStart(Dates.minimumDate(Dates.addDays(getLastProduct().getCreatedOn(),0)));
 
         setProduct(productService.createInstance());
@@ -354,7 +359,8 @@ public class InventoryHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyProductDataModel(productService);
         }
-        lazyDataModel.setOwner(subject);
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+        //lazyDataModel.setOwner(subject);
         lazyDataModel.setProductType(getProductType());
         lazyDataModel.setStart(this.getStart());
         lazyDataModel.setEnd(this.getEnd());

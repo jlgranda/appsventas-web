@@ -234,7 +234,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:panel id="AutoCompletePanel" class="">
                                     <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" 
                                                     minQueryLength="2" completeMethod="#{inventoryHome.find}"
-                                                    var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="5" itemValue="#{entidad}" 
+                                                    var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
                                                     converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
                                                     placeholder="#{settingHome.getValue('app.sales.detail.placeholder', 'Buscar producto...')}">
                                         <p:column>

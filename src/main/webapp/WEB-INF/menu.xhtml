@@ -11,6 +11,16 @@
             <div class="nano-content menu-scroll-content">
                 <h:form id="menuform">
                     <div class="layout-menu-title">#{i18n['common.menu.main']}</div>
+                    <div class="layout-menu-title">
+                        <p:selectOneMenu id="organization" value="#{organizationData.organization}" effect="fade"
+                                         required="true" immediate="true"
+                                         onchange="submit()"> 
+                            <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
+                            <p:ajax event="change" listener="#{organizationData.organizationValueChange}" partialSubmit="true"/>
+                            <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
+                            <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
+                        </p:selectOneMenu>
+                    </div>
                     <pe:menu widgetVar="me">
                         <p:menuitem id="om_home" value="#{i18n['common.home']}" icon="fa fa-fw fa-home" outcome="home"  rendered="#{request.isUserInRole('USER') or request.isUserInRole('CHECKER')}"/>
                         <p:menuitem id="om_profile" value="#{i18n['profile']}" icon="fa fa-fw fa-user" outcome="/pages/fede/gifts/profile.jsf"  rendered="#{request.isUserInRole('USER')}"/>

@@ -72,6 +72,7 @@ public class EmployeeHome extends FedeController implements Serializable {
     
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar clientes en factura
+    
 
     @PostConstruct
     private void init() {

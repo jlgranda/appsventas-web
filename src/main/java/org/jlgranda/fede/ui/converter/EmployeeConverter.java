@@ -17,7 +17,6 @@
 package org.jlgranda.fede.ui.converter;
 
 
-import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;

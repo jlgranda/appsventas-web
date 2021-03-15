@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.document.DocumentType;
+import org.jlgranda.fede.model.management.Organization;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Invoice_;
 import org.jpapi.model.BussinesEntity;
@@ -75,6 +76,8 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     private String filterValue;
     
     private DocumentType documentType;
+    
+    private Organization organization;
 
     public LazyInvoiceDataModel(InvoiceService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -114,6 +117,13 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         this.boardNumber = boardNumber;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 
     public Subject getOwner() {
         return owner;
@@ -281,10 +291,19 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
             _filters.put(Invoice_.boardNumber.getName(), getBoardNumber()); //Filtro de número de mesa
         }
         if (loadByAuthor){
-            _filters.put(Invoice_.author.getName(), getAuthor()); //Filtro por defecto
+            if (getAuthor() != null){
+                _filters.put(Invoice_.author.getName(), getAuthor()); //Filtro por defecto
+            }
         } else {
-            _filters.put(Invoice_.owner.getName(), getOwner()); //Filtro por defecto
+            if (getOwner() != null){
+                _filters.put(Invoice_.owner.getName(), getOwner()); //Filtro por defecto
+            } 
         }
+        
+        if (getOrganization()!= null){
+            _filters.put(Invoice_.organization.getName(), getOrganization()); //Filtro por defecto
+        } 
+        
         _filters.put(Invoice_.emissionOn.getName(), range); //Filtro de fecha de emissión
         if (!Strings.isNullOrEmpty(getTags())){
             _filters.put("tag", getTags()); //Filtro de etiquetas

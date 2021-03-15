@@ -20,7 +20,7 @@
         </h:link>
 
         <a id="topbar-profile-menu-button" href="#">
-            <span>#{subject.fullName}</span>
+            <span>#{subject.fullName}#{empty organizationData.organization ? '' : ' ['.concat(organizationData.organization.initials).concat(']')}</span>
             <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
                                                 class="profile-image"/>
             <i class="fa fa-angle-down"></i>

@@ -39,9 +39,7 @@ public class ConfigurationFactory {
         if (configuration == null) {
             try {
                 configuration = new DatabaseConfiguration(Database.getDataSource(), "Setting", "name", "value");
-            } catch (NamingException ex) {
-                Logger.getLogger(ConfigurationFactory.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
+            } catch (NamingException | SQLException ex) {
                 Logger.getLogger(ConfigurationFactory.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

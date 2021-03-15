@@ -67,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </p:commandButton>
                 <h1 class="BigTopic">#{i18n['app.fede.talentohumano.role']} </h1>
                 <div class="ui-g">
-                    <div class="Container100">
+                    <div class="ui-g-12">
                         <p:dataTable var="role" 
                                      value="#{jobRoleHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
@@ -93,6 +93,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>
+                    </div>
+                </div>
+                <h1 class="BigTopic">#{i18n['app.management.organization']} </h1>
+                <div class="ui-g">
+                    <div class="ui-g-12">
+                        <p:selectOneMenu id="organization" value="#{employeeHome.employee.organization}" effect="fade"
+                                             required="true" immediate="false"> 
+                                <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
+                                <f:selectItems value="#{organizationHome.findOrganizations()}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
+                            </p:selectOneMenu>
                     </div>
                 </div>
                 <div class="EmptyBox10"></div>

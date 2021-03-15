@@ -18,8 +18,8 @@
 package org.jlgranda.fede.controller;
 
 import java.io.Serializable;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
 import org.jlgranda.fede.util.FacturaUtil;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-@ManagedBean
 @SessionScoped
+@Named
 public class FedeAPI implements Serializable {
     private static final long serialVersionUID = 43323578487360899L;
     

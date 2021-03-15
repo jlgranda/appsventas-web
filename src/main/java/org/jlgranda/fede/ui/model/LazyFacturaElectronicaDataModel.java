@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaElectronica_;
+import org.jlgranda.fede.model.management.Organization;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
@@ -57,6 +58,8 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     private BussinesEntityType type;
     
     private Subject owner;
+    
+    private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
@@ -113,6 +116,14 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
 
     public void setOwner(Subject owner) {
         this.owner = owner;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     public String getTags() {
@@ -213,7 +224,11 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
             _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
         }
         
-        _filters.put(FacturaElectronica_.owner.getName(), getOwner()); //Filtro por defecto
+        if (getOwner() != null){
+            _filters.put(FacturaElectronica_.owner.getName(), getOwner());
+        }
+        
+        _filters.put(FacturaElectronica_.organization.getName(), getOrganization()); //Filtro por organization
         
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas

@@ -229,6 +229,20 @@ public class UI {
 
         return items;
     }
+    
+    public List<SelectItem> getOrganizationsAsSelectItem(List<Organization> organizations){
+        
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        for (Organization o : organizations) {
+            item = new SelectItem(cleanValue(o), o.getInitials());
+            items.add(item);
+        }
+
+        return items;
+    }
 
     /**
      * Calcula el tamaño de contenedor para el tamaño de elementos identificado

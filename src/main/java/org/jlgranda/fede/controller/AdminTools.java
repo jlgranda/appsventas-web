@@ -18,7 +18,7 @@
 package org.jlgranda.fede.controller;
 
 import java.io.Serializable;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -29,7 +29,7 @@ import com.google.common.base.Throwables;
  *
  * @author jlgranda
  */
-@ManagedBean
+@Named
 public class AdminTools implements Serializable {
     private static final long serialVersionUID = 8204586602687291604L;
 
