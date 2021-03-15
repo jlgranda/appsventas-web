@@ -713,6 +713,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
             //facturaElectronica.setAuthor(getSupplier());
             facturaElectronica.setOwner(subject);
+            facturaElectronica.setOrganization(this.organizationData.getOrganization());
 
             //Establecer un codigo por defecto
             if (Strings.isNullOrEmpty(facturaElectronica.getCode())) {
