@@ -62,13 +62,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['Start']}</label>
                                 <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2"/> <!-- oncomplete="form.submit();" --> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2 control-bar3"/> <!-- oncomplete="form.submit();" --> 
                                 </p:calendar>
                             </h:panelGroup>
                             <h:panelGroup>
                                 <label class="Gray">#{i18n['End']}</label>
                                 <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2" /> 
+                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="control-bar0 control-bar1 control-bar2 control-bar3"/> 
                                 </p:calendar>                            
                             </h:panelGroup>
                         </h:panelGroup>
@@ -108,6 +108,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <!--Listado de Productos más vendidos: Precio-->
                                 <p:chart type="bar" model="#{summaryHome.barModelSales}" 
                                          rendered="#{not empty summaryHome.barModelSales}"
+                                         responsive="true"/>
+                            </div>                        
+                        </p:panel>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                        <p:panel id="control-bar3" class="card" header="#{i18n['common.statistics.products.category']}" 
+                                 rendered="#{not empty summaryHome.barModelCategory}"
+                                 styleClass="statistics ui-g">                        
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
+                                <!--Listado de Productos más vendidos: Precio-->
+                                <p:chart type="bar" model="#{summaryHome.barModelCategory}" 
+                                         rendered="#{not empty summaryHome.barModelCategory}"
                                          responsive="true"/>
                             </div>                        
                         </p:panel>
