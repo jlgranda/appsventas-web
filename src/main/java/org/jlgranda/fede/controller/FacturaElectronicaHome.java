@@ -355,6 +355,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return total;
     }
 
+    /**
+     * Contar entidades por etiqueta
+     * @param tag
+     * @return 
+     */
     public BigDecimal countRowsByTag(String tag) {
         BigDecimal total = BigDecimal.ZERO;
         if ("all".equalsIgnoreCase(tag)) {
