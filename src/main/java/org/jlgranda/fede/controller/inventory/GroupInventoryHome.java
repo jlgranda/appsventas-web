@@ -70,6 +70,9 @@ public class GroupInventoryHome extends FedeController implements Serializable {
     
     private Long groupId;
     
+    @Inject
+    private OrganizationData organizationData;
+    
     @PostConstruct
     private void init() {
         int range = 0;
@@ -209,7 +212,8 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyGroupDataModel(groupService);
         }
-        lazyDataModel.setOwner(subject);
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+//        lazyDataModel.setOwner(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
         lazyDataModel.setGroupType(getGroupType());
@@ -231,6 +235,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         } else {
             group.setAuthor(this.subject);
             group.setOwner(this.subject);
+            group.setOrganization(this.organizationData.getOrganization());
         }
         groupService.save(group.getId(), group);
     }

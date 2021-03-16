@@ -514,7 +514,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         if (lazyDataModel == null) {
             lazyDataModel = new LazyInstanciaProcesoDataModel(instanciaProcesoService);
         }
-
+        
         lazyDataModel.setOwner(subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());

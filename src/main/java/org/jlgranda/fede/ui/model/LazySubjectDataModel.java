@@ -162,7 +162,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
         if (null != getOwner())
             _filters.put(Subject_.owner.getName(), getOwner()); //Filtro por defecto
-
+        
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
@@ -212,7 +212,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     public void setOwner(Subject owner) {
         this.owner = owner;
     }
-
+    
     public String getTags() {
         return tags;
     }

@@ -33,7 +33,7 @@ import javax.inject.Named;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Group;

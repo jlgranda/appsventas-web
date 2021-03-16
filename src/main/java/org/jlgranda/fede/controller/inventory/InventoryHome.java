@@ -243,6 +243,7 @@ public class InventoryHome extends FedeController implements Serializable {
 //            }
         } else {
             product.setAuthor(this.subject);
+            product.setOrganization(this.organizationData.getOrganization());
             product.setOwner(this.subject);
             productService.save(product.getId(), product);
         }

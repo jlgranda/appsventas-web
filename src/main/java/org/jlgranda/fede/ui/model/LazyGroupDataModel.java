@@ -28,6 +28,7 @@ import org.jpapi.model.BussinesEntityType;
 import com.jlgranda.fede.ejb.GroupService;
 import org.jpapi.model.Group;
 import org.jpapi.model.Group_;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
@@ -74,6 +75,8 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
     /**
      */
     private Group.Type groupType;
+    
+    private Organization organization;
 
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
@@ -86,7 +89,7 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         resultList = new ArrayList<>();
         this.bussinesEntityService = bussinesEntityService;
     }
-
+    
     @PostConstruct
     public void init() {
     }
@@ -202,6 +205,14 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
     public Object getRowKey(Group entity) {
         return entity.getId();
     }
+    
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 
     @Override
     public List<Group> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
@@ -227,6 +238,8 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         }
 
         _filters.put(Group_.owner.getName(), getOwner()); //Filtro por defecto
+        
+        _filters.put(Group_.organization.getName(), getOrganization()); //Filtro por organization
         
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas

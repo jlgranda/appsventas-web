@@ -40,6 +40,7 @@ import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.GroupHome;
+import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.SubjectHome;
 import org.jlgranda.fede.ui.model.LazySubjectDataModel;
@@ -99,6 +100,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     UsersRolesFacade usersRolesFacade;
     
     PasswordService svc = new DefaultPasswordService();
+    
+    @Inject
+    private OrganizationData organizationData;
 
     public SubjectAdminHome() {
         this.grupos = new ArrayList<>();

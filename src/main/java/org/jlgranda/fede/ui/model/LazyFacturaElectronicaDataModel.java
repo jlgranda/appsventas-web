@@ -27,7 +27,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaElectronica_;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;

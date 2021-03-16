@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.sales.Product_;
@@ -250,7 +250,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
             _filters.put(Product_.owner.getName(), getOwner()); //Filtro por defecto
         }
         if (getOrganization() != null) {
-            _filters.put(Product_.organization.getName(), getOrganization()); //Filtro de fecha inicial
+            _filters.put(Product_.organization.getName(), getOrganization()); //Filtro de organizacion
         }
         if (!range.isEmpty()) {
             _filters.put(Product_.createdOn.getName(), range); //Filtro de fecha inicial

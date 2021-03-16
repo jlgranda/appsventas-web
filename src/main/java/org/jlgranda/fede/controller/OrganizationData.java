@@ -25,7 +25,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 
