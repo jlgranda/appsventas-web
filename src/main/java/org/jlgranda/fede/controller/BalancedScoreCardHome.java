@@ -24,7 +24,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.jlgranda.fede.ui.model.LazyBalancedScoreCardDataModel;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;

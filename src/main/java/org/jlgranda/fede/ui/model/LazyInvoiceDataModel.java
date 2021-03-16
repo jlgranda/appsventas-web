@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.document.DocumentType;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Invoice_;
 import org.jpapi.model.BussinesEntity;

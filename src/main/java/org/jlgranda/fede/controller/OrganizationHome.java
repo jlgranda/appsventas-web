@@ -31,7 +31,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.jlgranda.fede.ui.model.LazyOrganizationDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;

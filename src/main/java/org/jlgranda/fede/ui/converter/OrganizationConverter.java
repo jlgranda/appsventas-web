@@ -19,7 +19,7 @@ package org.jlgranda.fede.ui.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import org.jlgranda.fede.model.management.Organization;
+import org.jpapi.model.Organization;
 import org.omnifaces.converter.SelectItemsConverter;
 
 /**
