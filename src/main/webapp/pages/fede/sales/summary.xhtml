@@ -46,7 +46,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                <div class="ui-g-6">
+<!--                <div class="ui-g-6">
                     <label class="Gray">#{i18n['Start']}&nbsp;</label>
                     <p:calendar value="#{summaryHome.start}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{summaryHome.refresh()}" oncomplete="form.submit();"/>
@@ -62,11 +62,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:ajax event="dateSelect" listener="#{summaryHome.refreshPorGrupoFechas()}" oncomplete="form.submit();"/>
                     </p:calendar>
 
-                </div>
+                </div>-->
+                <h3 class="CardTopic">#{i18n['app.fede.summary']}</h3>
+                <h:outputText value="#{summaryHome.end}">
+                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                </h:outputText>
             </div>
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                 <div class="EmptyBox10"></div>
-                <h3 class="CardTopic">#{i18n['app.fede.summary']}</h3>
+                <!--<h3 class="CardTopic">#{i18n['app.fede.summary']}</h3>-->
                 
                 <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
                     <div class="Container100 Responsive100">

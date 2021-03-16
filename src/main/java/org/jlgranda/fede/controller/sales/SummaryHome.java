@@ -246,10 +246,11 @@ public class SummaryHome extends FedeController implements Serializable {
      * Muestra
      */
     public void calculeSummary() {
-        Date _start = Dates.minimumDate(getStart());
+//        Date _start = Dates.minimumDate(getStart());
+        Date _start = Dates.minimumDate(getEnd());
         Date _end = Dates.maximumDate(getEnd());
-        calculeSummary(_start, _end);
-        setListDiscount(getListDiscount(_start, _end));
+        calculeSummary( _start, _end);
+        setListDiscount(getListDiscount( _start, _end));
     }
 
     public void calculeSummary(Date _start, Date _end) {
