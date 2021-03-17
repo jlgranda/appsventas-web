@@ -208,8 +208,8 @@ public class GroupHome extends FedeController implements Serializable {
     }
 
     public List<Group> getGroupsTypeProduct() {
-        return groupService.findByType(Group.Type.PRODUCT);
-//        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.PRODUCT);
+//        return groupService.findByType(Group.Type.PRODUCT);
+        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.PRODUCT);
     }
 
     public void clear() {

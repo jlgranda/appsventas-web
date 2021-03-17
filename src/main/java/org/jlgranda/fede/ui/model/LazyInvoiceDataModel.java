@@ -301,7 +301,7 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         }
         
         if (getOrganization()!= null){
-            _filters.put(Invoice_.organization.getName(), getOrganization()); //Filtro por defecto
+            _filters.put(Invoice_.organization.getName(), getOrganization()); //Filtro por defecto de organizacion
         } 
         
         _filters.put(Invoice_.emissionOn.getName(), range); //Filtro de fecha de emissión
