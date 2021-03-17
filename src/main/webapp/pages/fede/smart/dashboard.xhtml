@@ -30,28 +30,15 @@
                             </h:outputText>                          
                         </div>
                         <div class="overview-subinfo">
-                            <div class="ui-g-#{summaryHome.calculeProfitRateEquivalentForUX()} progressbar">
-                                <div class="ui-g-6 progressbar">
+                            <div class="ui-g-11">
+                                <div class="ui-g-#{summaryHome.calculeProfitRateEquivalentForUX()} progressbar">
                                 <div class="progress sale"></div>
                             </div>
-                            </div>
-                            <span class="ui-g-6">
-                                <h:outputText value="#{summaryHome.calculeProfitRate()}">
+                            </div>                            
+                            <span class="ui-g-1"><h:outputText value="#{summaryHome.calculeProfitRate()}">
                                     <f:convertNumber type="percent" />
-                                </h:outputText>
-                            </span>
+                                </h:outputText></span>
                         </div>
-                        <div class="overview-subinfo">
-                            <div class="ui-g-6 progressbar">
-                                <div class="progress sale"></div>
-                            </div>
-                            <span class="ui-g-6">#{summaryHome.calculeProfitRateEquivalentForUX()} 
-                                <h:outputText value="#{summaryHome.calculeProfitRate()}">
-                                    <f:convertNumber type="percent" />
-                                </h:outputText>
-                            </span>
-                        </div>
-                        
                     </div>
                 </div>
                 <div class="ui-g-12 ui-md-6 ui-lg-6">

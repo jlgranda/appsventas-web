@@ -246,13 +246,12 @@ public class SummaryHome extends FedeController implements Serializable {
      * Muestra
      */
     public void calculeSummary() {
-//        Date _start = Dates.minimumDate(getStart());
-        Date _start = Dates.minimumDate(getEnd());
+        Date _start = Dates.minimumDate(getStart());
         Date _end = Dates.maximumDate(getEnd());
         calculeSummary( _start, _end);
         setListDiscount(getListDiscount( _start, _end));
     }
-
+    
     public void calculeSummary(Date _start, Date _end) {
 
         this.costTotal = BigDecimal.ZERO;
@@ -326,16 +325,12 @@ public class SummaryHome extends FedeController implements Serializable {
     }
 
     public BigDecimal countSalesToday() {
-//        Date _start = Dates.minimumDate(getStart());
-        Date _start = Dates.minimumDate(getEnd());
-        System.out.println("\ngetStart:"+_start);
+        Date _start = Dates.minimumDate(getStart());
         Date _end = Dates.maximumDate(getEnd());
-        System.out.println("\ngetEnd:"+_end);
-        System.out.println("\ncalculateNumberOfDaysBetween:"+Dates.calculateNumberOfDaysBetween(_start, _end));
-//        if (Dates.calculateNumberOfDaysBetween(_start, _end) <= 0) {
-//            int range = Integer.parseInt(settingHome.getValue("fede.dashboard.summary.range", "1"));
-//            _start = Dates.addDays(getStart(), -1 * range);
-//        }
+        if (Dates.calculateNumberOfDaysBetween(_start, _end) <= 0) {
+            int range = Integer.parseInt(settingHome.getValue("fede.dashboard.summary.range", "1"));
+            _start = Dates.addDays(getStart(), -1 * range);
+        }
 //        BigDecimal total = new BigDecimal(invoiceService.count("Invoice.countTotalInvoiceBetween", this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end));
         BigDecimal total = new BigDecimal(invoiceService.count("Invoice.countTotalInvoiceBetweenOrg", this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end));
         return total;
