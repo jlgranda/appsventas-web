@@ -31,7 +31,9 @@
                         </div>
                         <div class="overview-subinfo">
                             <div class="ui-g-#{summaryHome.calculeProfitRateEquivalentForUX()} progressbar">
+                                <div class="ui-g-6 progressbar">
                                 <div class="progress sale"></div>
+                            </div>
                             </div>
                             <span class="ui-g-6">
                                 <h:outputText value="#{summaryHome.calculeProfitRate()}">
@@ -39,27 +41,40 @@
                                 </h:outputText>
                             </span>
                         </div>
+                        <div class="overview-subinfo">
+                            <div class="ui-g-6 progressbar">
+                                <div class="progress sale"></div>
+                            </div>
+                            <span class="ui-g-6">#{summaryHome.calculeProfitRateEquivalentForUX()} 
+                                <h:outputText value="#{summaryHome.calculeProfitRate()}">
+                                    <f:convertNumber type="percent" />
+                                </h:outputText>
+                            </span>
+                        </div>
+                        
                     </div>
                 </div>
                 <div class="ui-g-12 ui-md-6 ui-lg-6">
                     <div class="overview-box views">
                         <p:graphicImage name="images/icon-sales.png" library="ecuador-layout" styleClass="image-icon" style="margin-top:10px"/>
-                        <div class="overview-title">#{i18n['common.purchases']}</div>
+                        <div class="overview-title">#{i18n['app.fede.sales.goal']} #{i18n['common.purchases']}</div>
                         <div class="overview-numbers">
-                            #{facturaElectronicaHome.countRowsByTag("own")}
+                            <!--#{facturaElectronicaHome.countRowsByTag("own")}-->
+                            #{facturaElectronicaHome.countRowsByTag("org")}
                         </div>
                         <div class="overview-subinfo">
                             <div class="ui-g-6 progressbar">
                                 <div class="progress view"></div>
                             </div>
-                            <span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("own")} #{i18n['common.more']}</span>
+                            <!--<span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("own")} #{i18n['common.more']}</span>-->
+                            <span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("org")} #{i18n['common.more']}</span>
                         </div>
                     </div>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                     <p:panel header="#{i18n['common.statistics']}" styleClass="statistics ui-g">
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
-                            <!--                            <i class="fa fa-level-up"></i>
+<!--                                                        <i class="fa fa-level-up"></i>
                                                         <span class="icon-label">Mejora</span>
                                                         <span>$ 85,397</span>
                                                         <div class="statsbar">
