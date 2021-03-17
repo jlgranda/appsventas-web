@@ -68,17 +68,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                     </div>
-<!--                    <div class="Container100 Responsive50">
-                        <div class="ContainerIndent">
-                            <h4>PRUEBAS</h4>
-                            <p:selectOneMenu value="#{inventoryHome.groupSelected}" effect="fade"
-                                             required="#{true}" immediate="true"
-                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
-                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@form" />
-                            </p:selectOneMenu>
-                        </div>
-                    </div>-->
                     <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
                                     value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
 

@@ -227,8 +227,9 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         if (getOwner() != null){
             _filters.put(FacturaElectronica_.owner.getName(), getOwner());
         }
-        
-        _filters.put(FacturaElectronica_.organization.getName(), getOrganization()); //Filtro por organization
+        if (getOrganization() != null) {
+            _filters.put(FacturaElectronica_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
         
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
