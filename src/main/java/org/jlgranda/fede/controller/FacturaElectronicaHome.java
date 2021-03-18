@@ -366,6 +366,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             total = new BigDecimal(facturaElectronicaService.count());
         } else if ("own".equalsIgnoreCase(tag)) {
             total = new BigDecimal(facturaElectronicaService.count("FacturaElectronica.countBussinesEntityByOwner", subject));
+        } else if ("org".equalsIgnoreCase(tag)) {
+            total = new BigDecimal(facturaElectronicaService.count("FacturaElectronica.countBussinesEntityByOrg", this.organizationData.getOrganization()));
         } else {
             total = new BigDecimal(facturaElectronicaService.count("FacturaElectronica.countBussinesEntityByTagAndOwner", tag, subject));
         }

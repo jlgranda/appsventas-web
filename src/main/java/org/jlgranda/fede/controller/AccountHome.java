@@ -19,19 +19,26 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.controller.sales.SummaryHome;
 import org.jlgranda.fede.model.accounting.Account;
+import org.jlgranda.fede.model.document.DocumentType;
+import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.ui.model.LazyAccountDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
+import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.primefaces.event.SelectEvent;
@@ -55,16 +62,34 @@ public class AccountHome extends FedeController implements Serializable {
 
     @Inject
     private SettingHome settingHome;
+    
+    @Inject
+    private OrganizationData organizationData;
 
     @EJB
     private GroupService groupService;
+    
+    @EJB
+    private InvoiceService invoiceService;
 
     private LazyAccountDataModel lazyDataModel;
 
     private Account account;
 
     private Long accountId;
-
+    
+    private SummaryHome summaryHome;
+    
+    //Calcular Resumen
+    private BigDecimal grossSalesTotal;
+    private BigDecimal discountTotal;
+    private BigDecimal salesTotal;
+    private BigDecimal purchaseTotal;
+    private BigDecimal costTotal;
+    private BigDecimal profilTotal;
+    private Long paxTotal;
+    private List<Object[]> listDiscount;
+    
     @EJB
     private AccountService accountService;
 
@@ -82,6 +107,15 @@ public class AccountHome extends FedeController implements Serializable {
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
+        
+        setGrossSalesTotal(BigDecimal.ZERO);
+        setDiscountTotal(BigDecimal.ZERO);
+        setSalesTotal(BigDecimal.ZERO);
+        setPurchaseTotal(BigDecimal.ZERO);
+        setCostTotal(BigDecimal.ZERO);
+        setProfilTotal(BigDecimal.ZERO);
+        setPaxTotal(0L);
+        calculeSummaryToday();
     }
 
     @Override
@@ -130,6 +164,62 @@ public class AccountHome extends FedeController implements Serializable {
         this.lazyDataModel = lazyDataModel;
     }
 
+    public BigDecimal getGrossSalesTotal() {
+        return grossSalesTotal;
+    }
+
+    public void setGrossSalesTotal(BigDecimal grossSalesTotal) {
+        this.grossSalesTotal = grossSalesTotal;
+    }
+
+    public BigDecimal getDiscountTotal() {
+        return discountTotal;
+    }
+
+    public void setDiscountTotal(BigDecimal discountTotal) {
+        this.discountTotal = discountTotal;
+    }
+
+    public BigDecimal getSalesTotal() {
+        return salesTotal;
+    }
+
+    public void setSalesTotal(BigDecimal salesTotal) {
+        this.salesTotal = salesTotal;
+    }
+
+    public BigDecimal getPurchaseTotal() {
+        return purchaseTotal;
+    }
+
+    public void setPurchaseTotal(BigDecimal purchaseTotal) {
+        this.purchaseTotal = purchaseTotal;
+    }
+
+    public BigDecimal getCostTotal() {
+        return costTotal;
+    }
+
+    public void setCostTotal(BigDecimal costTotal) {
+        this.costTotal = costTotal;
+    }
+
+    public BigDecimal getProfilTotal() {
+        return profilTotal;
+    }
+
+    public void setProfilTotal(BigDecimal profilTotal) {
+        this.profilTotal = profilTotal;
+    }
+
+    public Long getPaxTotal() {
+        return paxTotal;
+    }
+
+    public void setPaxTotal(Long paxTotal) {
+        this.paxTotal = paxTotal;
+    }
+    
     public void clear() {
         filter();
     }
@@ -174,7 +264,82 @@ public class AccountHome extends FedeController implements Serializable {
         }
         accountService.save(account.getId(), account);
     }
+    
+    public List<Object[]> getListDiscount() {
+        return listDiscount;
+    }
 
+    public List<Object[]> getListDiscount(Date _start, Date _end) {
+//        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceBussinesSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, BigDecimal.ZERO);
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceBussinesSalesDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, BigDecimal.ZERO);
+        return objects;
+    }
+
+    public void setListDiscount(List<Object[]> listDiscount) {
+        this.listDiscount = listDiscount;
+    }
+
+    public BigDecimal getListDiscountTotal() {
+        BigDecimal total = new BigDecimal(0);
+        for (int i = 0; i < getListDiscount().size(); i++) {
+            total = total.add((BigDecimal) getListDiscount().get(i)[4]);
+        }
+        return total;
+    }
+    
+    public void calculeSummaryToday() {
+        Date _start = Dates.minimumDate(getEnd());
+        Date _end = Dates.maximumDate(getEnd());
+        calculeSummary( _start, _end);
+        setListDiscount(getListDiscount( _start, _end));
+    }
+    
+    public void calculeSummary(Date _start, Date _end) {
+
+        this.costTotal = BigDecimal.ZERO;
+//        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
+        objects.stream().forEach((Object[] object) -> {
+            this.grossSalesTotal = (BigDecimal) object[0];
+            this.discountTotal = (BigDecimal) object[1];
+            this.salesTotal = (BigDecimal) object[2];
+        });
+//        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetween", Integer.MAX_VALUE, this.subject, _start, _end, EmissionType.PURCHASE_CASH);
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CASH);
+        objects.stream().forEach((Object object) -> {
+            this.purchaseTotal = (BigDecimal) object;
+        });
+//        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesPaxBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesPaxBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
+        objects.stream().forEach((Object object) -> {
+            this.paxTotal = (Long) object;
+        });
+
+        if (this.grossSalesTotal == null) {
+            this.grossSalesTotal = BigDecimal.ZERO;
+        }
+
+        if (this.discountTotal == null) {
+            this.discountTotal = BigDecimal.ZERO;
+        }
+
+        if (this.salesTotal == null) {
+            this.salesTotal = BigDecimal.ZERO;
+        }
+
+        if (this.purchaseTotal == null) {
+            this.purchaseTotal = BigDecimal.ZERO;
+        }
+
+        if (this.paxTotal == null) {
+            this.paxTotal = 0L;
+        }
+
+        this.salesTotal = this.salesTotal.subtract(this.discountTotal);
+        this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
+
+    }
+    
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
