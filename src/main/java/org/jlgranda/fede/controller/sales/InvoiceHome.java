@@ -95,6 +95,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     private static final long serialVersionUID = 115507468383355922L;
 
     Logger logger = LoggerFactory.getLogger(InvoiceHome.class);
+    
+//    private static final double IVA=0d;
 
     @Inject
     private Subject subject;
@@ -127,7 +129,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Set<Product> recents = new HashSet<>();
 
     private Payment payment;
-
+    
     @EJB
     private GroupService groupService;
 
@@ -756,14 +758,14 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public BigDecimal calculeIva(BigDecimal subTotal) {
         BigDecimal iva = new BigDecimal(BigInteger.ZERO);
-        iva = subTotal.multiply(BigDecimal.valueOf(0.12));
+        iva = subTotal.multiply(BigDecimal.valueOf(invoice.IVA));
         return iva;
     }
 
     public void calculeChange() {
         BigDecimal subtotal = calculeCandidateDetailTotal();
         subtotal = subtotal.subtract(getPayment().getDiscount());
-        subtotal = subtotal.add(subtotal.multiply(BigDecimal.valueOf(0.12)));
+        subtotal = subtotal.add(subtotal.multiply(BigDecimal.valueOf(invoice.IVA)));
         if (subtotal.compareTo(getPayment().getCash()) > 0) {
             getPayment().setCash(subtotal); //Asumir que se entregará exacto, si no se ha indicado nada
         }
