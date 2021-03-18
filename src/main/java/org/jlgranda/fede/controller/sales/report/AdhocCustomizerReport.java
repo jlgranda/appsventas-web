@@ -167,12 +167,10 @@ public class AdhocCustomizerReport {
     private JRDataSource createDataSource(Invoice invoice) {
         DRDataSource dataSource = new DRDataSource("cantidad", "descripcion", "preciounitario", "subtotal");
         if ( !Boolean.TRUE.equals(invoice.getPrintAlias()) ){
-            for (Detail detail : invoice.getDetails()){
-                if (detail.getAmount() != 0.0f){
-                    BigDecimal subtotal = detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount()));
-                    dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), subtotal);
-                }
-            }
+            invoice.getDetails().stream().filter(detail -> (detail.getAmount() != 0.0f)).forEachOrdered(detail -> {
+                BigDecimal subtotal = detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount()));
+                dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), subtotal);
+            });
             //Agregar el descuento como item
             if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){
                 BigDecimal discount = invoice.getPaymentsDiscount().multiply(BigDecimal.valueOf(-1));

@@ -284,7 +284,8 @@ public class Templates {
         return cmp.horizontalList()
                 .add(cmp.verticalGap(Integer.valueOf(settings.get("app.fede.report.invoice.startLine"))))
                 .newRow()
-                .add(cmp.text(invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 12%: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+//                .add(cmp.text(invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 12%: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                .add(cmp.text(invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 0%: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
                 .newRow()
                 .add(cmp.text(invoice.getTotalSinImpuesto().add(invoice.getTotalTax(TaxType.IVA))).setValueFormatter(Templates.createCurrencyValueFormatter("Total a pagar: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
                 .newRow();
