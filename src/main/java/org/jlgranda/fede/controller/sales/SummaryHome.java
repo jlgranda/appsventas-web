@@ -42,6 +42,7 @@ import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Group;
+import org.jpapi.model.Organization;
 import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -75,7 +76,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
     @Inject
     private Subject subject;
-
+    
     @Inject
     private OrganizationData organizationData;
     
@@ -246,13 +247,12 @@ public class SummaryHome extends FedeController implements Serializable {
      * Muestra
      */
     public void calculeSummary() {
-//        Date _start = Dates.minimumDate(getStart());
-        Date _start = Dates.minimumDate(getEnd());
+        Date _start = Dates.minimumDate(getStart());
         Date _end = Dates.maximumDate(getEnd());
         calculeSummary( _start, _end);
         setListDiscount(getListDiscount( _start, _end));
     }
-
+    
     public void calculeSummary(Date _start, Date _end) {
 
         this.costTotal = BigDecimal.ZERO;
@@ -332,7 +332,8 @@ public class SummaryHome extends FedeController implements Serializable {
             int range = Integer.parseInt(settingHome.getValue("fede.dashboard.summary.range", "1"));
             _start = Dates.addDays(getStart(), -1 * range);
         }
-        BigDecimal total = new BigDecimal(invoiceService.count("Invoice.countTotalInvoiceBetween", this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end));
+//        BigDecimal total = new BigDecimal(invoiceService.count("Invoice.countTotalInvoiceBetween", this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end));
+        BigDecimal total = new BigDecimal(invoiceService.count("Invoice.countTotalInvoiceBetweenOrg", this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end));
         return total;
     }
 
@@ -474,7 +475,7 @@ public class SummaryHome extends FedeController implements Serializable {
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(), getStart(), getEnd());
 
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
@@ -489,7 +490,8 @@ public class SummaryHome extends FedeController implements Serializable {
 
     private BarChartModel createBarModelAmount() {
         BarChartModel model = new BarChartModel();
-        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween");
+//        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween");
+        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetweenOrg");
 
         model.addSeries(product);
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
@@ -517,7 +519,8 @@ public class SummaryHome extends FedeController implements Serializable {
 
     private BarChartModel createbarModelSales() {
         BarChartModel model = new BarChartModel();
-        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice");
+//        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice");
+        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPriceOrg");
 
         model.addSeries(product);
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
@@ -547,18 +550,17 @@ public class SummaryHome extends FedeController implements Serializable {
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
-//        System.out.println("\nObjects.size: "+objects.size());
+        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(),getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
-            chartSerie.set(object[0], ((BigDecimal) object[1]).doubleValue());
-//            System.out.println("\nSerie: "+object[0]+"  "+((BigDecimal) object[1]).doubleValue());
+            chartSerie.set(object[0], (Number) object[1]);
+            System.out.println("\nSerie: "+object[0]+""+(Number) object[1]);
         });
         return chartSerie;
     }
 
     private BarChartModel createbarModelCategory() {
         BarChartModel model = new BarChartModel();
-        ChartSeries product = createCategoriesSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.countProductByCategories");
+        ChartSeries product = createCategoriesSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenCategoryOrg");
 
         model.addSeries(product);
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
@@ -568,7 +570,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setShowPointLabels(false);
         model.setExtender("skinBar2");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.barchart.sales.axis"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.barchart.category.axis"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
@@ -586,8 +588,10 @@ public class SummaryHome extends FedeController implements Serializable {
     private HorizontalBarChartModel createHorizontalBarModel() {
         HorizontalBarChartModel model = new HorizontalBarChartModel();
 
-        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween"));
-        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice"));
+//        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween"));
+//        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice"));
+        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetweenOrg"));
+        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPriceOrg"));
 
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
@@ -619,7 +623,7 @@ public class SummaryHome extends FedeController implements Serializable {
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, getStart(), getEnd());
+        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(),getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
             if (object[0] == null) {
                 object[0] = object[2].toString() + " " + object[3].toString();
@@ -632,7 +636,8 @@ public class SummaryHome extends FedeController implements Serializable {
 
     private HorizontalBarChartModel createHorizontalPurchasesBarModel() {
         HorizontalBarChartModel model = new HorizontalBarChartModel();
-        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
+//        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
+        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetweenOrg"));
 
         model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
@@ -697,8 +702,10 @@ public class SummaryHome extends FedeController implements Serializable {
         BigDecimal fixedCost = new BigDecimal(settingHome.getValue("app.fede.costs.fixed", "50"));
         for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
             label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
-            _salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
-            _paxTotal = calculeTotalPax(findInvoices(subject, DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
+//            _salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
+//            _paxTotal = calculeTotalPax(findInvoices(subject, DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
+            _salesTotal = calculeTotal(findInvoices(this.organizationData.getOrganization(), DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
+            _paxTotal = calculeTotalPax(findInvoices(this.organizationData.getOrganization(), DocumentType.INVOICE, Integer.MAX_VALUE, Dates.minimumDate(_step), Dates.maximumDate(_step)));
             sales.set(label, _salesTotal);
 
             facturaElectronicaHome.setStart(Dates.minimumDate(_step));
@@ -753,11 +760,18 @@ public class SummaryHome extends FedeController implements Serializable {
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1))));
     }
 
-    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
-        if (author == null) { //retornar todas
+//    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
+//        if (author == null) { //retornar todas
+//            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
+//        } else {
+//            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndAuthor", limit, documentType, author, true, start, end);
+//        }
+//    }
+    public List<Invoice> findInvoices(Organization organization, DocumentType documentType, int limit, Date start, Date end) {
+        if (organization == null) { //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
         } else {
-            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndAuthor", limit, documentType, author, true, start, end);
+            return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndOrg", limit, documentType, organization, true, start, end);
         }
     }
 

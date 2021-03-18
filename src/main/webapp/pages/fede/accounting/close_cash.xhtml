@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2021 kellypaulinc
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+    <ui:param name="sitename" value="#{i18n['Sitename']}"/>
+    <ui:define name="title">#{i18n['app.name']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.name']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/accounting/close_cash.jsf">#{i18n['common.close_cash']}</p:link></li>
+    </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+            .hoverable:hover {
+                color: #007ad9;
+                font-weight: 900;
+            }
+        </style>
+    </ui:define>
+    <ui:define name="content">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                <h3 class="CardTopic">#{i18n['app.fede.summary.today']}</h3>
+                <h:outputText value="#{now}">
+                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                </h:outputText>
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                <div class="EmptyBox10"></div>
+                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.grosssales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{accountHome.grossSalesTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.discountsales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24 hoverable" 
+                                  update=":form:tableDetail" onclick="PF('tableDialog').show()">
+                                #{accountHome.discountTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{accountHome.salesTotal}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
+                    <div class="Container100 Responsive100">
+                        <div class="Card WhiteBlueBack TexAlCenter">
+                            <i class="fa fa-apple Fs50 BoldGray DispBlock"></i> 
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{accountHome.purchaseTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GreenBorderedBox TexAlCenter">
+                            <i class="fa fa-bank Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.costs.fixed']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{accountHome.costTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.profit']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{accountHome.profilTotal}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
+                    <div class="EmptyBox150"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-users Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.customers']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{accountHome.paxTotal}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="SeparatorFull"></div>
+                <div class="EmptyBox10"></div>
+            </div>
+            <p:dialog widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade" width="90%"
+                      resizable="false" class="Container100 Responsive50" style="text-align: right">
+                <div class="card">
+                    <p:dataTable id="dataTable" var="discount" value="#{accountHome.listDiscount}"> <!--scrollable="true" scrollHeight="250"-->
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
+                        </f:facet>
+                        <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}">
+                            <h:outputText value="#{discount[0]}"/>
+                        </p:column>
+                        <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{discount[1]}">
+                            <h:outputText value="#{discount[1]}"/>
+                        </p:column>
+                        <p:column id="fechaEmision" headerText="#{i18n['common.crationDate']}" sortBy="#{discount[2]}">
+                            <h:outputText value="#{discount[2]}"><f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
+                        </p:column>
+                        <p:column id="amount" headerText="#{i18n['app.fede.sales.payment.amount']}" sortBy="#{discount[3]}" style="text-align:center;">
+                            <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
+                        </p:column>
+                        <p:column id="numb_dscto" headerText="#{i18n['app.fede.sales.payment.discount']}" sortBy="#{discount[4]}" style="text-align:center;">
+                            <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
+                        </p:column>
+                        <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align:center;">
+                            <p:button value="#{i18n['VerDetalles']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
+                        </p:column>
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column colspan="4" footerText="#{i18n['common.statistics.sales.discount.table.total']}" style="text-align: right; font-weight: bolder;"/>
+                                <p:column footerText="$#{accountHome.getListDiscountTotal()}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </div>
+            </p:dialog>
+        </div>
+    </ui:define>
+    <ui:define name="script">
+    </ui:define>
+</ui:composition>
