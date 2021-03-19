@@ -28,6 +28,7 @@ import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jlgranda.fede.model.talentohumano.JobRole_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
@@ -56,6 +57,8 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
     private BussinesEntityType type;
     
     private Subject owner;
+    
+    private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
@@ -115,6 +118,14 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
         this.owner = owner;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+    
     public String getTags() {
         return tags;
     }
@@ -212,17 +223,18 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
         if (!range.isEmpty()){
             _filters.put(JobRole_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        
+        if(getOwner()!=null){
         _filters.put(JobRole_.owner.getName(), getOwner()); //Filtro por defecto
-        
+        }
+        if (getOrganization() != null) {
+            _filters.put(JobRole_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        
         if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-        
         _filters.putAll(filters);
         
         if (sortField == null){

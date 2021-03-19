@@ -255,19 +255,15 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         if (!range.isEmpty()) {
             _filters.put(Product_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        
         if(getGroupSelected() != null){
             _filters.put("category", getGroupSelected()); //Filtro de categoria
         }
-
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-
         if (getProductType() != null) {
             _filters.put("productType", getProductType()); //Filtro de tipo de producto
         }
-        
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }

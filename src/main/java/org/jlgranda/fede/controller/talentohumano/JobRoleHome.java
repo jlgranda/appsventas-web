@@ -28,6 +28,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.model.talentohumano.JobRole;
@@ -70,6 +71,9 @@ public class JobRoleHome extends FedeController implements Serializable {
     
     @Inject
     private Subject subject;
+    
+    @Inject
+    private OrganizationData organizationData;
 
     @PostConstruct
     private void init() {
@@ -124,8 +128,8 @@ public class JobRoleHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyJobRoleDataModel(jobRoleService);
         }
-        
-        lazyDataModel.setOwner(subject);
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+//        lazyDataModel.setOwner(subject);
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");

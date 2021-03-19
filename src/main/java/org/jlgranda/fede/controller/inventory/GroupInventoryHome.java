@@ -215,7 +215,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
 //        lazyDataModel.setOwner(subject);
-        lazyDataModel.setStart(getStart());
+//        lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
         lazyDataModel.setGroupType(getGroupType());
         if (getKeyword() != null && getKeyword().startsWith("label:")) {

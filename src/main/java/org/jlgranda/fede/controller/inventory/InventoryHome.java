@@ -44,6 +44,7 @@ import org.jlgranda.fede.ui.model.LazyProductDataModel;
 import org.jlgranda.fede.ui.util.UI;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
@@ -169,7 +170,8 @@ public class InventoryHome extends FedeController implements Serializable {
 
     public Product getLastProduct() {
         if (lastProduct == null) {
-            List<Product> obs = productService.findByNamedQuery("Product.findLastProduct", 1);
+//            List<Product> obs = productService.findByNamedQuery("Product.findLastProduct", 1);
+            List<Product> obs = productService.findByNamedQuery("Product.findLastProductOrg", 1, this.organizationData.getOrganization());
             lastProduct = obs.isEmpty() ? new Product() : (Product) obs.get(0);
         }
         return lastProduct;
@@ -201,7 +203,8 @@ public class InventoryHome extends FedeController implements Serializable {
     public List<Product> getLastProducts() {
         int limit = Integer.parseInt(settingHome.getValue("app.fede.sales.dashboard.lasts.list.length", "10"));
         if (lastProducts.isEmpty()) {
-            lastProducts = productService.findByNamedQuery("Product.findLastProducts", limit);
+//            lastProducts = productService.findByNamedQuery("Product.findLastProducts", limit);
+            lastProducts = productService.findByNamedQuery("Product.findLastProductsOrg", limit, this.organizationData.getOrganization());
         }
         return lastProducts;
     }
@@ -311,7 +314,10 @@ public class InventoryHome extends FedeController implements Serializable {
      */
     public List<Product> findTop() {
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "15"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
+//        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
+        int range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "7"));
+        Date _start=Dates.minimumDate(Dates.addDays(getEnd(), -1 * range));
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetweenOrg", top, this.organizationData.getOrganization(), _start, getEnd());
         List<Product> result = new ArrayList<>();
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
@@ -332,8 +338,9 @@ public class InventoryHome extends FedeController implements Serializable {
         return queryData.getResult();
     }
 
-    private Double countProduct(Long id, Date minimumDate, Date maximumDate) {
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProduct", 0, id, minimumDate, maximumDate);
+    private Double countProduct(Long id, Organization organization, Date minimumDate, Date maximumDate) {
+//        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProduct", 0, id, minimumDate, maximumDate);
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProductOrg", 0, id, organization, minimumDate, maximumDate);
         Double result = Double.valueOf(0);
         for (Object[] object : objects) {
             result = (Double) object[1];
@@ -445,7 +452,8 @@ public class InventoryHome extends FedeController implements Serializable {
         ChartSeries products = new ChartSeries();
         products.setLabel(settingHome.getValue("app.fede.chart.top.units", "Cantidad"));
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductNames", top, getStart(), getEnd());
+//        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductNames", top, getStart(), getEnd());
+        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductNamesOrg", top, getStart(), getEnd());
         objects.stream().forEach((object) -> {
             products.set(object[0], (Number) object[1]);
         });
@@ -486,7 +494,8 @@ public class InventoryHome extends FedeController implements Serializable {
             _step = _start;
             for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
                 label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
-                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+//                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+                total = countProduct(entity.getId(), this.organizationData.getOrganization(), Dates.minimumDate(_step), Dates.maximumDate(_step));
                 product.set(label, total);
                 _step = Dates.addDays(_step, 1); //Siguiente día
             }
@@ -536,7 +545,8 @@ public class InventoryHome extends FedeController implements Serializable {
             _step = _start;
             for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
                 label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
-                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+//                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+                total = countProduct(entity.getId(), this.organizationData.getOrganization(), Dates.minimumDate(_step), Dates.maximumDate(_step));
                 product.set(label, total);
                 _step = Dates.addDays(_step, gap); //Siguiente día
             }
@@ -590,7 +600,8 @@ public class InventoryHome extends FedeController implements Serializable {
             _step = _start;
             for (int i = 0; i <= Dates.calculateNumberOfDaysBetween(_start, getEnd()); i++) {
                 label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
-                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+//                total = countProduct(entity.getId(), Dates.minimumDate(_step), Dates.maximumDate(_step));
+                total = countProduct(entity.getId(), this.organizationData.getOrganization(), Dates.minimumDate(_step), Dates.maximumDate(_step));
                 product.set(label, total);
                 _step = Dates.addDays(_step, gap); //Siguiente día
             }

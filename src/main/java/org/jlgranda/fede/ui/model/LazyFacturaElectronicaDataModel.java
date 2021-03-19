@@ -223,18 +223,15 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         if (!range.isEmpty()){
             _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
         }
-        
         if (getOwner() != null){
             _filters.put(FacturaElectronica_.owner.getName(), getOwner());
         }
         if (getOrganization() != null) {
             _filters.put(FacturaElectronica_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
-        
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        
         if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }

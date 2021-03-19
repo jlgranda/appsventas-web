@@ -29,6 +29,7 @@ import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.model.talentohumano.Employee_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
@@ -59,6 +60,8 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
     private Subject owner;
     
     private Subject author;
+    
+    private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
@@ -131,6 +134,14 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
         this.owner = owner;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+    
     public String getTags() {
         return tags;
     }
@@ -242,11 +253,12 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
         if (getAuthor()!= null){
             _filters.put(Employee_.author.getName(), getAuthor()); //Filtro por defecto
         }
-        
+        if (getOrganization() != null) {
+            _filters.put(Employee_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        
         if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
