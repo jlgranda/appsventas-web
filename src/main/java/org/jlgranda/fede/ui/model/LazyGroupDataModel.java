@@ -236,21 +236,18 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
         if (!range.isEmpty()){
             _filters.put(Group_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-
+        if (getOwner()!=null){    
         _filters.put(Group_.owner.getName(), getOwner()); //Filtro por defecto
-        
+        }
         if (getOrganization() != null) {
         _filters.put(Group_.organization.getName(), getOrganization()); //Filtro por defecto organizacion
         }
-        
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-
         if (getGroupType() != null) {
             _filters.put("groupType", getGroupType()); //Filtro de tipo de grupo
         }
-
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }

@@ -220,7 +220,8 @@ public class GroupHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyGroupDataModel(groupService);
         }
-        lazyDataModel.setOwner(subject);
+//        lazyDataModel.setOwner(subject);
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
         if (getKeyword() != null && getKeyword().startsWith("label:")) {

@@ -299,20 +299,18 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
                 _filters.put(Invoice_.owner.getName(), getOwner()); //Filtro por defecto
             } 
         }
-        
         if (getOrganization()!= null){
             _filters.put(Invoice_.organization.getName(), getOrganization()); //Filtro por defecto de organizacion
         } 
-        
-        _filters.put(Invoice_.emissionOn.getName(), range); //Filtro de fecha de emissión
+        if (!range.isEmpty()){
+            _filters.put(Invoice_.emissionOn.getName(), range); //Filtro de fecha de emissión
+        }
         if (!Strings.isNullOrEmpty(getTags())){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        
         if (!Strings.isNullOrEmpty(getFilterValue())){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-        
         if (getDocumentType() != null){
             _filters.put("documentType", getDocumentType()); //Filtro por tipos de documentos
         }

@@ -28,6 +28,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.model.talentohumano.Employee;
@@ -73,6 +74,8 @@ public class EmployeeHome extends FedeController implements Serializable {
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar clientes en factura
     
+    @Inject
+    private OrganizationData organizationData;
 
     @PostConstruct
     private void init() {
@@ -142,7 +145,8 @@ public class EmployeeHome extends FedeController implements Serializable {
             lazyDataModel = new LazyEmployeeDataModel(employeeService);
         }
         
-        lazyDataModel.setOwner(null); //listar todos
+//        lazyDataModel.setOwner(null); //listar todos
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
         lazyDataModel.setAuthor(subject);
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {

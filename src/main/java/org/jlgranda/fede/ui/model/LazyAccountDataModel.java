@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.Account_;
+import org.jpapi.model.Organization;
 
 
 /**
@@ -57,6 +58,8 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
     private String filterValue;
     
     private Subject owner;
+    
+    private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
@@ -163,13 +166,15 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
         if (!range.isEmpty()){
             _filters.put(Account_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-
-        _filters.put(Account_.owner.getName(), getOwner()); //Filtro por defecto
-        
+        if (getOwner() != null){
+            _filters.put(Account_.owner.getName(), getOwner()); //Filtro por owner
+        }
+        if (getOrganization() != null) {
+            _filters.put(Account_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
@@ -207,6 +212,14 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
 
     public void setOwner(Subject owner) {
         this.owner = owner;
+    }
+    
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     public String getTags() {
