@@ -287,7 +287,8 @@ public class Templates {
 //                .add(cmp.text(invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 12%: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
                 .add(cmp.text(invoice.getTotalTax(TaxType.IVA)).setValueFormatter(Templates.createCurrencyValueFormatter("IVA 0%: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
                 .newRow()
-                .add(cmp.text(invoice.getTotalSinImpuesto().add(invoice.getTotalTax(TaxType.IVA))).setValueFormatter(Templates.createCurrencyValueFormatter("Total a pagar: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+//                .add(cmp.text(invoice.getTotalSinImpuesto().add(invoice.getTotalTax(TaxType.IVA))).setValueFormatter(Templates.createCurrencyValueFormatter("Total a pagar: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
+                .add(cmp.text(invoice.getTotalSinImpuesto().add(invoice.getTotalTax(TaxType.IVA)).subtract(invoice.getPaymentsDiscount())).setValueFormatter(Templates.createCurrencyValueFormatter("Total a pagar: ")).setStyle(subtotalStyle).setHorizontalTextAlignment(HorizontalTextAlignment.RIGHT))
                 .newRow();
     }
 }
