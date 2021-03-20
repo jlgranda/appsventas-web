@@ -788,8 +788,10 @@ public class InvoiceHome extends FedeController implements Serializable {
             lazyDataModel = new LazyInvoiceDataModel(invoiceService);
         }
 
-        if (_start != null || _end != null) {
+        if (_start != null) {
             lazyDataModel.setStart(_start);
+        }
+        if (_end != null) {
             lazyDataModel.setEnd(_end);
         }
 //        lazyDataModel.setAuthor(_subject);

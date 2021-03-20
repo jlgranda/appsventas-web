@@ -21,6 +21,7 @@ import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.shiro.UsersRoles;
 import com.jlgranda.shiro.UsersRolesPK;
 import com.jlgranda.shiro.ejb.UsersRolesFacade;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -34,11 +35,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.UserTransaction;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
@@ -90,6 +93,9 @@ public class SubjectHome extends FedeController implements Serializable {
     private boolean handledPhotoUpload;
     
     private byte[] photo;
+    
+    private String clave;
+    private String confirmarClave;
     
     @PostConstruct
     public void init() {
@@ -258,8 +264,9 @@ public class SubjectHome extends FedeController implements Serializable {
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
      * @param _signup el objeto <tt>Subject</tt> a agregar
+     * @throws java.io.IOException
      */
-    public void processChangePassword(Subject _signup) {
+    public void processChangePassword(Subject _signup) throws IOException {
 
 //
         if (_signup != null) {
@@ -268,7 +275,10 @@ public class SubjectHome extends FedeController implements Serializable {
                 //crypt password
                 _signup.setPassword(svc.encryptPassword(_signup.getPassword()));
                 
-                subjectService.save(_signup);
+                subjectService.save(_signup.getId(), _signup);
+                
+                //Cerrar sessión
+                redirectTo("/logout");
 
             } catch (SecurityException | IllegalStateException e) {
                 throw new RuntimeException("Could not create default security entities.", e);
@@ -346,5 +356,38 @@ public class SubjectHome extends FedeController implements Serializable {
         context.getExternalContext().getSessionMap().put("photoUser", getPhoto()); //Para cargar desde memoria
         addSuccessMessage(I18nUtil.getMessages("subject.upload.photo"), I18nUtil.getMessages("subject.upload.photo"));
         setHandledPhotoUpload(true);
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getConfirmarClave() {
+        return confirmarClave;
+    }
+
+    public void setConfirmarClave(String confirmarClave) {
+        this.confirmarClave = confirmarClave;
+    }
+    
+    /**
+     * El método debe actualizar en picketlink, de otra manera no tiene efecto
+     * el cambio de clave.
+     * @throws java.io.IOException
+     */
+    public void changePassword() throws IOException {
+        if (getClave().equalsIgnoreCase(getConfirmarClave())) {
+            this.signup.setPassword(getClave());
+            this.signup.setLastUpdate(Dates.now());
+            this.processChangePassword(this.signup);
+            this.addSuccessMessage("La contraseña se actualizó correctamente.", "");
+        } else {
+            this.addWarningMessage("Las contraseñas no coinciden! Intente nuevamente.", "");
+        }
+
     }
 }

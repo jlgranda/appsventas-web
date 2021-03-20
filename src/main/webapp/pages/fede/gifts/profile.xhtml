@@ -52,52 +52,50 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-lg-9">
                         <!-- Left Side -->
-                        <div class="card card-w-title">
-                            <h1>#{subjectHome.signup.fullName}</h1>
-                            <div class="EmptyBox10"></div>
-                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
-                                            value="#{subjectHome.signup.code}" validator="ciValidator"
-                                            required="#{!subjectHome.signup.persistent}" render="code"
-                                            class="ui-panelgrid-blank form-group"
-                                            container="none"/>
-                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
-                                            value="#{subjectHome.signup.firstname}" required="#{!subjectHome.signup.persistent}" 
-                                            inlinehelp="#{messages['firstname.inlinehelp']}" render="fstn"
-                                            class="ui-panelgrid-blank form-group"
-                                            container="none"/>
-                            <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
-                                            value="#{subjectHome.signup.surname}" required="#{!subjectHome.signup.persistent}"
-                                            inlinehelp="#{messages['lastname.inlinehelp']}" render="lstn"
-                                            class="ui-panelgrid-blank form-group"
-                                            container="none"/>
+                        <h1>#{subjectHome.signup.fullName}</h1>
+                        <div class="EmptyBox10"></div>
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                                        value="#{subjectHome.signup.code}" validator="ciValidator"
+                                        required="#{!subjectHome.signup.persistent}" render="code"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
+                                        value="#{subjectHome.signup.firstname}" required="#{!subjectHome.signup.persistent}" 
+                                        inlinehelp="#{messages['firstname.inlinehelp']}" render="fstn"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
+                                        value="#{subjectHome.signup.surname}" required="#{!subjectHome.signup.persistent}"
+                                        inlinehelp="#{messages['lastname.inlinehelp']}" render="lstn"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
 
-                            <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
-                                            value="#{subjectHome.signup.description}" required="false" 
-                                            inlinehelp="#{messages['address.inlinehelp']}" render="addrs"
-                                            class="ui-panelgrid-blank form-group"
-                                            container="none"/>
+                        <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
+                                        value="#{subjectHome.signup.description}" required="false" 
+                                        inlinehelp="#{messages['address.inlinehelp']}" render="addrs"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
 
-                            <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
-                                            value="#{subjectHome.signup.email}" validator="emailValidator"
-                                            required="#{!subjectHome.signup.persistent}" placeholder="false" 
-                                            execute="@this save" render="email"
-                                            class="ui-panelgrid-blank form-group"
-                                            container="none"/>
+                        <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                                        value="#{subjectHome.signup.email}" validator="emailValidator"
+                                        required="#{!subjectHome.signup.persistent}" placeholder="false" 
+                                        execute="@this save" render="email"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
 
-                            <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['phone']}" 
-                                            value="#{subjectHome.signup.mobileNumber}"
-                                            required="#{!subjectHome.signup.persistent}" placeholder="false" 
-                                            execute="@this save" render="mobileNumber"
-                                            class="ui-panelgrid-blank form-group"
-                                            container="none"/>
+                        <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['phone']}" 
+                                        value="#{subjectHome.signup.mobileNumber}"
+                                        required="#{!subjectHome.signup.persistent}" placeholder="false" 
+                                        execute="@this save" render="mobileNumber"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
 
-                            <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                            value="#{subjectHome.signup.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
-                                            render="bio"
-                                            class="ui-panelgrid-blank form-group"
-                                            container="none"/>
+                        <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
+                                        value="#{subjectHome.signup.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                        render="bio"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
 
-                        </div>
                     </div>
                     <div class="ui-g-12 ui-md-12 ui-lg-3">
                         <p:panel id="photo" styleClass="profile">
@@ -153,27 +151,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
                           header="#{i18n['common.password.change']}" 
                           modal="true" draggable="true" position="center" closable="false" >
-                    <div class="Container100">
-                        <p:messages id="messagesDlg" showDetail="true" closable="true" >
-                            <p:autoUpdate></p:autoUpdate>
-                        </p:messages>
-                        <div class="ContainerIndent">
-                            <div class="Card ShadowEffect ui-fluid">
-
-                                <div class="EmptyBox10"></div>
-                                <div class="Wid50 Fleft Responsive">
-                                    <p:commandButton value="#{i18n['Save']}"  icon="fa fa-save Fs14"
-                                                     update="@form"
-                                                     action="#{subjectHome.changePassword()}"
-                                                     onsuccess="PF('dlgCambiarClave').hide()"
-                                                     style="width: auto !important;" >
-                                    </p:commandButton>
-                                </div>
-                                <div class="Wid50 Fleft Responsive">
-                                    <p:commandButton icon="fa fa-close Fs14"
-                                                     onclick="PF('dlgCambiarClave').hide()" value="#{i18n['common.cancel']}"/>
-                                </div>
-                            </div> 
+                    <div class="ui-g ui-fluid">
+                        <div class="ui-g-12 ui-lg-9">
+                            <p:messages id="messagesDlg" showDetail="true" closable="true" >
+                                <p:autoUpdate></p:autoUpdate>
+                            </p:messages>
+                            <div class="ContainerIndent">
+                                <div class="Card ShadowEffect ui-fluid">
+                                    <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
+                                            value="#{subjectHome.clave}"  placeholder="true"
+                                            execute="@this save" render="password">
+                                    </jlgranda:input>
+                                    <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['password']}" 
+                                                    value="#{subjectHome.confirmarClave}"  placeholder="true"
+                                                    execute="@this save" render="confirmar-password"/>
+                                    <div class="EmptyBox10"></div>
+                                    <div class="Wid50 Fleft Responsive">
+                                        <p:commandButton value="#{i18n['Save']}"  icon="fa fa-save Fs14"
+                                                         update="@form"
+                                                         action="#{subjectHome.changePassword()}"
+                                                         onsuccess="PF('dlgCambiarClave').hide()"
+                                                         style="width: auto !important;" >
+                                        </p:commandButton>
+                                    </div>
+                                    <div class="Wid50 Fleft Responsive">
+                                        <p:commandButton icon="fa fa-close Fs14"
+                                                         onclick="PF('dlgCambiarClave').hide()" value="#{i18n['common.cancel']}"/>
+                                    </div>
+                                </div> 
+                            </div>
                         </div>
                     </div>
                 </p:dialog>
