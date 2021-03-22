@@ -370,8 +370,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     /**
      * El método debe actualizar en picketlink, de otra manera no tiene efecto
      * el cambio de clave.
+     * @throws java.io.IOException
      */
-    public void changePassword() {
+    public void changePassword() throws IOException {
         if (getClave().equalsIgnoreCase(getConfirmarClave())) {
             getSubjectEdit().setPassword(getClave());
             getSubjectEdit().setLastUpdate(Dates.now());
