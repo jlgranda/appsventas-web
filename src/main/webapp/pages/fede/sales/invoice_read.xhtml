@@ -95,7 +95,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <!-- sección de formulario -->
                     <div class="ui-g">
                         <div class="ui-g-7"></div>
-                        <div class="ui-g-5" style="text-align: center; font-size: larger; font-weight: 700">
+                        <div class="ui-g-5" style="text-align: center; font-size: larger">
                             <label>#{i18n['DateTimeCreatedOn']} </label>
                             <h:outputText value="#{invoiceHome.invoice.emissionOn}">
                                 <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
@@ -410,14 +410,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                     <f:facet name="right">
 
-                                        <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{not invoiceHome.invoice.persistent}"
-                                                         actionListener="#{invoiceHome.closeDialog(null)}" 
-                                                         action="summary"
+                                        <p:commandButton ajax="true" disabled="true" immediate="true" rendered="#{not invoiceHome.invoice.persistent}"
+                                                         actionListener="#{invoiceHome.closeDialog(null)}"
                                                          icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
                                                          />
-                                        <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{invoiceHome.invoice.persistent}"
-                                                         actionListener="#{invoiceHome.closeDialog(null)}" 
-                                                         action="summary"
+                                        <p:commandButton ajax="true" disabled="true" immediate="true" rendered="#{invoiceHome.invoice.persistent}"
+                                                         actionListener="#{invoiceHome.closeDialog(null)}"                                                         
                                                          icon="fa fa-times Fs14 Black" styleClass="secondary-button" type="submit"
                                                          />
                                         <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button" disabled="true">

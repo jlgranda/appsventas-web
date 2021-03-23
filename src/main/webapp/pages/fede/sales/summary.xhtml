@@ -152,7 +152,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:dataTable id="dataTable" var="discount" value="#{summaryHome.listDiscount}"
                                      scrollable="true" liveScroll="true" scrollRows="50" scrollHeight="400">
                             <f:facet name="header">
-                                <h:outputText value="#{i18n['common.statistics.sales.discount.table']}" style="font-size: large"></h:outputText>
+                                <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
                             </f:facet>
                             <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}" style="width:125px">
                                 <h:outputText value="#{discount[0]}"/>
@@ -176,8 +176,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:row>
                                     <!--<p:column colspan="4" footerText="#{i18n['common.statistics.sales.discount.table.total']}" style="font-weight: bolder;"/>-->
                                     <!--<p:column footerText="$#{summaryHome.getListDiscountTotal()}"  style="font-weight: bolder; font-size: larger; color: #005b9f"/>-->
-                                    <span class="ui-g-8" style=" font-weight: bolder">#{i18n['common.statistics.sales.discount.table.total']}: </span>
-                                    <span class="ui-g-2" style=" font-size: large; font-weight: bolder; color: #005b9f">$#{summaryHome.getListDiscountTotal()}</span>
+                                    <span class="ui-g-9" style=" font-weight: bold">#{i18n['common.statistics.sales.discount.table.total']}: </span>
+                                    <span class="ui-g-1" style=" font-size: medium; font-weight: bold; color: #005b9f">$#{summaryHome.getListDiscountTotal()}</span>
                                 </p:row>
                             </p:columnGroup>
                         </p:dataTable>

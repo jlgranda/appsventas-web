@@ -96,37 +96,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>                      
                     </p:panel>
                 </div>
+                <p:dialog widgetVar="tableDialog" modal="true" resizable="false"
+                          showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
+                          class="Container100 Responsive50" style="text-align: right" width="40%">
+                    <div class="card">
+                        <p:outputPanel id="tableDetail"> 
+                            <p:dataTable id="dataTable" var="purchases" value="#{summaryHome.listPurchases}"
+                                         scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="330">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n['common.statistics.products.provider.table']}"></h:outputText>
+                                </f:facet>
+                                <p:column id="nme" headerText="#{i18n['app.fede.purchase.supplier']}" sortBy="#{purchases[0]}" style="width:250px; text-align: left">
+                                    <h:outputText value="#{purchases[0]}"/>
+                                </p:column>
+                                <p:column id="amount" headerText="#{i18n['common.purchases.value']}" sortBy="#{purchases[1]}" style="width:125px">
+                                    <h:outputText value="#{purchases[1]}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <!--<p:column colspan="1" footerText="#{i18n['common.statistics.products.provider.table.total']}" style="font-weight: bolder;"/>-->
+                                        <!--<p:column footerText="$#{summaryHome.getListPurchasesTotal()}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>-->
+                                        <span class="ui-g-9" style=" font-weight: bold">#{i18n['common.statistics.products.provider.table.total']}: </span>
+                                        <span class="ui-g-2" style=" font-size: medium; font-weight: bold; color: #005b9f">$#{summaryHome.getListPurchasesTotal()}</span>
+                                        
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </p:outputPanel>
+                    </div>
+                </p:dialog>
             </div>
-            <p:dialog widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade"
-                      resizable="false" class="Container100 Responsive50" header="#{i18n['common.statistics.products.provider.table']}" style="text-align: center">
-                <p:outputPanel id="tableDetail"> 
-                    <p:dataTable id="dataTable" var="purchases" value="#{summaryHome.listPurchases}">
-<!--                        <f:facet name="header">
-                            <h:outputText value="#{i18n['common.statistics.products.provider.table']}"/>
-                        </f:facet>                    -->
-                        <p:column>
-                            <h:outputText value="#{purchases[0]}"/>
-                        </p:column>
-                        <p:column style="text-align:center;">
-                            <h:outputText value="#{purchases[1]}">
-                                <f:convertNumber type="currency" currencySymbol="$"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:columnGroup type="footer">
-                            <p:row>
-                                <p:column colspan="1" footerText="#{i18n['common.statistics.products.provider.table.total']}" style="font-weight: bolder;"/>
-                                <p:column footerText="$#{summaryHome.getListPurchasesTotal()}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>
-                            </p:row>
-                        </p:columnGroup>
-                    </p:dataTable>
-                </p:outputPanel>
-            </p:dialog>
         </div>
     </ui:define>
-
-
-
-
 
 
     <ui:define name="script">
