@@ -553,7 +553,6 @@ public class SummaryHome extends FedeController implements Serializable {
         List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(),getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
             chartSerie.set(object[0], (Number) object[1]);
-            System.out.println("\nSerie: "+object[0]+""+(Number) object[1]);
         });
         return chartSerie;
     }
