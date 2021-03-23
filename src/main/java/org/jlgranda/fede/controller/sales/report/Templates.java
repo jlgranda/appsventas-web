@@ -115,7 +115,7 @@ public class Templates {
      * Constant <code>footerComponent</code>
      */
     public static final ComponentBuilder<?, ?> footerComponent;
-
+    
     static {
         rootStyle = stl.style().setPadding(1);
         footerStyle = stl.style().setPadding(1).setFontSize(8);

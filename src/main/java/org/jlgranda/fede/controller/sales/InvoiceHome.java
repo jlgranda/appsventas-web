@@ -662,14 +662,20 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String save() {
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
-        if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
-            getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
-            getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
-            getInvoice().addPayment(getPayment());
-            setOutcome(save(false));
-        } else {
-            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+        if (getPayment().getDiscount().compareTo(BigDecimal.ZERO) > 0 && getInvoice().getDescription().equals("")) {
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.description"));
             setOutcome("");
+        }else{
+            if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+                getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
+                getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
+                getInvoice().addPayment(getPayment());
+                setOutcome("preinvoices");
+                setOutcome(save(false));
+            } else {
+                addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+                setOutcome("");
+            }
         }
         return getOutcome();
     }
