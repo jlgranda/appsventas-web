@@ -373,7 +373,6 @@ public class InventoryHome extends FedeController implements Serializable {
         lazyDataModel.setProductType(getProductType());
 //        lazyDataModel.setStart(this.getStart());
         lazyDataModel.setEnd(this.getEnd());
-//        lazyDataModel.setGroupSelected(groupSelected);
         lazyDataModel.setGroupSelected(groupSelected);
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");

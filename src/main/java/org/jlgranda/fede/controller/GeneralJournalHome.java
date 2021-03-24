@@ -17,17 +17,23 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
+import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.ui.model.LazyGeneralJournalDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;
@@ -58,15 +64,27 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     @EJB
     private GroupService groupService;
+    
+    @EJB
+    private AccountService accountService;
 
     private LazyGeneralJournalDataModel lazyDataModel;
 
     private GeneralJournal journal;
+    
+    private Record record;
+    
+    private RecordDetail recordDetail;
 
     private Long journalId;
+    
+    private Account accountSelected;
 
     @EJB
     private GeneralJournalService journalService;
+    
+    @Inject
+    private OrganizationData organizationData;
 
     @PostConstruct
     private void init() {
@@ -122,7 +140,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public void setJournal(GeneralJournal journal) {
         this.journal = journal;
     }
-
+    
     public LazyGeneralJournalDataModel getLazyDataModel() {
         return lazyDataModel;
     }
@@ -131,6 +149,34 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.lazyDataModel = lazyDataModel;
     }
 
+    public Record getRecord() {
+        return record;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
+
+    public RecordDetail getRecordDetail() {
+        return recordDetail;
+    }
+
+    public void setRecordDetail(RecordDetail recordDetail) {
+        this.recordDetail = recordDetail;
+    }
+    
+    public List<Account> getAccounts() {
+        return accountService.findByOrganization(this.organizationData.getOrganization());
+    }
+
+    public Account getAccountSelected() {
+        return accountSelected;
+    }
+
+    public void setAccountSelected(Account accountSelected) {
+        this.accountSelected = accountSelected;
+    }
+    
     public void clear() {
         filter();
     }
@@ -139,7 +185,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyGeneralJournalDataModel(journalService);
         }
-//        lazyDataModel.setOwner(this.subject);
+        lazyDataModel.setOwner(this.subject);
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
@@ -175,7 +221,50 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         }
         journalService.save(journal.getId(), journal);
     }
+    
+    public boolean mostrarFormularioRecord(Map<String, List<String>> params) {
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
+        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
+        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_RECORD, width, height, left, top, true, params);
+        return true;
+    }
+    
+    public boolean mostrarFormularioRecord() {
 
+        if(getRecord()!=null && getRecord().isPersistent()) {
+            super.setSessionParameter("RECORD", getRecord());
+        }
+        return mostrarFormularioRecord(null);
+    }
+    
+    
+    /**
+     * Agrega un detalle al Record
+     */
+    public void addRecordDetail(){
+        System.out.println("\naccountSelect: "+accountSelected);
+        recordDetail.setAccount(accountSelected);
+//        getRecordDetail().setAccount(accountSelected);
+//        recordDetail1.setAccount(accountSelected);
+//        recordDetail1.setRecordType("DEBE");
+//        recordDetail1.setAmount(BigDecimal.valueOf(50000));
+    }
+    
+    /**
+     * Agrega un record al Journal
+     */
+    public void saveRecord(){
+        
+    }
+    
+    
+    
+    
+    
+    
+    
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

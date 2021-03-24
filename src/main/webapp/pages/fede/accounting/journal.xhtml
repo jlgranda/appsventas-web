@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li><p:link outcome="/pages/fede/accounting/journal.jsf">#{generalJournalHome.journalId == null ? i18n['New'] : i18n['common.edit']} #{i18n['app.fede.accouting.journal']}</p:link></li>
     </ui:define>
     <ui:define name="content">
-        <o:importConstants type="org.jlgranda.fede.model.config.accounting.GeneralJournal"/>
+        <o:importConstants type="org.jlgranda.fede.model.accounting.GeneralJournal"/>
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <h1 class="BigTopic">#{i18n['app.fede.accouting.journal']}</h1> <!--Sección 1: Título-->
@@ -56,6 +56,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     execute="@this save" render="dscrpn"/>
                 </div>
                 <div class="EmptyBox10"></div><!--Separador de sección-->
+
+                <!-- Lista de asientos contables del Journal -->
+                <p:panel id="journal-tracking" styleClass="Container100 Responsive100">
+                    <div class="Container100 Fs22 BoldGray FontRobotoRegular BigTopic">#{i18n['app.fede.sales.journal.record.tracking']}
+                        <p:commandButton id="button-record-add" icon="fa fa-plus-square" 
+                                         actionListener="#{generalJournalHome.mostrarFormularioRecord()}" ajax="true"
+                                         immediate="true"
+                                         styleClass="RedButton" style="width:30px">
+<!--                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{invoiceHome.handleReturn}">
+                            </p:ajax>-->
+                        </p:commandButton>
+                    </div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Card SoftGrayBack">
+                                <div class="Container100 Responsive100">
+                                    <div class="dataTable_wrapper">
+                                        <p:dataTable var="record"
+                                                     value="#{generalJournalHome.journal.records}"
+                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                                     reflow="true" selection="#{generalJournalHome.selectedBussinesEntities}"
+                                                     rowKey="#{record.id}"
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                            <!--<p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelect}"/>-->
+                                            <!--<p:column selectionMode="multiple" style="width:32px;text-align:center"/>-->
+                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{record.createdOn}"
+                                                       styleClass="text-right" style="width:125px;">
+                                                <h:outputText value="#{record.createdOn}">
+                                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['name']}" sortBy="#{record.createdOn}" style="width:125px;">
+                                                <h:outputText value="#{record.name}" />
+                                            </p:column>
+                                            <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{record.id}" style="width:125px; text-align: center">
+                                                <!--<p:button value="#{i18n['VerDetalles']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{record.id}"/>-->
+                                                <p:commandButton id="button-detail" value="#{record.id}" style="margin-bottom:10px;"
+                                                                 styleClass="succes-btn" update=":form:tableDetail" 
+                                                                 oncomplete="PF('tableDialog').show()">
+                                                </p:commandButton>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+                <div class="EmptyBox10"></div>
+
                 <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
                     <f:facet name="left">
                         <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"
@@ -75,19 +128,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          type="submit"/>                          
                     </f:facet>
                 </p:toolbar>
-                <div class="EmptyBox10"></div>
-                <!-- Lista de asientos contables -->
-                <p:panel id="journal-tracking" styleClass="Container100 Responsive100">
-                    <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.fede.sales.journal.record.tracking']}</div>
-                    <div class="Container100 Responsive100">
-                        <div class="ContainerIndent">
-                            <div class="Card SoftGrayBack">
-                                <div class="Container100 Responsive100">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </p:panel>
             </div>
         </div>
     </ui:define>
