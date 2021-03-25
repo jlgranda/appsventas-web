@@ -30,7 +30,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.NoResultException;
 import org.jpapi.model.profile.Subject;
-import org.omnifaces.el.functions.Strings;
 
 /**
  *

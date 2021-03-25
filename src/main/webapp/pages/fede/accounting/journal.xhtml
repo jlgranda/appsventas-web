@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="journalId" value="#{generalJournalHome.journalId}"/>
+            <f:viewAction action="#{generalJournalHome.crearNuevo()}"/>
         </f:metadata>
     </ui:define>
     <ui:define name="title">#{i18n['app.fede.accouting.journal']}</ui:define>
@@ -96,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{record.id}" style="width:125px; text-align: center">
                                                 <!--<p:button value="#{i18n['VerDetalles']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{record.id}"/>-->
                                                 <p:commandButton id="button-detail" value="#{record.id}" style="margin-bottom:10px;"
-                                                                 styleClass="succes-btn" update=":form:tableDetail" 
+                                                                 styleClass="succes-btn" update="" 
                                                                  oncomplete="PF('tableDialog').show()">
                                                 </p:commandButton>
                                             </p:column>
@@ -129,6 +130,85 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </f:facet>
                 </p:toolbar>
             </div>
+            <!-- Edición de registro  -->
+        <p:dialog widgetVar="recordDialog" modal="true" resizable="false"
+                  showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
+                  class="Container100 Responsive50" style="text-align: right" width="80%">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="Container100">
+                        <p:outputPanel id="recordPanel" class="ui-g-12">
+                            <div class="ui-g-6">
+                                <h:outputText value="#{i18n['account.catalogue']} *"/>
+                                <div class="EmptyBox20"></div>
+                                <p:selectOneMenu id="account" value="#{generalJournalHome.recordDetail.account}" effect="fade" style="width: 350px"
+                                                 required="#{true}" immediate="true"
+                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                    <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                    <p:ajax update="@this"></p:ajax>
+                                </p:selectOneMenu>  
+                            </div>
+                            <div class="ui-g-2">
+                                <h:outputText value="#{i18n['app.fede.sales.record.type']} *"/>
+                                <div class="EmptyBox20"></div>
+                                <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordType}" effect="fade" style="width: 110px"
+                                                 required="#{true}" immediate="true"> 
+                                    <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                    <p:ajax update="@this"></p:ajax>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-g-2">
+                                <jlgranda:input id="amount_record_detail" name="amount_record_detail" type="number" label="#{i18n['module.accounting.amount']}"
+                                                update="@this" render="amount_record_detail" value="#{generalJournalHome.recordDetail.amount}" 
+                                                required="true" requiredMessage="#{i18n['module.accounting.amount.required']}"
+                                                placeholder="false" style="width: 100px"
+                                                decimalPlaces="0" container="none" rendered="#{true}" disabled="#{false}"/>
+                            </div>
+                            <div class="ui-g-2">
+                                <div class="EmptyBox30"></div>
+                                <p:commandButton id="add-record" value="#{i18n['Add']}" ajax="true"
+                                                 actionListener="#{generalJournalHome.addRecordDetail()}" immediate="true"
+                                                 update="account recordsDataTable"
+                                                 disabled="#{false}" 
+                                                 style="width: auto !important;"/>
+                            </div>
+                        </p:outputPanel>
+                    </div>
+                    <div class="Container100 Responsive100">
+                        <div class="ContainerIndent">
+                            <div class="Card SoftGrayBack">
+                                <div class="dataTable_wrapper">
+                                    <p:dataTable var="recordDetail" 
+                                                 value="#{generalJournalHome.record.recordDetails}"
+                                                 paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                                 sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                                 reflow="true" 
+                                                 rowKey="#{recordDetail.id}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                                 id="recordsDataTable" widgetVar="dataTable_wv" lazy="false" paginatorAlwaysVisible="false">
+                                        <p:column headerText="#{i18n['app.fede.accouting.account']}">
+                                            <h:outputText value="#{recordDetail.account.name}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['app.fede.sales.record.type']}">
+                                            <h:outputText value="#{recordDetail.recordType}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['module.accounting.amount']}">
+                                            <h:outputText value="$#{recordDetail.amount}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p:commandButton id="save" value="#{i18n['Save']}" 
+                                     ajax="false" 
+                                     actionListener="#{generalJournalHome.saveRecord()}" 
+                                     style="width: auto !important;"
+                                     type="submit"/>
+                </div>
+            </div>
+        </p:dialog>
+        <!--//Edición de registro -->
         </div>
     </ui:define>
     <ui:define name="script">

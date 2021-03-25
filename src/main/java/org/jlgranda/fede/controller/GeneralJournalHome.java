@@ -22,9 +22,10 @@ import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -72,8 +73,14 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     private GeneralJournal journal;
     
+    /**
+     * El objeto Record para edición
+     */
     private Record record;
     
+    /**
+     * RecordDetail para edición
+     */
     private RecordDetail recordDetail;
 
     private Long journalId;
@@ -101,6 +108,10 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         setJournal(journalService.createInstance());//Instancia de Cuenta
         setOutcome("general-journals");
         filter();
+        
+        this.record = journalService.createInstanceRecord();
+        this.recordDetail = journalService.createInstanceRecordDetail();
+        
     }
 
     @Override
@@ -133,8 +144,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public GeneralJournal getJournal() {
         if (this.journalId != null && !this.journal.isPersistent()) {
             this.journal = journalService.find(journalId);
-        }
-        return journal;
+        } 
+        return this.journal;
     }
 
     public void setJournal(GeneralJournal journal) {
@@ -233,8 +244,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     
     public boolean mostrarFormularioRecord() {
 
-        if(getRecord()!=null && getRecord().isPersistent()) {
-            super.setSessionParameter("RECORD", getRecord());
+        if(this.journal != null) {
+            super.setSessionParameter("journalId", this.journal.getId());
         }
         return mostrarFormularioRecord(null);
     }
@@ -245,28 +256,46 @@ public class GeneralJournalHome extends FedeController implements Serializable {
      */
     public void addRecordDetail(){
         System.out.println("\naccountSelect: "+accountSelected);
-        recordDetail.setAccount(accountSelected);
-//        getRecordDetail().setAccount(accountSelected);
-//        recordDetail1.setAccount(accountSelected);
-//        recordDetail1.setRecordType("DEBE");
-//        recordDetail1.setAmount(BigDecimal.valueOf(50000));
+        
+        this.record.addRecordDetail(this.recordDetail);
+        
+        //Preparar para una nueva entrada
+        this.recordDetail = journalService.createInstanceRecordDetail();
     }
     
     /**
      * Agrega un record al Journal
      */
     public void saveRecord(){
-        
+        journal.addRecord(this.record); //Agregar el record al journal
+        journalService.save(journal.getId(), journal);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> saved");
     }
-    
-    
-    
-    
-    
-    
     
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private GeneralJournal buildJournal() {
+        GeneralJournal generalJournal = journalService.createInstance();
+        generalJournal.setCode(UUID.randomUUID().toString());
+        generalJournal.setName("" + Dates.now());
+        generalJournal.setDescription("");
+        return generalJournal;
+    }
+    
+    public void crearNuevo(){
+        if (this.journalId == null){
+            this.journal = journalService.save(buildJournal());
+        }
+    }
+    
+    public void loadSessionParameters() {
+
+        if (existsSessionParameter("journalId")) {
+            this.setJournalId((Long) getSessionParameter("journalId"));
+            this.getJournal(); //Carga el objeto persistente
+        } 
     }
 }
