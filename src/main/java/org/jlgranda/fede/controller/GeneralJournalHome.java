@@ -20,6 +20,7 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.RecordService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -63,35 +64,39 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     @Inject
     private SettingHome settingHome;
 
+    @Inject
+    private OrganizationData organizationData;
+
     @EJB
     private GroupService groupService;
-    
+
     @EJB
     private AccountService accountService;
+
+    @EJB
+    private GeneralJournalService journalService;
+
+    @EJB
+    private RecordService recordService;
 
     private LazyGeneralJournalDataModel lazyDataModel;
 
     private GeneralJournal journal;
-    
+
     /**
      * El objeto Record para edición
      */
     private Record record;
-    
+
     /**
      * RecordDetail para edición
      */
     private RecordDetail recordDetail;
 
     private Long journalId;
-    
-    private Account accountSelected;
+    private Long recordId;
 
-    @EJB
-    private GeneralJournalService journalService;
-    
-    @Inject
-    private OrganizationData organizationData;
+    private Account accountSelected;
 
     @PostConstruct
     private void init() {
@@ -108,15 +113,15 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         setJournal(journalService.createInstance());//Instancia de Cuenta
         setOutcome("general-journals");
         filter();
-        
-        this.record = journalService.createInstanceRecord();
-        this.recordDetail = journalService.createInstanceRecordDetail();
-        
+
+        this.record = recordService.createInstanceRecord();
+        this.recordDetail = recordService.createInstanceRecordDetail();
+
     }
 
     @Override
     public void handleReturn(SelectEvent event) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setJournal((GeneralJournal) event.getObject());
     }
 
     @Override
@@ -141,17 +146,25 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.journalId = journalId;
     }
 
+    public Long getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(Long recordId) {
+        this.recordId = recordId;
+    }
+
     public GeneralJournal getJournal() {
         if (this.journalId != null && !this.journal.isPersistent()) {
             this.journal = journalService.find(journalId);
-        } 
+        }
         return this.journal;
     }
 
     public void setJournal(GeneralJournal journal) {
         this.journal = journal;
     }
-    
+
     public LazyGeneralJournalDataModel getLazyDataModel() {
         return lazyDataModel;
     }
@@ -161,7 +174,11 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
 
     public Record getRecord() {
-        return record;
+        if (this.recordId != null && !this.record.isPersistent()) {
+            this.record = recordService.find(recordId);
+            System.out.println("\nrecordDetails: "+record.getRecordDetails());
+        }
+        return this.record;
     }
 
     public void setRecord(Record record) {
@@ -175,7 +192,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public void setRecordDetail(RecordDetail recordDetail) {
         this.recordDetail = recordDetail;
     }
-    
+
     public List<Account> getAccounts() {
         return accountService.findByOrganization(this.organizationData.getOrganization());
     }
@@ -187,7 +204,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public void setAccountSelected(Account accountSelected) {
         this.accountSelected = accountSelected;
     }
-    
+
     public void clear() {
         filter();
     }
@@ -232,7 +249,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         }
         journalService.save(journal.getId(), journal);
     }
-    
+
     public boolean mostrarFormularioRecord(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
@@ -241,61 +258,81 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         super.openDialog(SettingNames.POPUP_FORMULARIO_RECORD, width, height, left, top, true, params);
         return true;
     }
-    
+
     public boolean mostrarFormularioRecord() {
 
-        if(this.journal != null) {
+        if (this.journal != null) {
             super.setSessionParameter("journalId", this.journal.getId());
+            super.setSessionParameter("recordId", null);
+        }
+        
+        return mostrarFormularioRecord(null);
+    }
+
+    public boolean editarFormularioRecord(Long recordId) {
+
+        if (this.journal != null) {
+            super.setSessionParameter("journalId", this.journal.getId());
+        }
+        if (recordId != null) {
+                super.setSessionParameter("recordId", recordId);
         }
         return mostrarFormularioRecord(null);
     }
-    
-    
+
+    public void closeFormularioRecord(Object data) {
+        removeSessionParameter("journalId");
+        super.closeDialog(data);
+    }
+
+    public void loadSessionParameters() {
+
+        if (existsSessionParameter("journalId")) {
+            this.setJournalId((Long) getSessionParameter("journalId"));
+            if(existsSessionParameter("recordId")){
+                    this.setRecordId((Long) getSessionParameter("recordId"));
+            }
+            this.getJournal(); //Carga el objeto persistente
+            this.getRecord(); //Carga el objeto persistente
+        }
+    }
+
     /**
      * Agrega un detalle al Record
      */
-    public void addRecordDetail(){
-        System.out.println("\naccountSelect: "+accountSelected);
-        
+    public void addRecordDetail() {
+        this.recordDetail.setOwner(subject);
         this.record.addRecordDetail(this.recordDetail);
-        
         //Preparar para una nueva entrada
-        this.recordDetail = journalService.createInstanceRecordDetail();
+        this.recordDetail = recordService.createInstanceRecordDetail();
     }
-    
+
     /**
      * Agrega un record al Journal
      */
-    public void saveRecord(){
+    public void saveRecord() {
+        this.record.setOwner(subject);
         journal.addRecord(this.record); //Agregar el record al journal
         journalService.save(journal.getId(), journal);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> saved");
-    }
-    
-    @Override
-    protected void initializeDateInterval() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        closeFormularioRecord(journal.getId());
     }
 
     private GeneralJournal buildJournal() {
         GeneralJournal generalJournal = journalService.createInstance();
         generalJournal.setCode(UUID.randomUUID().toString());
         generalJournal.setName("" + Dates.now());
-        generalJournal.setDescription("");
+        generalJournal.setOwner(subject);
         return generalJournal;
     }
-    
-    public void crearNuevo(){
-        if (this.journalId == null){
+
+    public void crearNuevo() {
+        if (this.journalId == null) {
             this.journal = journalService.save(buildJournal());
         }
     }
-    
-    public void loadSessionParameters() {
 
-        if (existsSessionParameter("journalId")) {
-            this.setJournalId((Long) getSessionParameter("journalId"));
-            this.getJournal(); //Carga el objeto persistente
-        } 
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

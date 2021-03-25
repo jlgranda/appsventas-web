@@ -29,16 +29,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:param name="title" value="#{i18n['app.fede.sales.records']}" />
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="recordId" value="#{generalJournalHome.getRecord().id}" />    
+                <f:viewParam name="journalId" value="#{generalJournalHome.journal.id}" />    
                 <f:viewAction action="#{generalJournalHome.loadSessionParameters}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
         </ui:define>
         <ui:define name="viewname">
-            <li>#{generalJournalHome.journal.name}</li>
+            <li>#{generalJournalHome.journal.id}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.getRecord().id == null ? i18n['New'].concat(' ').concat(i18n['app.fede.sales.record']) : i18n['common.edit'].concat(': ')} #{generalJournalHome.getRecord().name}</p:link></li>
+            <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['New'].concat(' ').concat(i18n['app.fede.sales.record']) : i18n['common.edit'].concat(': ')} #{generalJournalHome.record.id}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -117,12 +117,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </div>
                         </div>
-                        <p:commandButton id="save" value="#{i18n['Save']}" 
+                        
+
+                        <div class="EmptyBox10"></div>
+
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:commandButton id="save" value="#{i18n['Save']}" 
                                          ajax="false" 
                                          actionListener="#{generalJournalHome.saveRecord()}" 
                                          style="width: auto !important;"
                                          type="submit"/>
+                        </f:facet>
+                        <f:facet name="right">
 
+                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                                             actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal)}"
+                                             action="#{generalJournalHome.redirect}"
+                                             icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                        </f:facet>
+                    </p:toolbar>
+                        
+                        
+                        
+                        
                     </h:form>
                 </div>
             </div>
