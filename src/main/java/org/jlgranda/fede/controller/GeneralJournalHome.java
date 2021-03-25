@@ -176,7 +176,6 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public Record getRecord() {
         if (this.recordId != null && !this.record.isPersistent()) {
             this.record = recordService.find(recordId);
-            System.out.println("\nrecordDetails: "+record.getRecordDetails());
         }
         return this.record;
     }
