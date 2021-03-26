@@ -46,7 +46,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton value="#{i18n['Find']}" style="margin-bottom: 10px;" styleClass="raised-btn"
                                          actionListener="#{generalJournalHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/accounting/journal.jsf"/>
+                        <!--<p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/accounting/journal.jsf"/>-->
+                        <p:commandButton value="#{i18n['New']}" style="margin-bottom: 10px;" styleClass="danger-btn"
+                                         actionListener="#{generalJournalHome.crearNuevo()}" ajax="false">
+                        </p:commandButton>
                     </div>
                     <div class="card">
                         <p:dataTable var="journal"

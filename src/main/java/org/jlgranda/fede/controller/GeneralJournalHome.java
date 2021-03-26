@@ -333,27 +333,17 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     private GeneralJournal buildJournal() {
         GeneralJournal generalJournal = journalService.createInstance();
         generalJournal.setCode(UUID.randomUUID().toString());
-//        generalJournal.setName(I18nUtil.getMessages("import.email.error") + Dates.toDateString(Dates.now()));
         generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal")+ " "+ this.organizationData.getOrganization().getInitials()+ " - " + Dates.toDateString(Dates.now()));
         generalJournal.setOwner(subject);
         return generalJournal;
     }
 
-    public void crearNuevo() {
+    public void crearNuevo() throws IOException {
         if (this.journalId == null) {
             this.journal = journalService.save(buildJournal());
+            redirectTo("/pages/fede/accounting/journal.jsf");
         }
     }
-    
-//    public void onCellEdit(CellEditEvent event) {
-//        Object oldValue = event.getOldValue();
-//        Object newValue = event.getNewValue();
-//        
-//        if(newValue != null && !newValue.equals(oldValue)) {
-//            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Celda cambiada", "Anterior: " + oldValue + ", Nuevo:" + newValue);
-//            FacesContext.getCurrentInstance().addMessage(null, msg);
-//        }
-//    }
 
     @Override
     protected void initializeDateInterval() {

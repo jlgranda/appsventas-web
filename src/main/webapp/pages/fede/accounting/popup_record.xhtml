@@ -136,13 +136,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:column style="width: 20px">
                                                 <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
                                             </p:column>
-                                            <p:column style="width: 10px">
+<!--                                            <p:column style="width: 10px">
                                                 <p:commandButton icon="fa fa-minus" style="font-size: 10px" styleClass="danger-btn" action="#{generalJournalHome.removeRecordDetail()}"/>
-                                            </p:column>
+                                            </p:column>-->
                                         </p:dataTable>
-                                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}" class="Container100 BigTopic"
+                                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.sales.record.description']}" class="Container100 BigTopic"
                                                         value="#{generalJournalHome.record.description}" required="false"
-                                                        inlinehelp="#{messages['app.fede.sales.record.description.inlinehelp']}"
+                                                        inlinehelp="#{messages['app.fede.accouting.account.description.inlinehelp']}"
                                                         execute="@this save" render="dscrpn"/>
                                     </div>
                                 </div>
