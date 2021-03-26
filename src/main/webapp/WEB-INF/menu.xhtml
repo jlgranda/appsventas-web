@@ -55,8 +55,8 @@
                             <p:menuitem id="om_talentohumano_role" value="Roles" icon="fa fa-fw fa fa-group" outcome="/pages/fede/talentohumano/roles.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                             <p:menuitem id="om_talentohumano_employee" value="Empleados" icon="fa fa-fw fa fa-drivers-license" outcome="/pages/fede/talentohumano/employees.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
-                        <p:submenu id="om_admin_accounting" label="Contabilidad" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
-                            <p:menuitem id="om_close_cash" value="#{i18n['common.close_cash']}" icon="fa fa-fw fa-lock" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                        <p:submenu id="om_admin_accounting" label="Contabilidad" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER')}">
+                            <p:menuitem id="om_close_cash" value="#{i18n['common.close_cash']}" icon="fa fa-fw fa-lock" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER')}"/>
                             <p:menuitem id="om_accounts" value="#{i18n['common.accounts']}" icon="fa fa-fw fa-percent" outcome="/pages/fede/accounting/account_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                             <p:menuitem id="om_journals" value="#{i18n['common.journals']}" icon="fa fa-fw fa-book" outcome="/pages/fede/accounting/journal_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                         </p:submenu>

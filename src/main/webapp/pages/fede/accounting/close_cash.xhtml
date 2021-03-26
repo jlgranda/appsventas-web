@@ -129,38 +129,44 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="SeparatorFull"></div>
                 <div class="EmptyBox10"></div>
             </div>
-            <p:dialog widgetVar="tableDialog" modal="true" showEffect="fade" hideEffect="fade" width="90%"
-                      resizable="false" class="Container100 Responsive50" style="text-align: right">
+            <p:dialog widgetVar="tableDialog" modal="true" resizable="false"
+                      showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
+                      class="Container100 Responsive50" style="text-align: right" width="90%">
                 <div class="card">
-                    <p:dataTable id="dataTable" var="discount" value="#{accountHome.listDiscount}"> <!--scrollable="true" scrollHeight="250"-->
-                        <f:facet name="header">
-                            <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
-                        </f:facet>
-                        <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}">
-                            <h:outputText value="#{discount[0]}"/>
-                        </p:column>
-                        <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{discount[1]}">
-                            <h:outputText value="#{discount[1]}"/>
-                        </p:column>
-                        <p:column id="fechaEmision" headerText="#{i18n['common.crationDate']}" sortBy="#{discount[2]}">
-                            <h:outputText value="#{discount[2]}"><f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
-                        </p:column>
-                        <p:column id="amount" headerText="#{i18n['app.fede.sales.payment.amount']}" sortBy="#{discount[3]}" style="text-align:center;">
-                            <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
-                        </p:column>
-                        <p:column id="numb_dscto" headerText="#{i18n['app.fede.sales.payment.discount']}" sortBy="#{discount[4]}" style="text-align:center;">
-                            <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
-                        </p:column>
-                        <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align:center;">
-                            <p:button value="#{i18n['VerDetalles']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
-                        </p:column>
-                        <p:columnGroup type="footer">
-                            <p:row>
-                                <p:column colspan="4" footerText="#{i18n['common.statistics.sales.discount.table.total']}" style="text-align: right; font-weight: bolder;"/>
-                                <p:column footerText="$#{accountHome.getListDiscountTotal()}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>
-                            </p:row>
-                        </p:columnGroup>
-                    </p:dataTable>
+                    <p:outputPanel id="tableDetail"> 
+                        <p:dataTable id="dataTable" var="discount" value="#{accountHome.listDiscount}"
+                                     scrollable="true" liveScroll="true" scrollRows="50" scrollHeight="400">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
+                            </f:facet>
+                            <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}" style="width:125px">
+                                <h:outputText value="#{discount[0]}"/>
+                            </p:column>
+                            <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{discount[1]}" style="width:125px">
+                                <h:outputText value="#{discount[1]}"/>
+                            </p:column>
+                            <p:column id="fechaEmision" headerText="#{i18n['common.crationDate']}" sortBy="#{discount[2]}" style="width:125px">
+                                <h:outputText value="#{discount[2]}"><f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
+                            </p:column>
+                            <p:column id="amount" headerText="#{i18n['app.fede.sales.payment.amount']}" sortBy="#{discount[3]}" style="width:125px">
+                                <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
+                            </p:column>
+                            <p:column id="numb_dscto" headerText="#{i18n['app.fede.sales.payment.discount']}" sortBy="#{discount[4]}" style="width:125px">
+                                <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
+                            </p:column>
+                            <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="width:125px; text-align: center">
+                                <p:button value="#{i18n['VerDetalles']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
+                            </p:column>
+                            <p:columnGroup type="footer">
+                                <p:row>
+                                    <!--<p:column colspan="4" footerText="#{i18n['common.statistics.sales.discount.table.total']}" style="font-weight: bolder;"/>-->
+                                    <!--<p:column footerText="$#{accountHome.getListDiscountTotal()}"  style="font-weight: bolder; font-size: larger; color: #005b9f"/>-->
+                                    <span class="ui-g-9" style=" font-weight: bold">#{i18n['common.statistics.sales.discount.table.total']}: </span>
+                                    <span class="ui-g-1" style=" font-size: medium; font-weight: bold; color: #005b9f">$#{accountHome.getListDiscountTotal()}</span>
+                                </p:row>
+                            </p:columnGroup>
+                        </p:dataTable>
+                    </p:outputPanel>
                 </div>
             </p:dialog>
         </div>

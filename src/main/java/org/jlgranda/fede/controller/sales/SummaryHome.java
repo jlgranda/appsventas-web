@@ -721,9 +721,9 @@ public class SummaryHome extends FedeController implements Serializable {
 
         areaModel.addSeries(sales);
         areaModel.addSeries(profits);
-        areaModel.addSeries(customers);
-        areaModel.addSeries(fixedCosts);
         areaModel.addSeries(purchases);
+        areaModel.addSeries(fixedCosts);
+        areaModel.addSeries(customers);
 
         areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));

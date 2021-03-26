@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 jlgranda
+ * Copyright (C) 2021 kellypaulinc
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  */
 package org.jlgranda.fede.ui.converter;
 
-import com.jlgranda.fede.ejb.sales.ProductCache;
+import com.jlgranda.fede.ejb.AccountService;
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,16 +33,17 @@ import org.jpapi.model.profile.Subject;
 
 /**
  *
- * @author jlgranda
+ * @author kellypaulinc
  */
+
 @RequestScoped
-@FacesConverter("org.jlgranda.fede.ui.converter.ProductConverter")
-public class ProductConverter implements Converter, Serializable {
+@FacesConverter("org.jlgranda.fede.ui.converter.AccountConverter")
+public class AccountConverter implements Converter, Serializable {
 
-    private static final long serialVersionUID = -3361609066820809465L;
-
+    private static final long serialVersionUID = -3057944404700510467L;
+    
     @EJB
-    private ProductCache service;
+    private AccountService service;
 
     @PostConstruct
     public void setup() {
@@ -58,7 +59,7 @@ public class ProductConverter implements Converter, Serializable {
 
         if (value != null && !value.isEmpty() && service != null) {
             try {
-                return service.lookup(getKey(value));
+                return service.find(getKey(value));
             } catch (NoResultException e) {
                 return new Subject();
             }

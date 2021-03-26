@@ -31,6 +31,7 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jpapi.model.Organization;
@@ -128,6 +129,34 @@ public class UI {
         for (Group x : entities) {
             items[i++] = new SelectItem(x, x.getName());
         }
+        return items;
+    }
+    
+    public SelectItem[] getAccountAsSelectItem(List<Account> entities) {
+        boolean selectOne = true;
+        int size = selectOne ? entities.size() + 1 : entities.size();
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        for (Account x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
+        }
+        return items;
+    }
+    
+    public List<SelectItem> getAccountTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        item = new SelectItem("DEBE", "DEBE");
+        items.add(item);
+        item = new SelectItem("HABER", "HABER");
+        items.add(item);
+
         return items;
     }
 
