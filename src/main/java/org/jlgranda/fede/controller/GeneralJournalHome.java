@@ -42,6 +42,11 @@ import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.primefaces.event.CellEditEvent;
+import javax.faces.context.FacesContext;
+import javax.faces.application.FacesMessage;
+import org.primefaces.ecuador.domain.Car;
+import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +126,9 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     @Override
     public void handleReturn(SelectEvent event) {
-        setJournal((GeneralJournal) event.getObject());
+        this.setJournalId((Long) event.getObject());
+        this.setJournal(new GeneralJournal());
+        this.getJournal();
     }
 
     @Override
@@ -305,7 +312,14 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         //Preparar para una nueva entrada
         this.recordDetail = recordService.createInstanceRecordDetail();
     }
-
+    
+    /**
+     * Eliminar un detalle al Record
+     */
+    public void removeRecordDetail(){
+        
+    }
+    
     /**
      * Agrega un record al Journal
      */
@@ -319,7 +333,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     private GeneralJournal buildJournal() {
         GeneralJournal generalJournal = journalService.createInstance();
         generalJournal.setCode(UUID.randomUUID().toString());
-        generalJournal.setName("" + Dates.now());
+//        generalJournal.setName(I18nUtil.getMessages("import.email.error") + Dates.toDateString(Dates.now()));
+        generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal")+ " "+ this.organizationData.getOrganization().getInitials()+ " - " + Dates.toDateString(Dates.now()));
         generalJournal.setOwner(subject);
         return generalJournal;
     }
@@ -329,6 +344,16 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             this.journal = journalService.save(buildJournal());
         }
     }
+    
+//    public void onCellEdit(CellEditEvent event) {
+//        Object oldValue = event.getOldValue();
+//        Object newValue = event.getNewValue();
+//        
+//        if(newValue != null && !newValue.equals(oldValue)) {
+//            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Celda cambiada", "Anterior: " + oldValue + ", Nuevo:" + newValue);
+//            FacesContext.getCurrentInstance().addMessage(null, msg);
+//        }
+//    }
 
     @Override
     protected void initializeDateInterval() {

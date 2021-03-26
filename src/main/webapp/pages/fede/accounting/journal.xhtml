@@ -43,17 +43,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <h1 class="BigTopic">#{i18n['app.fede.accouting.journal']}</h1> <!--Sección 1: Título-->
                 <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
-                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
+                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
                                     value="#{generalJournalHome.journal.code}" required="true"
                                     inlinehelp="#{messages['app.fede.accouting.journal.name.inlinehel']}"
                                     execute="@this save" render="code"/>
-                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}"
+                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['Label']}"
                                     value="#{generalJournalHome.journal.name}" required="true"
                                     inlinehelp="#{messages['app.fede.accouting.journal.name.inlinehel']}"
                                     execute="@this save" render="nme"/>
-                    <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
+                    <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.observation']}"
                                     value="#{generalJournalHome.journal.description}" required="false"
-                                    inlinehelp="#{messages['app.fede.accouting.journal.description.inlinehelp']}"
+                                    inlinehelp="#{messages['app.fede.accouting.journal.observation.inlinehelp']}"
                                     execute="@this save" render="dscrpn"/>
                 </div>
                 <div class="EmptyBox10"></div><!--Separador de sección-->
@@ -62,8 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="Container100 Fs16 BoldGray" style="text-align: right">
                         <p:commandButton id="button-record-add" icon="fa fa-plus-square" 
                                          actionListener="#{generalJournalHome.mostrarFormularioRecord()}" ajax="true"
-                                         immediate="true"
-                                         styleClass="RedButton">
+                                         immediate="true">
                             <p:ajax event="dialogReturn" update="@form"
                                     listener="#{generalJournalHome.handleReturn}">
                             </p:ajax>
@@ -88,8 +87,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <f:convertDateTime type = "time" timeZone="EST" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                                                 </h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['name']}" sortBy="#{record.createdOn}" style="width: auto">
-                                                <h:outputText value="#{record.name}" />
+                                            <p:column headerText="#{i18n['common.description']}" sortBy="#{record.description}" style="width: auto">
+                                                <h:outputText value="#{record.description}" />
                                             </p:column>
                                             <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{record.id}" style="width: auto; text-align: center">
                                                 <p:commandButton id="button-detail" value="#{i18n['VerDetalles']}"

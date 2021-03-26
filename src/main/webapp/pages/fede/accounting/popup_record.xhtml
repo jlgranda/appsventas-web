@@ -29,22 +29,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:param name="title" value="#{i18n['app.fede.sales.records']}" />
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="journalId" value="#{generalJournalHome.journal.id}" />    
                 <f:viewAction action="#{generalJournalHome.loadSessionParameters}" />
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
         </ui:define>
         <ui:define name="viewname">
-<!--            <li>#{generalJournalHome.journal.name}</li>
-            <li>/</li>-->
             <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['New'].concat(' ').concat(i18n['app.fede.sales.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.sales.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
-                    <div class="Container100">
-                    </div>
                     <h:form id="form-nuevo-registro-detalle">
                         <p:messages id="messages" showDetail="true" closable="true" >
                             <p:autoUpdate />
@@ -70,7 +65,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:selectOneMenu>
                             </div>
                             <div class="ui-g-3">
-                                <h:outputText value="#{i18n['app.fede.sales.payment.cash']}" />
+                                <h:outputText value="#{i18n['app.fede.sales.record.amount']} *" />
                                 <div class="EmptyBox20"></div>
                                 <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
                                                required="true" immediate="true" disabled="false"
@@ -82,7 +77,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-1">
-                                <!--<div class="EmptyBox40"></div>-->
                                 <p:commandButton id="add-record"  ajax="false"
                                                  actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
                                                  update="form-registro" icon="fa fa-plus-square" 
@@ -92,63 +86,90 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                     </h:form>
                     <h:form id="form-registro">
-                        <div class="Container100 Responsive100" style="height: 300px" >
+                        <div class="Container100 Responsive100" >
                             <div class="ContainerIndent">
                                 <div class="Card SoftGrayBack">
                                     <div class="dataTable_wrapper">
-                                        <p:dataTable var="recordDetail" 
-                                                     value="#{generalJournalHome.record.recordDetails}"
-                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                                     reflow="true"
-                                                     rowKey="#{recordDetail.id}" 
-                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                                     id="recordsDataTable" widgetVar="dataTable_wv" lazy="false" paginatorAlwaysVisible="false">
-                                            <p:column headerText="#{i18n['app.fede.accouting.account']}">
-                                                <h:outputText value="#{recordDetail.account.name}" />
+                                        <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
+                                                     value="#{generalJournalHome.record.recordDetails}" rowKey="#{recordDetail.id}" 
+                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
+                                                     scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
+                                                     lazy="false" reflow="true" editable="true">
+                                            <p:column headerText="#{i18n['app.fede.accouting.account']}" style="width: 50%">
+                                                <p:cellEditor>
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{recordDetail.account.name}"/>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <h:selectOneMenu value="#{recordDetail.account}"
+                                                                         required="#{true}" immediate="true"
+                                                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                                            <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                                            <p:ajax update="@this"></p:ajax>
+                                                        </h:selectOneMenu> 
+                                                    </f:facet>
+                                                </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.record.type']}">
-                                                <h:outputText value="#{recordDetail.recordType}" />
+                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}">
+                                                <p:cellEditor>
+                                                    <f:facet name="output">
+                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordType=='DEBE'}" style="text-align: right"/>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <p:inputText value="#{recordDetail.amount}"     
+                                                                     rendered="#{recordDetail.recordType=='DEBE'}" label="app.fede.sales.journal.record.debe"/>
+                                                    </f:facet>
+                                                </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['module.accounting.amount']}">
-                                                <h:outputText value="$#{recordDetail.amount}" />
+                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}">
+                                                <p:cellEditor>
+                                                    <f:facet name="output">
+                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordType=='HABER'}" style="text-align: right"/>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <p:inputText value="#{recordDetail.amount}" 
+                                                                     rendered="#{recordDetail.recordType=='HABER'}" label="app.fede.sales.journal.record.debe"/>
+                                                    </f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                                            <p:column style="width: 20px">
+                                                <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
+                                            </p:column>
+                                            <p:column style="width: 10px">
+                                                <p:commandButton icon="fa fa-minus" style="font-size: 10px" styleClass="danger-btn" action="#{generalJournalHome.removeRecordDetail()}"/>
                                             </p:column>
                                         </p:dataTable>
+                                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}" class="Container100 BigTopic"
+                                                        value="#{generalJournalHome.record.description}" required="false"
+                                                        inlinehelp="#{messages['app.fede.sales.record.description.inlinehelp']}"
+                                                        execute="@this save" render="dscrpn"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
-
                         <div class="EmptyBox10"></div>
-
-                    <p:toolbar>
-                        <f:facet name="left">
-                            <p:commandButton id="save" value="#{i18n['Save']}" 
-                                         ajax="false" 
-                                         actionListener="#{generalJournalHome.saveRecord()}" 
-                                         style="width: auto !important;"
-                                         type="submit"/>
-                        </f:facet>
-                        <f:facet name="right">
-
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
-                                             actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal)}"
-                                             action="#{generalJournalHome.redirect}"
-                                             icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
-                                             />
-                        </f:facet>
-                    </p:toolbar>
-                        
-                        
-                        
-                        
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="save" value="#{i18n['Save']}" 
+                                                 ajax="false" 
+                                                 actionListener="#{generalJournalHome.saveRecord()}" 
+                                                 style="width: auto !important;"
+                                                 type="submit"/>
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:commandButton ajax="true" disabled="false" immediate="true"
+                                                 actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal)}"
+                                                 action="#{generalJournalHome.redirect}"
+                                                 icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
+                                                 />
+                            </f:facet>
+                        </p:toolbar>
                     </h:form>
                 </div>
             </div>
             <!--/.panel-body -->
         </ui:define>
-
 
         <ui:define name="script">
         </ui:define>
