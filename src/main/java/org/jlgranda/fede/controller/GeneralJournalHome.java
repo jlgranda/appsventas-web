@@ -23,6 +23,7 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -332,13 +333,19 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     private GeneralJournal buildJournal() {
         GeneralJournal generalJournal = journalService.createInstance();
+        generalJournal.setOrganization(this.organizationData.getOrganization());
+        generalJournal.setOwner(subject);
         generalJournal.setCode(UUID.randomUUID().toString());
         generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal")+ " "+ this.organizationData.getOrganization().getInitials()+ " - " + Dates.toDateString(Dates.now()));
-        generalJournal.setOwner(subject);
         return generalJournal;
     }
 
     public void crearNuevo() throws IOException {
+//        Journal.findByCreatedOnAndOrg
+        List<GeneralJournal> generalJournal = new ArrayList<GeneralJournal>();
+        generalJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        System.out.println("\ngeneralJournalsize: "+generalJournal.size());
+        System.out.println("\ngeneralJournal: "+generalJournal.get(0));
         if (this.journalId == null) {
             this.journal = journalService.save(buildJournal());
             redirectTo("/pages/fede/accounting/journal.jsf");
