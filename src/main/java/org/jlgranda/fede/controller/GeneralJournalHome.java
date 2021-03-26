@@ -23,6 +23,7 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -329,6 +330,29 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         journal.addRecord(this.record); //Agregar el record al journal
         journalService.save(journal.getId(), journal);
         closeFormularioRecord(journal.getId());
+//        this.record.setOwner(subject);
+//        journal.addRecord(this.record); //Agregar el record al journal
+//        System.out.println("\nDEBE:"+this.record.getRecordDetails());
+//        System.out.println("\nDEBE:"+this.record.getRecordDetails().get(0).getRecordType());
+//        BigDecimal sumDebe = new BigDecimal(0);
+//        BigDecimal sumHaber = new BigDecimal(0);
+//        for (int i=0; i<this.record.getRecordDetails().size();i++){
+//            if("DEBE".equals(this.record.getRecordDetails().get(i).getRecordType())){
+//                sumDebe=sumDebe.add(this.record.getRecordDetails().get(i).getAmount());               
+//            }else if("HABER".equals(this.record.getRecordDetails().get(i).getRecordType())){
+//                sumHaber=sumHaber.add(this.record.getRecordDetails().get(i).getAmount());
+//            }
+//        }
+//        System.out.println("\nDEBESUM: "+sumDebe);
+//        System.out.println("\nHABERSUM: "+sumHaber);
+//        journalService.save(journal.getId(), journal);
+//        if(sumDebe==sumHaber){
+//            System.out.println("El debe y haber son iguales");
+////            closeFormularioRecord(journal.getId());
+//        }else{
+//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.journal.record.cuadre"));
+//        }
+        
     }
 
     private GeneralJournal buildJournal() {
@@ -336,19 +360,23 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         generalJournal.setOrganization(this.organizationData.getOrganization());
         generalJournal.setOwner(subject);
         generalJournal.setCode(UUID.randomUUID().toString());
-        generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal")+ " "+ this.organizationData.getOrganization().getInitials()+ " - " + Dates.toDateString(Dates.now()));
+        generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal")+ " "+ this.organizationData.getOrganization().getInitials()+ "/" + Dates.toDateString(Dates.now()));
         return generalJournal;
     }
 
-    public void crearNuevo() throws IOException {
-//        Journal.findByCreatedOnAndOrg
-        List<GeneralJournal> generalJournal = new ArrayList<GeneralJournal>();
-        generalJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        System.out.println("\ngeneralJournalsize: "+generalJournal.size());
-        System.out.println("\ngeneralJournal: "+generalJournal.get(0));
+    public void newJournal() throws IOException {
         if (this.journalId == null) {
             this.journal = journalService.save(buildJournal());
+        }
+    }
+    
+    public void validateNewJournal() throws IOException {
+        List<GeneralJournal> generalJournal = new ArrayList<GeneralJournal>();
+        generalJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        if (generalJournal.isEmpty()) {
             redirectTo("/pages/fede/accounting/journal.jsf");
+        }else{
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.journal.isExist") + " " + Dates.toDateString(Dates.now()));
         }
     }
 
