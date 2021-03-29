@@ -121,7 +121,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         setOutcome("general-journals");
         filter();
 
-        this.record = recordService.createInstanceRecord();
+        this.record = recordService.createInstance();
         this.recordDetail = recordService.createInstanceRecordDetail();
 
     }
