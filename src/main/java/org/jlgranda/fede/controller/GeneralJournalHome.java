@@ -328,31 +328,22 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public void saveRecord() {
         this.record.setOwner(subject);
         journal.addRecord(this.record); //Agregar el record al journal
-        journalService.save(journal.getId(), journal);
-        closeFormularioRecord(journal.getId());
-//        this.record.setOwner(subject);
-//        journal.addRecord(this.record); //Agregar el record al journal
-//        System.out.println("\nDEBE:"+this.record.getRecordDetails());
-//        System.out.println("\nDEBE:"+this.record.getRecordDetails().get(0).getRecordType());
-//        BigDecimal sumDebe = new BigDecimal(0);
-//        BigDecimal sumHaber = new BigDecimal(0);
-//        for (int i=0; i<this.record.getRecordDetails().size();i++){
-//            if("DEBE".equals(this.record.getRecordDetails().get(i).getRecordType())){
-//                sumDebe=sumDebe.add(this.record.getRecordDetails().get(i).getAmount());               
-//            }else if("HABER".equals(this.record.getRecordDetails().get(i).getRecordType())){
-//                sumHaber=sumHaber.add(this.record.getRecordDetails().get(i).getAmount());
-//            }
-//        }
-//        System.out.println("\nDEBESUM: "+sumDebe);
-//        System.out.println("\nHABERSUM: "+sumHaber);
-//        journalService.save(journal.getId(), journal);
-//        if(sumDebe==sumHaber){
-//            System.out.println("El debe y haber son iguales");
-////            closeFormularioRecord(journal.getId());
-//        }else{
-//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.journal.record.cuadre"));
-//        }
-        
+        BigDecimal sumDebe = new BigDecimal(0);
+        BigDecimal sumHaber = new BigDecimal(0);
+        for (int i=0; i<this.record.getRecordDetails().size();i++){
+            if("DEBE".equals(this.record.getRecordDetails().get(i).getRecordType())){
+                sumDebe=sumDebe.add(this.record.getRecordDetails().get(i).getAmount());               
+            }else if("HABER".equals(this.record.getRecordDetails().get(i).getRecordType())){
+                sumHaber=sumHaber.add(this.record.getRecordDetails().get(i).getAmount());
+            }
+        }
+        int difSum = sumDebe.compareTo(sumHaber);
+        if(difSum==0){
+            journalService.save(journal.getId(), journal);
+            closeFormularioRecord(journal.getId());
+        }else{
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.journal.record.cuadre"));
+        }
     }
 
     private GeneralJournal buildJournal() {
