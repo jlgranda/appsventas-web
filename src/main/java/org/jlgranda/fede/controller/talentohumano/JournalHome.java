@@ -463,7 +463,6 @@ public class JournalHome extends FedeController implements Serializable {
     public void delete(Journal _journal) throws IOException {
         if (_journal.isPersistent()){
             journalService.remove(_journal.getId(), _journal);
-            //System.out.println("deleted " + _journal);
         }
     }
 

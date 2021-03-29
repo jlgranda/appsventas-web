@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.inject.Named;
 import javax.mail.MessagingException;
+import org.jlgranda.fede.controller.GeneralJournalHome;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.sri.jaxb.exception.FacturaXMLReadException;
 import org.jlgranda.fede.util.FacturaUtil;
@@ -44,7 +45,10 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.primefaces.event.FileUploadEvent;
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.AccountService;
+import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
@@ -65,6 +69,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
+import org.jlgranda.fede.model.accounting.Account;
+import org.jlgranda.fede.model.accounting.GeneralJournal;
+import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
@@ -110,6 +118,15 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     @EJB
     private SubjectService subjectService;
 
+    @EJB
+    private AccountService accountService;
+
+    @EJB
+    private GeneralJournalService journalService;
+
+    @EJB
+    private RecordService recordService;
+
     private String keys;
 
     private String url;
@@ -121,6 +138,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private LazyFacturaElectronicaDataModel lazyDataModel;
 
     private FacturaElectronica ultimafacturaElectronica;
+
+    private GeneralJournalHome generaljournalHome;
 
     /**
      * Instancia de entidad <tt>FacturaElectronica</tt> para edición manual
@@ -153,7 +172,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private List<FacturaElectronica> sampleResultList = Collections.synchronizedList(new ArrayList<>());
 
     private Payment payment; //Para editar pagos
-    
+
     @Inject
     private OrganizationData organizationData;
 
@@ -695,7 +714,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         if (facturaElectronica.getImporteTotal().compareTo(sumaImporteComparar) != 0) {
             setOutcome("");
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("ride.infoFactura.importeTotal.invalid"));
-        } else {            
+        } else {
             setOutcome("fede-inbox");
             facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
             facturaElectronica.setFilename(null);
@@ -718,6 +737,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             }
 
             facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
+            registerRecordInJournal();
         }
     }
 
@@ -1010,4 +1030,61 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
         }
     }
+
+    public void registerRecordInJournal() {
+        List<GeneralJournal> listGeneralJournal = new ArrayList<>();
+        listGeneralJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        GeneralJournal generalJournal = journalService.createInstance();
+        if (listGeneralJournal.isEmpty()) {
+            generalJournal.setOrganization(this.organizationData.getOrganization());
+            generalJournal.setOwner(subject);
+            generalJournal.setCode(UUID.randomUUID().toString());
+            generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
+            journalService.save(generalJournal);
+            listGeneralJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        }
+        generalJournal = listGeneralJournal.get(0);
+        Record record = recordService.createInstance();
+        record.setOwner(subject);
+        RecordDetail recordDetail = recordService.createInstanceRecordDetail();
+        recordDetail.setOwner(subject);
+        
+//        1º Detalle del Asiento: Registrar la compra en la cuenta mercadería
+        Account account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "MERCADERIAS", this.organizationData.getOrganization());
+        recordDetail.setAccount(account);
+        recordDetail.setAmount(facturaElectronica.getTotalSinImpuestos());
+        recordDetail.setRecordType("DEBE");
+        record.addRecordDetail(recordDetail);
+        
+//        2º Detalle del Asiento: Registrar el Iva de la compra en la cuenta mercadería
+        account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "I.V.A. POR PAGAR", this.organizationData.getOrganization());
+        recordDetail.setAccount(account);
+        recordDetail.setAmount(facturaElectronica.getTotalIVA12());
+        recordDetail.setRecordType("DEBE");
+        record.addRecordDetail(recordDetail);
+        
+//        3º Detalle del Asiento: Registrar la cuenta con la cual se paga el valor
+        if (facturaElectronica.getEmissionType() == EmissionType.PURCHASE_CASH) {
+            account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA", this.organizationData.getOrganization());
+        }
+        recordDetail.setAccount(account);
+        recordDetail.setAmount(facturaElectronica.getImporteTotal());
+        recordDetail.setRecordType("HABER");
+        record.addRecordDetail(recordDetail);
+        
+        generalJournal.addRecord(record); //Agregar el record al journal
+        journalService.save(generalJournal.getId(), generalJournal);
+    }
+
+//    public void addRecordDetail() {
+//        this.recordDetail.setOwner(subject);
+//        this.record.addRecordDetail(this.recordDetail);
+//        //Preparar para una nueva entrada
+//        this.recordDetail = recordService.createInstanceRecordDetail();
+//    }
+//    save record
+//    this.record.setOwner(subject);
+//        journal.addRecord(this.record); //Agregar el record al journal
+//        journalService.save(journal.getId(), journal);
+//        closeFormularioRecord(journal.getId());
 }

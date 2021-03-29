@@ -337,8 +337,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
                 sumHaber=sumHaber.add(this.record.getRecordDetails().get(i).getAmount());
             }
         }
-        int difSum = sumDebe.compareTo(sumHaber);
-        if(difSum==0){
+        if(sumDebe.compareTo(sumHaber)== 0){
             journalService.save(journal.getId(), journal);
             closeFormularioRecord(journal.getId());
         }else{
@@ -355,14 +354,14 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         return generalJournal;
     }
 
-    public void newJournal() throws IOException {
+    public void newJournal() {
         if (this.journalId == null) {
             this.journal = journalService.save(buildJournal());
         }
     }
     
     public void validateNewJournal() throws IOException {
-        List<GeneralJournal> generalJournal = new ArrayList<GeneralJournal>();
+        List<GeneralJournal> generalJournal = new ArrayList<>();
         generalJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         if (generalJournal.isEmpty()) {
             redirectTo("/pages/fede/accounting/journal.jsf");
