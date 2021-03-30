@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.GeneralJournal_;
 import org.jpapi.model.BussinesEntity;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
@@ -56,6 +57,8 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     private String filterValue;
     
     private Subject owner;
+    
+    private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
@@ -162,8 +165,14 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
         if (!range.isEmpty()){
             _filters.put(GeneralJournal_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-
-        _filters.put(GeneralJournal_.owner.getName(), getOwner()); //Filtro por defecto
+        
+        if(getOwner()!=null){
+        _filters.put(GeneralJournal_.owner.getName(), getOwner());
+        }
+        
+        if (getOrganization() != null) {
+            _filters.put(GeneralJournal_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
         
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
@@ -208,6 +217,14 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
         this.owner = owner;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+    
     public String getTags() {
         return tags;
     }
