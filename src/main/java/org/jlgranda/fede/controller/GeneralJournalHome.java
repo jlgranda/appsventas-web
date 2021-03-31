@@ -20,6 +20,7 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -85,9 +86,15 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     @EJB
     private RecordService recordService;
+    
+    @EJB
+    private RecordDetailService recordDetailService;
 
     private LazyGeneralJournalDataModel lazyDataModel;
 
+    /**
+     * El objeto Journal para edición
+     */
     private GeneralJournal journal;
 
     /**
@@ -122,7 +129,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         filter();
 
         this.record = recordService.createInstance();
-        this.recordDetail = recordService.createInstanceRecordDetail();
+        this.recordDetail = recordDetailService.createInstance();
 
     }
 
@@ -313,7 +320,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.recordDetail.setOwner(subject);
         this.record.addRecordDetail(this.recordDetail);
         //Preparar para una nueva entrada
-        this.recordDetail = recordService.createInstanceRecordDetail();
+        this.recordDetail = recordDetailService.createInstance();
     }
     
     /**
