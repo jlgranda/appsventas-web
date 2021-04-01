@@ -1057,74 +1057,71 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
     }
 
+    private GeneralJournal buildJournal() {
+        GeneralJournal generalJournal = journalService.createInstance();
+        generalJournal.setOrganization(this.organizationData.getOrganization());
+        generalJournal.setOwner(subject);
+        generalJournal.setCode(UUID.randomUUID().toString());
+        generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
+        return generalJournal;
+    }
+
+    private Record buildRecord() {
+        Record recordGeneral = recordService.createInstance();
+        recordGeneral.setOwner(subject);
+        recordGeneral.setFacturaElectronica(facturaElectronica);
+        return recordGeneral;
+    }
+
+    private RecordDetail buildRecordDetail(String Account) {
+        Account account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", Account, this.organizationData.getOrganization());
+        RecordDetail recordDetailGeneral = recordDetailService.createInstance();
+        recordDetailGeneral.setAccount(account);
+        recordDetailGeneral.setOwner(subject);
+        RecordDetail rDetail = recordDetailService.findUniqueByNamedQuery("RecordDetail.findByAccount", account);
+        if (rDetail != null) {
+            recordDetailGeneral = rDetail;
+        }
+        switch (Account) {
+            case "MERCADERIAS":
+                recordDetailGeneral.setAmount(facturaElectronica.getTotalSinImpuestos());
+                recordDetailGeneral.setRecordType("DEBE");
+                break;
+            case "I.V.A. POR PAGAR":
+                recordDetailGeneral.setAmount(facturaElectronica.getTotalIVA12());
+                recordDetailGeneral.setRecordType("DEBE");
+                break;
+            case "CAJA":
+                recordDetailGeneral.setAmount(facturaElectronica.getImporteTotal());
+                recordDetailGeneral.setRecordType("HABER");
+                break;
+            default:
+                recordDetailGeneral.setAmount(null);
+                recordDetailGeneral.setRecordType(null);
+        }
+        return recordDetailGeneral;
+    }
+
     public void registerRecordInJournal() {
         this.journal = journalService.createInstance();
         this.record = recordService.createInstance();
-        List<GeneralJournal> listGeneralJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        System.out.println("\nlistgeneralJournal: " + listGeneralJournal);
-        if (listGeneralJournal.isEmpty()) {
-            this.journal.setOrganization(this.organizationData.getOrganization());
-            this.journal.setOwner(subject);
-            this.journal.setCode(UUID.randomUUID().toString());
-            this.journal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
-            journalService.save(this.journal);
-            listGeneralJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        this.journal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        if (this.journal == null) {
+            this.journal = buildJournal();
+            journalService.save(this.journal); //Guardar el journal creado
+            this.journal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         }
-        this.journal = listGeneralJournal.get(0);
-        System.out.println("\nthis.journalListEmpty: " + this.journal);
-
-        List<Record> listRecord = recordService.findByNamedQuery("Record.findByJournalAndFact", this.journal, this.facturaElectronica);
-        if (!listRecord.isEmpty()) {
-            this.record = listRecord.get(0);
-            System.out.println("\nthis.recordJournalFactura: " + this.record);
-//            if (!this.record.getRecordDetails().isEmpty()) {
-//                System.out.println("\ngetRecordDetailBeforeRemove: "+this.record.getRecordDetails());
-//                this.record.setRecordDetails(this.record.removeRecordsDetails());
-//                this.journal.addRecord(this.record); //Agregar el record al journal
-//                System.out.println("\nADD1 - this.record: "+this.record);
-//            }
+        this.record = recordService.findUniqueByNamedQuery("Record.findByJournalAndFact", this.journal, this.facturaElectronica);
+        if (this.record == null) {
+            this.record = buildRecord();
         }
-
-        System.out.println("\nrecord: " + this.record);
-        System.out.println("recordDetails: " + this.record.getRecordDetails());
-
-        Account account;
-//        1º Detalle del Asiento: Registrar la compra en la cuenta mercadería
-        account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "MERCADERIAS", this.organizationData.getOrganization());
-        this.recordDetail = recordDetailService.createInstance();
-        this.recordDetail.setOwner(subject);
-        this.recordDetail.setAccount(account);
-        this.recordDetail.setAmount(facturaElectronica.getTotalSinImpuestos());
-        this.recordDetail.setRecordType("DEBE");
-        this.record.addRecordDetail(this.recordDetail);
-//
-////        2º Detalle del Asiento: Registrar el Iva de la compra en la cuenta mercadería
-//        account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "I.V.A. POR PAGAR", this.organizationData.getOrganization());
-//        this.recordDetail = recordDetailService.createInstance();
-//        this.recordDetail.setOwner(subject);
-//        this.recordDetail.setAccount(account);
-//        this.recordDetail.setAmount(facturaElectronica.getTotalIVA12());
-//        this.recordDetail.setRecordType("DEBE");
-////        this.record.addRecordDetail(this.recordDetail);
-//
-////        3º Detalle del Asiento: Registrar la cuenta con la cual se paga el valor
-//        if (facturaElectronica.getEmissionType() == EmissionType.PURCHASE_CASH) {
-//            account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA", this.organizationData.getOrganization());
-//        }
-//        this.recordDetail = recordDetailService.createInstance();
-//        this.recordDetail.setOwner(subject);
-//        this.recordDetail.setAccount(account);
-//        this.recordDetail.setAmount(facturaElectronica.getImporteTotal());
-//        this.recordDetail.setRecordType("HABER");
-////        this.record.addRecordDetail(this.recordDetail);
-
-        this.record.setOwner(subject);
-        this.record.setFacturaElectronica(facturaElectronica);
+        this.record.addRecordDetail(buildRecordDetail("MERCADERIAS"));
+        this.record.addRecordDetail(buildRecordDetail("I.V.A. POR PAGAR"));
+        this.record.addRecordDetail(buildRecordDetail("CAJA"));
+        
         this.record.setDescription(facturaElectronica.getDescription());
         this.journal.addRecord(this.record); //Agregar el record al journal
-        System.out.println("\nADD2 - this.record: " + this.record);
-        journalService.save(this.journal.getId(), this.journal);
-        System.out.println("\nRECORDDETAILS - this.record: " + this.record.getRecordDetails());
-        System.out.println("\nSAVED 2 - this.journal: " + this.journal);
+
+        journalService.save(this.journal.getId(), this.journal); //Guardar el journal
     }
 }
