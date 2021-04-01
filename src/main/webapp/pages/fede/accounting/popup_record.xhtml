@@ -73,6 +73,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                    <!--<f:validateDoubleRange minimum="1"/>-->
                                     <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
                                 </p:inputNumber>
                             </div>
@@ -80,7 +81,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:commandButton id="add-record"  ajax="false"
                                                  actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
                                                  update="form-registro" icon="fa fa-plus-square" 
-                                                 disabled="#{false}" 
+                                                 disabled="#{!generalJournalHome.recordOfReferen}" 
                                                  style="width: 50px;"/>
                             </div>
                         </div>
@@ -95,7 +96,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
                                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
                                                      scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
-                                                     lazy="false" reflow="true" editable="true">
+                                                     lazy="false" reflow="true" editable="#{generalJournalHome.recordOfReferen}">
                                             <p:column headerText="#{i18n['app.fede.accouting.account']}" style="width: 50%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
@@ -138,7 +139,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </p:column>
                                         </p:dataTable>
                                         <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.sales.record.description']}" class="Container100 BigTopic"
-                                                        value="#{generalJournalHome.record.description}" required="false"
+                                                        value="#{generalJournalHome.record.description}" required="false" 
                                                         inlinehelp="#{messages['app.fede.accouting.account.description.inlinehelp']}"
                                                         execute="@this save" render="dscrpn"/>
                                     </div>
@@ -146,7 +147,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </div>
                         </div>
                         <div class="EmptyBox10"></div>
-                        <p:toolbar>
+                        <p:toolbar rendered="#{generalJournalHome.recordOfReferen}">
                             <f:facet name="left">
                                 <p:commandButton id="save" value="#{i18n['Save']}" 
                                                  ajax="false" 
