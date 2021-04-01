@@ -62,13 +62,13 @@ public class AccountHome extends FedeController implements Serializable {
 
     @Inject
     private SettingHome settingHome;
-    
+
     @Inject
     private OrganizationData organizationData;
 
     @EJB
     private GroupService groupService;
-    
+
     @EJB
     private InvoiceService invoiceService;
 
@@ -77,9 +77,9 @@ public class AccountHome extends FedeController implements Serializable {
     private Account account;
 
     private Long accountId;
-    
+
     private SummaryHome summaryHome;
-    
+
     //Calcular Resumen
     private BigDecimal grossSalesTotal;
     private BigDecimal discountTotal;
@@ -89,9 +89,11 @@ public class AccountHome extends FedeController implements Serializable {
     private BigDecimal profilTotal;
     private Long paxTotal;
     private List<Object[]> listDiscount;
-    
+
     @EJB
     private AccountService accountService;
+
+    private Account accountSelected;
 
     @PostConstruct
     private void init() {
@@ -107,7 +109,7 @@ public class AccountHome extends FedeController implements Serializable {
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
-        
+
         setGrossSalesTotal(BigDecimal.ZERO);
         setDiscountTotal(BigDecimal.ZERO);
         setSalesTotal(BigDecimal.ZERO);
@@ -149,11 +151,33 @@ public class AccountHome extends FedeController implements Serializable {
         if (this.accountId != null && !this.account.isPersistent()) {
             this.account = accountService.find(accountId);
         }
+        getCuentaPadre();
         return account;
     }
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public List<Account> getAccounts() {
+        return accountService.findByOrganization(this.organizationData.getOrganization());
+    }
+
+    public void getCuentaPadre() {
+//        System.out.print("getAccount: "+account+"\n");
+        this.accountSelected = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getCuentaPadreId(), this.organizationData.getOrganization());
+//        System.out.print("getCuentaPadre: "+accountSelected+"\n");
+    }
+
+    public Account getAccountSelected() {
+        if(accountSelected!=null){
+            account.setCuentaPadreId(accountSelected.getId());
+        }
+        return accountSelected;
+    }
+
+    public void setAccountSelected(Account accountSelected) {
+        this.accountSelected = accountSelected;
     }
 
     public LazyAccountDataModel getLazyDataModel() {
@@ -219,7 +243,7 @@ public class AccountHome extends FedeController implements Serializable {
     public void setPaxTotal(Long paxTotal) {
         this.paxTotal = paxTotal;
     }
-    
+
     public void clear() {
         filter();
     }
@@ -229,6 +253,7 @@ public class AccountHome extends FedeController implements Serializable {
             lazyDataModel = new LazyAccountDataModel(accountService);
         }
 //        lazyDataModel.setOwner(this.subject);
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
@@ -261,10 +286,11 @@ public class AccountHome extends FedeController implements Serializable {
         } else {
             account.setAuthor(this.subject);
             account.setOwner(this.subject);
+            account.setOrganization(this.organizationData.getOrganization());
         }
         accountService.save(account.getId(), account);
     }
-    
+
     public List<Object[]> getListDiscount() {
         return listDiscount;
     }
@@ -286,14 +312,14 @@ public class AccountHome extends FedeController implements Serializable {
         }
         return total;
     }
-    
+
     public void calculeSummaryToday() {
         Date _start = Dates.minimumDate(getEnd());
         Date _end = Dates.maximumDate(getEnd());
-        calculeSummary( _start, _end);
-        setListDiscount(getListDiscount( _start, _end));
+        calculeSummary(_start, _end);
+        setListDiscount(getListDiscount(_start, _end));
     }
-    
+
     public void calculeSummary(Date _start, Date _end) {
 
         this.costTotal = BigDecimal.ZERO;
@@ -339,10 +365,10 @@ public class AccountHome extends FedeController implements Serializable {
         this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
 
     }
-    
+
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

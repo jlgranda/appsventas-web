@@ -65,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.code.UUID']}" sortBy="#{journal.code}">
                                 <h:outputText value="#{journal.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['Label']}" sortBy="#{journal.name}">
+                            <p:column headerText="#{i18n['Label']}" sortBy="#{journal.name}" style="width: 45%">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
                             <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{journal.createdOn}"

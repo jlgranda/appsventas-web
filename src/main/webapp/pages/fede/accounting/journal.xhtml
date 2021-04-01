@@ -82,12 +82,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      rowKey="#{record.id}"
                                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationHour']}" sortBy="#{record.createdOn}" style="width: auto">
+                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationHour']}" sortBy="#{record.createdOn}" style="width: 10%">
                                                 <h:outputText value="#{record.createdOn}">
                                                     <f:convertDateTime type = "time" timeZone="EST" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                                                 </h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.description']}" sortBy="#{record.description}" style="width: auto">
+                                            <p:column headerText="#{i18n['common.description']}" sortBy="#{record.description}" style="width: 70%">
                                                 <h:outputText value="#{record.description}" />
                                             </p:column>
                                             <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{record.id}" style="width: auto; text-align: center">

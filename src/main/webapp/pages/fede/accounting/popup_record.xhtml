@@ -82,7 +82,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
                                                  update="form-registro" icon="fa fa-plus-square" 
                                                  disabled="#{!generalJournalHome.recordOfReferen}" 
-                                                 style="width: 50px;"/>
+                                                 style="width: 25px;"/>
                             </div>
                         </div>
                     </h:form>
@@ -97,7 +97,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
                                                      scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
                                                      lazy="false" reflow="true" editable="#{generalJournalHome.recordOfReferen}">
-                                            <p:column headerText="#{i18n['app.fede.accouting.account']}" style="width: 50%">
+                                            <p:column headerText="#{i18n['app.fede.accouting.account']}" style="width: 60%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="#{recordDetail.account.name}"/>
@@ -134,7 +134,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column style="width: 20px">
+                                            <p:column style="width: auto">
                                                 <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
                                             </p:column>
                                         </p:dataTable>

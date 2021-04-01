@@ -80,10 +80,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['ride.no']}" sortBy="#{facturaElectronica.code}">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author.initials}">
+                            <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author}"> <!--sortBy="#{facturaElectronica.author.initials}"-->
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}" sortBy="#{facturaElectronica.author.initials}">
+                            <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}" sortBy="#{facturaElectronica.description}" >
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
                             </p:column>
                             <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{facturaElectronica.importeTotal}"
@@ -92,15 +92,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
+                            <p:column headerText="#{i18n['ride.infoFactura.emissionType']}" sortBy="#{facturaElectronica.emissionType}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{facturaElectronica.emissionType}">
+                                </h:outputText>
+                            </p:column>
                             <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{facturaElectronica.fechaEmision}"
                                        styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
                                     <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.emissionType']}" sortBy="#{facturaElectronica.emissionType}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.emissionType}">
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>
