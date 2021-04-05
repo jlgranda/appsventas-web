@@ -1053,13 +1053,32 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
     }
 
-    private GeneralJournal buildJournal() {
-        GeneralJournal generalJournal = journalService.createInstance();
-        generalJournal.setOrganization(this.organizationData.getOrganization());
-        generalJournal.setOwner(subject);
-        generalJournal.setCode(UUID.randomUUID().toString());
-        generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
-        return generalJournal;
+    public void registerRecordInJournal() {
+//        Crear o encontrar el journal y el record, para insertar los recordDetails
+        this.record = findRecordOfFactura();
+        if (this.record != null) {
+            this.journal = journalService.find(this.record.getJournal().getId());
+        } else {
+            this.record = buildRecord();
+            this.journal = buildFindJournal();
+        }
+//        Crear/Modificar y anadir un recordDetail al record
+        this.record.addRecordDetail(updateRecordDetail("MERCADERIAS"));
+        this.record.addRecordDetail(updateRecordDetail("I.V.A. POR PAGAR"));
+        if (facturaElectronica.getEmissionType() == EmissionType.PURCHASE_CASH) {
+            this.record.addRecordDetail(updateRecordDetail("CAJA"));
+        } else if (facturaElectronica.getEmissionType() == EmissionType.TRANSFER) {
+            this.record.addRecordDetail(updateRecordDetail("BANCOS"));
+        }
+        this.record.setDescription(facturaElectronica.getDescription());
+        this.journal.addRecord(this.record); //Agregar el record al journal
+
+        journalService.save(this.journal.getId(), this.journal); //Guardar el journal
+    }
+
+    private Record findRecordOfFactura() {
+        Record recordGeneral = recordService.findUniqueByNamedQuery("Record.findByFact", this.facturaElectronica);
+        return recordGeneral;
     }
 
     private Record buildRecord() {
@@ -1069,12 +1088,41 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return recordGeneral;
     }
 
-    private RecordDetail buildRecordDetail(String Account) {
-        Account account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", Account, this.organizationData.getOrganization());
+    private GeneralJournal buildFindJournal() {
+        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        if (generalJournal == null) {
+            generalJournal = journalService.createInstance();
+            generalJournal.setOrganization(this.organizationData.getOrganization());
+            generalJournal.setOwner(subject);
+            generalJournal.setCode(UUID.randomUUID().toString());
+            generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
+            journalService.save(generalJournal); //Guardar el journal creado
+            generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        }
+        return generalJournal;
+    }
+
+    private RecordDetail updateRecordDetail(String NameAccount) {
+        Account account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", NameAccount, this.organizationData.getOrganization());
         RecordDetail recordDetailGeneral = recordDetailService.createInstance();
-        recordDetailGeneral.setAccount(account);
-        recordDetailGeneral.setOwner(subject);
-        switch (Account) {
+        if (this.record.getId() != null) {
+            recordDetailGeneral = recordDetailService.findUniqueByNamedQuery("RecordDetail.findByRecordAndAccount", this.record, account);
+            if (recordDetailGeneral == null) {
+                recordDetailGeneral = recordDetailService.createInstance();
+                recordDetailGeneral.setAccount(account);
+                recordDetailGeneral.setOwner(subject);
+            }
+        } else {
+            recordDetailGeneral.setAccount(account);
+            recordDetailGeneral.setOwner(subject);
+        }
+        recordDetailGeneral = valuesRecordDetail(NameAccount, recordDetailGeneral);
+
+        return recordDetailGeneral;
+    }
+
+    private RecordDetail valuesRecordDetail(String NameAccount, RecordDetail recordDetailGeneral) {
+        switch (NameAccount) {
             case "MERCADERIAS":
                 recordDetailGeneral.setAmount(facturaElectronica.getTotalSinImpuestos());
                 recordDetailGeneral.setRecordType("DEBE");
@@ -1092,68 +1140,5 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                 recordDetailGeneral.setRecordType(null);
         }
         return recordDetailGeneral;
-    }
-
-    private RecordDetail updateRecordDetail(String Account) {
-        Account account = accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", Account, this.organizationData.getOrganization());
-        RecordDetail recordDetailGeneral = recordDetailService.createInstance();
-        recordDetailGeneral = recordDetailService.findUniqueByNamedQuery("RecordDetail.findByRecordAndAccount", this.record, account);
-        if (recordDetailGeneral != null) {
-            switch (Account) {
-                case "MERCADERIAS":
-                    recordDetailGeneral.setAmount(facturaElectronica.getTotalSinImpuestos());
-                    recordDetailGeneral.setRecordType("DEBE");
-                    break;
-                case "I.V.A. POR PAGAR":
-                    recordDetailGeneral.setAmount(facturaElectronica.getTotalIVA12());
-                    recordDetailGeneral.setRecordType("DEBE");
-                    break;
-                case "CAJA":
-                    recordDetailGeneral.setAmount(facturaElectronica.getImporteTotal());
-                    recordDetailGeneral.setRecordType("HABER");
-                    break;
-                default:
-                    recordDetailGeneral.setAmount(null);
-                    recordDetailGeneral.setRecordType(null);
-            }
-        }
-        return recordDetailGeneral;
-    }
-    public void registerRecordInJournal() {
-        this.journal = journalService.createInstance();
-        this.record = recordService.createInstance();
-        this.journal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        if (this.journal == null) {
-            this.journal = buildJournal();
-            journalService.save(this.journal); //Guardar el journal creado
-            this.journal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        }
-        this.record = recordService.findUniqueByNamedQuery("Record.findByJournalAndFact", this.journal, this.facturaElectronica);
-        if (this.record == null) {
-            this.record = buildRecord();
-        }
-        if (this.record.getRecordDetails().isEmpty()) {
-            this.record.addRecordDetail(buildRecordDetail("MERCADERIAS"));
-            this.record.addRecordDetail(buildRecordDetail("I.V.A. POR PAGAR"));
-            if (facturaElectronica.getEmissionType() == EmissionType.PURCHASE_CASH) {
-                this.record.addRecordDetail(buildRecordDetail("CAJA"));
-            } else if (facturaElectronica.getEmissionType() == EmissionType.TRANSFER) {
-                this.record.addRecordDetail(buildRecordDetail("BANCOS"));
-            }
-        }else{
-            this.record.addRecordDetail(updateRecordDetail("MERCADERIAS"));
-            this.record.addRecordDetail(updateRecordDetail("I.V.A. POR PAGAR"));
-            if (facturaElectronica.getEmissionType() == EmissionType.PURCHASE_CASH) {
-                this.record.addRecordDetail(updateRecordDetail("CAJA"));
-            } else if (facturaElectronica.getEmissionType() == EmissionType.TRANSFER) {
-                this.record.addRecordDetail(updateRecordDetail("BANCOS"));
-            }
-        }
-        
-
-        this.record.setDescription(facturaElectronica.getDescription());
-        this.journal.addRecord(this.record); //Agregar el record al journal
-
-        journalService.save(this.journal.getId(), this.journal); //Guardar el journal
     }
 }

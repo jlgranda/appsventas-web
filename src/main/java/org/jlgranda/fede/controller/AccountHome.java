@@ -164,9 +164,7 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public void getCuentaPadre() {
-//        System.out.print("getAccount: "+account+"\n");
         this.accountSelected = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getCuentaPadreId(), this.organizationData.getOrganization());
-//        System.out.print("getCuentaPadre: "+accountSelected+"\n");
     }
 
     public Account getAccountSelected() {
