@@ -23,6 +23,9 @@ import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -30,6 +33,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import static javax.swing.UIManager.get;
 import org.jlgranda.fede.controller.sales.SummaryHome;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.document.DocumentType;
@@ -41,7 +45,13 @@ import org.jpapi.model.Group;
 import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.SortMeta;
+import org.primefaces.model.SortOrder;
+import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,13 +82,19 @@ public class AccountHome extends FedeController implements Serializable {
     @EJB
     private InvoiceService invoiceService;
 
+    @EJB
+    private AccountService accountService;
+
     private LazyAccountDataModel lazyDataModel;
+
+    private TreeNode treeDataModel;
+    private TreeNode singleSelectedNode;
 
     private Account account;
 
     private Long accountId;
 
-    private SummaryHome summaryHome;
+    private Account accountSelected;
 
     //Calcular Resumen
     private BigDecimal grossSalesTotal;
@@ -89,11 +105,6 @@ public class AccountHome extends FedeController implements Serializable {
     private BigDecimal profilTotal;
     private Long paxTotal;
     private List<Object[]> listDiscount;
-
-    @EJB
-    private AccountService accountService;
-
-    private Account accountSelected;
 
     @PostConstruct
     private void init() {
@@ -118,6 +129,7 @@ public class AccountHome extends FedeController implements Serializable {
         setProfilTotal(BigDecimal.ZERO);
         setPaxTotal(0L);
         calculeSummaryToday();
+        treeDataModel = createTreeAccounts();
     }
 
     @Override
@@ -168,7 +180,7 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public Account getAccountSelected() {
-        if(accountSelected!=null){
+        if (accountSelected != null) {
             account.setCuentaPadreId(accountSelected.getId());
         }
         return accountSelected;
@@ -184,6 +196,22 @@ public class AccountHome extends FedeController implements Serializable {
 
     public void setLazyDataModel(LazyAccountDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
+    }
+
+    public TreeNode getTreeDataModel() {
+        return treeDataModel;
+    }
+
+    public void setTreeDataModel(TreeNode treeDataModel) {
+        this.treeDataModel = treeDataModel;
+    }
+
+    public TreeNode getSingleSelectedNode() {
+        return singleSelectedNode;
+    }
+
+    public void setSingleSelectedNode(TreeNode singleSelectedNode) {
+        this.singleSelectedNode = singleSelectedNode;
     }
 
     public BigDecimal getGrossSalesTotal() {
@@ -266,18 +294,50 @@ public class AccountHome extends FedeController implements Serializable {
         }
     }
 
-    public void onRowSelect(SelectEvent event) {
+    public TreeNode createTreeAccounts() {
+        List<Account> accountsOrder = getAccounts();
+        // Ordenar la lista por el atributo getCode(), para crear el árbol de cuentas correcto
+        Collections.sort(accountsOrder, (Account account1, Account other) -> account1.getCode().compareToIgnoreCase(other.getCode()));
+        TreeNode generalTree = new DefaultTreeNode(new Account("Código", "Cuenta"), null); //Árbol general
+        TreeNode parent = null;
+        TreeNode child = null;
+        int iterador = 0;
+        while (iterador < accountsOrder.size()) {
+            if (accountsOrder.get(iterador).getCuentaPadreId() == null) {
+                parent = new DefaultTreeNode(accountsOrder.get(iterador), generalTree);
+                iterador++;
+            } else {
+                while (accountsOrder.get(iterador).getCuentaPadreId() != null) {
+                    child = new DefaultTreeNode(accountsOrder.get(iterador), parent);
+                    iterador++;
+                }
+            }
+        }
+        return generalTree;
+    }
+
+    public void onNodeSelect(NodeSelectEvent event) {
         try {
-            //Redireccionar a RIDE de objeto seleccionado
-            if (event != null && event.getObject() != null) {
-                Account p = (Account) event.getObject();
+            if (event != null && event.getTreeNode().getData() != null) {
+                Account p = (Account) event.getTreeNode().getData();
                 redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
             }
         } catch (IOException ex) {
-            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
         }
     }
 
+//    public void onRowSelect(SelectEvent event) {
+//        try {
+//            //Redireccionar a RIDE de objeto seleccionado
+//            if (event != null && event.getObject() != null) {
+//                Account p = (Account) event.getObject();
+//                redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
+//            }
+//        } catch (IOException ex) {
+//            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+//        }
+//    }
     public void save() {
         if (account.isPersistent()) {
             account.setLastUpdate(Dates.now());
