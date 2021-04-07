@@ -19,23 +19,30 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.RecordDetailService;
+import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import static javax.swing.UIManager.get;
 import org.jlgranda.fede.controller.sales.SummaryHome;
 import org.jlgranda.fede.model.accounting.Account;
+import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.ui.model.LazyAccountDataModel;
@@ -85,16 +92,22 @@ public class AccountHome extends FedeController implements Serializable {
     @EJB
     private AccountService accountService;
 
+    @EJB
+    private RecordService recordService;
+
+    @EJB
+    private RecordDetailService recordDetailService;
+
     private LazyAccountDataModel lazyDataModel;
 
     private TreeNode treeDataModel;
     private TreeNode singleSelectedNode;
 
     private Account account;
+    private Account accountSelected;
+    private Account parentAccount;
 
     private Long accountId;
-
-    private Account accountSelected;
 
     //Calcular Resumen
     private BigDecimal grossSalesTotal;
@@ -105,6 +118,13 @@ public class AccountHome extends FedeController implements Serializable {
     private BigDecimal profilTotal;
     private Long paxTotal;
     private List<Object[]> listDiscount;
+
+    //Calcular monto anterior de la cuenta por los recordDetails
+    private BigDecimal amountDebeRdOld;
+    private BigDecimal amountHaberRdOld;
+    private HashMap<String, RecordDetail> mapRecordDetail;
+    private List<Object[]> objectsRecordDetail;
+    private List<RecordDetail> recordDetails;
 
     @PostConstruct
     private void init() {
@@ -129,7 +149,10 @@ public class AccountHome extends FedeController implements Serializable {
         setProfilTotal(BigDecimal.ZERO);
         setPaxTotal(0L);
         calculeSummaryToday();
-        treeDataModel = createTreeAccounts();
+        setAmountDebeRdOld(BigDecimal.ZERO);
+        setAmountHaberRdOld(BigDecimal.ZERO);
+        this.mapRecordDetail = new HashMap<>();
+        this.treeDataModel = createTreeAccounts();
     }
 
     @Override
@@ -163,7 +186,10 @@ public class AccountHome extends FedeController implements Serializable {
         if (this.accountId != null && !this.account.isPersistent()) {
             this.account = accountService.find(accountId);
         }
-        getCuentaPadre();
+        this.parentAccount = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getCuentaPadreId(), this.organizationData.getOrganization());
+        if (this.parentAccount != null) {
+            this.account.setCuentaPadreId(this.parentAccount.getId());
+        }
         return account;
     }
 
@@ -175,14 +201,15 @@ public class AccountHome extends FedeController implements Serializable {
         return accountService.findByOrganization(this.organizationData.getOrganization());
     }
 
-    public void getCuentaPadre() {
-        this.accountSelected = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getCuentaPadreId(), this.organizationData.getOrganization());
+    public Account getParentAccount() {
+        return this.parentAccount;
+    }
+
+    public void setParentAccount(Account parentAccount) {
+        this.parentAccount = parentAccount;
     }
 
     public Account getAccountSelected() {
-        if (accountSelected != null) {
-            account.setCuentaPadreId(accountSelected.getId());
-        }
         return accountSelected;
     }
 
@@ -270,6 +297,46 @@ public class AccountHome extends FedeController implements Serializable {
         this.paxTotal = paxTotal;
     }
 
+    public HashMap<String, RecordDetail> getMapRecordDetail() {
+        return mapRecordDetail;
+    }
+
+    public void setMapRecordDetail(HashMap<String, RecordDetail> mapRecordDetail) {
+        this.mapRecordDetail = mapRecordDetail;
+    }
+
+    public List<Object[]> getObjectsRecordDetail() {
+        return objectsRecordDetail;
+    }
+
+    public void setObjectsRecordDetail(List<Object[]> objectsRecordDetail) {
+        this.objectsRecordDetail = objectsRecordDetail;
+    }
+
+    public List<RecordDetail> getRecordDetails() {
+        return recordDetails;
+    }
+
+    public void setRecordDetails(List<RecordDetail> recordDetails) {
+        this.recordDetails = recordDetails;
+    }
+
+    public BigDecimal getAmountDebeRdOld() {
+        return amountDebeRdOld;
+    }
+
+    public void setAmountDebeRdOld(BigDecimal amountDebeRdOld) {
+        this.amountDebeRdOld = amountDebeRdOld;
+    }
+
+    public BigDecimal getAmountHaberRdOld() {
+        return amountHaberRdOld;
+    }
+
+    public void setAmountHaberRdOld(BigDecimal amountHaberRdOld) {
+        this.amountHaberRdOld = amountHaberRdOld;
+    }
+
     public void clear() {
         filter();
     }
@@ -314,6 +381,42 @@ public class AccountHome extends FedeController implements Serializable {
             }
         }
         return generalTree;
+    }
+
+//    LIBRO MAYOR
+//    public List<Product> findTop() {
+//        int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "15"));
+////        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetween", top, getStart(), getEnd());
+//        int range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "7"));
+//        Date _start=Dates.minimumDate(Dates.addDays(getEnd(), -1 * range));
+//        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.findTopProductIdsBetweenOrg", top, this.organizationData.getOrganization(), _start, getEnd());
+//        List<Product> result = new ArrayList<>();
+//        objects.stream().forEach((Object[] object) -> {
+//            Product _product = productCache.lookup((Long) object[0]);
+//            if (_product != null) {
+//                _product.getStatistics().setCount((Double) object[1]);
+//                result.add(_product);
+//            }
+//        });
+//        return result;
+//    }
+    public void findRecordDetailAccountTop() {
+        Calendar dayDate = Calendar.getInstance();
+        Date _end = Dates.maximumDate(Dates.now());
+        Date _start = Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1)));
+        Date _end1 = Dates.maximumDate(Dates.addDays(_start, -1));
+        //Obtener los recordDetails desde el mes anterior hasta el inicial
+        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end1, this.organizationData.getOrganization());
+        for (int i = 0; i < recordDetailsOld.size(); i++) {
+            if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
+                this.amountDebeRdOld = this.amountDebeRdOld.add(recordDetailsOld.get(i).getAmount());
+            } else if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
+                this.amountHaberRdOld = this.amountHaberRdOld.add(recordDetailsOld.get(i).getAmount());
+            }
+        }
+
+        //Obtener los recordsDetails del mes actual
+        this.objectsRecordDetail = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccAndOrg", this.accountSelected, _start, _end, this.organizationData.getOrganization());
     }
 
     public void onNodeSelect(NodeSelectEvent event) {

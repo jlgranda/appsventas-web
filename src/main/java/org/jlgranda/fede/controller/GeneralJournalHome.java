@@ -339,9 +339,9 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         BigDecimal sumDebe = new BigDecimal(0);
         BigDecimal sumHaber = new BigDecimal(0);
         for (int i = 0; i < this.record.getRecordDetails().size(); i++) {
-            if ("DEBE".equals(this.record.getRecordDetails().get(i).getRecordType())) {
+            if (this.record.getRecordDetails().get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
                 sumDebe = sumDebe.add(this.record.getRecordDetails().get(i).getAmount());
-            } else if ("HABER".equals(this.record.getRecordDetails().get(i).getRecordType())) {
+            } else if (this.record.getRecordDetails().get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
                 sumHaber = sumHaber.add(this.record.getRecordDetails().get(i).getAmount());
             }
         }

@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ui-g-2">
                                 <h:outputText value="#{i18n['app.fede.sales.record.type']} *"/>
                                 <div class="EmptyBox20"></div>
-                                <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordType}" effect="fade" style="width: 100%"
+                                <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordDetailType}" effect="fade" style="width: 100%"
                                                  required="#{true}" immediate="true"> 
                                     <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                     <p:ajax update="@this"></p:ajax>
@@ -112,25 +112,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}">
+                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}" style="width: 15%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
-                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordType=='DEBE'}" style="text-align: right"/>
+                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right"/>
                                                     </f:facet>
                                                     <f:facet name="input">
                                                         <p:inputText value="#{recordDetail.amount}"     
-                                                                     rendered="#{recordDetail.recordType=='DEBE'}" label="app.fede.sales.journal.record.debe"/>
+                                                                     rendered="#{recordDetail.recordDetailType=='DEBE'}" label="app.fede.sales.journal.record.debe"/>
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}">
+                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}" style="width: 15%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
-                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordType=='HABER'}" style="text-align: right"/>
+                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
                                                     </f:facet>
                                                     <f:facet name="input">
                                                         <p:inputText value="#{recordDetail.amount}" 
-                                                                     rendered="#{recordDetail.recordType=='HABER'}" label="app.fede.sales.journal.record.debe"/>
+                                                                     rendered="#{recordDetail.recordDetailType=='HABER'}" label="app.fede.sales.journal.record.debe"/>
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
@@ -139,7 +139,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </p:column>
                                         </p:dataTable>
                                         <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.sales.record.description']}" class="Container100 BigTopic"
-                                                        value="#{generalJournalHome.record.description}" required="false" 
+                                                        value="#{generalJournalHome.record.description}" required="true" 
                                                         inlinehelp="#{messages['app.fede.accouting.account.description.inlinehelp']}"
                                                         execute="@this save" render="dscrpn"/>
                                     </div>

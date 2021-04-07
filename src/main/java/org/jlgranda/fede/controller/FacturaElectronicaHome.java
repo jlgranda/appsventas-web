@@ -1125,19 +1125,22 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         switch (NameAccount) {
             case "MERCADERIAS":
                 recordDetailGeneral.setAmount(facturaElectronica.getTotalSinImpuestos());
-                recordDetailGeneral.setRecordType("DEBE");
+//                recordDetailGeneral.setRecordType("DEBE");
+                recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
                 break;
             case "I.V.A. POR PAGAR":
                 recordDetailGeneral.setAmount(facturaElectronica.getTotalIVA12());
-                recordDetailGeneral.setRecordType("DEBE");
+//                recordDetailGeneral.setRecordType("DEBE");
+                recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
                 break;
             case "CAJA":
                 recordDetailGeneral.setAmount(facturaElectronica.getImporteTotal());
-                recordDetailGeneral.setRecordType("HABER");
+//                recordDetailGeneral.setRecordType("HABER");
+                recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
                 break;
             default:
                 recordDetailGeneral.setAmount(null);
-                recordDetailGeneral.setRecordType(null);
+                recordDetailGeneral.setRecordDetailType(null);
         }
         return recordDetailGeneral;
     }
