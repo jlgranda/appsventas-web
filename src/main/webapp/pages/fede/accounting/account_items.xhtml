@@ -77,52 +77,90 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </h:outputText>
                                 </p:column>
                                 <p:column style="width:3rem">
-                                    <p:commandButton update="form" oncomplete="PF('generalLedgerDialog').show()"
+<!--                                    <p:commandButton id="button-generalLedger" update="form" oncomplete="PF('generalLedgerDialog').show()"
                                                      title="#{i18n['module.accounting.generalLedger']}" icon="fa fa-book" action="#{accountHome.findRecordDetailAccountTop()}">
                                         <f:setPropertyActionListener value="#{account}" target="#{accountHome.accountSelected}"/>
+                                    </p:commandButton>-->
+<!--                                    <p:commandButton id="button-generalLedger" icon="fa fa-book" 
+                                                     actionListener="#{accountHome.mostrarFormularioRecord()}" ajax="true"
+                                                     immediate="true">-->
+                                    <p:commandButton id="button-generalLedger" update="form"
+                                                     title="#{i18n['module.accounting.generalLedger']}" icon="fa fa-book"
+                                                     actionListener="#{accountHome.mostrarFormularioLedger(account)}">
+                                        <f:setPropertyActionListener value="#{account}" target="#{account}"/>
+                                        <p:ajax event="dialogReturn" update="@form"
+                                                listener="#{accountHome.handleReturn}">
+                                        </p:ajax>
                                     </p:commandButton>
                                 </p:column>
                             </p:treeTable>
                             <p:dialog widgetVar="generalLedgerDialog" modal="true" resizable="false" 
                                       showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
-                                      class="Container100 Responsive50" style="text-align: right" width="60%" header="Libro Mayor">
+                                      class="Container100 Responsive50" style="text-align: right" width="50%">
                                 <p:outputPanel id="generalLedger">
-                                        <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
-                                                     value="#{accountHome.objectsRecordDetail}" rowKey="#{recordDetail.id}" 
-                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
-                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
-                                                     scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
-                                                     lazy="false" reflow="true">
-                                            <p:columnGroup type="header">
-                                                <p:row>
-                                                    <p:column rowspan="2" colspan="2" headerText="Monto acumulado anterior" style="text-align: right"/>
-                                                </p:row>
-                                                <p:row>
-                                                    <p:column headerText="$#{accountHome.amountDebeRdOld}" style="text-align: right"/>
-                                                    <p:column headerText="$#{accountHome.amountHaberRdOld}" style="text-align: right"/>
-                                                </p:row>
-                                                <p:row>
-                                                    <p:column headerText="#{i18n['common.crationDate']}"/>
-                                                    <p:column headerText="#{i18n['common.concept']}"/>
-                                                    <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}"/>
-                                                    <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}"/>
-                                                </p:row>
-                                            </p:columnGroup>
-                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" style="width: 15%">
-                                                <h:outputText value="#{recordDetail[0]}">
-                                                    <f:convertDateTime dateStyle="long" timeZone="EST" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
-                                                </h:outputText>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.concept']}" style="width: 60%">
-                                                <h:outputText value="#{recordDetail[1]}" />
-                                            </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}" style="width: auto">
-                                                <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='DEBE'}" style="text-align: right"/>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}" style="width: auto">
-                                                <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='HABER'}" style="text-align: right"/>
-                                            </p:column>
-                                        </p:dataTable>
+                                    <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
+                                                 value="#{accountHome.objectsRecordDetail}" rowKey="#{recordDetail.id}" 
+                                                 paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
+                                                 scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
+                                                 lazy="false" reflow="true">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{accountHome.accountSelected.name}"/>
+                                        </f:facet>
+                                        <p:columnGroup type="header">
+                                            <p:row>
+                                                <p:column rowspan="2" colspan="2" headerText="Monto acumulado anterior" style="text-align: right"/>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column headerText="$#{accountHome.amountDebeRdOld}" style="text-align: right"/>
+                                                <p:column headerText="$#{accountHome.amountHaberRdOld}" style="text-align: right"/>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column headerText="#{i18n['common.crationDate']}"/>
+                                                <p:column headerText="#{i18n['common.concept']}"/>
+                                                <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}"/>
+                                                <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}"/>
+                                            </p:row>
+                                        </p:columnGroup>
+                                        <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" style="width: 10%">
+                                            <h:outputText value="#{recordDetail[0]}">
+                                                <f:convertDateTime dateStyle="long" timeZone="EST" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.concept']}" style="width: 60%">
+                                            <h:outputText value="#{recordDetail[1]}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}" style="width: auto">
+                                            <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='DEBE'}" style="text-align: right"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}" style="width: auto">
+                                            <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='HABER'}" style="text-align: right"/>
+                                        </p:column>
+                                        <p:columnGroup type="footer" >
+                                            <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                                                <span class="ui-g-6" style=" font-weight: bolder;">#{i18n['Saldo']}: </span>
+                                                <span class="ui-g-3" style="font-weight: bold; color: #005b9f;">
+                                                    <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount gt 0}" style="text-align: right"/>
+                                                </span>
+                                                <span class="ui-g-3" style="font-weight: bold; color: #C03213;">
+                                                    <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount lt 0}" style="text-align: right"/>
+                                                </span>
+                                            </span>
+                                        </p:columnGroup>
+                                    </p:dataTable>
+                                    <span class="ui-g-10">
+                                        <p:selectOneMenu id="select-account" value="#{accountHome.depositAccount}" effect="fade" style="width: 100%"
+                                                         required="#{false}" immediate="true" rendered="#{accountHome.amountAccount gt 0}"
+                                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                            <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                            <p:ajax update="@this"></p:ajax>
+                                        </p:selectOneMenu>                                                    
+                                    </span>
+                                    <span class="ui-g-2">
+                                        <p:commandButton id="btn-deposit" ajax="true" immediate="true" styleClass="p-mt-3"
+                                                         value="Depósito" icon="fa fa-exchange" update="@form" rendered="#{accountHome.amountAccount gt 0}"
+                                                         actionListener="#{accountHome.validateDeposit()}"/>
+                                    </span>
                                 </p:outputPanel>
                             </p:dialog>
                         </h:form>
@@ -132,80 +170,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
     </ui:composition>
 </html>
-<!--                                        <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
-                                                     value="#{generalJournalHome.record.recordDetails}" rowKey="#{recordDetail.id}" 
-                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
-                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
-                                                     scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
-                                                     lazy="false" reflow="true">
-                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{recordDetail.createdOn}" style="width: 10%">
-                                                <h:outputText value="#{recordDetail.createdOn}">
-                                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                                </h:outputText>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.concept']}" sortBy="#{record.description}" style="width: 30%">
-                                                <h:outputText value="#{record.description}" />
-                                            </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}">
-                                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordType=='DEBE'}" style="text-align: right"/>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}">
-                                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordType=='DEBE'}" style="text-align: right"/>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}">
-                                                <p:cellEditor>
-                                                    <f:facet name="output">
-                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordType=='DEBE'}" style="text-align: right"/>
-                                                    </f:facet>
-                                                    <f:facet name="input">
-                                                        <p:inputText value="#{recordDetail.amount}"     
-                                                                     rendered="#{recordDetail.recordType=='DEBE'}" label="app.fede.sales.journal.record.debe"/>
-                                                    </f:facet>
-                                                </p:cellEditor>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}">
-                                                <p:cellEditor>
-                                                    <f:facet name="output">
-                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordType=='HABER'}" style="text-align: right"/>
-                                                    </f:facet>
-                                                    <f:facet name="input">
-                                                        <p:inputText value="#{recordDetail.amount}" 
-                                                                     rendered="#{recordDetail.recordType=='HABER'}" label="app.fede.sales.journal.record.debe"/>
-                                                    </f:facet>
-                                                </p:cellEditor>
-                                            </p:column>
-                                            <p:column style="width: auto">
-                                                <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
-                                            </p:column>
-                                        </p:dataTable>-->
-
-<!--                                        <p:dataTable var="accountSelected"
-                                                     value="#{accountHome.accountSelected}"
-                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                                     reflow="true" selection="#{accountHome.accountSelected}"
-                                                     rowKey="#{account.id}"
-                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                                     id="dataTableSelected" widgetVar="dataTable_wv" lazy="true">
-                                            <p:column headerText="#{i18n['common.code']}" sortBy="#{account.code}">
-                                                <h:outputText value="#{accountSelected.code}" />
-                                            </p:column>
-                                            <p:column headerText="#{i18n['name']}" sortBy="#{account.name}">
-                                                <h:outputText value="#{accountSelected.name}" />
-                                            </p:column>
-                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{account.createdOn}"
-                                                       styleClass="text-right">
-                                                <h:outputText value="#{accountSelected.createdOn}">
-                                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                                </h:outputText>
-                                            </p:column>
-                                        </p:dataTable>-->
-<!--                                        <h2 class="BigTopic" style="font-weight: bold">#{i18n['app.fede.accouting.account']}</h2>
-<ui:repeat value="#{inventoryHome.findTop()}" var="product">  
-    <p:commandButton ajax="true" update="@form" immediate="true"
-                     actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
-                     icon="#{product.icon}" styleClass="success-btn" title="#{product.name}"
-                     style="width:36px; height: 36px;">
-    </p:commandButton>
-    <h:outputText value="#{product.name}"/>
-</ui:repeat>-->

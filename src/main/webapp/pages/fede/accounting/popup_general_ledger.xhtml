@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template_popup.xhtml">
+        <ui:param name="sitename" value="#{i18n['Sitename']}" />
+        <ui:define name="title">#{i18n['app.name']}</ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewAction action="#{accountHome.loadSessionParameters}" />
+                <f:viewAction action="#{accountHome.findRecordDetailAccountTop()}"/>
+            </f:metadata>
+        </ui:define>
+        <ui:define name="subheader">
+        </ui:define>
+        <ui:define name="viewname">
+            <li><p:link outcome="/pages/fede/accounting/popup_general_ledger.jsf">CUENTA #{accountHome.accountSelected.name}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <h:form id="form-registro">
+                        <div class="Container100 Responsive100" >
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGrayBack">
+                                    <div class="dataTable_wrapper">
+                                        <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
+                                                     value="#{accountHome.objectsRecordDetail}" rowKey="#{recordDetail.id}" 
+                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
+                                                     scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
+                                                     lazy="false" reflow="true">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{accountHome.accountSelected.name}"/>
+                                            </f:facet>
+                                            <p:columnGroup type="header">
+                                                <p:row>
+                                                    <p:column rowspan="2" colspan="2" headerText="Monto acumulado anterior" style="text-align: right"/>
+                                                </p:row>
+                                                <p:row>
+                                                    <p:column headerText="$#{accountHome.amountDebeRdOld}" style="text-align: right"/>
+                                                    <p:column headerText="$#{accountHome.amountHaberRdOld}" style="text-align: right"/>
+                                                </p:row>
+                                                <p:row>
+                                                    <p:column headerText="#{i18n['common.crationDate']}"/>
+                                                    <p:column headerText="#{i18n['common.concept']}"/>
+                                                    <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}"/>
+                                                    <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}"/>
+                                                </p:row>
+                                            </p:columnGroup>
+                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" style="width: 10%">
+                                                <h:outputText value="#{recordDetail[0]}">
+                                                    <f:convertDateTime dateStyle="long" timeZone="EST" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.concept']}" style="width: 60%">
+                                                <h:outputText value="#{recordDetail[1]}" />
+                                            </p:column>
+                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}" style="width: auto">
+                                                <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='DEBE'}" style="text-align: right"/>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}" style="width: auto">
+                                                <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='HABER'}" style="text-align: right"/>
+                                            </p:column>
+                                            <p:columnGroup type="footer" >
+                                                <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                                                    
+                                                    <!--#{generalJournalHome.record.id == null ? i18n['New'].concat(' ').concat(i18n['app.fede.sales.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.sales.record']).concat(' # ')} #{generalJournalHome.record.id}-->
+                                                    <span class="ui-g-6" style=" font-weight: bolder; text-align: right">#{accountHome.amountAccount ge 0 ?  'SALDO DEUDOR': 'SALDO ACCREEDOR'}: </span>
+                                                    <span class="ui-g-3" style="font-weight: bold; color: #005b9f;">
+                                                        <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount ge 0}" style="text-align: right"/>
+                                                    </span>
+                                                    <span class="ui-g-3" style="font-weight: bold; color: #C03213;">
+                                                        <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount lt 0}" style="text-align: right"/>
+                                                    </span>
+                                                </span>
+                                            </p:columnGroup>
+                                        </p:dataTable>
+                                        <span class="ui-g-10">
+                                            <p:selectOneMenu id="select-account" value="#{accountHome.depositAccount}" effect="fade" style="width: 100%"
+                                                             required="#{false}" immediate="true" rendered="#{accountHome.amountAccount gt 0}"
+                                                             converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                                <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                                <p:ajax update="@this"></p:ajax>
+                                            </p:selectOneMenu>                                                    
+                                        </span>
+                                        <span class="ui-g-2">
+                                            <p:commandButton id="btn-deposit" ajax="true" immediate="true" styleClass="p-mt-3"
+                                                             value="Depósito" icon="fa fa-exchange" update="@form" rendered="#{accountHome.amountAccount gt 0}"
+                                                             actionListener="#{accountHome.validateDeposit()}"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="EmptyBox10"></div>-->
+                    </h:form>
+                </div>
+            </div>
+            <!--/.panel-body -->
+        </ui:define>
+
+        <ui:define name="script">
+        </ui:define>
+    </ui:composition>
+</html>
