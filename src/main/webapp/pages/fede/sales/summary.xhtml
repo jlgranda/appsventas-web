@@ -51,17 +51,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                 <div class="ui-g-6">
-                    <label class="Gray">#{i18n['common.from']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.from']} &nbsp;</label>
                     <p:calendar value="#{summaryHome.start}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{summaryHome.refresh()}" oncomplete="form.submit();"/>
                     </p:calendar>
-                    <label class="Gray">#{i18n['common.to']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.to']} &nbsp;</label>
                     <p:calendar value="#{summaryHome.end}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{summaryHome.refresh()}" oncomplete="form.submit();"/>
                     </p:calendar>
                 </div>
                 <div class="ui-g-6">
-                    <label class="Gray">#{i18n['common.selection.fast']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.selected.fast']}&nbsp;</label>
                     <p:calendar value="#{summaryHome.grupoFechas}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{summaryHome.refreshPorGrupoFechas()}" oncomplete="form.submit();"/>
                     </p:calendar>
@@ -152,19 +152,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                       fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
                       style="text-align: right" height="600" width="800">
                     <p:outputPanel id="panel-dataTable"> 
-                        <p:dataTable id="dataTable-sales-discounts" lazy="false" liveResize="true"
+                        <p:dataTable id="dataTable-sales-discounts" draggableColumns="true" lazy="false" liveResize="true"
                                      liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                     rows="10" scrollable="true" scrollHeight="100%" scrollRows="10"
-                                     scrollWidth="100%" tableStyle="table-layout: auto"
-                                     value="#{summaryHome.listDiscount}" var="discount">
+                                     rows="10" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
+                                     scrollable="true" tableStyle="table-layout: auto"
+                                     value="#{summaryHome.listDiscount}" var="discount"
+                                     selection="#{summaryHome.selectedBussinesEntities}">
                             <f:facet name="header">
                                 <h:outputText value="#{i18n['app.fede.sales.summary.discount.summary']}"></h:outputText>
                             </f:facet>
-                            <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}" >
+                            <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" sortBy="#{discount[0]}" >
                                 <h:outputText value="#{discount[0]}"/>
                             </p:column>
-                            <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{discount[1]}" >
+                            <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{discount[1]}" >
                                 <h:outputText value="#{discount[1]}"/>
                             </p:column>
                             <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{discount[2]}" >

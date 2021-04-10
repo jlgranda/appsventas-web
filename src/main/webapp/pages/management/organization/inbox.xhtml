@@ -25,20 +25,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['fede']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{organizationHome.tags}" />
             </f:metadata>
         </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/management/organization/inbox.jsf">#{i18n['app.management.organizations']}</p:link></li>
+        </ui:define>
         <ui:define name="subheader">
-            <p:menuButton value="#{i18n['organization']}" iconPos="right"
+            <p:menuButton value="#{i18n['app.management.organization']}" iconPos="right"
                           styleClass="MarRight10"
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['Documents']}" icon="fa fa-paper-plane-o" 
+                <p:menuitem value="#{i18n['common.documents']}" icon="fa fa-paper-plane-o" 
                             url="/pages/management/tarea/dashboard.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
@@ -55,17 +60,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <span class="ui-separator">
                                 <span class="fa fa-ellipsis-v SoftGray" />
                             </span>
-                            <p:menuButton value="#{i18n['More']}" iconPos="right"
+                            <p:menuButton value="#{i18n['common.more']}" iconPos="right"
                                           styleClass="MarRight10"
                                           buttonStyleClass="ToolbarButton Fs14" 
                                           iconStyleClass="Gray"
                                           menuStyleClass="Gray">
-                                <p:menuitem value="#{i18n['Show']} #{i18n['RIDE']}" icon="fa fa-eye"
+                                <p:menuitem value="#{i18n['common.show']} #{i18n['common.ride']}" icon="fa fa-eye"
                                             onclick="triggerHiddenEventShowRIDE(); return false;"
                                             disabled="#{empty organizationHome.selectedBussinesEntities}">
                                 </p:menuitem>
                             </p:menuButton>
-                            <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
+                            <p:menuButton id="labelsMenuButton" value="#{i18n['common.labels']}" iconPos="right"
                                           styleClass="MarRight10"
                                           buttonStyleClass="ToolbarButton Fs14" 
                                           iconStyleClass="Gray"
@@ -73,11 +78,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:menuButton>
                         </f:facet>
                         <f:facet name="right">
-                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                             <p:calendar value="#{organizationHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
-                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                             <p:calendar value="#{organizationHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
@@ -122,7 +127,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:commandLink id="button-labels" actionListener="#{organizationHome.mostrarFormularioNuevaEtiqueta()}" ajax="false"
                                                styleClass=""
                                                rendered="#{empty organizationHome.selectedBussinesEntities}">
-                                    <i class="fa fa-pencil-square-o">&nbsp;</i><h:outputText value="#{i18n['New']} #{i18n['Label']}" />
+                                    <i class="fa fa-pencil-square-o">&nbsp;</i><h:outputText value="#{i18n['common.new']} #{i18n['common.label']}" />
                                     <p:ajax event="dialogReturn" update="@form"
                                             listener="#{organizationHome.handleReturn}">
                                     </p:ajax>
@@ -133,14 +138,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" ajax="false" 
                                         styleClass=""
                                         disabled="#{empty organizationHome.selectedBussinesEntities}">
-                                    <i class="fa fa-tags"></i>&nbsp;#{i18n['Manage']}&nbsp;#{i18n['Labels']}
+                                    <i class="fa fa-tags"></i>&nbsp;#{i18n['common.manage']}&nbsp;#{i18n['common.labels']}
                                 </h:link>
                             </li>
                             <li>
                                 <p:commandLink id="button-apply-labels" actionListener="#{organizationHome.applySelectedGroups}" ajax="false"
                                                styleClass=""
                                                rendered="#{not empty organizationHome.selectedBussinesEntities}">
-                                    <h:outputText value="#{i18n['Apply']}" />
+                                    <h:outputText value="#{i18n['common.apply']}" />
                                     <p:ajax event="dialogReturn" update="@form"
                                             listener="#{organizationHome.handleReturn}">
                                     </p:ajax>
@@ -158,32 +163,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                        <label class="Gray">#{i18n['common.keyword']}&nbsp;</label>
                         <p:inputText value="#{organizationHome.keyword}" class="input-sm">
                         </p:inputText>
-                        <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="false">
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="false">
                         </p:commandButton>
 
-                        <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/management/organization/organization.jsf"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/management/organization/organization.jsf"/>
                     </div>
                     <div class="Card">
-                        <p:dataTable var="organization" 
-                                     value="#{organizationHome.lazyDataModel}" 
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{organizationHome.selectedBussinesEntities}" 
-                                     rowKey="#{organization.id}" 
-                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                        <p:dataTable id="dataTable-organizations" draggableColumns="true" lazy="true" liveResize="true"
+                                     paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{organization.id}"
+                                     rows="25" scrollRows="25"
+                                     value="#{organizationHome.lazyDataModel}" var="organization"
+                                     selection="#{organizationHome.selectedBussinesEntities}"
+                                     sortOrder="DESCENDING" sortBy="#{organization.initials}">
 
                             <p:ajax event="rowSelect" listener="#{organizationHome.onRowSelect}"/>
                             <p:ajax event="rowSelectCheckbox" 
-                                    process="dataTable" update="dataTable"/>
+                                    process="dataTable-organizations" update="dataTable-organizations"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                            <p:column headerText="#{i18n['ride.ruc']}" sortBy="#{organization.ruc}">
+                            <p:column headerText="#{i18n['common.ruc']}" sortBy="#{organization.ruc}">
                                 <h:outputText value="#{organization.ruc}" />
                             </p:column>
-                            <p:column headerText="#{i18n['initials']}" sortBy="#{organization.initials}">
+                            <p:column headerText="#{i18n['common.company.initials']}" sortBy="#{organization.initials}">
                                 <h:outputText value="#{organization.initials}" />
                             </p:column>
                             <p:column headerText="#{i18n['common.type']}" sortBy="#{organization.organizationType}">

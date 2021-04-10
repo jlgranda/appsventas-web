@@ -26,35 +26,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-
-    <ui:define name="title">#{i18n['app.name']}</ui:define>
-    
-    <ui:define name="viewname">
-        <li>#{i18n['app.name']}</li>
-        <li>/</li>
-        <li><p:link outcome="/pages/fede/sales/preinvoices.jsf">#{i18n['app.fede.allmysales']}</p:link></li>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <!--<f:viewParam name="" value="" />-->
+        </f:metadata>
     </ui:define>
-
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/sales/preinvoices.jsf">#{i18n['common.current']}</p:link></li>
+    </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jpapi.model.StatusType" />
         <o:importConstants type="org.jpapi.model.TaxType" />
         <div class="ui-g">
             <div class="ui-g-12">
                 <div class="card">
-                    <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.keyword']}&nbsp;</label>
                     <p:inputText value="#{invoiceHome.keyword}" class="input-sm">
                         <p:ajax listener="#{invoiceHome.clear()}" />
                     </p:inputText>  
                     <!--
                     <h:panelGroup id="controles-busqueda-avanzada" >
                         <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                             <p:calendar value="#{invoiceHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> <!oncomplete="form.submit();" 
                             </p:calendar>
                         </h:panelGroup>
                         <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                             <p:calendar value="#{invoiceHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> 
                             </p:calendar>
@@ -64,16 +67,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:ajax event="change" update="controles-busqueda-avanzada" />
                     </p:selectBooleanCheckbox>
                     -->
-                    <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
+                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
                     </p:commandButton>
-                    <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
+                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
                 </div>
                 <div class="card">
                     <p:tabView style="margin:-20px; border:none 0px;">
-                        <p:tab title="#{i18n['app.fede.allmysales']}">
+                        <p:tab title="#{i18n['app.fede.sales.my.orders']}">
                             <!-- overrides title on tab-->
                             <f:facet name="title">
-                                <h:outputText value="#{i18n['app.fede.allmysales']}"/>
+                                <h:outputText value="#{i18n['app.fede.sales.my.orders']}"/>
                             </f:facet>
                             <div class="ui-g">
                                 <div class="Container100 Responsive100">
@@ -83,17 +86,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <span class="Fs16 DispBlock">
                                                     #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText #{entity.status} White " style="#{entity.status eq 'ATTEND' ? 'background-color: #4b6cb7;' : ''}"> #{entity.boardNumber}</span></i>
                                                 </span>
-                                                <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.totalSinImpuestos']}:&nbsp;<h:outputText value="#{entity.totalSinImpuesto}">
+                                                <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.taxes.total.none']}:&nbsp;<h:outputText value="#{entity.totalSinImpuesto}">
                                                         <f:convertNumber type="currency"/>
                                                     </h:outputText>
-                                                    &nbsp;|&nbsp;#{i18n['ride.infoFactura.totalIVA0']}:&nbsp;<h:outputText value="#{entity.getTotalTax(TaxType.IVA)}">
+                                                    &nbsp;|&nbsp;#{i18n['common.iva.0']}:&nbsp;<h:outputText value="#{entity.getTotalTax(TaxType.IVA)}">
                                                         <f:convertNumber type="currency"/>
                                                     </h:outputText>
-                                                    &nbsp;|&nbsp;#{i18n['ride.infoFactura.Total']}:&nbsp;<h:outputText value="#{entity.total}">
+                                                    &nbsp;|&nbsp;#{i18n['common.total.pay']}:&nbsp;<h:outputText value="#{entity.total}">
                                                         <f:convertNumber type="currency"/>
                                                     </h:outputText>
                                                 </span>     
-                                                <span class="Gray Fs10 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                                <span class="Gray Fs10 FontRobotoLight DispBlock">#{i18n['common.customer']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.update.last']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comanda.number']}: <strong>#{entity.code}</strong></span>
                                                 <span class="Gray Fs10 DispBlock">#{i18n['common.observation']}: <strong>#{entity.description}</strong></span>
 
                                                 <hr></hr>
@@ -101,7 +104,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <div class="Container40">
 
                                                 <!--Botón de pago directo-->
-                                                <p:commandButton title="#{i18n['common.record']}" 
+                                                <p:commandButton title="#{i18n['common.register']}" 
                                                                  icon="fa fa-dot-circle-o"
                                                                  styleClass="secondary-button Fright"
                                                                  actionListener="#{invoiceHome.record(entity.id)}" action="#{invoiceHome.redirect}" 
@@ -109,7 +112,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  immediate="true">
                                                 </p:commandButton>
                                                 <!--Botón de modificación/o pago-->
-                                                <p:button title="#{i18n['app.fede.collect']}" 
+                                                <p:button title="#{i18n['common.collect']}" 
                                                           icon="fa fa-dollar"
                                                           styleClass="secondary-button Fright"
                                                           outcome="invoice.jsf?invoiceId=#{entity.id}"/>
@@ -127,13 +130,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <div class="Separator"></div>
                                         </ui:repeat>
                                         <div class="Container100 Fs20 BoldGray  TexAlRight hide">
-                                            <h:outputText rendered="false">#{i18n['ride.infoFactura.Total']}:</h:outputText>
+                                            <h:outputText rendered="false">#{i18n['common.total.pay']}:</h:outputText>
                                             <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastPreInvoices)}" rendered="false">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
                                         </div>
                                         <div class="TexAlCenter DispBlock hide">
-                                            <p:button value="#{i18n['ShowAll']}" rendered="false" 
+                                            <p:button value="#{i18n['common.show.all']}" rendered="false" 
                                                       styleClass="danger-btn" icon="fa fa-table"
                                                       outcome="/pages/fede/sales/invoices.jsf"/>
                                         </div>
@@ -141,9 +144,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </div>
                         </p:tab>
-                        <p:tab title="#{i18n['Invoices']}">
+                        <p:tab title="#{i18n['common.invoices']}">
                             <f:facet name="title">
-                                <h:outputText value="#{i18n['app.fede.allmyinvoices']}" escape="false" rendered="true"/> 
+                                <h:outputText value="#{i18n['app.fede.sales.my']}" escape="false" rendered="true"/> 
                             </f:facet>
                             <div class="ui-g">
                                 <div class="Container100">
@@ -154,11 +157,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Fs20 DispBlock">
                                                     #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
                                                     </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.crationDate']}: #{entity.createdOn} | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.customer']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.date.created']}: #{entity.createdOn} | #{i18n['common.update.last']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comanda.number']}: <strong>#{entity.code}</strong></span>
                                                     <hr></hr>
                                                 </div>
                                                 <div class="Container30">
-                                                    <p:commandButton title="#{i18n['app.fede.sales.invoice.rollback']}" 
+                                                    <p:commandButton title="#{i18n['common.rollback']}" 
                                                                      icon="fa fa-undo"
                                                                      styleClass="GrayButton Fright"
                                                                      action="#{invoiceHome.reopen(entity.id)}"
@@ -174,9 +177,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </div>
                         </p:tab>
-                        <p:tab title="#{i18n['Pending']}">
+                        <p:tab title="#{i18n['app.fede.sales.pending']}">
                             <f:facet name="title">
-                                <h:outputText value="#{i18n['app.fede.allpendingsales']}"/>
+                                <h:outputText value="#{i18n['app.fede.sales.pending']}"/>
                             </f:facet>
                             <div class="ui-g">
                                 <div class="Container100">
@@ -187,24 +190,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Fs20 DispBlock">
                                                     #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
                                                     </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.totalSinImpuestos']}:&nbsp;<h:outputText value="#{entity.totalSinImpuesto}">
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.taxes.total.none']}:&nbsp;<h:outputText value="#{entity.totalSinImpuesto}">
                                                         <f:convertNumber type="currency"/>
                                                         </h:outputText>
-                                                        &nbsp;|&nbsp;#{i18n['ride.infoFactura.totalIVA0']}:&nbsp;<h:outputText value="#{entity.getTotalTax(TaxType.IVA)}">
+                                                        &nbsp;|&nbsp;#{i18n['common.iva.0']}:&nbsp;<h:outputText value="#{entity.getTotalTax(TaxType.IVA)}">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
-                                                        &nbsp;|&nbsp;#{i18n['ride.Factura.Detalles.descuento']}:&nbsp;<h:outputText value="#{entity.getPaymentsDiscount()}">
+                                                        &nbsp;|&nbsp;#{i18n['common.discount']}:&nbsp;<h:outputText value="#{entity.getPaymentsDiscount()}">
                                                                 <f:convertNumber type="currency"/>
                                                             </h:outputText>
-                                                        &nbsp;|&nbsp;#{i18n['ride.infoFactura.Total']}:&nbsp;<h:outputText value="#{entity.total}">
+                                                        &nbsp;|&nbsp;#{i18n['common.total.pay']}:&nbsp;<h:outputText value="#{entity.total}">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </span>   
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: #{entity.code}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.customer']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.update.last']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comanda.number']}: #{entity.code}</span>
                                                 </div>
                                                 <div class="Container30">
 
-                                                    <p:button title="#{i18n['app.fede.collect']}" 
+                                                    <p:button title="#{i18n['common.collect']}" 
                                                               icon="fa fa-dollar"
                                                               styleClass="RedButton Fright"
                                                               outcome="invoice.jsf?invoiceId=#{entity.id}"/>
@@ -217,65 +220,65 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </div>
                         </p:tab>
-                        <p:tab title="#{i18n['app.fede.sale.fast.add']}">
+                        <p:tab title="#{i18n['app.fede.sales.preinvoice.fast.add']}">
                             <f:facet name="title">
-                                <h:outputText value="#{i18n['app.fede.sale.fast.add']}"/>
+                                <h:outputText value="#{i18n['app.fede.sales.preinvoice.fast.add']}"/>
                             </f:facet>
                             <div class="ui-g ui-fluid">
                                 <div class="ui-g-12">
-                                    <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                    <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
                                                     execute="@this" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
                                                     validator="comandaValidator"
-                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
+                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
                                                     decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
                                 </div>
                                 <div class="ui-g-12">
-                                    <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
+                                    <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.board.number']}" 
                                                     execute="@this" render="board_number" value="#{invoiceHome.invoice.boardNumber}"
-                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
+                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.board.number.required']}"
                                                     decimalPlaces="0" container="none" rendered="true"/>
                                 </div>
                                 <div class="ui-g-12">
-                                    <jlgranda:input id="amount" name="amount" type="number" label="#{i18n['ride.Factura.Detalles.cantidad']}" 
+                                    <jlgranda:input id="amount" name="amount" type="number" label="#{i18n['common.quantity']}" 
                                                     execute="@this" render="amount" value="#{invoiceHome.amount}" 
-                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
+                                                    required="true" requiredMessage="#{i18n['common.quantity.required']}"
                                                     decimalPlaces="0" container="none" rendered="true"/>
                                 </div>
                                 <div class="ui-g-12">
                                     <p:commandButton immediate="false" ajax="true"
                                                      actionListener="#{invoiceHome.macro('100494')}" action="#{invoiceHome.redirect}" disabled="#{false}"
-                                                     icon="flaticon-almuerzo" styleClass="warning-btn" title="Almuerzo"
+                                                     icon="flaticon-almuerzo" styleClass="warning-btn" title="#{i18n['app.phrase.order.lunch']}"
                                                      style="width:36px; height: 36px;" type="submit">
                                     </p:commandButton>
                                     <p:commandButton immediate="false" ajax="true"
                                                      actionListener="#{invoiceHome.macro('100529')}" action="#{invoiceHome.redirect}" disabled="#{false}"
-                                                     icon="flaticon-almuerzo-solo-segundo" styleClass="warning-btn" title="Almuerzo: sólo segundo"
+                                                     icon="flaticon-almuerzo-solo-segundo" styleClass="warning-btn" title="#{i18n['app.phrase.order.lunch.second']}"
                                                      style="width:36px; height: 36px;" type="submit">
                                     </p:commandButton>
 
                                     <p:commandButton immediate="false" ajax="true"
                                                      actionListener="#{invoiceHome.macro('100550')}" action="#{invoiceHome.redirect}" disabled="#{false}"
-                                                     icon="flaticon-almuerzo-solo-sopa" styleClass="help-btn" title="Almuerzo: sólo sopa"
+                                                     icon="flaticon-almuerzo-solo-sopa" styleClass="help-btn" title="#{i18n['app.phrase.order.lunch.soup']}"
                                                      style="width:36px; height: 36px;" type="submit">
                                     </p:commandButton>
 
                                     <p:commandButton immediate="false" ajax="true"
                                                      actionListener="#{invoiceHome.macro('100626')}" action="#{invoiceHome.redirect}" disabled="#{false}"
-                                                     icon="flaticon-almuerzo" styleClass="danger-btn" title="Almuerzo dominguero"
+                                                     icon="flaticon-almuerzo" styleClass="danger-btn" title="#{i18n['app.phrase.order.lunch.sunday']}"
                                                      style="width:36px; height: 36px;" type="submit">
                                     </p:commandButton>
                                     <p:commandButton immediate="false" ajax="true"
                                                      actionListener="#{invoiceHome.macro('102086')}" action="#{invoiceHome.redirect}" disabled="#{false}"
-                                                     icon="flaticon-almuerzo-solo-segundo" styleClass="danger-btn" title="Almuerzo dominguero: sólo segundo"
+                                                     icon="flaticon-almuerzo-solo-segundo" styleClass="danger-btn" title="#{i18n['app.phrase.order.lunch.sunday.second']}"
                                                      style="width:36px; height: 36px;" type="submit">
                                     </p:commandButton>
                                 </div>
                             </div>
                         </p:tab>
                         <!--Busqueda-->
-                        <p:tab title="#{i18n['Search']}" rendered="#{invoiceHome.busquedaEjecutada}">
+                        <p:tab title="#{i18n['common.search']}" rendered="#{invoiceHome.busquedaEjecutada}">
                             <f:facet name="title">
-                                <h:outputText value="#{i18n['Search']} #{invoiceHome.start} - #{invoiceHome.end} - #{invoiceHome.keyword}" escape="false" rendered="true"/> 
+                                <h:outputText value="#{i18n['common.search']} #{invoiceHome.start} - #{invoiceHome.end} - #{invoiceHome.keyword}" escape="false" rendered="true"/> 
                             </f:facet>
                             <div class="ui-g">
                                 <div class="Container100">

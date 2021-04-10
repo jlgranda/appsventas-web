@@ -578,7 +578,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setStatus(status);
             save(true);
         } else {
-            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
             setOutcome("");
         }
         return "failed";
@@ -868,7 +868,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public boolean touch(Product product) {
         if (product == null){
             addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.requiredMessage"));
-            logger.error("No se seleccionó un producto.");
+            logger.error(I18nUtil.getMessages("common.selected.product.none"));
             return false;
         }
         setCandidateDetail(detailService.createInstance(1));
@@ -1039,7 +1039,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(fillSeries);
-        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales.net"));
 
         LineChartSeries purchases = new LineChartSeries();
         purchases.setFill(fillSeries);
@@ -1080,19 +1080,19 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.addSeries(profits);
 //        areaModel.addSeries(fixedCosts);
 
-        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
+        areaModel.setTitle(I18nUtil.getMessages("linechart.salesvspurchases"));
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "ne"));
         areaModel.setExtender("skinChart");
         //areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.day"));
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-500")));
-        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.max", "500")));
+        yAxis.setLabel(I18nUtil.getMessages("common.dollars"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "-500")));
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
 
         return areaModel;
     }
