@@ -12,7 +12,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
             <meta name="apple-mobile-web-app-capable" content="yes" />
         </f:facet>
-        <title>#{i18n['app.name']} - #{i18n['app.registrarse']}</title>
+        <title>#{i18n['app.name']} - #{i18n['common.register.me']}</title>
     </h:head>
 
     <h:body styleClass="login-body">
@@ -32,26 +32,26 @@
                         <p:autoUpdate />
                     </p:messages>
                     <p:graphicImage name="images/appsventas.png" library="appsventas" style="margin-bottom: 8px;"/>
-                    <h2>#{i18n['app.registrarse']}</h2>
+                    <h2>#{i18n['common.register.me']}</h2>
                     <p:inputText id="code" 
                                     value="#{subjectAdminHome.subjectEdit.code}" validator="ciValidator"
-                                    required="true" placeholder="#{i18n['subject.code']}" 
+                                    required="true" placeholder="#{i18n['common.ci.ruc']}" 
                                     requiredMessage=""
                                  class="form-control" rendered="#{true}">
                         <f:validator validatorId="ciValidator"/>
                         <p:ajax event="blur" partialSubmit="true" update="@form" listener="#{subjectAdminHome.tryForExistentSubject}"/>
                     </p:inputText>
                     
-                    <jlgranda:input id="description" name="description" type="text" label="#{i18n['common.fullName']}" 
+                    <jlgranda:input id="description" name="description" type="text" label="#{i18n['common.names.full']}" 
                                     value="#{subjectAdminHome.subjectEdit.description}" 
                                     required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true"
-                                    inlinehelp="#{messages['common.fullName.inlinehelp']}" execute="@this save" render="description"/>
-                    <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['phone']}" 
+                                    inlinehelp="#{messages['common.names.full.inlinehelp']}" execute="@this save" render="description"/>
+                    <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
                                     value="#{subjectAdminHome.subjectEdit.mobileNumber}"
                                     required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
                                     execute="@this save" render="mobileNumber"/>
                     <div class="separator"></div>
-                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
                                     value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                     required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
                                     execute="@this save" render="email"/>
@@ -61,7 +61,7 @@
                     <p:password id="contrasenia2" value="#{subjectAdminHome.clave}" 
                                 required="true" placeholder="#{i18n['common.confirm.password']}"/>
 
-                    <p:commandButton id="save" value="#{i18n['app.gifts.begin']}" 
+                    <p:commandButton id="save" value="#{i18n['common.begin']}" 
                                      ajax="true" 
                                      actionListener="#{subjectAdminHome.validate}" 
                                      action="#{subjectAdminHome.save}"

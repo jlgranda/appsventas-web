@@ -7,9 +7,7 @@
                 xmlns:of="http://omnifaces.org/functions"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="/WEB-INF/template.xhtml">
-
     <ui:define name="title">#{i18n['common.welcome']} - #{subject.fullName}</ui:define>
-
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -19,17 +17,14 @@
     <ui:define name="viewname">
         <li><p:link outcome="home">#{i18n['common.welcome']} - #{subject.fullName}</p:link></li>
     </ui:define>
-
     <ui:define name="style" rendered="#{!request.isUserInRole('USER')}">
         <style type="text/css">
-            
             .bg-image {
                 background-image: url('#{facesContext.externalContext.requestContextPath}#{not empty giftHome.uuid ? '/images/dynamic/?uuid='.concat(giftHome.uuid).concat('&amp;type=png') : '/javax.faces.resource/images/emporiolojano-portada-01.jpg.jsf?ln=ecuador-layout'}') !important;
                 height: 190px !important;
                 width: 100%;
                 background-size: cover;
             }
-            
             .layout-content .layout-dashboard .profile .ui-panel-content .profile-info span {
                 font-size: 15px;
                 color: #fff;
@@ -37,7 +32,6 @@
             }
         </style>
     </ui:define>
-
     <ui:define name="content" rendered="#{request.isUserInRole('USER')}">
         <div class="layout-dashboard">
             <div class="ui-g">
@@ -57,19 +51,18 @@
                                 <i class="fa fa-location-arrow"></i>
                                 <span class="location">Seattle</span>
                             </div>-->
-
                             <div>
                                 <div class="profile-numbers">
-                                    <span class="header">Regalos</span>
+                                    <span class="header">#{i18n['app.gifts']}</span>
                                     <span class="number">#{giftHome.giftCount}</span>
                                 </div>
                                 <div class="profile-numbers">
-                                    <span class="header">Compartidos</span>
+                                    <span class="header">#{i18n['common.shared']}</span>
                                     <span class="number">#{giftHome.sharedGiftCount}</span>
                                 </div>
                             </div>
                             <div class="">
-                                <p:commandButton id="print-button" value="#{i18n['get.gift']}" ajax="false" 
+                                <p:commandButton id="print-button" value="#{i18n['app.gift.get']}" ajax="false" 
                                                  icon="fa fa-dollar"
                                                  styleClass="danger-btn rounded-btn" 
                                                  style="margin-bottom: 10px; background-color:#85bb65;border-color:#85bb65;"
@@ -79,19 +72,18 @@
                             </div>
                         </div>
                     </p:panel>
-                    <p:panel header="#{i18n['app.gifts.MyLastGifts']}" styleClass="timeline">
+                    <p:panel header="#{i18n['app.gifts.my']}" styleClass="timeline">
                         <ul>
                             <ui:repeat value="#{giftHome.lastGitfs}" var="entity">
                                 <li>
 <!--                                    <div class="date-indicator ui-lg-3 ui-md-3">
                                         <span class="date">
-                                            
                                         </span>
                                     </div>-->
 <!--                                    <div class="activity-link"></div>
                                     <i class="fa fa-circle code"></i>-->
                                     <div class="timeline-subject ui-lg-9 ui-md-9">
-                                        <span class="timeline-header">#{i18n['common.caducaEn']} <h:outputText value="#{entity.expirationTime}" styleClass="">
+                                        <span class="timeline-header">#{i18n['common.expire']} <h:outputText value="#{entity.expirationTime}" styleClass="">
                                                 <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
                                             </h:outputText></span>
                                         <span class="timeline-subheader" style="display: inline-block; width: 90%;">
@@ -103,12 +95,11 @@
                                     <i class="fa fa-coffee device success" style="color:red;"></i>
                                 </li>
                             </ui:repeat>
-
                         </ul>
                     </p:panel>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-8">
-                    <p:panel header="#{i18n['MisUltimasCompras']}" styleClass="timeline ShowOnDesktop ShowOnDesktop">
+                    <p:panel header="#{i18n['app.fede.purchases.lasts.my']}" styleClass="timeline ShowOnDesktop ShowOnDesktop">
                         <ul>
                             <p:panel rendered="#{empty invoiceHome.myLastlastInvoicesByOwner}">
                                 <li>
@@ -122,7 +113,7 @@
                                     <div class="activity-link"></div>
                                     <i class="fa fa-circle success"></i>
                                     <div class="timeline-subject ui-md-9">
-                                        <span class="timeline-header">#{i18n['TiempoBuenCafe']} #{'Te sugerimos el Emporio Lojano'}</span>
+                                        <span class="timeline-header">#{i18n['slogan.pharse.1']} #{i18n['slogan.pharse.2']}</span>
                                         <span class="timeline-subheader">#{''}</span>
                                     </div>
                                     <i class="fa fa-coffee device success" style="color:red;"></i>
@@ -146,10 +137,9 @@
                                     <i class="fa fa-coffee device success" style="color:gray;"></i>
                                 </li>
                             </ui:repeat>
-
                         </ul>
                     </p:panel>
-                    <p:panel header="#{i18n['app.gifts.RecentGiftFromOther']}" styleClass="inbox">
+                    <p:panel header="#{i18n['app.gifts.recents']}" styleClass="inbox">
                         <ul>
                             <ui:repeat value="#{giftHome.giftsFromOthers}" var="entity">
                                 <li>
@@ -172,7 +162,6 @@
                         </ul>
                     </p:panel>
                 </div>
-
                 <div class="ui-g-12 ui-md-12 ui-lg-12">
                     <p:panel header="Upcoming Events" style="height:100%" rendered="false">
                         <p:schedule value="#{scheduleView.eventModel}"/>

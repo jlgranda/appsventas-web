@@ -25,19 +25,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['Profile']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.profile']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="subjectId" value="#{invoiceHome.subjectAdminHome.subjectId}" />    
                 <f:viewAction action="#{invoiceHome.loadSessionParameters}" />
             </f:metadata>
         </ui:define>
-        <ui:define name="subheader">
-
-        </ui:define>
         <ui:define name="viewname">
-            <li>#{i18n['app.name']}</li>
+            <li>#{i18n['common.customer']}</li>
             <li>/</li>
             <li><p:link outcome="/pages/fede/sales/popup_profile.jsf">#{invoiceHome.subjectAdminHome.subjectId == null ? i18n['New'].concat(' ').concat(i18n['Profile']).concat(': ') : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
         </ui:define>
@@ -70,32 +67,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="ui-g-12">
                             <div class="ui-g-4">
                                 <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['phone']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.mobileNumber}"
-                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
-                                        execute="@this save" render="phone"/>
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.mobileNumber}"
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                                execute="@this save" render="phone"/>
                             </div>
                             <div class="ui-g-8">
                                 <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
-                                        execute="@this save" render="email"/>
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                                execute="@this save" render="email"/>
                                 <h:outputText value=" No tiene correo " />
                                 <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultEmail}">
                                     <p:ajax update="email" listener="#{invoiceHome.updateDefaultEmail}" />
                                 </p:selectBooleanCheckbox>
                             </div>
                         </div>
-                        
+
                         <div class="ui-g-12">
                             <div class="ui-g-6">
                                 <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 
-                                        inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                                inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
                             </div>
                             <div class="ui-g-6">
                                 <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
-                                        execute="@this save" render="bio"/>
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                                execute="@this save" render="bio"/>
                             </div>
                         </div>
                         <div class="ui-g-12">

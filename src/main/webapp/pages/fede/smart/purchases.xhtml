@@ -24,16 +24,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:o="http://omnifaces.org/ui"
                 template="/WEB-INF/template.xhtml"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
-
-    <ui:define name="title">#{i18n['common.purchases']}</ui:define>
-    <ui:define name="head">
-    </ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.smart']}</ui:define>
+    <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
+            <!--<f:viewParam name="" value="" />-->
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li><p:link outcome="dashboard">#{i18n['common.purchases']}</p:link></li>
+        <li>#{i18n['app.fede.smart']}</li>
+        <li>/</li>
+        <li><p:link outcome="purchases">#{i18n['common.purchases']}</p:link></li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -53,8 +54,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             }
         </style>
     </ui:define>
-
-
     <ui:define name="content" rendered="#{true}">
         <div class="layout-dashboard">
             <div class="ui-g">
@@ -62,13 +61,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="card">
                         <h:panelGroup>
                             <h:panelGroup>
-                                <label class="Gray">#{i18n['Start']}</label>
+                                <label class="Gray">#{i18n['common.from']}</label>
                                 <p:calendar value="#{summaryHome.start}" class="input-sm">
                                     <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> <!-- oncomplete="form.submit();" --> 
                                 </p:calendar>
                             </h:panelGroup>
                             <h:panelGroup>
-                                <label class="Gray">#{i18n['End']}</label>
+                                <label class="Gray">#{i18n['common.to']}</label>
                                 <p:calendar value="#{summaryHome.end}" class="input-sm">
                                     <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> 
                                 </p:calendar>                            
@@ -78,14 +77,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div><!-- comment -->
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                     <p:panel id="control-bar2" class="card"
-                             header="#{i18n['common.statistics.products.provider']}" 
-                             rendered="#{not empty summaryHome.horizontalProductsBarModel}"
+                             header="#{i18n['app.smart.purchases.top']}" 
                              styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
                             <div align="right">
-                                <p:commandButton id="button-detail" value="#{i18n['app.fede.sales.details']}" style="margin-bottom:10px;"
-                                                 styleClass="raised-btn" update=":form:tableDetail" 
-                                                 oncomplete="PF('tableDialog').show()">
+                                <p:commandButton id="button-detail" value="#{i18n['common.detail.current']}" style="margin-bottom:10px;"
+                                                 styleClass="raised-btn" update=":form:panel-dataTable" 
+                                                 oncomplete="PF('dlgTblPurchases').show()">
                                 </p:commandButton>
                             </div>
                             <!--Listado de Proveedores: Compras-->
@@ -96,42 +94,43 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>                      
                     </p:panel>
                 </div>
-                <p:dialog widgetVar="tableDialog" modal="true" resizable="false"
-                          showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
-                          class="Container100 Responsive50" style="text-align: right" width="40%">
-                    <div class="card">
-                        <p:outputPanel id="tableDetail"> 
-                            <p:dataTable id="dataTable" var="purchases" value="#{summaryHome.listPurchases}"
-                                         scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="330">
+                <p:dialog widgetVar="dlgTblPurchases" class="Container100 Responsive50" closeOnEscape="true"
+                          fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
+                          style="text-align: right" height="500" width="800">
+                        <p:outputPanel id="panel-dataTable"> 
+                            <p:dataTable id="dataTable-purchases" lazy="false" liveResize="true"
+                                         liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
+                                         rows="10" scrollable="true" scrollHeight="100%" scrollRows="10"
+                                         scrollWidth="100%" tableStyle="table-layout: auto"
+                                         value="#{summaryHome.listPurchases}" var="purchases">
                                 <f:facet name="header">
-                                    <h:outputText value="#{i18n['common.statistics.products.provider.table']}"></h:outputText>
+                                    <h:outputText value="#{i18n['app.smart.purchases.summary']}"></h:outputText>
                                 </f:facet>
-                                <p:column id="nme" headerText="#{i18n['app.fede.purchase.supplier']}" sortBy="#{purchases[0]}" style="width:250px; text-align: left">
+                                <p:column id="nme" headerText="#{i18n['common.supplier']}" sortBy="#{purchases[0]}" style="width:60%; text-align: left">
                                     <h:outputText value="#{purchases[0]}"/>
                                 </p:column>
-                                <p:column id="amount" headerText="#{i18n['common.purchases.value']}" sortBy="#{purchases[1]}" style="width:125px">
+                                <p:column id="amount" headerText="#{i18n['common.value']} #{i18n['common.money.letter']}" sortBy="#{purchases[1]}"  style="width: auto">
                                     <h:outputText value="#{purchases[1]}">
                                         <f:convertNumber type="currency" currencySymbol="$"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:columnGroup type="footer">
-                                    <p:row>
-                                        <!--<p:column colspan="1" footerText="#{i18n['common.statistics.products.provider.table.total']}" style="font-weight: bolder;"/>-->
-                                        <!--<p:column footerText="$#{summaryHome.getListPurchasesTotal()}"  style="text-align:center; font-weight: bolder; color: #005b9f"/>-->
-                                        <span class="ui-g-9" style=" font-weight: bold">#{i18n['common.statistics.products.provider.table.total']}: </span>
-                                        <span class="ui-g-2" style=" font-size: medium; font-weight: bold; color: #005b9f">$#{summaryHome.getListPurchasesTotal()}</span>
-                                        
-                                    </p:row>
-                                </p:columnGroup>
+                                <p:columnGroup type="footer" >
+                                    <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                                        <span class="ui-g-10" style=" font-weight: bolder; text-align: right">#{i18n['app.smart.purchases.total']}: </span>
+                                        <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
+                                            <h:outputText value="#{summaryHome.getListPurchasesTotal()}" style="text-align: right">
+                                                <f:convertNumber type="currency" currencySymbol="$"/>
+                                            </h:outputText>
+                                        </span>
+                                    </span>
+                            </p:columnGroup>
                             </p:dataTable>
                         </p:outputPanel>
-                    </div>
                 </p:dialog>
             </div>
         </div>
     </ui:define>
-
-
     <ui:define name="script">
         <script type="text/javascript">
             //<![CDATA[
