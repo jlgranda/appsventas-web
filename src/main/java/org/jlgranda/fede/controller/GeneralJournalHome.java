@@ -385,6 +385,18 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 //        }
     }
 
+    public void validateNewReloadJournal() throws IOException {
+        if (this.journalId == null) {
+            GeneralJournal generalJournal = journalService.createInstance();
+            generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+            if (generalJournal == null) {
+                this.journal = journalService.save(buildJournal());
+            } else {
+                this.journal = generalJournal;
+            }
+        }
+    }
+    
     public boolean isRecordOfReferen() {
         return this.record.getFacturaElectronica() == null;
     }

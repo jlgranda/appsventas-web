@@ -25,18 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:define name="title">#{i18n['app.name']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.generalLedger']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewAction action="#{accountHome.loadSessionParameters}" />
                 <f:viewAction action="#{accountHome.findRecordDetailAccountTop()}"/>
             </f:metadata>
         </ui:define>
-        <ui:define name="subheader">
-        </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="/pages/fede/accounting/popup_general_ledger.jsf">CUENTA #{accountHome.accountSelected.name}</p:link></li>
+            <li>#{i18n['app.fede.accounting.accounts.plan']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/fede/accounting/popup_general_ledger.jsf">#{i18n['common.account']} #{accountHome.accountSelected.name}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -46,54 +46,60 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ContainerIndent">
                                 <div class="Card SoftGrayBack">
                                     <div class="dataTable_wrapper">
-                                        <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
-                                                     value="#{accountHome.objectsRecordDetail}" rowKey="#{recordDetail.id}" 
-                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
-                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
-                                                     scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
-                                                     lazy="false" reflow="true">
-                                            <f:facet name="header">
-                                                <h:outputText value="#{accountHome.accountSelected.name}"/>
-                                            </f:facet>
-                                            <p:columnGroup type="header">
-                                                <p:row>
-                                                    <p:column rowspan="2" colspan="2" headerText="Monto acumulado anterior" style="text-align: right"/>
-                                                </p:row>
-                                                <p:row>
-                                                    <p:column headerText="$#{accountHome.amountDebeRdOld}" style="text-align: right"/>
-                                                    <p:column headerText="$#{accountHome.amountHaberRdOld}" style="text-align: right"/>
-                                                </p:row>
-                                                <p:row>
-                                                    <p:column headerText="#{i18n['common.crationDate']}"/>
-                                                    <p:column headerText="#{i18n['common.concept']}"/>
-                                                    <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}"/>
-                                                    <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}"/>
-                                                </p:row>
-                                            </p:columnGroup>
-                                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" style="width: 10%">
+                                        <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                                            <span class="ui-g-9" style=" font-weight: bolder; text-align: right">#{i18n['app.fede.accounting.account.fund.old']}: </span>
+                                            <span class="ui-g-2" style="font-weight: bold; text-align: center">
+                                                <h:outputText value="#{accountHome.amountHaberRdOld}" style="text-align: right">
+                                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                                </h:outputText>
+                                            </span>
+                                            <span class="ui-g-1" style="font-weight: bold; text-align: center">
+                                                <h:outputText value="#{accountHome.amountHaberRdOld}" style="text-align: right">
+                                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                                </h:outputText>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Container100 Responsive100" >
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGrayBack">
+                                    <div class="dataTable_wrapper">
+                                        <p:dataTable id="dataTable-account-general-ledger" draggableColumns="true" lazy="false" liveResize="true"
+                                                     liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
+                                                     rows="8" scrollRows="8" scrollHeight="100%" scrollWidth="100%"
+                                                     scrollable="true"
+                                                     value="#{accountHome.objectsRecordDetail}" var="recordDetail"
+                                                     selection="#{accountHome.selectedBussinesEntities}">
+                                            <p:column headerText="#{i18n['common.date.created']}" style="width: 25%">
                                                 <h:outputText value="#{recordDetail[0]}">
-                                                    <f:convertDateTime dateStyle="long" timeZone="EST" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
+                                                    <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                                 </h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.concept']}" style="width: 60%">
+                                            <p:column headerText="#{i18n['common.concept']}" style="width: auto">
                                                 <h:outputText value="#{recordDetail[1]}" />
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}" style="width: auto">
+                                            <p:column headerText="#{i18n['app.fede.accounting.debit']}"  style="width: 25%">
                                                 <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='DEBE'}" style="text-align: right"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}" style="width: auto">
+                                            <p:column headerText="#{i18n['app.fede.accounting.credit']}"  style="width: 25%" >
                                                 <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='HABER'}" style="text-align: right"/>
                                             </p:column>
                                             <p:columnGroup type="footer" >
                                                 <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                                                    
-                                                    <!--#{generalJournalHome.record.id == null ? i18n['New'].concat(' ').concat(i18n['app.fede.sales.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.sales.record']).concat(' # ')} #{generalJournalHome.record.id}-->
-                                                    <span class="ui-g-6" style=" font-weight: bolder; text-align: right">#{accountHome.amountAccount ge 0 ?  'SALDO DEUDOR': 'SALDO ACCREEDOR'}: </span>
-                                                    <span class="ui-g-3" style="font-weight: bold; color: #005b9f;">
-                                                        <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount ge 0}" style="text-align: right"/>
+                                                    <span class="ui-g-9" style=" font-weight: bolder; text-align: right">#{accountHome.amountAccount ge 0 ?  i18n['app.fede.accounting.account.fund.debit']: i18n['app.fede.accounting.account.fund.credit']}: </span>
+                                                    <span class="ui-g-2" style="font-weight: bold; color: #005b9f; text-align: center">
+                                                        <h:outputText value="#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount ge 0}">
+                                                            <f:convertNumber type="currency" currencySymbol="$"/>
+                                                        </h:outputText>
                                                     </span>
-                                                    <span class="ui-g-3" style="font-weight: bold; color: #C03213;">
-                                                        <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount lt 0}" style="text-align: right"/>
+                                                    <span class="ui-g-1" style="font-weight: bold; color: #a30000; text-align: center">
+                                                        <h:outputText value="#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount lt 0}">
+                                                            <f:convertNumber type="currency" currencySymbol="$"/>
+                                                        </h:outputText>
                                                     </span>
                                                 </span>
                                             </p:columnGroup>
@@ -108,14 +114,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </span>
                                         <span class="ui-g-2">
                                             <p:commandButton id="btn-deposit" ajax="true" immediate="true" styleClass="p-mt-3"
-                                                             value="Depósito" icon="fa fa-exchange" update="@form" rendered="#{accountHome.amountAccount gt 0}"
+                                                             value="Depósito" icon="fa fa-exchange" update="dataTable-account-general-ledger" rendered="#{accountHome.amountAccount gt 0}"
                                                              actionListener="#{accountHome.validateDeposit()}"/>
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!--<div class="EmptyBox10"></div>-->
                     </h:form>
                 </div>
             </div>

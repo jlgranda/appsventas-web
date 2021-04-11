@@ -25,18 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup_libre.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.fede.sales.records']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewAction action="#{generalJournalHome.loadSessionParameters}" />
-                <f:viewAction action="#{generalJournalHome.newJournal()}"/>
+                <!--<f:viewAction action="#{generalJournalHome.newJournal()}"/>-->
             </f:metadata>
         </ui:define>
-        <ui:define name="subheader">
-        </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['New'].concat(' ').concat(i18n['app.fede.sales.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.sales.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
+            <li>#{i18n['app.fede.accounting.journal']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:messages>
                         <div class="ui-g-12">
                             <div class="ui-g-6">
-                                <h:outputText value="#{i18n['account.catalogue']} *"/>
+                                <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
                                 <div class="EmptyBox20"></div>
                                 <p:selectOneMenu id="account" value="#{generalJournalHome.recordDetail.account}" effect="fade" style="width: 100%"
                                                  required="#{true}" immediate="true"
@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:selectOneMenu>  
                             </div>
                             <div class="ui-g-2">
-                                <h:outputText value="#{i18n['app.fede.sales.record.type']} *"/>
+                                <h:outputText value="#{i18n['common.type']} *"/>
                                 <div class="EmptyBox20"></div>
                                 <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordDetailType}" effect="fade" style="width: 100%"
                                                  required="#{true}" immediate="true"> 
@@ -66,7 +66,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:selectOneMenu>
                             </div>
                             <div class="ui-g-3">
-                                <h:outputText value="#{i18n['app.fede.sales.record.amount']} *" />
+                                <h:outputText value="#{i18n['common.value']} #{i18n['common.money.letter']} *" />
                                 <div class="EmptyBox20"></div>
                                 <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
                                                required="true" immediate="true" disabled="false"
@@ -92,13 +92,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ContainerIndent">
                                 <div class="Card SoftGrayBack">
                                     <div class="dataTable_wrapper">
-                                        <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
-                                                     value="#{generalJournalHome.record.recordDetails}" rowKey="#{recordDetail.id}" 
-                                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
-                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
-                                                     scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
-                                                     lazy="false" reflow="true" editable="#{generalJournalHome.recordOfReferen}">
-                                            <p:column headerText="#{i18n['app.fede.accouting.account']}" style="width: 60%">
+                                        <p:dataTable id="dataTable-records-details" draggableColumns="true" lazy="false" liveResize="true"
+                                                     liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
+                                                     rows="10" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
+                                                     scrollable="true"
+                                                     value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
+                                                     selection="#{generalJournalHome.selectedBussinesEntities}"
+                                                     editable="#{generalJournalHome.recordOfReferen}">
+                                            <p:column headerText="#{i18n['common.accounts']}" style="width: auto">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="#{recordDetail.account.name}"/>
@@ -113,35 +115,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}" style="width: 15%">
+                                            <p:column headerText="#{i18n['app.fede.accounting.debit']}" style="width: 15%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right"/>
                                                     </f:facet>
                                                     <f:facet name="input">
-                                                        <p:inputText value="#{recordDetail.amount}"     
-                                                                     rendered="#{recordDetail.recordDetailType=='DEBE'}" label="app.fede.sales.journal.record.debe"/>
+                                                        <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}"/>
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}" style="width: 15%">
+                                            <p:column headerText="#{i18n['app.fede.accounting.credit']}" style="width: 15%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
                                                     </f:facet>
                                                     <f:facet name="input">
-                                                        <p:inputText value="#{recordDetail.amount}" 
-                                                                     rendered="#{recordDetail.recordDetailType=='HABER'}" label="app.fede.sales.journal.record.debe"/>
+                                                        <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}"/>
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column style="width: auto">
+                                            <p:column style="width: 5%">
                                                 <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
                                             </p:column>
                                         </p:dataTable>
-                                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.sales.record.description']}" class="Container100 BigTopic"
+                                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.accounting.record.description']}" class="Container100 BigTopic"
                                                         value="#{generalJournalHome.record.description}" required="true" 
-                                                        inlinehelp="#{messages['app.fede.accouting.account.description.inlinehelp']}"
+                                                        inlinehelp="#{messages['app.fede.accounting.record.description.inlinehelp']}"
                                                         execute="@this save" render="dscrpn"/>
                                     </div>
                                 </div>
@@ -150,7 +150,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="EmptyBox10"></div>
                         <p:toolbar rendered="#{generalJournalHome.recordOfReferen}">
                             <f:facet name="left">
-                                <p:commandButton id="save" value="#{i18n['Save']}" 
+                                <p:commandButton id="save" value="#{i18n['common.save']}" 
                                                  ajax="false" 
                                                  actionListener="#{generalJournalHome.saveRecord()}" 
                                                  style="width: auto !important;"

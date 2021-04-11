@@ -25,40 +25,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+    <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="accountId" value="#{accountHome.accountId}"/>
         </f:metadata>
     </ui:define>
-    <ui:define name="title">#{i18n['app.fede.accouting.account']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['module.stocklist']}</li>
+        <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/accounting/account.jsf">#{accountHome.accountId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.accouting.account']}</p:link></li>
+        <li>#{i18n['app.fede.accounting.accounts.plan']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/accounting/account.jsf">#{accountHome.accountId == null ? i18n['common.newa'].concat(' ').concat(i18n['common.account']) : i18n['common.edit'].concat(': ')} #{accountHome.account.name}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <h1 class="BigTopic">#{i18n['app.fede.accouting.account']}</h1> <!--Sección 1: Título-->
+                <h1 class="BigTopic">#{i18n['common.account']}</h1> <!--Sección 1: Título-->
                 <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
                                     value="#{accountHome.account.code}" required="true"
-                                    inlinehelp="#{messages['app.fede.accouting.account.name.inlinehel']}"
+                                    inlinehelp="#{messages['app.fede.accounting.account.code.inlinehelp']}"
                                     execute="@this save" render="code"/>
                     <div class="ui-g ui-lg-8">
-                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}"
+                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}"
                                         value="#{accountHome.account.name}" required="true"
-                                        inlinehelp="#{messages['app.fede.accouting.account.name.inlinehel']}"
+                                        inlinehelp="#{messages['app.fede.accounting.account.name.inlinehelp']}"
                                         execute="@this save" render="nme"/>
                     </div>
                     <div class="ui-g ui-lg-4">
                         <div class="EmptyBox5"></div>
-                        <h:outputText value="#{i18n['account.parentAccount']}"/>
+                        <h:outputText value="#{i18n['app.fede.accounting.account.parent']}"/>
                         <div class="EmptyBox10"></div>
                         <p:selectOneMenu id="account" value="#{accountHome.parentAccount}" effect="fade" style="width: 100%"
                                          required="#{false}" immediate="true"
-                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                         converter="org.jlgranda.fede.ui.converter.AccountConverter">
                             <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
                             <p:ajax update="@this"></p:ajax>
                         </p:selectOneMenu>
@@ -66,13 +69,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
                                     value="#{accountHome.account.description}" required="false"
-                                    inlinehelp="#{messages['app.fede.accouting.account.description.inlinehelp']}"
+                                    inlinehelp="#{messages['app.fede.accounting.account.description.inlinehelp']}"
                                     execute="@this save" render="dscrpn"/>
                 </div>
                 <div class="EmptyBox10"></div><!--Separador de sección-->
                 <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
                                          actionListener="#{accountHome.save()}" action="#{accountHome.getOutcome()}"
                                          disabled="#{false}"
                                          style="width: auto !important;"
@@ -89,7 +92,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          type="submit"/>                          
                     </f:facet>
                 </p:toolbar>
-
             </div>
         </div>
     </ui:define>

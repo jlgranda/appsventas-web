@@ -88,7 +88,7 @@ s        <ui:define name="content">
                             <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}"
                                        styleClass="text-right" style="width: auto">
                                 <h:outputText value="#{product.createdOn}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>

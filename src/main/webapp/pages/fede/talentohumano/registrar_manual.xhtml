@@ -161,13 +161,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                        styleClass="text-right">
 
                                 <h:outputText value="#{journal.beginTime}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}" timeZone="#{ui.timeZone}"/>
+                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                 </h:outputText>
                             </p:column>
                             <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
                                        styleClass="text-right">
                                 <h:outputText value="#{journal.beginTime}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" />
                                 </h:outputText>
                             </p:column>                    
                             <p:column headerText="#{i18n['common.accion']}" styleClass="Wid10" exportable="false">

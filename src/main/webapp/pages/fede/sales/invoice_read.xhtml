@@ -98,10 +98,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="ui-g-5" style="text-align: center; font-size: larger">
                             <label>#{i18n['DateTimeCreatedOn']} </label>
                             <h:outputText value="#{invoiceHome.invoice.emissionOn}">
-                                <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                            </h:outputText>
-                            <h:outputText value="#{invoiceHome.invoice.emissionOn}"> -
-                                <f:convertDateTime type = "time" timeZone="EST" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
+                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
                         </div>
                         <div class="ui-g-12">

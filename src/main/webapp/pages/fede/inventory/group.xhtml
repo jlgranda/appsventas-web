@@ -25,29 +25,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
+    <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="groupId" value="#{groupInventoryHome.groupId}"/>
         </f:metadata>
     </ui:define>
-
-    <ui:define name="title">#{i18n['app.fede.inventory.group']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['common.admin']}</li>
-        <li>/</li>
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupInventoryHome.groupId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.inventory.group']}</p:link></li>
+        <li>#{i18n['app.fede.inventory.groups']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupInventoryHome.groupId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['app.fede.inventory.group']}</p:link></li>
     </ui:define>
-
     <ui:define name="content">
         <o:importConstants type="org.jpapi.model.Group"/>
         <div class="ui-g ui-fluid"> <!--Contenedor General-->
             <div class="ui-g-12 ui-lg-12 ui-md-12"><!--Contenedor General-->
                 <h1 class="BigTopic">#{i18n['app.fede.inventory.group']}</h1> <!--Sección 1: Título-->
                 <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
-                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['name']}"
+                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}"
                                     value="#{groupInventoryHome.group.name}" required="true"
                                     inlinehelp="#{messages['app.fede.inventory.group.name.inlinehelp']}"
                                     execute="@this save" render="nme"/>
@@ -80,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="EmptyBox10"></div><!--Separador de sección-->
                 <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
                                          actionListener="#{groupInventoryHome.save()}" action="#{groupInventoryHome.getOutcome()}"
                                          disabled="#{false}"
                                          style="width: auto !important;"
@@ -99,12 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </p:toolbar>
             </div>
         </div>
-
-
-
-
     </ui:define>
-
     <ui:define name="script">
         <script type="text/javascript">
             //<![CDATA[
@@ -118,5 +111,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             //]]>
         </script>
     </ui:define>
-
 </ui:composition>

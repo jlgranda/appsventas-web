@@ -14,26 +14,11 @@ and open the template in the editor.
       xmlns:o="http://omnifaces.org/ui"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.documents.task']}" />
-        <ui:define name="params">
-            <f:metadata>
-                <f:viewParam name="organizationId" value="#{organizationHome.organizationId}" />       
-            </f:metadata>
-        </ui:define>
-        
-        
-        
-        
-        
-        
-        
-        
         <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="tags" value="#{organizationHome.tags}" />
+                <f:viewParam name="organizationId" value="#{organizationHome.organizationId}" /> 
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -84,7 +69,7 @@ and open the template in the editor.
                             <p:toolbar>
                                 <f:facet name="left">
 
-                                    <p:commandButton value="#{i18n['Save']}" ajax="false" 
+                                    <p:commandButton value="#{i18n['common.save']}" ajax="false" 
                                                      actionListener="#{organizationHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
                                                      action="#{organizationHome.getOutcome()}" type="submit"/>

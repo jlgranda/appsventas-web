@@ -284,6 +284,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <h:outputText value="#{i18n['app.fede.sales.payment.method']}"/>
                                                 <p:selectOneMenu value="#{invoiceHome.payment.method}" effect="blind"
                                                                  required="#{true}" immediate="true"> 
+                                                    <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                     <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 </p:selectOneMenu>
                                             </div>
@@ -296,7 +297,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, collect-button" partialSubmit="true"></p:ajax>
+                                                    <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, collect-button" partialSubmit="true"></p:ajax>
                                                 </p:inputNumber>
                                             </div>
                                         </div>
@@ -308,7 +309,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                        <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, payment-total" partialSubmit="true"/>
+                                                    <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, payment-total" partialSubmit="true"/>
                                                 </p:inputNumber>
                                             </div>
                                         </div>                                            

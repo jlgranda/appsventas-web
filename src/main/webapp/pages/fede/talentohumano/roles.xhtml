@@ -74,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:column  id="fechaIngreso"  headerText="#{i18n['common.crationDate']}" sortBy="#{role.createdOn}"
                                    styleClass="text-right">
                             <h:outputText value="#{role.createdOn}">
-                                <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
                         </p:column>
                     </p:dataTable>

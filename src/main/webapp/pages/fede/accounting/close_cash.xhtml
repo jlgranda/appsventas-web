@@ -25,12 +25,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
                 template="/WEB-INF/template.xhtml">
-    <ui:param name="sitename" value="#{i18n['Sitename']}"/>
-    <ui:define name="title">#{i18n['app.name']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <!--<f:viewParam name="" value="" />-->
+        </f:metadata>
+    </ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.name']}</li>
+        <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/accounting/close_cash.jsf">#{i18n['common.close_cash']}</p:link></li>
+        <li><p:link outcome="/pages/fede/accounting/close_cash.jsf">#{i18n['app.fede.accounting.close.cash']}</p:link></li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -43,10 +48,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                <h3 class="CardTopic">#{i18n['app.fede.summary.today']}</h3>
-                <h:outputText value="#{now}">
-                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                </h:outputText>
+                <label class="CardTopic" style="font-weight: 900; font-size: larger">#{i18n['app.fede.sales.summary.today']} </label>
+                            <h:outputText style="font-weight: bolder; font-size: large" value="#{invoiceHome.invoice.emissionOn}">
+                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                            </h:outputText>
             </div>
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                 <div class="EmptyBox10"></div>
@@ -55,7 +60,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card WhiteBlueBack TexAlCenter">
                             <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.grosssales']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales.gross']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24">#{accountHome.grossSalesTotal}</span>
                         </div>
@@ -65,10 +70,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card WhiteBlueBack TexAlCenter">
                             <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.discountsales']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.discounts']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24 hoverable" 
-                                  update=":form:tableDetail" onclick="PF('tableDialog').show()">
+                                  update=":form:tableDetail" onclick="PF('dlgTblDiscounts').show()">
                                 #{accountHome.discountTotal}</span>
                         </div>
                     </div>
@@ -77,7 +82,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card GrayBack TexAlCenter">
                             <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales.net']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24">#{accountHome.salesTotal}</span>
                         </div>
@@ -98,7 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card GreenBorderedBox TexAlCenter">
                             <i class="fa fa-bank Fs50 BoldGray DispBlock"></i>
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.costs.fixed']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.costs.fixed']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24">#{accountHome.costTotal}</span>
                         </div>
@@ -129,45 +134,52 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="SeparatorFull"></div>
                 <div class="EmptyBox10"></div>
             </div>
-            <p:dialog widgetVar="tableDialog" modal="true" resizable="false"
-                      showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
-                      class="Container100 Responsive50" style="text-align: right" width="90%">
-                <div class="card">
-                    <p:outputPanel id="tableDetail"> 
-                        <p:dataTable id="dataTable" var="discount" value="#{accountHome.listDiscount}"
-                                     scrollable="true" liveScroll="true" scrollRows="50" scrollHeight="400">
+            <p:dialog widgetVar="dlgTblDiscounts" class="Container100 Responsive50" closeOnEscape="true"
+                      fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
+                      style="text-align: right" height="600" width="800">
+                    <p:outputPanel id="panel-dataTable"> 
+                        <p:dataTable id="dataTable-sales-discounts" draggableColumns="true" lazy="false" liveResize="true"
+                                     liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{discount.id}"
+                                     rows="8" scrollRows="8" scrollHeight="100%" scrollWidth="100%"
+                                     scrollable="true"
+                                     value="#{accountHome.listDiscount}" var="discount"
+                                     selection="#{summaryHome.selectedBussinesEntities}">
                             <f:facet name="header">
-                                <h:outputText value="#{i18n['common.statistics.sales.discount.table']}"></h:outputText>
+                                <h:outputText value="#{i18n['app.fede.sales.summary.discount.summary']}"></h:outputText>
                             </f:facet>
-                            <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comandaNumber']}" sortBy="#{discount[0]}" style="width:125px">
+                            <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" sortBy="#{discount[0]}" >
                                 <h:outputText value="#{discount[0]}"/>
                             </p:column>
-                            <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{discount[1]}" style="width:125px">
+                            <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{discount[1]}" >
                                 <h:outputText value="#{discount[1]}"/>
                             </p:column>
-                            <p:column id="fechaEmision" headerText="#{i18n['common.crationDate']}" sortBy="#{discount[2]}" style="width:125px">
-                                <h:outputText value="#{discount[2]}"><f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
+                            <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{discount[2]}" >
+                                <h:outputText value="#{discount[2]}"><f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
                             </p:column>
-                            <p:column id="amount" headerText="#{i18n['app.fede.sales.payment.amount']}" sortBy="#{discount[3]}" style="width:125px">
+                            <p:column id="amount" headerText="#{i18n['common.total']}" sortBy="#{discount[3]}" >
                                 <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
                             </p:column>
-                            <p:column id="numb_dscto" headerText="#{i18n['app.fede.sales.payment.discount']}" sortBy="#{discount[4]}" style="width:125px">
+                            <p:column id="numb_dscto" headerText="#{i18n['common.discount']}" sortBy="#{discount[4]}" >
                                 <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
                             </p:column>
-                            <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="width:125px; text-align: center">
-                                <p:button value="#{i18n['VerDetalles']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
+                            <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align: center">
+                                <p:button value="#{i18n['common.details.view']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
                             </p:column>
-                            <p:columnGroup type="footer">
-                                <p:row>
-                                    <!--<p:column colspan="4" footerText="#{i18n['common.statistics.sales.discount.table.total']}" style="font-weight: bolder;"/>-->
-                                    <!--<p:column footerText="$#{accountHome.getListDiscountTotal()}"  style="font-weight: bolder; font-size: larger; color: #005b9f"/>-->
-                                    <span class="ui-g-9" style=" font-weight: bold">#{i18n['common.statistics.sales.discount.table.total']}: </span>
-                                    <span class="ui-g-1" style=" font-size: medium; font-weight: bold; color: #005b9f">$#{accountHome.getListDiscountTotal()}</span>
-                                </p:row>
+                            <p:columnGroup type="footer" >
+                                <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                                    <span class="ui-g-8" style=" font-weight: bolder; text-align: right">#{i18n['common.total.discounts']}: </span>
+                                    <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
+                                        <h:outputText value="#{summaryHome.getListDiscountTotal()}" style="text-align: right">
+                                            <f:convertNumber type="currency" currencySymbol="$"/>
+                                        </h:outputText>
+                                    </span>
+                                    <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
+                                    </span>
+                                </span>
                             </p:columnGroup>
                         </p:dataTable>
                     </p:outputPanel>
-                </div>
             </p:dialog>
         </div>
     </ui:define>

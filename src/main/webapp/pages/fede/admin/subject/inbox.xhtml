@@ -25,53 +25,56 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['fede']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{subjectAdminHome.tags}" />
             </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/fede/admin/subject/inbox.jsf">#{i18n['module.persons']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <!-- /.row -->
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                        <label class="Gray">#{i18n['common.keyword']}&nbsp;</label>
                         <p:inputText value="#{subjectAdminHome.keyword}" class="input-sm">
                         </p:inputText>
-                        <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="false">
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="false">
                         </p:commandButton>
 
-                        <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/admin/subject/profile.jsf"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/admin/subject/profile.jsf"/>
                     </div>
                     <div class="Card">
-                        <p:dataTable var="_subject" 
-                                     value="#{subjectAdminHome.lazyDataModel}" 
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{subjectAdminHome.selectedBussinesEntities}" 
-                                     rowKey="#{_subject.id}" 
-                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
-
+                        <p:dataTable id="dataTable-persons" draggableColumns="true" lazy="true" liveResize="true"
+                                     paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{_subject.id}"
+                                     rows="25" scrollRows="25"
+                                     value="#{subjectAdminHome.lazyDataModel}" var="_subject"
+                                     selection="#{subjectAdminHome.selectedBussinesEntities}"
+                                     sortOrder="DESCENDING" sortBy="#{_subject.createdOn}">
                             <p:ajax event="rowSelect" listener="#{subjectAdminHome.onRowSelect}"/>
                             <p:ajax event="rowSelectCheckbox" 
-                                    process="dataTable" update="dataTable"/>
+                                    process="dataTable-persons" update="dataTable-persons"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                            <p:column headerText="#{i18n['common.surname']}" sortBy="#{_subject.surname}">
+                            <p:column headerText="#{i18n['common.lastnames']}" sortBy="#{_subject.surname}">
                                 <h:outputText value="#{_subject.surname}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{_subject.firstname}">
+                            <p:column headerText="#{i18n['common.firstnames']}" sortBy="#{_subject.firstname}">
                                 <h:outputText value="#{_subject.firstname}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{_subject.createdOn}"
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_subject.createdOn}"
                                        styleClass="text-right">
                                 <h:outputText value="#{_subject.createdOn}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="code"  headerText="#{i18n['subject.code']}" sortBy="#{_subject.code}"
+                            <p:column  id="code"  headerText="#{i18n['common.dni']}" sortBy="#{_subject.code}"
                                        styleClass="text-right">
                                 <h:outputText value="#{_subject.code}"/>
                             </p:column>
@@ -86,7 +89,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div>
             </div>
             <!-- /.row -->
-
         </ui:define>
         <ui:define name="script">
             <style></style>

@@ -102,13 +102,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
                                                styleClass="text-right">
                                         <h:outputText value="#{journal.beginTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}" timeZone="#{ui.timeZone}"/>
+                                            <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}"/>
                                         </h:outputText>
                                     </p:column>                    
                                     <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
                                                styleClass="text-right">
                                         <h:outputText value="#{journal.beginTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                            <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                         </h:outputText>
                                     </p:column>                    
                                 </p:dataTable>

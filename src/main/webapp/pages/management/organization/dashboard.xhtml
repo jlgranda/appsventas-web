@@ -99,7 +99,7 @@
                                                     <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{entity.createdOn}"
                                                                styleClass="text-right">
                                                         <h:outputText value="#{entity.createdOn}">
-                                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                                            <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                                         </h:outputText>
                                                     </p:column>
                                                 </p:dataTable> 
