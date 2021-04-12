@@ -405,10 +405,7 @@ public class AccountHome extends FedeController implements Serializable {
         if(account!=null){
             this.accountSelected = account;
         }
-//        System.out.println("\ncuenta: "+this.account);
-        System.out.println("\nlacuentaseleccionada: "+this.accountSelected);
         if (this.accountSelected != null) {
-            System.out.println("\nlacuentaseleccionada no es nula");
             super.setSessionParameter("account", this.accountSelected);
         }
 
@@ -429,7 +426,6 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public void findRecordDetailAccountTop() {
-        System.out.println("\naccountSelected: " + this.accountSelected);
         this.amountDebeRdOld = BigDecimal.ZERO;
         this.amountHaberRdOld = BigDecimal.ZERO;
         Calendar dayDate = Calendar.getInstance();
@@ -461,20 +457,15 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public void validateDeposit() {
-//        System.out.println("\namountAccount: " + this.amountAccount);
-//        System.out.println("\naccountAccount: " + this.accountSelected);
         if (this.depositAccount != null) {
-        System.out.println("\ndepositAccountId: " + this.depositAccount.getId());
-        System.out.println("\naccountSelectedId: " + this.accountSelected.getId());
             if (this.amountAccount.compareTo(BigDecimal.ZERO) == 0) {
                 this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.account.amount"));
             } else {
                 if (this.accountSelected.getId().compareTo(this.depositAccount.getId())==0) {
-                    System.out.println("Entró a este If");
                     this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.account.isEquals"));
                 } else {
-                    System.out.println("\nHacer el depósito");
                     registerRecordInJournal();
+                    findRecordDetailAccountTop();
                 }
             }
         } else {
@@ -485,9 +476,7 @@ public class AccountHome extends FedeController implements Serializable {
     public void registerRecordInJournal() {
 //        Crear o encontrar el journal y el record, para insertar los recordDetails
         GeneralJournal journal = buildFindJournal();
-        System.out.println("\njournal: " + journal);
         Record record = buildRecord();
-        System.out.println("\nrecord: " + record);
 //        Crear/Modificar y anadir un recordDetail al record
         record.addRecordDetail(updateRecordDetail(this.accountSelected.getName()));
         record.addRecordDetail(updateRecordDetail(this.depositAccount.getName()));
@@ -531,7 +520,6 @@ public class AccountHome extends FedeController implements Serializable {
                 recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
             }
         }
-        System.out.println("\nrecordDetail: " + recordDetailGeneral);
         return recordDetailGeneral;
     }
 

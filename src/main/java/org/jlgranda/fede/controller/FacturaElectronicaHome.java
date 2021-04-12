@@ -756,7 +756,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             //Establecer un codigo por defecto
             if (Strings.isNullOrEmpty(facturaElectronica.getCode())) {
                 facturaElectronica.setCode(UUID.randomUUID().toString());
-            }
+    }
 
             facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
             registerRecordInJournal();
@@ -1046,11 +1046,22 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void calcularIVA12() {
-        //Calcular el iva del 12 % ALERTA!! REVISAR
-        this.facturaElectronica.setTotalSinImpuestos(BigDecimal.ONE);
-        if (this.facturaElectronica.getTotalSinImpuestos() != null) {
-            this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
+        if (this.facturaElectronica.getTotalSinImpuestos() != null && this.facturaElectronica.getTotalDescuento() != null) {
+            this.facturaElectronica.setTotalIVA12((facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento())).multiply(BigDecimal.valueOf(0.12)));
+        } else if (this.facturaElectronica.getTotalSinImpuestos() != null) {
+            this.facturaElectronica.setTotalIVA12(facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
         }
+    }
+
+    public void calcularTotalFactura() {
+        System.out.println("\nCALCULARTOTAL");
+//        if (this.facturaElectronica.getTotalSinImpuestos() != null && this.facturaElectronica.getTotalDescuento() != null) {
+//            this.facturaElectronica.setTotalIVA12((facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento())).multiply(BigDecimal.valueOf(0.12)));
+//        } else if (this.facturaElectronica.getTotalSinImpuestos() != null) {
+//            this.facturaElectronica.setTotalIVA12(facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
+//        }
+        this.facturaElectronica.setImporteTotal(facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento()).add(this.facturaElectronica.getTotalIVA12()));
+        System.out.println("\nthis.facturaElectronica.facturaelectronica.importetotal: " + facturaElectronica.getImporteTotal());
     }
 
     public void registerRecordInJournal() {

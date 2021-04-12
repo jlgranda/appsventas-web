@@ -172,7 +172,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h2>#{i18n['app.fede.sales.invoice.detail.add']}</h2>
                             <div class="ui-g-9">
                                 <ui:repeat value="#{inventoryHome.findTop()}" var="product">  
-                                    <p:commandButton ajax="true" update="@form" immediate="true"
+                                    <p:commandButton ajax="true" update="@form @form:DetailPanel @form:DetailPanel:payment-panel" immediate="true"
                                                      actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
                                                      icon="#{product.icon}" styleClass="success-btn" title="#{product.name}"
                                                      style="width:36px; height: 36px;">
@@ -221,7 +221,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  style="width:36px; height: 36px;">
                                 </p:commandButton>
 
-                                <p:commandButton ajax="true" update="@form" immediate="true"
+                                <p:commandButton ajax="true" update="@form @form:DetailPanel @form:DetailPanel:payment-panel" immediate="true"
                                                  actionListener="#{invoiceHome.touch('100494,100558')}" disabled="#{false}"
                                                  icon="flaticon-almuerzo" styleClass="help-btn" title="#{i18n['app.phrase.order.lunch.avo']}"
                                                  style="width:36px; height: 36px;">
@@ -240,7 +240,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:ajax event="itemSelect" update="@form:DetailPanel @form:AutoCompletePanel" listener="#{invoiceHome.addCandidateDetail()}" partialSubmit="true"></p:ajax>
                                     </p:autoComplete>
                                     <ui:repeat value="#{invoiceHome.recents.toArray()}" var="product">  
-                                        <p:commandButton ajax="true" update="@form" immediate="true"
+                                        <p:commandButton ajax="true" update="@form @form:DetailPanel @form:DetailPanel:payment-panel" immediate="true"
                                                          actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
                                                          icon="#{product.icon}" styleClass="danger-btn" title="#{product.name}"
                                                          style="width:36px; height: 36px;">
@@ -267,7 +267,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 </h:outputText></span>
                                             <div class="EmptyBox5"></div>
                                             <p:spinner id="spinner_#{detail.product.id}" value="#{detail.amount}" min="0" styleClass="SoftGreenBack">
-                                                <p:ajax listener="#{invoiceHome.calculeChange()}" update="@form:invoice-total, @form:payment-total, @form:payment-panel"></p:ajax>
+                                                <p:ajax listener="#{invoiceHome.calculeChange()}" update="@form:invoice-total @form:payment-total @form:payment-panel"></p:ajax>
                                             </p:spinner>
                                         </div>
                                     </div>

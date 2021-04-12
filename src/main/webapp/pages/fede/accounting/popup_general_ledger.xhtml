@@ -49,7 +49,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
                                             <span class="ui-g-9" style=" font-weight: bolder; text-align: right">#{i18n['app.fede.accounting.account.fund.old']}: </span>
                                             <span class="ui-g-2" style="font-weight: bold; text-align: center">
-                                                <h:outputText value="#{accountHome.amountHaberRdOld}" style="text-align: right">
+                                                <h:outputText value="#{accountHome.amountDebeRdOld}" style="text-align: right">
                                                     <f:convertNumber type="currency" currencySymbol="$"/>
                                                 </h:outputText>
                                             </span>
@@ -73,8 +73,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      rows="8" scrollRows="8" scrollHeight="100%" scrollWidth="100%"
                                                      scrollable="true"
                                                      value="#{accountHome.objectsRecordDetail}" var="recordDetail"
-                                                     selection="#{accountHome.selectedBussinesEntities}">
-                                            <p:column headerText="#{i18n['common.date.created']}" style="width: 25%">
+                                                     selection="#{accountHome.selectedBussinesEntities}"
+                                                     sortOrder="DESCENDING" sortBy="#{recordDetail[0]}">
+                                                <p:column headerText="#{i18n['common.date.created']}" style="width: 25%">
                                                 <h:outputText value="#{recordDetail[0]}">
                                                     <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                                 </h:outputText>
@@ -82,10 +83,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:column headerText="#{i18n['common.concept']}" style="width: auto">
                                                 <h:outputText value="#{recordDetail[1]}" />
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.debit']}"  style="width: 25%">
+                                            <p:column headerText="#{i18n['app.fede.accounting.debit']}"  style="width: 15%">
                                                 <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='DEBE'}" style="text-align: right"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.credit']}"  style="width: 25%" >
+                                            <p:column headerText="#{i18n['app.fede.accounting.credit']}"  style="width: 15%" >
                                                 <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='HABER'}" style="text-align: right"/>
                                             </p:column>
                                             <p:columnGroup type="footer" >
