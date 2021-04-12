@@ -198,6 +198,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      */
     private RecordDetail recordDetail;
 
+    private boolean payableTotal;
+
     public FacturaElectronicaHome() {
     }
 
@@ -379,6 +381,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
 
         return ids;
+    }
+
+    public boolean isPayableTotal() {
+        return payableTotal;
+    }
+
+    public void setPayableTotal(boolean payableTotal) {
+        this.payableTotal = payableTotal;
     }
 
     /**
@@ -756,10 +766,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             //Establecer un codigo por defecto
             if (Strings.isNullOrEmpty(facturaElectronica.getCode())) {
                 facturaElectronica.setCode(UUID.randomUUID().toString());
-    }
+            }
 
             facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
-            registerRecordInJournal();
+            //Registrar asiento contable de la compra
+//            registerRecordInJournal();
         }
     }
 
@@ -947,19 +958,64 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     /**
+     * Calcular valores del monto abonado del pago de la factura.
+     */
+    public void calcularMontoAbonado() {
+        if (getPayment().getAmount() != null && getPayment().getDiscount() != null) {
+            getPayment().setCash(getPayment().getAmount().subtract(getPayment().getDiscount()));
+        } else if (getPayment().getAmount() != null) {
+            getPayment().setCash(getPayment().getAmount());
+        }
+    }
+
+    public void calcularVueltoAbonado() {
+        if (getPayment().getCash() != null && getPayment().getAmount() != null && getPayment().getDiscount() != null) {
+            getPayment().setChange(getPayment().getCash().subtract(getPayment().getAmount().subtract(getPayment().getDiscount())));
+        } else if (getPayment().getCash() != null && getPayment().getAmount() != null) {
+            getPayment().setChange(getPayment().getCash().subtract(getPayment().getAmount()));
+        }
+    }
+
+    /**
      * Agrega o actualiza el pago de la factura.
      */
     public void addPayment() {
-
-        this.getPayment().setCash(getPayment().getAmount());
-
+        montoPorPagar();
         Payment p = paymentService.createInstance();
         p.setAmount(getPayment().getAmount());
-        p.setCash(getPayment().getAmount());
         p.setDiscount(getPayment().getDiscount());
+        p.setCash(getPayment().getCash());
+        p.setChange(getPayment().getChange());
         this.getFacturaElectronica().addPayment(p);
-
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
+    }
+
+    public BigDecimal montoPorPagar() {
+        BigDecimal total = new BigDecimal(0);
+        BigDecimal residuo = new BigDecimal(0);
+        for (int i = 0; i < facturaElectronica.getPayments().size(); i++) {
+            total = total.add(facturaElectronica.getPayments().get(i).getAmount());
+        }
+        if (getPayment().getAmount() != null) {
+            residuo = facturaElectronica.getImporteTotal().subtract(total.add(getPayment().getAmount()));
+        } else if (total.compareTo(BigDecimal.ZERO) == 1) {
+            residuo = facturaElectronica.getImporteTotal().subtract(total);
+        } else {
+            residuo = facturaElectronica.getImporteTotal();
+        }
+
+        System.out.println("\nfacturaGetId: " + facturaElectronica.getId());
+        System.out.println("\nResudio: " + residuo);
+        if (residuo != null) {
+            if (residuo.compareTo(BigDecimal.ZERO) == 0) {
+                System.out.println("\nMontoesCERO");
+                this.payableTotal = true;
+            } else {
+                System.out.println("\nMontoNOesCERO");
+                this.payableTotal = false;
+            }
+        }
+        return residuo;
     }
 
     @Override
@@ -1054,14 +1110,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void calcularTotalFactura() {
-        System.out.println("\nCALCULARTOTAL");
-//        if (this.facturaElectronica.getTotalSinImpuestos() != null && this.facturaElectronica.getTotalDescuento() != null) {
-//            this.facturaElectronica.setTotalIVA12((facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento())).multiply(BigDecimal.valueOf(0.12)));
-//        } else if (this.facturaElectronica.getTotalSinImpuestos() != null) {
-//            this.facturaElectronica.setTotalIVA12(facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
-//        }
-        this.facturaElectronica.setImporteTotal(facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento()).add(this.facturaElectronica.getTotalIVA12()));
-        System.out.println("\nthis.facturaElectronica.facturaelectronica.importetotal: " + facturaElectronica.getImporteTotal());
+        if (this.facturaElectronica.getTotalSinImpuestos() != null) {
+            this.facturaElectronica.setImporteTotal(facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento()).add(this.facturaElectronica.getTotalIVA12()));
+        }
     }
 
     public void registerRecordInJournal() {
@@ -1136,17 +1187,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         switch (NameAccount) {
             case "MERCADERIAS":
                 recordDetailGeneral.setAmount(facturaElectronica.getTotalSinImpuestos());
-//                recordDetailGeneral.setRecordType("DEBE");
                 recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
                 break;
             case "I.V.A. POR PAGAR":
                 recordDetailGeneral.setAmount(facturaElectronica.getTotalIVA12());
-//                recordDetailGeneral.setRecordType("DEBE");
                 recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
                 break;
             case "CAJA":
                 recordDetailGeneral.setAmount(facturaElectronica.getImporteTotal());
-//                recordDetailGeneral.setRecordType("HABER");
                 recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
                 break;
             default:

@@ -891,7 +891,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public boolean touch(String command) {
-        System.out.println("\namount: "+getPayment().getAmount());
         for (String id : command.split(",")) {
 //            touch(productService.find(Long.valueOf(id)));
             touch(productCache.lookup(Long.valueOf(id)));
