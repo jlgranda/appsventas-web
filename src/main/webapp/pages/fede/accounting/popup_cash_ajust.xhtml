@@ -25,17 +25,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup_libre.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.ajust.cash']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <f:viewAction action="#{generalJournalHome.loadSessionParameters}" />
+                <f:viewAction action="#{accountHome.loadSessionParameters}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li>#{i18n['app.fede.accounting.journal']}</li>
+            <li>#{i18n['app.fede.accounting.close.cash']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
+            <!--<li><p:link outcome="/pages/fede/accounting/popup_cash_ajust.jsf">#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>-->
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -44,47 +44,92 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:messages id="messages" showDetail="true" closable="true" >
                             <p:autoUpdate />
                         </p:messages>
-                        <div class="ui-g-12">
-                            <div class="ui-g-6">
-                                <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
-                                <div class="EmptyBox20"></div>
-                                <p:selectOneMenu id="account" value="#{generalJournalHome.recordDetail.account}" effect="fade" style="width: 100%"
-                                                 required="#{true}" immediate="true"
-                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
-                                    <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                                    <p:ajax update="@this"></p:ajax>
-                                </p:selectOneMenu>  
+                        <div class="ui-g-12 Container100 BoldGray">
+                            <div class="ui-g-3">
+                                <div class="Fs20">
+                                    <label>#{i18n['common.profit']}: </label>
+                                    <h:outputText style="font-weight: bolder" id="profil-Total" value="#{accountHome.profilTotal}">
+                                        <f:convertNumber type="currency"/>
+                                    </h:outputText>
+                                </div>
+                                <div class="Fs15">
+                                    <label>#{i18n['app.fede.accouting.validate.deposit']} </label>
+                                    <p:selectBooleanCheckbox value="#{accountHome.activeDeposit}">
+                                        <p:ajax event="change" update="deposit-control" />
+                                    </p:selectBooleanCheckbox>
+                                </div>
                             </div>
-                            <div class="ui-g-2">
-                                <h:outputText value="#{i18n['common.type']} *"/>
-                                <div class="EmptyBox20"></div>
+                            <div  class="ui-g-9">
+                                <h:panelGroup id="deposit-control" >
+                                    <h:panelGroup rendered="#{accountHome.activeDeposit}">
+                                        <div class="ui-g-4">
+                                            <h4>#{i18n['app.fede.accounting.amount.deposit']}</h4>
+                                            <p:inputNumber id="cash-deposit" value="#{accountHome.amountDeposit}" required="true" 
+                                                           styleClass=""
+                                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                                <p:ajax listener="#{accountHome.validateDepositAmount()}" update="select-account btn-deposit" partialSubmit="true"></p:ajax>
+                                            </p:inputNumber>
+                                        </div>
+                                        <div class="ui-g-6">
+                                            <h4>#{i18n['app.fede.accounting.accounts.plan']}</h4>
+                                            <p:selectOneMenu id="select-account" value="#{accountHome.depositAccount}" effect="fade" style="width: 100%"
+                                                             required="#{true}" immediate="true" disabled="#{accountHome.validateAmountDeposit}"
+                                                             converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                                <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                                <p:ajax update="@this"></p:ajax>
+                                            </p:selectOneMenu>                                                    
+                                        </div>
+                                        <div class="ui-g-2">
+                                            <div class="EmptyBox10"></div>
+                                            <p:commandButton id="btn-deposit" ajax="true" immediate="true" styleClass="p-mt-3" disabled="#{accountHome.validateAmountDeposit}"
+                                                             value="Depósito" icon="fa fa-exchange" update=" btn-deposit" 
+                                                             actionListener="#{accountHome.validateDeposit()}"/>
+                                        </div>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                        <div class="ui-g-12 Container100 BoldGray">
+                            <div class="ui-g-4 Fs20 BoldGray">
+                                <h3>#{i18n['app.fede.accounting.ajust.breakdown']}</h3>
+                                <h:outputText style="font-weight: bolder" id="profil-ajust-cash" value="#{accountHome.profilTotal}">
+                                    <f:convertNumber type="currency"/>
+                                </h:outputText>
+                            </div>
+                            <div class="ui-g-3">
+                                <h4>#{i18n['common.money.moneys']}/#{i18n['common.money.bills']}</h4>
                                 <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordDetailType}" effect="fade" style="width: 100%"
-                                                 required="#{true}" immediate="true"> 
+                                                 required="#{false}" immediate="true"> 
                                     <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                     <p:ajax update="@this"></p:ajax>
                                 </p:selectOneMenu>
                             </div>
                             <div class="ui-g-3">
-                                <h:outputText value="#{i18n['common.value']} #{i18n['common.money.letter']} *" />
-                                <div class="EmptyBox20"></div>
-                                <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
-                                               required="true" immediate="true" disabled="false"
-                                               styleClass=""
-                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                    <!--<f:validateDoubleRange minimum="1"/>-->
-                                    <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
+                                <h4>#{i18n['common.quantity']}</h4>
+                                <p:inputNumber id="number_amountb" value="#{generalJournalHome.recordDetail.amount}" 
+                                               required="false" immediate="true" disabled="false"
+                                               styleClass="" style="width: 100%"
+                                               minValue="0" decimalPlaces="0">
+                                    <!--<p:ajax listener="#{facturaElectronicaHome.calcularVueltoAbonado()}" update="change" partialSubmit="true"></p:ajax>-->
                                 </p:inputNumber>
                             </div>
-                            <div class="ui-g-1">
-                                <p:commandButton id="add-record"  ajax="false"
-                                                 actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
-                                                 update="form-registro" icon="fa fa-plus-square" 
-                                                 disabled="#{!generalJournalHome.recordOfReferen}" 
-                                                 style="width: 25px;"/>
+                            <div class="ui-g-2" style="text-align: right">
+                                <div class="EmptyBox10"></div>
+                                <p:commandButton id="add-cash-detail" ajax="false" styleClass="secondary-button"
+                                                 actionListener="#{accountHome.filter()}" immediate="false"
+                                                 update="" icon="fa fa-plus-square" 
+                                                 disabled=""  value="#{i18n['common.add']}"
+                                                 style="width: auto"/>
                             </div>
                         </div>
+                        <p:inputNumber id="change-cash-deposit" value="#{facturaElectronicaHome.payment.change}" required="true" disabled="true"
+                                                       styleClass="" placeholder="#{i18n['app.fede.sales.payment.change']}"
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                        </p:inputNumber>
                     </h:form>
                     <h:form id="form-registro">
                         <div class="Container100 Responsive100" >
@@ -99,7 +144,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
                                                      selection="#{generalJournalHome.selectedBussinesEntities}"
                                                      editable="#{generalJournalHome.recordOfReferen}">
-                                            <p:column headerText="#{i18n['common.accounts']}" style="width: auto">
+                                            <p:column headerText="#{i18n['common.denomination']}">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="#{recordDetail.account.name}"/>
@@ -114,7 +159,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.debit']}" style="width: 15%">
+                                            <p:column headerText="#{i18n['common.quantity']}">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right"/>
@@ -124,7 +169,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.credit']}" style="width: 15%">
+                                            <p:column headerText="#{i18n['ride.subtotal']}">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
@@ -138,10 +183,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
                                             </p:column>
                                         </p:dataTable>
-                                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.accounting.record.description']}" class="Container100 BigTopic"
-                                                        value="#{generalJournalHome.record.description}" required="true" 
-                                                        inlinehelp="#{messages['app.fede.accounting.record.description.inlinehelp']}"
-                                                        execute="@this save" render="dscrpn"/>
                                     </div>
                                 </div>
                             </div>

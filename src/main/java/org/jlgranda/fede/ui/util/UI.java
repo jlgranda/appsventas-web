@@ -159,6 +159,49 @@ public class UI {
 
         return items;
     }
+    
+    public List<SelectItem> getDenominationBillsAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        item = new SelectItem("$ 100", "$ 100");
+        items.add(item);
+        item = new SelectItem("$ 50", "$ 50");
+        items.add(item);
+        item = new SelectItem("$ 20", "$ 20");
+        items.add(item);
+        item = new SelectItem("$ 10", "$ 10");
+        items.add(item);
+        item = new SelectItem("$ 5", "$ 5");
+        items.add(item);
+        item = new SelectItem("$ 2", "$ 2");
+        items.add(item);
+        item = new SelectItem("$ 1 (billete)", "$ 1");
+        items.add(item);
+        
+        return items;
+    }
+    public List<SelectItem> getDenominationMoneysAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        item = new SelectItem("$ 1 (moneda)", "$ 1");
+        items.add(item);
+        item = new SelectItem("50 ¢", "50 ¢");
+        items.add(item);
+        item = new SelectItem("25 ¢", "25 ¢");
+        items.add(item);
+        item = new SelectItem("10 ¢", "10 ¢");
+        items.add(item);
+        item = new SelectItem("5 ¢", "5 ¢");
+        items.add(item);
+        item = new SelectItem("1 ¢", "1 ¢");
+        items.add(item);
+        
+        return items;
+    }
 
     public List<SelectItem> getTaxTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();

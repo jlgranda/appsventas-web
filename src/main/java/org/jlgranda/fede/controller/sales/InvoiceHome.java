@@ -96,8 +96,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(InvoiceHome.class);
     
-//    private static final double IVA=0d;
-
     @Inject
     private Subject subject;
 

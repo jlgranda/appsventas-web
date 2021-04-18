@@ -48,10 +48,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                <label class="CardTopic" style="font-weight: 900; font-size: larger">#{i18n['app.fede.sales.summary.today']} </label>
-                            <h:outputText style="font-weight: bolder; font-size: large" value="#{invoiceHome.invoice.emissionOn}">
-                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                            </h:outputText>
+                <label class="CardTopic Fs20">#{i18n['app.fede.sales.summary.today']} </label>
+                <h:outputText class="Fs15" value="#{now}">
+                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                </h:outputText>
             </div>
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                 <div class="EmptyBox10"></div>
@@ -62,7 +62,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox5"></div>
                             <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales.gross']}</span>
                             <div class="EmptyBox10"></div>
-                            <span class="FontRobotoLight Fs24">#{accountHome.grossSalesTotal}</span>
+                            <span class="FontRobotoLight Fs24">#{cashBoxHome.grossSalesTotal}</span>
                         </div>
                     </div>
                     <div class="EmptyBox20"></div>
@@ -74,7 +74,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24 hoverable" 
                                   update=":form:tableDetail" onclick="PF('dlgTblDiscounts').show()">
-                                #{accountHome.discountTotal}</span>
+                                #{cashBoxHome.discountTotal}</span>
                         </div>
                     </div>
                     <div class="EmptyBox20"></div>
@@ -84,7 +84,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox5"></div>
                             <span class="FontRobotoLight Fs18">#{i18n['app.fede.sales.net']}</span>
                             <div class="EmptyBox10"></div>
-                            <span class="FontRobotoLight Fs24">#{accountHome.salesTotal}</span>
+                            <span class="FontRobotoLight Fs24">#{cashBoxHome.salesTotal}</span>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox5"></div>
                             <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
                             <div class="EmptyBox10"></div>
-                            <span class="FontRobotoLight Fs24">#{accountHome.purchaseTotal}</span>
+                            <span class="FontRobotoLight Fs24">#{cashBoxHome.purchaseTotal}</span>
+                        </div>
+                    </div>
+                    <div class="EmptyBox20"></div>
+                    <div class="Container100 Responsive100">
+                        <div class="Card GrayBack TexAlCenter">
+                            <i class="fa fa-users Fs50 BoldGray DispBlock"></i>
+                            <div class="EmptyBox5"></div>
+                            <span class="FontRobotoLight Fs18">#{i18n['common.customers']}</span>
+                            <div class="EmptyBox10"></div>
+                            <span class="FontRobotoLight Fs24">#{cashBoxHome.paxTotal}</span>
                         </div>
                     </div>
                     <div class="EmptyBox20"></div>
@@ -105,29 +115,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox5"></div>
                             <span class="FontRobotoLight Fs18">#{i18n['common.costs.fixed']}</span>
                             <div class="EmptyBox10"></div>
-                            <span class="FontRobotoLight Fs24">#{accountHome.costTotal}</span>
+                            <span class="FontRobotoLight Fs24">#{cashBoxHome.costTotal}</span>
                         </div>
                     </div>
-                    <div class="EmptyBox20"></div>
+                </div>
+                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
+                    <div class="EmptyBox100"></div>
                     <div class="Container100 Responsive100">
                         <div class="Card GrayBack TexAlCenter">
                             <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
                             <div class="EmptyBox5"></div>
                             <span class="FontRobotoLight Fs18">#{i18n['common.profit']}</span>
                             <div class="EmptyBox10"></div>
-                            <span class="FontRobotoLight Fs24">#{accountHome.profilTotal}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-xl-4">
-                    <div class="EmptyBox150"></div>
-                    <div class="Container100 Responsive100">
-                        <div class="Card GrayBack TexAlCenter">
-                            <i class="fa fa-users Fs50 BoldGray DispBlock"></i>
-                            <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['common.customers']}</span>
-                            <div class="EmptyBox10"></div>
-                            <span class="FontRobotoLight Fs24">#{accountHome.paxTotal}</span>
+                            <span class="FontRobotoLight Fs24">#{cashBoxHome.profilTotal}</span>
                         </div>
                     </div>
                 </div>
@@ -137,49 +137,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <p:dialog widgetVar="dlgTblDiscounts" class="Container100 Responsive50" closeOnEscape="true"
                       fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
                       style="text-align: right" height="600" width="800">
-                    <p:outputPanel id="panel-dataTable"> 
-                        <p:dataTable id="dataTable-sales-discounts" draggableColumns="true" lazy="false" liveResize="true"
-                                     liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{discount.id}"
-                                     rows="8" scrollRows="8" scrollHeight="100%" scrollWidth="100%"
-                                     scrollable="true"
-                                     value="#{accountHome.listDiscount}" var="discount"
-                                     selection="#{summaryHome.selectedBussinesEntities}">
-                            <f:facet name="header">
-                                <h:outputText value="#{i18n['app.fede.sales.summary.discount.summary']}"></h:outputText>
-                            </f:facet>
-                            <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" sortBy="#{discount[0]}" >
-                                <h:outputText value="#{discount[0]}"/>
-                            </p:column>
-                            <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{discount[1]}" >
-                                <h:outputText value="#{discount[1]}"/>
-                            </p:column>
-                            <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{discount[2]}" >
-                                <h:outputText value="#{discount[2]}"><f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
-                            </p:column>
-                            <p:column id="amount" headerText="#{i18n['common.total']}" sortBy="#{discount[3]}" >
-                                <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
-                            </p:column>
-                            <p:column id="numb_dscto" headerText="#{i18n['common.discount']}" sortBy="#{discount[4]}" >
-                                <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
-                            </p:column>
-                            <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align: center">
-                                <p:button value="#{i18n['common.details.view']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
-                            </p:column>
-                            <p:columnGroup type="footer" >
-                                <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                                    <span class="ui-g-8" style=" font-weight: bolder; text-align: right">#{i18n['common.total.discounts']}: </span>
-                                    <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
-                                        <h:outputText value="#{summaryHome.getListDiscountTotal()}" style="text-align: right">
-                                            <f:convertNumber type="currency" currencySymbol="$"/>
-                                        </h:outputText>
-                                    </span>
-                                    <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
-                                    </span>
+                <p:outputPanel id="panel-dataTable"> 
+                    <p:dataTable id="dataTable-sales-discounts" draggableColumns="true" lazy="false" liveResize="true"
+                                 liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{discount.id}"
+                                 rows="8" scrollRows="8" scrollHeight="100%" scrollWidth="100%"
+                                 scrollable="true"
+                                 value="#{cashBoxHome.listDiscount}" var="discount"
+                                 selection="#{summaryHome.selectedBussinesEntities}">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n['app.fede.sales.summary.discount.summary']}"></h:outputText>
+                        </f:facet>
+                        <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" sortBy="#{discount[0]}" >
+                            <h:outputText value="#{discount[0]}"/>
+                        </p:column>
+                        <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{discount[1]}" >
+                            <h:outputText value="#{discount[1]}"/>
+                        </p:column>
+                        <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{discount[2]}" >
+                            <h:outputText value="#{discount[2]}"><f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
+                        </p:column>
+                        <p:column id="amount" headerText="#{i18n['common.total']}" sortBy="#{discount[3]}" >
+                            <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
+                        </p:column>
+                        <p:column id="numb_dscto" headerText="#{i18n['common.discount']}" sortBy="#{discount[4]}" >
+                            <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
+                        </p:column>
+                        <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align: center">
+                            <p:button value="#{i18n['common.details.view']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
+                        </p:column>
+                        <p:columnGroup type="footer" >
+                            <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                                <span class="ui-g-8" style=" font-weight: bolder; text-align: right">#{i18n['common.total.discounts']}: </span>
+                                <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
+                                    <h:outputText value="#{summaryHome.getListDiscountTotal()}" style="text-align: right">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </h:outputText>
                                 </span>
-                            </p:columnGroup>
-                        </p:dataTable>
-                    </p:outputPanel>
+                                <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
+                                </span>
+                            </span>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:outputPanel>
             </p:dialog>
         </div>
     </ui:define>

@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <!--<f:viewParam name="" value="" />-->
+                <f:viewAction action="#{accountHome.closeFormularioLedger(accountHome.accountSelected)}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -83,17 +83,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:commandButton id="button-generalLedger" update="form"
                                                  title="#{i18n['app.fede.accounting.generalLedger']}" icon="fa fa-book"
                                                  actionListener="#{accountHome.mostrarFormularioLedger(account)}">
-                                    <f:setPropertyActionListener value="#{account}" target="#{account}"/>
+                                    <!--<f:setPropertyActionListener value="#{account}" target="#{account}"/>-->
                                     <p:ajax event="dialogReturn" update="@form"
                                             listener="#{accountHome.handleReturn}">
                                     </p:ajax>
                                 </p:commandButton>
+                            </p:column>
+                        </p:treeTable>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>
                                 <!--                                    <p:commandButton id="button-generalLedger" update="form" oncomplete="PF('generalLedgerDialog').show()"
                                                                                      title="#{i18n['app.fede.accounting.generalLedger']}" icon="fa fa-book" action="#{accountHome.findRecordDetailAccountTop()}">
                                                                         <f:setPropertyActionListener value="#{account}" target="#{accountHome.accountSelected}"/>
                                                                     </p:commandButton>-->
-                            </p:column>
-                        </p:treeTable>
                         <!--                            <p:dialog widgetVar="generalLedgerDialog" modal="true" resizable="false" 
                                                               showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
                                                               class="Container100 Responsive50" style="text-align: right" width="50%">
@@ -164,9 +170,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                         </p:outputPanel>
                                                     </p:dialog>-->
                         <!--</h:form>-->
-                    </div>
-                </div>
-            </div>
-        </ui:define>
-    </ui:composition>
-</html>

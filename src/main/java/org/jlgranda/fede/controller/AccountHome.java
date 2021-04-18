@@ -26,25 +26,17 @@ import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import static javax.swing.UIManager.get;
-import org.jlgranda.fede.controller.sales.SummaryHome;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
@@ -58,13 +50,9 @@ import org.jpapi.model.Group;
 import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.SortMeta;
-import org.primefaces.model.SortOrder;
 import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,29 +96,21 @@ public class AccountHome extends FedeController implements Serializable {
     @EJB
     private RecordDetailService recordDetailService;
 
+    //Modelo de datos lazy
     private LazyAccountDataModel lazyDataModel;
 
+    //Modelo de árbol de datos
     private TreeNode treeDataModel;
     private TreeNode singleSelectedNode;
 
+    //Objetos Account para edición
+    private Long accountId;
     private Account account;
     private Account accountSelected;
     private Account parentAccount;
     private Account depositAccount;
 
-    private Long accountId;
-
-    //Calcular Resumen
-    private BigDecimal grossSalesTotal;
-    private BigDecimal discountTotal;
-    private BigDecimal salesTotal;
-    private BigDecimal purchaseTotal;
-    private BigDecimal costTotal;
-    private BigDecimal profilTotal;
-    private Long paxTotal;
-    private List<Object[]> listDiscount;
-
-    //Calcular monto anterior de la cuenta por los recordDetails
+    //Calcular el GeneralLedger: Montos (recordDetails) de Accounts 
     private BigDecimal amountDebeRdOld;
     private BigDecimal amountHaberRdOld;
     private BigDecimal amountDebeRd;
@@ -147,26 +127,19 @@ public class AccountHome extends FedeController implements Serializable {
             nfe.printStackTrace();
             range = 7;
         }
+        //Inicialización de variables, objetos, métodos.
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
-
-        setGrossSalesTotal(BigDecimal.ZERO);
-        setDiscountTotal(BigDecimal.ZERO);
-        setSalesTotal(BigDecimal.ZERO);
-        setPurchaseTotal(BigDecimal.ZERO);
-        setCostTotal(BigDecimal.ZERO);
-        setProfilTotal(BigDecimal.ZERO);
-        setPaxTotal(0L);
-        calculeSummaryToday();
-        this.treeDataModel = createTreeAccounts();
+        
+        setTreeDataModel(createTreeAccounts());
     }
 
     @Override
     public void handleReturn(SelectEvent event) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -181,6 +154,34 @@ public class AccountHome extends FedeController implements Serializable {
             setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "inventory", "inventory"), Group.Type.LABEL));
         }
         return this.groups;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //GETTER AND SETTER
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    public LazyAccountDataModel getLazyDataModel() {
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyAccountDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+
+    public TreeNode getTreeDataModel() {
+        return treeDataModel;
+    }
+
+    public void setTreeDataModel(TreeNode treeDataModel) {
+        this.treeDataModel = treeDataModel;
+    }
+
+    public TreeNode getSingleSelectedNode() {
+        return singleSelectedNode;
+    }
+
+    public void setSingleSelectedNode(TreeNode singleSelectedNode) {
+        this.singleSelectedNode = singleSelectedNode;
     }
 
     public Long getAccountId() {
@@ -206,8 +207,12 @@ public class AccountHome extends FedeController implements Serializable {
         this.account = account;
     }
 
-    public List<Account> getAccounts() {
-        return accountService.findByOrganization(this.organizationData.getOrganization());
+    public Account getAccountSelected() {
+        return this.accountSelected;
+    }
+
+    public void setAccountSelected(Account accountSelected) {
+        this.accountSelected = accountSelected;
     }
 
     public Account getParentAccount() {
@@ -218,100 +223,12 @@ public class AccountHome extends FedeController implements Serializable {
         this.parentAccount = parentAccount;
     }
 
-    public Account getAccountSelected() {
-        return this.accountSelected;
+    public Account getDepositAccount() {
+        return depositAccount;
     }
 
-    public void setAccountSelected(Account accountSelected) {
-        this.accountSelected = accountSelected;
-    }
-
-    public LazyAccountDataModel getLazyDataModel() {
-        return lazyDataModel;
-    }
-
-    public void setLazyDataModel(LazyAccountDataModel lazyDataModel) {
-        this.lazyDataModel = lazyDataModel;
-    }
-
-    public TreeNode getTreeDataModel() {
-        return treeDataModel;
-    }
-
-    public void setTreeDataModel(TreeNode treeDataModel) {
-        this.treeDataModel = treeDataModel;
-    }
-
-    public TreeNode getSingleSelectedNode() {
-        return singleSelectedNode;
-    }
-
-    public void setSingleSelectedNode(TreeNode singleSelectedNode) {
-        this.singleSelectedNode = singleSelectedNode;
-    }
-
-    public BigDecimal getGrossSalesTotal() {
-        return grossSalesTotal;
-    }
-
-    public void setGrossSalesTotal(BigDecimal grossSalesTotal) {
-        this.grossSalesTotal = grossSalesTotal;
-    }
-
-    public BigDecimal getDiscountTotal() {
-        return discountTotal;
-    }
-
-    public void setDiscountTotal(BigDecimal discountTotal) {
-        this.discountTotal = discountTotal;
-    }
-
-    public BigDecimal getSalesTotal() {
-        return salesTotal;
-    }
-
-    public void setSalesTotal(BigDecimal salesTotal) {
-        this.salesTotal = salesTotal;
-    }
-
-    public BigDecimal getPurchaseTotal() {
-        return purchaseTotal;
-    }
-
-    public void setPurchaseTotal(BigDecimal purchaseTotal) {
-        this.purchaseTotal = purchaseTotal;
-    }
-
-    public BigDecimal getCostTotal() {
-        return costTotal;
-    }
-
-    public void setCostTotal(BigDecimal costTotal) {
-        this.costTotal = costTotal;
-    }
-
-    public BigDecimal getProfilTotal() {
-        return profilTotal;
-    }
-
-    public void setProfilTotal(BigDecimal profilTotal) {
-        this.profilTotal = profilTotal;
-    }
-
-    public Long getPaxTotal() {
-        return paxTotal;
-    }
-
-    public void setPaxTotal(Long paxTotal) {
-        this.paxTotal = paxTotal;
-    }
-
-    public List<Object[]> getObjectsRecordDetail() {
-        return objectsRecordDetail;
-    }
-
-    public void setObjectsRecordDetail(List<Object[]> objectsRecordDetail) {
-        this.objectsRecordDetail = objectsRecordDetail;
+    public void setDepositAccount(Account depositAccount) {
+        this.depositAccount = depositAccount;
     }
 
     public BigDecimal getAmountDebeRdOld() {
@@ -330,6 +247,14 @@ public class AccountHome extends FedeController implements Serializable {
         this.amountHaberRdOld = amountHaberRdOld;
     }
 
+    public List<Object[]> getObjectsRecordDetail() {
+        return objectsRecordDetail;
+    }
+
+    public void setObjectsRecordDetail(List<Object[]> objectsRecordDetail) {
+        this.objectsRecordDetail = objectsRecordDetail;
+    }
+
     public BigDecimal getAmountAccount() {
         return amountAccount;
     }
@@ -338,14 +263,16 @@ public class AccountHome extends FedeController implements Serializable {
         this.amountAccount = amountAccount;
     }
 
-    public Account getDepositAccount() {
-        return depositAccount;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // MÉTODOS/FUNCIONES
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+    //OBJETO: ACCOUNT.GETACCOUNTS
+    public List<Account> getAccounts() {
+        return accountService.findByOrganization(this.organizationData.getOrganization());
     }
 
-    public void setDepositAccount(Account depositAccount) {
-        this.depositAccount = depositAccount;
-    }
-
+    //MODELO: LAZY DE DATOS
     public void clear() {
         filter();
     }
@@ -370,6 +297,7 @@ public class AccountHome extends FedeController implements Serializable {
         }
     }
 
+    //MODELO: ÁRBOL DE DATOS
     public TreeNode createTreeAccounts() {
         List<Account> accountsOrder = getAccounts();
         // Ordenar la lista por el atributo getCode(), para crear el árbol de cuentas correcto
@@ -391,8 +319,32 @@ public class AccountHome extends FedeController implements Serializable {
         }
         return generalTree;
     }
-    
-    public boolean mostrarFormulario(Map<String, List<String>> params) {
+
+    public void onNodeSelect(NodeSelectEvent event) {
+        try {
+            if (event != null && event.getTreeNode().getData() != null) {
+                Account p = (Account) event.getTreeNode().getData();
+                redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
+        }
+    }
+
+    //ACCIÓN PRINCIPAL: GUARDAR CUENTA
+    public void save() {
+        if (account.isPersistent()) {
+            account.setLastUpdate(Dates.now());
+        } else {
+            account.setAuthor(this.subject);
+            account.setOwner(this.subject);
+            account.setOrganization(this.organizationData.getOrganization());
+        }
+        accountService.save(account.getId(), account);
+    }
+
+    //LIBRO MAYOR DE PLAN DE CUENTAS
+    public boolean mostrarFormularioLedgerValues(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
         String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
@@ -402,23 +354,22 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public boolean mostrarFormularioLedger(Account account) {
-        if(account!=null){
+        if (account != null) {
             this.accountSelected = account;
         }
         if (this.accountSelected != null) {
             super.setSessionParameter("account", this.accountSelected);
         }
 
-        return mostrarFormulario(null);
+        return mostrarFormularioLedgerValues(null);
     }
-    
-     public void closeFormularioRecord(Object data) {
+
+    public void closeFormularioLedger(Object data) {
         removeSessionParameter("account");
         super.closeDialog(data);
     }
 
     public void loadSessionParameters() {
-
         if (existsSessionParameter("account")) {
             this.setAccountSelected((Account) getSessionParameter("account"));
             this.getAccountSelected(); //Carga el objeto persistente
@@ -458,21 +409,28 @@ public class AccountHome extends FedeController implements Serializable {
 
     public void validateDeposit() {
         if (this.depositAccount != null) {
-            if (this.amountAccount.compareTo(BigDecimal.ZERO) == 0) {
-                this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.account.amount"));
-            } else {
-                if (this.accountSelected.getId().compareTo(this.depositAccount.getId())==0) {
-                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.account.isEquals"));
+            if (this.amountAccount != null) {
+                if (this.amountAccount.compareTo(BigDecimal.ZERO) == 0) {
+                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.account.amount"));
                 } else {
-                    registerRecordInJournal();
-                    findRecordDetailAccountTop();
+                    if (this.accountSelected.getId().compareTo(this.depositAccount.getId()) == 0) {
+                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
+                    } else {
+                        registerRecordInJournal();
+                        findRecordDetailAccountTop();
+                    }
                 }
             }
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.account.validate"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
         }
     }
 
+    public void saveLedger() {
+        closeFormularioLedger(this.accountSelected);
+    }
+
+    //REGISTRO DE ASIENTOS CONTABLES
     public void registerRecordInJournal() {
 //        Crear o encontrar el journal y el record, para insertar los recordDetails
         GeneralJournal journal = buildFindJournal();
@@ -521,114 +479,6 @@ public class AccountHome extends FedeController implements Serializable {
             }
         }
         return recordDetailGeneral;
-    }
-
-    public void onNodeSelect(NodeSelectEvent event) {
-        try {
-            if (event != null && event.getTreeNode().getData() != null) {
-                Account p = (Account) event.getTreeNode().getData();
-                redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
-            }
-        } catch (IOException ex) {
-            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
-        }
-    }
-
-//    public void onRowSelect(SelectEvent event) {
-//        try {
-//            //Redireccionar a RIDE de objeto seleccionado
-//            if (event != null && event.getObject() != null) {
-//                Account p = (Account) event.getObject();
-//                redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
-//            }
-//        } catch (IOException ex) {
-//            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
-//        }
-//    }
-    public void save() {
-        if (account.isPersistent()) {
-            account.setLastUpdate(Dates.now());
-        } else {
-            account.setAuthor(this.subject);
-            account.setOwner(this.subject);
-            account.setOrganization(this.organizationData.getOrganization());
-        }
-        accountService.save(account.getId(), account);
-    }
-
-    public List<Object[]> getListDiscount() {
-        return listDiscount;
-    }
-
-    public List<Object[]> getListDiscount(Date _start, Date _end) {
-//        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceBussinesSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, BigDecimal.ZERO);
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceBussinesSalesDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, BigDecimal.ZERO);
-        return objects;
-    }
-
-    public void setListDiscount(List<Object[]> listDiscount) {
-        this.listDiscount = listDiscount;
-    }
-
-    public BigDecimal getListDiscountTotal() {
-        BigDecimal total = new BigDecimal(0);
-        for (int i = 0; i < getListDiscount().size(); i++) {
-            total = total.add((BigDecimal) getListDiscount().get(i)[4]);
-        }
-        return total;
-    }
-
-    public void calculeSummaryToday() {
-        Date _start = Dates.minimumDate(getEnd());
-        Date _end = Dates.maximumDate(getEnd());
-        calculeSummary(_start, _end);
-        setListDiscount(getListDiscount(_start, _end));
-    }
-
-    public void calculeSummary(Date _start, Date _end) {
-
-        this.costTotal = BigDecimal.ZERO;
-//        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
-        objects.stream().forEach((Object[] object) -> {
-            this.grossSalesTotal = (BigDecimal) object[0];
-            this.discountTotal = (BigDecimal) object[1];
-            this.salesTotal = (BigDecimal) object[2];
-        });
-//        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetween", Integer.MAX_VALUE, this.subject, _start, _end, EmissionType.PURCHASE_CASH);
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CASH);
-        objects.stream().forEach((Object object) -> {
-            this.purchaseTotal = (BigDecimal) object;
-        });
-//        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesPaxBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesPaxBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
-        objects.stream().forEach((Object object) -> {
-            this.paxTotal = (Long) object;
-        });
-
-        if (this.grossSalesTotal == null) {
-            this.grossSalesTotal = BigDecimal.ZERO;
-        }
-
-        if (this.discountTotal == null) {
-            this.discountTotal = BigDecimal.ZERO;
-        }
-
-        if (this.salesTotal == null) {
-            this.salesTotal = BigDecimal.ZERO;
-        }
-
-        if (this.purchaseTotal == null) {
-            this.purchaseTotal = BigDecimal.ZERO;
-        }
-
-        if (this.paxTotal == null) {
-            this.paxTotal = 0L;
-        }
-
-        this.salesTotal = this.salesTotal.subtract(this.discountTotal);
-        this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
-
     }
 
     @Override

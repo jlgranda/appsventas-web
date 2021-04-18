@@ -192,7 +192,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText> </h4> 
                                         </div>
-                                        <p:inputNumber id="total" value="#{facturaElectronicaHome.payment.amount}" required="true" disabled="#{facturaElectronicaHome.payableTotal}"
+                                        <p:inputNumber id="total" value="#{facturaElectronicaHome.payment.amount}" required="false" disabled="#{facturaElectronicaHome.payableTotal}"
                                                        styleClass="" placeholder="#{i18n['app.fede.sales.payment.cash.paid']}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
@@ -200,7 +200,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:ajax listener="#{facturaElectronicaHome.calcularMontoAbonado()}" update="cash" partialSubmit="true"></p:ajax>
                                             <p:ajax listener="#{facturaElectronicaHome.calcularVueltoAbonado()}" update="change" partialSubmit="true"></p:ajax>
                                         </p:inputNumber>
-                                        <p:inputNumber id="discount" value="#{facturaElectronicaHome.payment.discount}" required="true" disabled="#{facturaElectronicaHome.payableTotal}" 
+                                        <p:inputNumber id="discount" value="#{facturaElectronicaHome.payment.discount}" required="false" disabled="#{facturaElectronicaHome.payableTotal}" 
                                                        styleClass="" placeholder="#{i18n['common.discount']}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
@@ -208,14 +208,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:ajax listener="#{facturaElectronicaHome.calcularMontoAbonado()}" update="cash" partialSubmit="true"></p:ajax>
                                             <p:ajax listener="#{facturaElectronicaHome.calcularVueltoAbonado()}" update="change" partialSubmit="true"></p:ajax>
                                         </p:inputNumber>
-                                        <p:inputNumber id="cash" value="#{facturaElectronicaHome.payment.cash}" required="true" disabled="#{facturaElectronicaHome.payableTotal}" 
+                                        <p:inputNumber id="cash" value="#{facturaElectronicaHome.payment.cash}" required="false" disabled="#{facturaElectronicaHome.payableTotal}" 
                                                        styleClass="" placeholder="#{i18n['app.fede.sales.payment.cash']}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
                                             <p:ajax listener="#{facturaElectronicaHome.calcularVueltoAbonado()}" update="change" partialSubmit="true"></p:ajax>
                                         </p:inputNumber>
-                                        <p:inputNumber id="change" value="#{facturaElectronicaHome.payment.change}" required="true" disabled="true"
+                                        <p:inputNumber id="change" value="#{facturaElectronicaHome.payment.change}" required="false" disabled="true"
                                                        styleClass="" placeholder="#{i18n['app.fede.sales.payment.change']}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
@@ -230,7 +230,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          actionListener="#{facturaElectronicaHome.addPayment()}" immediate="true"
                                                          update="dataTable-payments-credit fund-request add-payment"
                                                          disabled="#{facturaElectronicaHome.payableTotal}" 
-                                                         style="width: auto !important;"/><!--facturaElectronicaHome.validarMonto(facturaElectronicaHome.montoPorPagar())-->
+                                                         style="width: auto !important;"/>
                                     </p:panelGrid>
                                     <div class="card">
                                         <!--                                        var="payment" 

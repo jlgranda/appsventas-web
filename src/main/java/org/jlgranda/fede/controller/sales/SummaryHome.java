@@ -294,7 +294,6 @@ public class SummaryHome extends FedeController implements Serializable {
             this.paxTotal = 0L;
         }
 
-        this.salesTotal = this.salesTotal.subtract(this.discountTotal);
         this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
 
     }

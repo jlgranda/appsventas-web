@@ -53,6 +53,7 @@ import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
+import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
@@ -743,9 +744,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     public void save() {
         //Validar que la sumatoria del subtotal, iva y descuento sea equivalente al Importe Total
         BigDecimal sumaImporteComparar = facturaElectronica.getTotalSinImpuestos().add(facturaElectronica.getTotalIVA0()).add(facturaElectronica.getTotalIVA12().subtract(facturaElectronica.getTotalDescuento()));
+        sumaImporteComparar = sumaImporteComparar.setScale(2, RoundingMode.HALF_EVEN);//Redondear el valor, para mejorar exactitud
         if (facturaElectronica.getImporteTotal().compareTo(sumaImporteComparar) != 0) {
             setOutcome("");
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("ride.infoFactura.importeTotal.invalid"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("ride.infoFactura.total.import.invalid"));
         } else {
             setOutcome("fede-inbox");
             facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
@@ -904,7 +906,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 FacturaElectronica fe = (FacturaElectronica) event.getObject();
-//                redirectTo("/pages/fede/ride.jsf?key=" + fe.getId());
                 redirectTo("/pages/fede/factura.jsf?facturaElectronicaId=" + fe.getId());
             }
         } catch (IOException ex) {
@@ -981,6 +982,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      */
     public void addPayment() {
         montoPorPagar();
+        if(getPayment().getAmount()!=null){
         Payment p = paymentService.createInstance();
         p.setAmount(getPayment().getAmount());
         p.setDiscount(getPayment().getDiscount());
@@ -988,6 +990,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         p.setChange(getPayment().getChange());
         this.getFacturaElectronica().addPayment(p);
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
+        }else{
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.required"));
+        }
     }
 
     public BigDecimal montoPorPagar() {
@@ -1003,17 +1008,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         } else {
             residuo = facturaElectronica.getImporteTotal();
         }
-
-        System.out.println("\nfacturaGetId: " + facturaElectronica.getId());
-        System.out.println("\nResudio: " + residuo);
         if (residuo != null) {
-            if (residuo.compareTo(BigDecimal.ZERO) == 0) {
-                System.out.println("\nMontoesCERO");
-                this.payableTotal = true;
-            } else {
-                System.out.println("\nMontoNOesCERO");
-                this.payableTotal = false;
-            }
+            this.payableTotal = residuo.compareTo(BigDecimal.ZERO) == 0;
         }
         return residuo;
     }
@@ -1116,7 +1112,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void registerRecordInJournal() {
-//        Crear o encontrar el journal y el record, para insertar los recordDetails
+        //Crear o encontrar el journal y el record, para insertar los recordDetails
         this.record = findRecordOfFactura();
         if (this.record != null) {
             this.journal = journalService.find(this.record.getJournal().getId());
@@ -1124,7 +1120,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             this.record = buildRecord();
             this.journal = buildFindJournal();
         }
-//        Crear/Modificar y anadir un recordDetail al record
+        //Crear/Modificar y anadir un recordDetail al record
         this.record.addRecordDetail(updateRecordDetail("MERCADERIAS"));
         this.record.addRecordDetail(updateRecordDetail("I.V.A. POR PAGAR"));
         if (facturaElectronica.getEmissionType() == EmissionType.PURCHASE_CASH) {

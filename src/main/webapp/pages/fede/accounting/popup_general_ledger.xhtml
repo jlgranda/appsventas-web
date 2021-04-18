@@ -115,13 +115,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </span>
                                         <span class="ui-g-2">
                                             <p:commandButton id="btn-deposit" ajax="true" immediate="true" styleClass="p-mt-3"
-                                                             value="Depósito" icon="fa fa-exchange" update="dataTable-account-general-ledger" rendered="#{accountHome.amountAccount gt 0}"
+                                                             value="Depósito" icon="fa fa-exchange" update="dataTable-account-general-ledger select-account btn-deposit" rendered="#{accountHome.amountAccount gt 0}"
                                                              actionListener="#{accountHome.validateDeposit()}"/>
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="EmptyBox10"></div>
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="save" value="#{i18n['common.save']}" 
+                                                 ajax="false" 
+                                                 actionListener="#{accountHome.saveLedger()}" 
+                                                 style="width: auto !important;"
+                                                 type="submit"/>
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:commandButton ajax="true" disabled="false" immediate="true"
+                                                 actionListener="#{accountHome.closeDialog(accountHome.accountSelected.id)}"
+                                                 action="#{accountHome.redirect}"
+                                                 icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
+                                                 />
+                            </f:facet>
+                        </p:toolbar>
                     </h:form>
                 </div>
             </div>
