@@ -29,16 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
-            <!--<f:viewParam name="cashBoxId" value="#{accountHome.cashBoxId}"/>-->
-            <!--<f:viewAction action=""/>-->
+            <!--<f:viewParam name="cashBoxId" value="#{cashBoxHome.cashBox.id}"/>-->
+            <!--<f:viewAction action="" />-->
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li>#{i18n['app.fede.accounting.ajust.cash']}</li>
-        <li>/</li>
-        <!--<li><p:link outcome="/pages/fede/accounting/cash_ahust.jsf">#{accountHome.cashBoxId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.close.cash']}</p:link></li>-->
+        <li><p:link outcome="/pages/fede/accounting/cash_ajust.jsf">#{cashBoxHome.cashBox.id == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.close.cash']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.CashBox"/>
@@ -195,7 +193,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                              required="#{true}" immediate="true" disabled="#{cashBoxHome.activeButtonSelectDeposit}"
                                                              converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
                                                 <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                                                <p:ajax update="@form"></p:ajax>
+                                                <p:ajax update="@this"></p:ajax>
                                             </p:selectOneMenu>                                                    
                                         </div>
                                         <div class="ui-g-4">
@@ -212,23 +210,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </h:panelGroup>
                                 </h:panelGroup>
                             </div>
-                            <div class="ui-g-4"></div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <div class="ui-g-4 ui-lg-4 ui-md-4"></div>
                             <div class="ui-g-8">
                                 <p:commandButton id="btn-breakdown" ajax="true" styleClass="p-mr-2" 
                                                  value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" icon="fa fa-play-circle"
-                                                 disabled=""
+                                                 disabled="#{cashBoxHome.activePanelBreakdown}"
+                                                 rendered="#{cashBoxHome.saldoCash gt 0}"
                                                  action="#{cashBoxHome.validPanelBreakdown()}" 
-                                                 update="cash-saldo saldo-cash btn-breakdown panel-deposit-button panel-breakdown-cash"
+                                                 update="btn-breakdown cash-saldo saldo-cash panel-deposit-button panel-breakdown-cash"
                                                  style="text-transform: uppercase">
                                     <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
                                 </p:commandButton>
-                                <p:confirmDialog global="true" showEffect="blind" hideEffect="blind" responsive="true" width="350">
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="false" width="350">
                                     <p:commandButton value="#{i18n['common.yes']}" type="button" styleClass="ui-confirmdialog-yes" />
                                     <p:commandButton value="#{i18n['common.no']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
                                 </p:confirmDialog>
                             </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
                 </div>
                 <!--PANEL DERECHO-->
                 <h:panelGroup id="panel-breakdown-cash">
@@ -247,7 +246,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <div class="EmptyBox10"></div>
                                         <h4>#{i18n['common.money.bills']}</h4>
                                         <p:selectOneMenu id="select-bill" value="#{cashBoxHome.cashBoxDetail.denomination}" effect="blind" style="width: 100%"
-                                                         required="#{true}" immediate="true" disabled="#{cashBoxHome.activeSelectMenuBill}"> 
+                                                         required="#{false}" immediate="true" disabled="#{cashBoxHome.activeSelectMenuBill}"> 
                                             <f:selectItems value="#{ui.getDenominationBillsAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                             <p:ajax listener="#{cashBoxHome.activeSelectMoney()}" update="@this select-money"></p:ajax>
                                         </p:selectOneMenu>
@@ -256,7 +255,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <div class="EmptyBox10"></div>
                                         <h4>#{i18n['common.money.moneys']}</h4>
                                         <p:selectOneMenu id="select-money" value="#{cashBoxHome.cashBoxDetail.denomination}" effect="blind" style="width: 100%"
-                                                         required="#{true}" immediate="true" disabled="#{cashBoxHome.activeSelectMenuMoney}"> 
+                                                         required="#{false}" immediate="true" disabled="#{cashBoxHome.activeSelectMenuMoney}"> 
                                             <f:selectItems value="#{ui.getDenominationMoneysAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                             <p:ajax listener="#{cashBoxHome.activeSelectBill()}" update="@this select-bill"></p:ajax>
                                         </p:selectOneMenu>
@@ -265,7 +264,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <div class="EmptyBox10"></div>
                                         <h4>#{i18n['common.quantity']}</h4>
                                         <p:inputNumber id="quantity" value="#{cashBoxHome.cashBoxDetail.quantity}" 
-                                                       required="true" immediate="true"
+                                                       required="false" immediate="true"
                                                        styleClass="" style="width: 100%"
                                                        minValue="0" decimalPlaces="0">
                                         </p:inputNumber>
@@ -390,50 +389,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton ajax="true" disabled="false" immediate="true"
-                                         actionListener="#{invoiceHome.closeDialog(null)}" 
-                                         action="home"
+                                         actionListener="#{cashBoxHome.closeDialog(null)}" 
+                                         action="#{cashBoxHome.redirect()}"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                          />
                     </f:facet>
                 </p:toolbar>
                     </h:panelGroup>
                 </h:panelGroup>
-<!--            <div class="EmptyBox10"></div>
-            <p:toolbar rendered="#{true}">Sección Envío de formulario
-                <f:facet name="left">
-                    <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
-                                     actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.getOutcome()}"
-                                     disabled="#{false}"
-                                     style="width: auto !important;"
-                                     type="submit"/>
-                    <span class="ui-separator">
-                        <span class="fa fa-ellipsis-v SoftGray" />
-                    </span>
-                </f:facet>
-                <f:facet name="right">
-                    <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
-                                     actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
-                                     disabled="false" immediate="true"
-                                     styleClass="GrayButton"
-                                     type="submit"/>                          
-                </f:facet>
-            </p:toolbar>-->
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
             </div>
         </div>
     </ui:define>

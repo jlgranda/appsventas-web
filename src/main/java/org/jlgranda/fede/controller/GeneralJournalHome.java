@@ -349,7 +349,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             journalService.save(journal.getId(), journal);
             closeFormularioRecord(journal.getId());
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.journal.record.cuadre"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance"));
         }
     }
 
@@ -358,7 +358,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         generalJournal.setOrganization(this.organizationData.getOrganization());
         generalJournal.setOwner(subject);
         generalJournal.setCode(UUID.randomUUID().toString());
-        generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
+        generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
         return generalJournal;
     }
 
@@ -374,14 +374,14 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         if (generalJournal == null) {
             redirectTo("/pages/fede/accounting/journal.jsf");
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.journal.isExist") + " " + Dates.toDateString(Dates.now()));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date") + " " + Dates.toDateString(Dates.now()));
         }
 //        List<GeneralJournal> generalJournal = new ArrayList<>();
 //        generalJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
 //        if (generalJournal.isEmpty()) {
 //            redirectTo("/pages/fede/accounting/journal.jsf");
 //        }else{
-//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.journal.isExist") + " " + Dates.toDateString(Dates.now()));
+//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date") + " " + Dates.toDateString(Dates.now()));
 //        }
     }
 

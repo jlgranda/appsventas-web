@@ -163,7 +163,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                    decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
                     </p:inputNumber>
                     <div class="EmptyBox10"></div>
-                    <p:outputLabel value="#{i18n['ride.infoFactura.total.import']}"/>
+                    <p:outputLabel value="#{i18n['ride.infoFactura.total']}"/>
                     <div class="EmptyBox10"></div>
                     <p:inputNumber id="impt" value="#{facturaElectronicaHome.facturaElectronica.importeTotal}" required="true" disabled="false"
                                    styleClass=""
@@ -188,7 +188,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="Container100 Responsive100">
                                     <p:panelGrid columns="9" layout="grid" style="border:0px !important; background:none;" styleClass="ui-panelgrid-blank">
                                         <div class="Fs20 BoldGray" style="text-align: center">
-                                            <h4>#{i18n['app.fede.accounting.account.fund.pending']}<h:outputText style="font-weight: bolder" id="fund-request" value="#{facturaElectronicaHome.montoPorPagar()}">
+                                            <h4>#{i18n['common.fund']} #{i18n['app.fede.accounting.pending']}<h:outputText style="font-weight: bolder" id="fund-request" value="#{facturaElectronicaHome.montoPorPagar()}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText> </h4> 
                                         </div>
