@@ -29,14 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
-            <!--<f:viewParam name="cashBoxId" value="#{cashBoxHome.cashBox.id}"/>-->
+            <!--<f:viewParam name="cashBoxId" value="#{cashBoxHome.cashBoxGeneral.id}"/>-->
             <!--<f:viewAction action="" />-->
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/accounting/cash_ajust.jsf">#{cashBoxHome.cashBox.id == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.close.cash']}</p:link></li>
+        <li><p:link outcome="/pages/fede/accounting/cash_ajust.jsf">#{cashBoxHome.cashBoxGeneral.id == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.close.cash']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.CashBox"/>
@@ -115,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="ui-g-8"><label>#{i18n['common.transactions.others']}</label></div>
                                 <div class="ui-g-4" style="text-align: center; #{cashBoxHome.transactionTotal lt 0 ? 'color: #e53935;': 'color: #000000'};">
                                     <h:outputText class="Fs20" value="#{cashBoxHome.transactionTotal lt 0 ? '- ' : '+ '}"></h:outputText>
-                                    <h:outputText id="transactions-Total" value="#{cashBoxHome.transactionTotal*-1}">
+                                    <h:outputText id="transactions-Total" value="#{cashBoxHome.transactionTotal lt 0 ? cashBoxHome.transactionTotal*-1: cashBoxHome.transactionTotal}">
                                         <f:convertNumber type="currency"/>
                                     </h:outputText>
                                 </div>
@@ -213,26 +213,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </h:panelGroup>
                     </h:panelGroup>
                     <div class="ui-g-4 ui-lg-4 ui-md-4"></div>
-                            <div class="ui-g-8">
-                                <p:commandButton id="btn-breakdown" ajax="true" styleClass="p-mr-2" 
-                                                 value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" icon="fa fa-play-circle"
-                                                 disabled="#{cashBoxHome.activePanelBreakdown}"
-                                                 rendered="#{cashBoxHome.saldoCash gt 0}"
-                                                 action="#{cashBoxHome.validPanelBreakdown()}" 
-                                                 update="btn-breakdown cash-saldo saldo-cash panel-deposit-button panel-breakdown-cash"
-                                                 style="text-transform: uppercase">
-                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
-                                </p:commandButton>
-                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="false" width="350">
-                                    <p:commandButton value="#{i18n['common.yes']}" type="button" styleClass="ui-confirmdialog-yes" />
-                                    <p:commandButton value="#{i18n['common.no']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                                </p:confirmDialog>
-                            </div>
+                    <div class="ui-g-8">
+                        <p:commandButton id="btn-breakdown" ajax="true" styleClass="p-mr-2" 
+                                         value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" icon="fa fa-play-circle"
+                                         disabled="#{cashBoxHome.activePanelBreakdown}"
+                                         rendered="#{cashBoxHome.saldoCash gt 0}"
+                                         action="#{cashBoxHome.validPanelBreakdown()}" 
+                                         update="btn-breakdown cash-saldo saldo-cash panel-deposit-button panel-breakdown-cash"
+                                         style="text-transform: uppercase">
+                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="false" width="350">
+                            <p:commandButton value="#{i18n['common.yes']}" type="button" styleClass="ui-confirmdialog-yes" />
+                            <p:commandButton value="#{i18n['common.no']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                        </p:confirmDialog>
+                    </div>
                 </div>
                 <!--PANEL DERECHO-->
+
+                <div class="card ui-g-8 ui-lg-8 ui-md-8">
+                    <div class="card">
+                        <h5>Basic</h5>
+                        <p:accordionPanel widgetVar="basic">
+                            <p:tab title="Header I">
+                                <p class="p-m-0">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                </p>
+                            </p:tab>
+                            <p:tab title="Header II">
+                                <p class="p-m-0">
+                                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
+                                </p>
+                            </p:tab>
+                            <p:tab title="Header III">
+                                <p class="p-m-0">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
+                                </p>
+                            </p:tab>
+                        </p:accordionPanel>
+                    </div>
+                </div>
+
                 <h:panelGroup id="panel-breakdown-cash">
                     <h:panelGroup rendered="#{cashBoxHome.activePanelBreakdown}">
-                        <div class="ui-g-8 ui-lg-8 ui-md-8">
+                        <div class="card ui-g-8 ui-lg-8 ui-md-8">
                             <!--SUBPANEL ARRIBA-->
                             <div class="card ui-g-12 Container100 BoldGray">
                                 <h:panelGroup id="panel-cashBox-detail" >
@@ -281,7 +304,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          value="#{i18n['common.add']}" icon="fa fa-plus-square"
                                                          disabled=""  
                                                          actionListener="#{cashBoxHome.addCashDetail()}" 
-                                                         update="select-bill select-money dataTable-bills dataTable-moneys panel-breakdown-totals"  
+                                                         update="panel-cashBox-detail select-bill select-money dataTable-bills dataTable-moneys panel-breakdown-totals"  
                                                          style="width: auto"/>
                                     </div>
                                 </h:panelGroup>
@@ -293,7 +316,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  paginator="true" paginatorAlwaysVisible="false"
                                                  paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
                                                  rows="10"
-                                                 value="#{cashBoxHome.cashBoxBills.cashboxDetails}" var="cashBoxDetail"
+                                                 value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
                                                  sortOrder="DESCENDING" sortBy="#{cashBoxDetail.valuer}">
                                         <f:facet name="header">
@@ -323,7 +346,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  paginator="true" paginatorAlwaysVisible="false"
                                                  paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
                                                  rows="10"
-                                                 value="#{cashBoxHome.cashBoxMoneys.cashboxDetails}" var="cashBoxDetail"
+                                                 value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
                                                  sortOrder="DESCENDING" sortBy="#{cashBoxDetail.valuer}">
                                         <f:facet name="header">
@@ -367,34 +390,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </div>
                                         <div class="ui-g-6"><label>#{i18n['app.fede.accounting.ajust.surplus']}: </label></div>
                                         <div class="ui-g-6">
-                                            <h:outputText id="cash-surplus" value="#{cashBoxHome.surplusBreakdown}">
+                                            <h:outputText id="cash-surplus" value="#{cashBoxHome.excessBreakdown}">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
                                         </div>
                                     </h:panelGroup>
                                 </div>
                             </div>
+                            <div class="EmptyBox20"></div>
+                            <p:toolbar rendered="#{true}">
+                                <f:facet name="left">
+                                    <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                                                     actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
+                                                     disabled="#{false}" 
+                                                     style="width: auto !important;"
+                                                     type="submit"/>
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+                                </f:facet>
+                                <f:facet name="right">
+                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                                     actionListener="#{cashBoxHome.closeDialog(null)}" 
+                                                     action="#{cashBoxHome.redirect()}"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                                     />
+                                </f:facet>
+                            </p:toolbar>
                         </div>
-                        <div class="EmptyBox20"></div>
-                <p:toolbar rendered="#{true}">
-                    <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
-                                         actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
-                                         disabled="#{false}" 
-                                         style="width: auto !important;"
-                                         type="submit"/>
-                        <span class="ui-separator">
-                            <span class="fa fa-ellipsis-v SoftGray" />
-                        </span>
-                    </f:facet>
-                    <f:facet name="right">
-                        <p:commandButton ajax="true" disabled="false" immediate="true"
-                                         actionListener="#{cashBoxHome.closeDialog(null)}" 
-                                         action="#{cashBoxHome.redirect()}"
-                                         icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
-                                         />
-                    </f:facet>
-                </p:toolbar>
                     </h:panelGroup>
                 </h:panelGroup>
             </div>
