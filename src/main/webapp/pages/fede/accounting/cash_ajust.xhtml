@@ -232,11 +232,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <!--PANEL DERECHO-->
 
                 <div class="card ui-g-8 ui-lg-8 ui-md-8">
-                    <div class="card">
-                        <h5>Basic</h5>
-                        <p:accordionPanel widgetVar="basic">
+                        <h5>CIERRES DE CAJA: PARCIALES</h5>
+                        <p:accordionPanel widgetVar="basic" activeIndex="-1">
                             <p:tab title="Header I">
                                 <p class="p-m-0">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                                 </p>
                             </p:tab>
@@ -250,7 +253,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p>
                             </p:tab>
                         </p:accordionPanel>
-                    </div>
                 </div>
 
                 <h:panelGroup id="panel-breakdown-cash">
@@ -396,6 +398,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </div>
                                     </h:panelGroup>
                                 </div>
+                            </div>
+                            <div class="ui-g-12">
+                                <label>#{i18n['common.observation']}</label>
+                                <jlgranda:input id="description" name="description" type="textarea" placeholder="#{i18n['common.observation']}" 
+                                                execute="none" render="description" value="#{cashBoxHome.cashBox.description}" 
+                                                required="false" requiredMessage="#{i18n['common.observation']}"
+                                                container="none"/>
                             </div>
                             <div class="EmptyBox20"></div>
                             <p:toolbar rendered="#{true}">
