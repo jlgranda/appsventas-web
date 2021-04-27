@@ -218,9 +218,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         setTotalBreakdown(BigDecimal.ZERO);
         setMissingBreakdown(BigDecimal.ZERO);
         setExcessBreakdown(BigDecimal.ZERO);
-        
-//        setActiveButtonCloseCash(true); //disabled
 
+//        setActiveButtonCloseCash(true); //disabled
         calculeSummaryToday();
         findCashBoxs();
     }
@@ -317,13 +316,6 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActivePanelDeposit() {
-        getCashBoxOpen();
-        System.out.println("\nPRINCIPAL: "+this.cashBoxOpen);
-//        if(this.cashBoxOpen.getId()!=null){
-//            return activePanelDeposit = false;
-//        }else{
-//            return activePanelDeposit = true;
-//        }
         return activePanelDeposit;
     }
 
@@ -584,13 +576,8 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public CashBox getCashBoxOpen() {
-                System.out.println("\n: "+this.cashBoxGeneral.getId());
         if (this.cashBoxGeneral.getId() != null) {
-//            if (this.cashBox.getId() == null) {
-                return cashBoxOpen = cashBoxService.findUniqueByNamedQuery("CashBox.findByCashBoxGeneralAndStatus", this.cashBoxGeneral, CashBox.Status.OPEN);
-//            } else {
-//                return cashBoxOpen;
-//            }
+            return cashBoxOpen = cashBoxService.findUniqueByNamedQuery("CashBox.findByCashBoxGeneralAndStatus", this.cashBoxGeneral, CashBox.Status.OPEN);
         } else {
             return cashBoxOpen;
         }
@@ -601,9 +588,9 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActiveButtonCloseCash() {
-        if(this.cashBoxGeneral.getId()==null  || this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.CLOSED)){
+        if (this.cashBoxGeneral.getId() == null || this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.CLOSED)) {
             return activeButtonCloseCash = true;
-        }else {
+        } else {
             return activeButtonCloseCash = false;
         }
     }
@@ -611,7 +598,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void setActiveButtonCloseCash(boolean activeButtonCloseCash) {
         this.activeButtonCloseCash = activeButtonCloseCash;
     }
-    
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // MÉTODOS/FUNCIONES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -747,8 +734,13 @@ public class CashBoxHome extends FedeController implements Serializable {
         } else {
             this.activePanelDeposit = this.saldoCash.compareTo(BigDecimal.ZERO) == 1; //Mostra u Ocultar el Panel de Depósito según el saldoCash > 0
         }
-        this.activeSelectMenuBill = false; //Habilitar los selects del Panel de Detalle para Billetes y Monedas
+        this.activeSelectMenuBill = false; //Habilitar los Selects del Panel de Detalle para Billetes y Monedas
         this.activeSelectMenuMoney = false;
+        
+        getCashBoxOpen(); //Buscar un Cashox abierto
+        if (cashBoxOpen == null) { //Deshabilitar/Habilitar el Panel de Depósito según la existencia del CashBoxOpen
+            this.activePanelDeposit = true;
+        } else this.activePanelDeposit = cashBoxOpen.getId() == null;
     }
 
     private void reloadDataCashBox() { //Recargar la vista con los datos del CashBox Instanciado
@@ -845,8 +837,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.activeSelectMenuMoney = true;
         this.activeButtonCloseCash = false; //Habilitar el Button de CashBoxGeneral
     }
-    
-    public void closeCashBoxGeneral(){
+
+    public void closeCashBoxGeneral() {
         this.cashBoxGeneral.setStatusCashBoxGeneral(CashBoxGeneral.Status.CLOSED); //Cambiar el estado del CashBoxGeneral Instanciado (Cerrar)
         this.cashBoxGeneral.setAuthor(this.subject); //Actualiza, para saber que sujeto lo cierra por última vez
         cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral); //Guardar el CashBoxGeneral, con todos sus CashBoxs y CashBoxDetails

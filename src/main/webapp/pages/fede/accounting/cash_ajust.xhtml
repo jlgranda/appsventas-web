@@ -162,6 +162,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </h:panelGroup>
                     </div>
+                        CHEKER: #{request.isUserInRole('CHECKER')} || activePanelDeposit: #{cashBoxHome.activePanelDeposit}
                     <div class="ui-g-12 Container100">
                         <h:panelGroup id="panel-deposit">
                             <h:panelGroup rendered="#{request.isUserInRole('CHECKER') and cashBoxHome.activePanelDeposit}">
