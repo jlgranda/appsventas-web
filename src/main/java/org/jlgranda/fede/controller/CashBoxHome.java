@@ -144,7 +144,7 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     //Obtener saldo inicial del cierre de caja anterior
     private BigDecimal saldoInitial;
-    
+
     //Calcular el dinero obtenido del cierre de caja
     private BigDecimal cashTotal;
     private BigDecimal saldoCash;
@@ -212,7 +212,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         setTransactionTotal(BigDecimal.ZERO);
 
         setSaldoInitial(BigDecimal.ZERO);
-        
+
         setCashTotal(BigDecimal.ZERO);
         setSaldoCash(BigDecimal.ZERO);
 
@@ -404,7 +404,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void setPurchasesCredit(BigDecimal purchasesCredit) {
         this.purchasesCredit = purchasesCredit;
     }
-    
+
     public BigDecimal getPurchasesCreditPaid() {
         return purchasesCreditPaid;
     }
@@ -444,7 +444,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void setSaldoInitial(BigDecimal saldoInitial) {
         this.saldoInitial = saldoInitial;
     }
-    
+
     public BigDecimal getCashTotal() {
         return cashTotal;
     }
@@ -606,20 +606,22 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActiveButtonCloseCash() {
-        if(cashBox.getId()!=null && cashBox.getStatusCashBox().equals(CashBox.Status.OPEN)) {
+        if (cashBox.getId() != null && cashBox.getStatusCashBox().equals(CashBox.Status.OPEN)) {
             activeButtonCloseCash = true; //Deshabilitar Botón Cierre de Caja General, si el CashBox está abierto
         } else {
             if (this.cashBoxGeneral.getId() == null || this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.CLOSED)) {
                 activeButtonCloseCash = true;
-            } else if(this.activePanelBreakdown == true){
+            } else if (this.activePanelBreakdown == true) {
                 activeButtonCloseCash = true;
-            }else{
+            } else {
                 getCashBoxOpen(); //Buscar un Cashox abierto
                 if (cashBoxOpen == null) {
                     if (cashBox.getId() == null) {
                         activeButtonCloseCash = false;
                     }
-                } else activeButtonCloseCash = cashBoxOpen.getId() != null; //Habilitar Botón Cierre de Caja General, si no hay un CashBox abierto
+                } else {
+                    activeButtonCloseCash = cashBoxOpen.getId() != null; //Habilitar Botón Cierre de Caja General, si no hay un CashBox abierto
+                }
             }
         }
         return activeButtonCloseCash;
@@ -780,13 +782,15 @@ public class CashBoxHome extends FedeController implements Serializable {
         }
         this.activeSelectMenuBill = false; //Habilitar los Selects del Panel de Detalle para Billetes y Monedas
         this.activeSelectMenuMoney = false;
-        
+
         getCashBoxOpen(); //Buscar un Cashox abierto
         if (cashBoxOpen == null) { //Deshabilitar/Habilitar el Panel de Depósito según la existencia del CashBoxOpen
-            if(this.cashBox.getId()==null){
+            if (this.cashBox.getId() == null) {
                 this.activePanelDeposit = true;
             }
-        } else this.activePanelDeposit = cashBoxOpen.getId() == null;
+        } else {
+            this.activePanelDeposit = cashBoxOpen.getId() == null;
+        }
     }
 
     private void reloadDataCashBox() { //Recargar la vista con los datos del CashBox Instanciado
@@ -866,14 +870,15 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.cashBoxGeneral.addCashBox(this.cashBox); //Agregar un CashBox al CashBoxGeneral
         if (this.cashBoxGeneral.isPersistent()) {
             this.cashBoxGeneral.setLastUpdate(Dates.now());
+            cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
         } else {
             this.cashBoxGeneral.setAuthor(this.subject);
             this.cashBoxGeneral.setOwner(this.subject);
             this.cashBoxGeneral.setStatusCashBoxGeneral(CashBoxGeneral.Status.OPEN);
             this.cashBoxGeneral.setAccount(this.selectedAccount);
             this.cashBoxGeneral.setOrganization(this.organizationData.getOrganization());
+            cashBoxGeneralService.save(this.cashBoxGeneral);
         }
-        cashBoxGeneralService.save(this.cashBoxGeneral);
     }
 
     public void closeCashBoxChecker() {

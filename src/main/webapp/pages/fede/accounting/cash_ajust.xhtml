@@ -515,11 +515,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="EmptyBox20"></div>
                             <p:toolbar rendered="#{cashBoxHome.cashBox.id == null || cashBoxHome.cashBox.statusCashBox == 'OPEN'}">
                                 <f:facet name="left">
-                                    <p:commandButton id="btn-save" value="#{i18n['common.save']}" 
+<!--                                    <p:commandButton id="btn-save" value="#{i18n['common.save']}" 
                                                      actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
                                                      disabled="#{false}" 
                                                      style="width: auto !important;" styleClass="success-btn"
-                                                     type="submit"/>
+                                                     type="submit"/>-->
                                     <p:commandButton id="btn-close-cash-partial" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}" icon="fa fa-check"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
                                                      update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash"
