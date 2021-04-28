@@ -887,6 +887,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.activeSelectMenuBill = true; //Desabilitar los Selects del Panel de Detalle para Billetes y Monedas
         this.activeSelectMenuMoney = true;
         this.activePanelBreakdown = false;
+        getCashBoxsClosed(); //Recargar lista de CashBox Cerrados
         this.activeButtonCloseCash = false; //Habilitar el Button de CashBoxGeneral
     }
 
