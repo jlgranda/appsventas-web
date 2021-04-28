@@ -234,7 +234,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          action="#{cashBoxHome.openPanelBreakdown()}" 
                                          update="btn-breakdown panel-deposit panel-breakdown-cash cash-saldo saldo-cash btn-close-cash-general"
                                          disabled="#{!cashBoxHome.activePanelDeposit}"
-                                         style="text-transform: uppercase" styleClass="info-btn" ><!--rendered="#{request.isUserInRole('CHECKER') and  cashBoxHome.activePanelDeposit}"-->
+                                         rendered="#{request.isUserInRole('CHECKER')}"
+                                         style="text-transform: uppercase" styleClass="info-btn" >
                             <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
                         </p:commandButton>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
@@ -368,7 +369,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <h:panelGroup id="panel-breakdown-cash">
                     <h:panelGroup rendered="#{cashBoxHome.activePanelBreakdown and (cashBoxHome.cashBox.id == null || cashBoxHome.cashBox.statusCashBox == 'OPEN')}">
                         <div class="card ui-g-8 ui-lg-8 ui-md-8">
-                            <!--SUBPANEL ARRIBA-->
                             <div class="card ui-g-12 Container100">
                                 <h:panelGroup id="panel-cashBoxDetail" >
                                     <div class="ui-g-4" style="font-weight: bolder; text-align: center">
@@ -418,7 +418,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </h:panelGroup>
                             </div>
-                            <!--SUBPANEL ABAJO-->
                             <div class="ui-g-12 Container100">
                                 <div class="card ui-g-6">
                                     <p:dataTable id="dataTable-bills" draggableColumns="true" lazy="false"
@@ -516,7 +515,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="EmptyBox20"></div>
                             <p:toolbar rendered="#{cashBoxHome.cashBox.id == null || cashBoxHome.cashBox.statusCashBox == 'OPEN'}">
                                 <f:facet name="left">
-                                    <!--ajax="true"-->
                                     <p:commandButton id="btn-save" value="#{i18n['common.save']}" 
                                                      actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
                                                      disabled="#{false}" 

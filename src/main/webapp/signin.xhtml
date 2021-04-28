@@ -57,9 +57,9 @@
                                     execute="@this save" render="email"/>
                     <p:password id="contrasenia1" value="#{subjectAdminHome.clave}" match="contrasenia2" 
                                 required="true" placeholder="#{i18n['common.password']}" 
-                                validatorMessage="#{i18n['passwordsDontMatch']}" />
+                                validatorMessage="#{i18n['common.password.dont.match']}" />
                     <p:password id="contrasenia2" value="#{subjectAdminHome.clave}" 
-                                required="true" placeholder="#{i18n['common.confirm.password']}"/>
+                                required="true" placeholder="#{i18n['common.password.confirm']}"/>
 
                     <p:commandButton id="save" value="#{i18n['common.begin']}" 
                                      ajax="true" 
