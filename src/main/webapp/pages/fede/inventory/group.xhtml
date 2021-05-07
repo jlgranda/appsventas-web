@@ -35,17 +35,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li>#{i18n['app.fede.inventory.groups']}</li>
+        <li>#{i18n['app.fede.inventory.category']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupInventoryHome.groupId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['app.fede.inventory.group']}</p:link></li>
+        <li><p:link outcome="/pages/fede/inventory/group.jsf">#{groupInventoryHome.groupId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['app.fede.inventory.categories']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jpapi.model.Group"/>
         <div class="ui-g ui-fluid"> <!--Contenedor General-->
             <div class="ui-g-12 ui-lg-12 ui-md-12"><!--Contenedor General-->
-                <h1 class="BigTopic">#{i18n['app.fede.inventory.group']}</h1> <!--Sección 1: Título-->
+                <h1 class="BigTopic">#{i18n['app.fede.inventory.category']}</h1> <!--Sección 1: Título-->
                 <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
-                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}"
+                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.firstname']}"
                                     value="#{groupInventoryHome.group.name}" required="true"
                                     inlinehelp="#{messages['app.fede.inventory.group.name.inlinehelp']}"
                                     execute="@this save" render="nme"/>

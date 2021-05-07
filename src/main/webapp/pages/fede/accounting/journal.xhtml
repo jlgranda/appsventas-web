@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:outputText value="#{record.description}" />
                         </p:column>
                         <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{record.id}" style="width: auto; text-align: center">
-                            <p:commandButton id="button-detail" value="#{i18n['common.details.view']}"
+                            <p:commandButton id="button-detail" value="#{i18n['common.view']} #{i18n['common.details']}"
                                              actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" ajax="true"
                                              immediate="true" update=""
                                              styleClass="RedButton">

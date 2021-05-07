@@ -62,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  id="dataTable" widgetVar="dataTable_wv" lazy="true">
                         <p:ajax event="rowSelect" listener="#{employeeHome.onRowSelect}"/>
                         <p:column selectionMode="single" style="width:32px;text-align:center"/>
-                        <p:column headerText="#{i18n['name']}" sortBy="#{employee.owner.fullName}">
+                        <p:column headerText="#{i18n['common.names.full']}" sortBy="#{employee.owner.fullName}">
                             <h:outputText value="#{employee.owner.fullName}" />
                         </p:column>
                         <p:column headerText="#{i18n['app.fede.talentohumano.role']}" sortBy="#{employee.role.name}">

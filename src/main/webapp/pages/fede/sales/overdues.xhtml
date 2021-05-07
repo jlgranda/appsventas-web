@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <ui:repeat value="#{invoiceHome.myOverduelastPreInvoices}" var="entity">
                                         <div class="Container70 Fs50 FontRobotoLight Orange">
                                             <span class="Fs18 DispBlock">
-                                               <strong>#{entity.owner.fullName}</strong> #{i18n['app.fede.sales.invoice.comanda.number']}: #{entity.code} | <strong>#{i18n['ride.infoFactura.total.import']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                               <strong>#{entity.owner.fullName}</strong> #{i18n['app.fede.sales.invoice.comanda.number']}: #{entity.code} | <strong>#{i18n['ride.infoFactura.total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText></strong>
                                             </span>

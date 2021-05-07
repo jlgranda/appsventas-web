@@ -545,8 +545,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         return excessBreakdown;
     }
 
-    public void setExcessBreakdown(BigDecimal surplusBreakdown) {
-        this.excessBreakdown = surplusBreakdown;
+    public void setExcessBreakdown(BigDecimal excessBreakdown) {
+        this.excessBreakdown = excessBreakdown;
     }
 
     public List<CashBox> getCashBoxsClosed() {

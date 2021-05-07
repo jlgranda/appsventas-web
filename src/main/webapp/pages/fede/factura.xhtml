@@ -113,7 +113,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                         execute="none" render="imptiva12" value="#{facturaElectronicaHome.facturaElectronica.totalIVA12}" required="true"
                                                         container="none">
                                         </jlgranda:input>
-                                        <jlgranda:input id="impt" name="impt" type="number" label="#{i18n['ride.infoFactura.total.import']}" 
+                                        <jlgranda:input id="impt" name="impt" type="number" label="#{i18n['ride.infoFactura.total']}" 
                                                         execute="none" render="impt" value="#{facturaElectronicaHome.facturaElectronica.importeTotal}" required="true"
                                                         container="none"/>                    
                                         <jlgranda:input id="descuento" name="descuento" type="number" label="#{i18n['common.discount']}" 
@@ -188,7 +188,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="Container100 Responsive100">
                                     <p:panelGrid columns="9" layout="grid" style="border:0px !important; background:none;" styleClass="ui-panelgrid-blank">
                                         <div class="Fs20 BoldGray" style="text-align: center">
-                                            <h4>#{i18n['common.fund']} #{i18n['app.fede.accounting.pending']}<h:outputText style="font-weight: bolder" id="fund-request" value="#{facturaElectronicaHome.montoPorPagar()}">
+                                            <h4>#{i18n['common.fund']} #{i18n['common.pending']}<h:outputText style="font-weight: bolder" id="fund-request" value="#{facturaElectronicaHome.montoPorPagar()}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText> </h4> 
                                         </div>

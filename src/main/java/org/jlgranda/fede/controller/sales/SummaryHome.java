@@ -570,7 +570,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setShowPointLabels(false);
         model.setExtender("skinBar2");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.inventory.groups"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.groups"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
@@ -638,7 +638,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private HorizontalBarChartModel createHorizontalPurchasesBarModel() {
         HorizontalBarChartModel model = new HorizontalBarChartModel();
 //        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
-        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.total.import"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetweenOrg"));
+        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.total"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetweenOrg"));
 
         model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
                 + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
@@ -650,7 +650,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setExtender("skinHorizontalBar");
 
         Axis xAxis = model.getAxis(AxisType.X);
-        xAxis.setLabel(I18nUtil.getMessages("ride.infoFactura.total.import"));
+        xAxis.setLabel(I18nUtil.getMessages("ride.infoFactura.total"));
         xAxis.setMin(0);
 //        double scale; //Aumentar un poco más la escala
 //        if (!model.getSeries().get(0).getData().isEmpty()) {

@@ -33,9 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
 
-    <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
+    <ui:define name="title">#{i18n['common.register']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.talentohumano.registrar']}</li>
+        <li>#{i18n['common.register']}</li>
     </ui:define>
     <ui:define name="head">
         <style>
@@ -68,14 +68,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g-7">
                         <div class="ui-g-12">
                             <div class="ui-g-4">
-                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                                 <p:calendar value="#{journalHome.start}" class="input-sm">
                                     <p:ajax event="dateSelect" listener="#{journalHome.clear()}" 
                                             update="@form"/>
                                 </p:calendar>
                             </div>
                             <div class="ui-g-4">
-                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                                 <p:calendar value="#{journalHome.end}" class="input-sm">
                                     <p:ajax event="dateSelect" listener="#{journalHome.clear()}" update="@form" /> 
                                 </p:calendar>
@@ -126,7 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.dayOfWeek']}">
                                 <h:outputText value="#{journal.dayOfWeek}" />
                             </p:column>
-                            <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
                             <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"

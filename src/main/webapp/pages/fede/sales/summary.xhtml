@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <li>/</li>
         <li>#{i18n['app.fede.smart.dashboard']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/sales/summary.jsf">#{i18n['app.fede.sales.summary']}</p:link></li>
+        <li><p:link outcome="/pages/fede/sales/summary.jsf">#{i18n['common.summary']}</p:link></li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -178,7 +178,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
                             </p:column>
                             <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align: center">
-                                <p:button value="#{i18n['common.details.view']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
+                                <p:button value="#{i18n['common.view']} #{i18n['common.details']}" styleClass="succes-btn" outcome="/pages/fede/sales/invoice_read.jsf?invoiceId=#{discount[5]}"/>
                             </p:column>
                             <p:columnGroup type="footer" >
                                 <span class="ui-g-12" style="border: 1px solid #E9E9E9;">

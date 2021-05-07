@@ -267,7 +267,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:column headerText="#{i18n['common.quantity']}" styleClass="text-right">
                                                     <h:outputText style="text-align: right" value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </p:column>
-                                                <p:column headerText="#{i18n['app.fede.accounting.amount']}" style="text-align: right" styleClass="text-right">
+                                                <p:column headerText="#{i18n['common.amount']}" style="text-align: right" styleClass="text-right">
                                                     <h:outputText style="text-align: right" value="#{cashBoxDetail.amount}">
                                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                                     </h:outputText>
@@ -296,7 +296,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:column headerText="#{i18n['common.quantity']}" styleClass="text-right">
                                                     <h:outputText style="text-align: right" value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </p:column>
-                                                <p:column headerText="#{i18n['app.fede.accounting.amount']}" style="text-align: right" styleClass="text-right">
+                                                <p:column headerText="#{i18n['common.amount']}" style="text-align: right" styleClass="text-right">
                                                     <h:outputText style="text-align: right" value="#{cashBoxDetail.amount}">
                                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                                     </h:outputText>
@@ -328,13 +328,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                             </h:outputText>
                                                         </div>
                                                     </div>
-                                                    <div class="ui-g-6"><label>#{i18n['app.fede.accounting.ajust.missing']}: </label></div>
+                                                    <div class="ui-g-6"><label>#{i18n['common.missing']}: </label></div>
                                                     <div class="ui-g-6">
                                                         <h:outputText value="#{cashBoxs.missCashPartial}" style="#{cashBoxs.missCashPartial lt 0 ? 'color: #e53935;': 'color: #000000'};">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </div>
-                                                    <div class="ui-g-6"><label>#{i18n['app.fede.accounting.ajust.surplus']}: </label></div>
+                                                    <div class="ui-g-6"><label>#{i18n['common.excess']}: </label></div>
                                                     <div class="ui-g-6">
                                                         <h:outputText value="#{cashBoxs.excessCashPartial}">
                                                             <f:convertNumber type="currency"/>
@@ -436,7 +436,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.quantity']}" styleClass="text-right">
                                             <h:outputText style="text-align: right" value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.accounting.amount']}" style="text-align: right" styleClass="text-right">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right" styleClass="text-right">
                                             <h:outputText style="text-align: right" value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
@@ -466,7 +466,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.quantity']}" styleClass="text-right">
                                             <h:outputText style="text-align: right" value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.accounting.amount']}" style="text-align: right" styleClass="text-right">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right" styleClass="text-right">
                                             <h:outputText style="text-align: right" value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
@@ -490,15 +490,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </h:outputText>
                                             </div>
                                         </div>
-                                        <div class="ui-g-6"><label>#{i18n['app.fede.accounting.ajust.missing']}: </label></div>
+                                        <div class="ui-g-6"><label>#{i18n['common.missing']}: </label></div>
                                         <div class="ui-g-6">
                                             <h:outputText id="cash-missing" value="#{cashBoxHome.missingBreakdown*-1}" style="#{cashBoxHome.missingBreakdown lt 0 ? 'color: #e53935;': 'color: #000000'};">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
                                         </div>
-                                        <div class="ui-g-6"><label>#{i18n['app.fede.accounting.ajust.surplus']}: </label></div>
+                                        <div class="ui-g-6"><label>#{i18n['common.excess']}: </label></div>
                                         <div class="ui-g-6">
-                                            <h:outputText id="cash-surplus" value="#{cashBoxHome.excessBreakdown}">
+                                            <h:outputText id="cash-excess" value="#{cashBoxHome.excessBreakdown}">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
                                         </div>

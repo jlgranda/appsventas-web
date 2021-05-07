@@ -48,14 +48,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
                         <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
-                        <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.file']}"
+                        <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
                                          styleClass="secondary-button" style="margin-bottom:10px;"
                                          actionListener="#{facturaElectronicaHome.mostrarFormularioCargaFacturaElectronica()}">
                             <p:ajax event="dialogReturn" update="@form"
                                     listener="#{facturaElectronicaHome.handleReturn}">
                             </p:ajax>
                         </p:commandButton>
-                        <p:commandButton id="commandAddFromURL" value="#{i18n['common.download']} #{i18n['common.from.URL']}"
+                        <p:commandButton id="commandAddFromURL" value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
                                          styleClass="secondary-button" style="margin-bottom:10px;"
                                          actionListener="#{facturaElectronicaHome.mostrarFormularioDescargaFacturaElectronica()}">
                             <p:ajax event="dialogReturn" update="@form"

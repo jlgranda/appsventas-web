@@ -169,7 +169,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <!-- sección de formulario -->
                     <div class="ui-g">
                         <div class="ui-g-12">
-                            <h2>#{i18n['app.fede.sales.invoice.detail.add']}</h2>
+                            <h2>#{i18n['common.add']} #{i18n['common.detail']}</h2>
                             <div class="ui-g-9">
                                 <ui:repeat value="#{inventoryHome.findTop()}" var="product">  
                                     <p:commandButton ajax="true" update="@form @form:DetailPanel @form:DetailPanel:payment-panel" immediate="true"
@@ -251,7 +251,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                         <!-- sección de formulario -->
                         <p:panel id="DetailPanel" styleClass="ui-g-12">
-                            <h2>#{i18n['common.detail.current']} [<h:outputText id="invoice-total" value="#{-invoiceHome.calculeCandidateDetailTotal()}">
+                            <h2>#{i18n['common.detail']} #{i18n['common.current']} [<h:outputText id="invoice-total" value="#{-invoiceHome.calculeCandidateDetailTotal()}">
                                     <f:convertNumber type="currency"/>
                                 </h:outputText>]</h2>
                             <div class="ui-g-12">

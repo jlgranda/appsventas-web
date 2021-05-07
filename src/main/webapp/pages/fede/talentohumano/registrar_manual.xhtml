@@ -33,9 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
 
-    <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
+    <ui:define name="title">#{i18n['common.register']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.talentohumano.registrar']}</li>
+        <li>#{i18n['common.register']}</li>
     </ui:define>
     <ui:define name="head">
         <style>
@@ -69,14 +69,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g-7">
                         <div class="ui-g-12">
                             <div class="ui-g-4">
-                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                                 <p:calendar value="#{journalHome.start}" class="input-sm">
                                     <p:ajax event="dateSelect" listener="#{journalHome.clear()}" 
                                             update="@form"/>
                                 </p:calendar>
                             </div>
                             <div class="ui-g-4">
-                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                                 <p:calendar value="#{journalHome.end}" class="input-sm">
                                     <p:ajax event="dateSelect" listener="#{journalHome.clear()}" update="@form" /> 
                                 </p:calendar>
@@ -96,7 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h1>#{journalHome.employeeSelected.owner.id} #{journalHome.employeeSelected.owner.fullName}</h1>
                     <div class="ui-g-12">
                         <p:accordionPanel widgetVar="accordion">
-                            <p:tab title="#{i18n['app.fede.talentohumano.registrar']}">
+                            <p:tab title="#{i18n['common.register']}">
                                 <div class="ui-g-12">
                                     <div class="ui-g-6">
                                         <p:calendar id="beginTime" value="#{journalHome.journal.beginTime}" pattern="dd/MM/yyyy HH:mm" 
@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 render="observation"/>
                                 <p:commandButton id="add-btn" value="#{i18n['Add']}" actionListener="#{journalHome.add()}" 
                                                  icon="fa fa-check" >
-                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                 </p:commandButton>
 
                                 <p:defaultCommand target="add-btn" />
@@ -154,7 +154,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.dayOfWeek']}">
                                 <h:outputText value="#{journal.dayOfWeek}" />
                             </p:column>
-                            <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
                             <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
@@ -184,7 +184,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:commandButton value="#{i18n['common.delete']}" id="delete-btn" 
                                                  actionListener="#{journalHome.delete(journal)}" icon="fa fa-eraser " ajax="true"
                                                  update="@form" class="danger-btn">
-                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                 </p:commandButton>
                             </p:column>
                         </p:dataTable>
@@ -201,7 +201,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:commandButton value="#{i18n['common.save']}" id="put-btn-access" 
                                                      actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
                                                      update="@form" class="danger-btn" onclick="PF('addJournalAcces').hide()">
-                                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                     </p:commandButton>
                                 </p:panelGrid>
                             </p:outputPanel>
@@ -219,7 +219,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:commandButton value="#{i18n['common.save']}" id="put-btn-egress" 
                                                      actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
                                                      update="@form" class="danger-btn" onclick="PF('addJournalEgress').hide()">
-                                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                        <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                     </p:commandButton>
                                 </p:panelGrid>
                             </p:outputPanel>

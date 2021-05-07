@@ -77,11 +77,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div><!-- comment -->
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                     <p:panel id="control-bar2" class="card"
-                             header="#{i18n['app.smart.purchases.top']}" 
+                             header="#{i18n['app.fede.smart.purchases.top']}" 
                              styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
                             <div align="right">
-                                <p:commandButton id="button-detail" value="#{i18n['common.detail.current']}" style="margin-bottom:10px;"
+                                <p:commandButton id="button-detail" value="#{i18n['common.detail']} #{i18n['common.current']}" style="margin-bottom:10px;"
                                                  styleClass="raised-btn" update=":form:panel-dataTable" 
                                                  oncomplete="PF('dlgTblPurchases').show()">
                                 </p:commandButton>
@@ -105,7 +105,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          scrollWidth="100%" tableStyle="table-layout: auto"
                                          value="#{summaryHome.listPurchases}" var="purchases">
                                 <f:facet name="header">
-                                    <h:outputText value="#{i18n['app.smart.purchases.summary']}"></h:outputText>
+                                    <h:outputText value="#{i18n['app.fede.smart.purchases.summary']}"></h:outputText>
                                 </f:facet>
                                 <p:column id="nme" headerText="#{i18n['common.supplier']}" sortBy="#{purchases[0]}" style="width:60%; text-align: left">
                                     <h:outputText value="#{purchases[0]}"/>
@@ -117,7 +117,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:column>
                                 <p:columnGroup type="footer" >
                                     <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                                        <span class="ui-g-10" style=" font-weight: bolder; text-align: right">#{i18n['app.smart.purchases.total']}: </span>
+                                        <span class="ui-g-10" style=" font-weight: bolder; text-align: right">#{i18n['common.purchases']} #{i18n['common.totals']}: </span>
                                         <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
                                             <h:outputText value="#{summaryHome.getListPurchasesTotal()}" style="text-align: right">
                                                 <f:convertNumber type="currency" currencySymbol="$"/>

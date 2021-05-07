@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel header="#{i18n['app.fede.statistic']}" styleClass="statistics ui-g">
+                    <p:panel header="#{i18n['app.fede.smart.statistic']}" styleClass="statistics ui-g">
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
 <!--                                                        <i class="fa fa-level-up"></i>
                                                         <span class="icon-label">Mejora</span>
@@ -123,7 +123,7 @@
                             </div>
                             <div class="details">
                                 <h:link outcome="/pages/fede/sales/summary.jsf">
-                                    <span>#{i18n['common.details.view']}</span>
+                                    <span>#{i18n['common.view']} #{i18n['common.details']}</span>
                                     <i class="fa fa-chevron-right"></i>
                                 </h:link>
                             </div>
@@ -159,8 +159,8 @@
                 <div class="ui-g-12 ui-md-12 ui-lg-6">
                     <p:panel styleClass="tasks">
                         <f:facet name="header">
-                            #{i18n['common.pre.invoices']}
-                            <p:button icon="fa fa-plus" title="#{i18n['common.pre.invoices']}" styleClass="secondary-button" outcome="/pages/fede/sales/invoice.jsf"/>
+                            #{i18n['common.orders']}
+                            <p:button icon="fa fa-plus" title="#{i18n['common.orders']}" styleClass="secondary-button" outcome="/pages/fede/sales/invoice.jsf"/>
                         </f:facet>
                         <ul>
                             <ui:repeat value="#{invoiceHome.myLastlastPreInvoices}" var="entity">
