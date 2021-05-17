@@ -188,9 +188,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <h:panelGroup id="panel-deposit-enable" >
                                         <h:panelGroup rendered="#{cashBoxHome.activeSelectDeposit}">
                                             <div class="ui-g-4">
-                                                <label>#{i18n['app.fede.accounting.amount']}</label>
+                                                <label>#{i18n['common.amount']}</label>
                                                 <p:inputNumber id="amount-deposit" value="#{cashBoxHome.amountDeposit}" required="true" 
-                                                               placeholder="#{i18n['app.fede.accounting.amount']}"
                                                                styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{!cashBoxHome.activeButtonSelectDeposit}"
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 

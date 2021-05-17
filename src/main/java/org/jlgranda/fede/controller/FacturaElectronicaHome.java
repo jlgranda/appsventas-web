@@ -46,11 +46,13 @@ import org.jpapi.util.Dates;
 import org.primefaces.event.FileUploadEvent;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
+import com.jlgranda.fede.ejb.FacturaElectronicaDetailService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
+import com.jlgranda.fede.ejb.sales.ProductService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
 import java.math.RoundingMode;
@@ -76,7 +78,9 @@ import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
 import org.jlgranda.fede.model.sales.Payment;
+import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -134,6 +138,12 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     @EJB
     private RecordDetailService recordDetailService;
+    
+    @EJB
+    private ProductService productService;
+    
+    @EJB
+    private FacturaElectronicaDetailService facturaElectronicaDetailService;
 
     private String keys;
 
@@ -200,6 +210,15 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private RecordDetail recordDetail;
 
     private boolean payableTotal;
+    
+    //Variables de FacturaElectronicaDetail para edición
+    private Product productSelected;
+    private FacturaElectronicaDetail facturaElectronicaDetail;
+    
+    
+    
+    
+    
 
     public FacturaElectronicaHome() {
     }
@@ -222,6 +241,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         setOutcome("fede-inbox");
+        
+        setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -268,7 +289,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public List<FacturaElectronica> getResultList() {
-        return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmisionAndEmissionType", Integer.MAX_VALUE, subject, getStart(), getEnd(), EmissionType.PURCHASE_CASH, true);
+        return facturaElectronicaService.findByNamedQueryWithLimit("FacturaElectronica.findByOwnerAndEmisionAndEmissionTypeAndOrg", Integer.MAX_VALUE, subject, getStart(), getEnd(), EmissionType.PURCHASE_CASH, true, this.organizationData.getOrganization());
     }
 
     public void setSampleResultList(List<FacturaElectronica> sampleResultList) {
@@ -392,6 +413,22 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.payableTotal = payableTotal;
     }
 
+    public Product getProductSelected() {
+        return productSelected;
+    }
+
+    public void setProductSelected(Product productSelected) {
+        this.productSelected = productSelected;
+    }
+
+    public FacturaElectronicaDetail getFacturaElectronicaDetail() {
+        return facturaElectronicaDetail;
+    }
+
+    public void setFacturaElectronicaDetail(FacturaElectronicaDetail facturaElectronicaDetail) {
+        this.facturaElectronicaDetail = facturaElectronicaDetail;
+    }
+    
     /**
      * TODO !IMPLEMENTACION TEMPORAL
      *
@@ -1198,5 +1235,16 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                 recordDetailGeneral.setRecordDetailType(null);
         }
         return recordDetailGeneral;
+    }
+    
+    //Métodos de FacturaElectronicaDetail
+    public List<Product> getProducts() {
+        return productService.findByOrganization(this.organizationData.getOrganization());
+    }
+    
+    public void addFacturaElectronicaDetail(){
+        this.facturaElectronicaDetail.setTotal_value(this.facturaElectronicaDetail.getUnit_value().multiply(BigDecimal.valueOf(this.facturaElectronicaDetail.getUnit_value().doubleValue())));
+        this.facturaElectronica.addFacturaElectronicaDetail(this.facturaElectronicaDetail);
+        this.facturaElectronicaDetail = facturaElectronicaDetailService.createInstance();
     }
 }
