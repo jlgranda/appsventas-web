@@ -169,6 +169,11 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         listInvoices.stream().forEach((Object object) -> {
             this.listInvoices.add((String) object);
         });
+        for (KardexDetail kardexDetail1 : this.kardex.getKardexDetails()) {
+            if (kardexDetail1.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                this.listInvoices.add(kardexDetail1.getCode());
+            }
+        }
     }
 
     public List<String> getListFacturas() {
@@ -180,6 +185,11 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         listFacturas.stream().forEach((Object object) -> {
             this.listFacturas.add((String) object);
         });
+        for (KardexDetail kardexDetail1 : this.kardex.getKardexDetails()) {
+            if (kardexDetail1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
+                this.listInvoices.add(kardexDetail1.getCode());
+            }
+        }
     }
 
     //METHODS
@@ -267,12 +277,13 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public boolean validatedKardexDetail() {
         if (this.kardexDetail.getOperation_type() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnit_value() != null) {
-            if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)) {
-                this.kardexDetail.setCode(null);
-                return false;
-            } else {
-                return this.kardexDetail.getCode() == null;
-            }
+//            if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)) {
+//                this.kardexDetail.setCode(null);
+//                return false;
+//            } else {
+//                return this.kardexDetail.getCode() == null;
+//            }
+            return false;
         } else {
             return true;
         }
@@ -280,7 +291,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public void addKardexDetail() {
         boolean existTransaction = true;
+        System.out.println("\nkardexId: " + kardexId);
         if (this.kardexId != null) {
+            System.out.print("\nthis.kardexDetail.getOperation_type(): " + this.kardexDetail.getOperation_type());
             if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA) && this.kardexDetail.getQuantity() > this.kardex.getQuantity()) {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.sales"));
             } else {
@@ -292,13 +305,20 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                     } else if (objects.get(i)[0].equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) || objects.get(i)[0].equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
                         residue = residue - (Long) objects.get(i)[1];
                     }
+                    System.out.print("\nresiduoCurrent: " + residue);
                 }
+                System.out.print("\nresiduo: " + residue);
                 List<KardexDetail> listNewKardexDetails = new ArrayList<>();
                 for (KardexDetail kd : this.kardex.getKardexDetails()) {
-                    if (kd.getId() == null) {
+                    System.out.println("\nkdgetId: " + kd.getId());
+                    System.out.println("kdGetCode: " + kd.getCode());
+                    System.out.println("kardexDetailgetCOde(): " + this.kardexDetail.getCode());
+                    if (kd.getId() == (null) && kd.getCode().equals(this.kardexDetail.getCode())) {
                         listNewKardexDetails.add(kd);
+                        System.out.println("kardexDetailLIst: " + kd.getCode() + "-->" + kd.getQuantity());
                     }
                 }
+                System.out.println("\nlistNewKardexDetails.contains(this.kardexDetail): " + listNewKardexDetails.contains(this.kardexDetail));
                 if (!this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)) {
                     if (!listNewKardexDetails.contains(this.kardexDetail)) {
                         if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.COMPRA)
@@ -313,11 +333,14 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                                     || (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && this.listInvoices.contains(this.kardexDetail.getCode()))) {
                                 if (listNewKardexDetails.isEmpty()) {
                                     residue = residue - this.kardexDetail.getQuantity();
+                                    System.out.print("\nresiduo 5: " + residue);
                                 } else {
+                                    System.out.print("\nresiduo 6: " + residue);
                                     if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
                                         for (KardexDetail kd1 : listNewKardexDetails) {
                                             if (kd1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
                                                 residue = residue + kd1.getQuantity();
+                                                System.out.print("\nresiduo : " + kd1 + " " + residue);
                                             } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
                                                 residue = residue - this.kardexDetail.getQuantity();
                                             }
@@ -331,7 +354,10 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                                             }
                                         }
                                     }
+                                    residue = residue - this.kardexDetail.getQuantity();
+                                    System.out.print("\nresiduo 8: " + residue);
                                 }
+                                System.out.print("\nresiduo 2: " + residue);
                             } else {
                                 existTransaction = false;
                                 if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
@@ -359,8 +385,10 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                                 }
                             }
                         }
+                        System.out.print("\nresiduo 3: " + residue);
                     }
                 }
+                System.out.print("\nresiduo 1: " + residue);
                 if (existTransaction == true) {
                     if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && (residue < 0)) {
                         this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.code.dev.sales"));
@@ -401,7 +429,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             }
         }
         this.kardexDetail = kardexDetailService.createInstance(); //Recargar para la nueva instancia
-        this.kardexDetail.setOperation_type(null); //Enserar valores
+//        this.kardexDetail.setOperation_type(null); //Enserar valores
     }
 
     public List<String> completeCode(String query) {
@@ -415,11 +443,13 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             for (String x : getListFacturas()) {
                 codeList.add(x);
             }
+        } else {
+            codeList.add("null");
         }
         return codeList.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
     }
 
-    public void save() { //Guardar el KArdex, con todos sus KardexDetails
+    public void save() { //Guardar el Kardex, con todos sus KardexDetails
         if (this.kardex.isPersistent()) {
             this.kardex.setLastUpdate(Dates.now());
         } else {

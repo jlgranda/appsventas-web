@@ -203,10 +203,10 @@ public class UI {
         items.add(item);
         item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
         items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
-//        items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
-//        items.add(item);
+        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
+        items.add(item);
+        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
+        items.add(item);
 
         return items;
     }

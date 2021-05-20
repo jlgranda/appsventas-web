@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h4>#{i18n['common.vaucher']} #{i18n['common.nr']} :</h4>
                     <p:autoComplete id="code" value="#{kardexInventoryHome.kardexDetail.code}"
                                     completeMethod="#{kardexInventoryHome.completeCode}" scrollHeight="250" 
-                                    disabled="#{kardexInventoryHome.kardexDetail.operation_type==null || kardexInventoryHome.kardexDetail.operation_type=='EXISTENCIA_INICIAL'}">
+                                    disabled="#{kardexInventoryHome.kardexDetail.operation_type=='EXISTENCIA_INICIAL'}">
                         <p:ajax listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-kardexDetail-save" partialSubmit="true"></p:ajax>
                     </p:autoComplete>
                     <h4>#{i18n['common.quantity']}:</h4>
