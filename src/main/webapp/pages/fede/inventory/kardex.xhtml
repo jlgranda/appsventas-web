@@ -80,22 +80,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                 </div>
                 <div class="card ui-g-12 ui-fluid">
-                    <div class="ui-g-7">
+                    <div class="ui-g-6">
                         <div class="ui-inputgroup">
                             <span class="ui-inputgroup-addon">#{i18n['app.fede.inventory.kardex.sku']}</span>
-                            <p:inputText value="#{kardexInventoryHome.kardex.code}"  disabled="true"/>
+                            <p:inputText value="#{kardexInventoryHome.kardex.code}" required="#{true}" disabled="#{kardexInventoryHome.kardexId!=null}"/>
                         </div>
                         <div class="ui-inputgroup">
                             <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 30%">#{i18n['common.product']}</span>
-                            <p:inputText value="#{kardexInventoryHome.kardex.product.name}" disabled="true"/>
+                            <p:autoComplete value="#{kardexInventoryHome.kardex.product}" effect="blind" disabled="#{kardexInventoryHome.kardexId!=null}"
+                                            minQueryLength="2" completeMethod="#{kardexInventoryHome.completeProductKardex}"
+                                            var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
+                                            converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
+                                            placeholder="#{i18n['common.product.find']}">
+                                <p:column>
+                                    <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
+                                </p:column>
+                                <p:ajax event="itemSelect" update="panel-kardexDetail-add" partialSubmit="true"></p:ajax>
+                            </p:autoComplete>
                         </div>
                     </div>
-                    <div class="ui-g-4">
+                    <div class="ui-g-5">
                         <h:panelGroup id="panel-kardex-properties">
                             <div class="ui-inputgroup">
                                 <span class="ui-inputgroup-addon"  style="text-transform: uppercase; width: 100%">#{i18n['common.unit']} #{i18n['common.of']} #{i18n['common.measure']}</span>
                                 <p:selectOneMenu value="#{kardexInventoryHome.kardex.unit_measure}" effect="fade" style="width: 100%;"
-                                                 required="#{false}" immediate="true" disabled="#{kardexInventoryHome.activeKardexEdition}"> 
+                                                 required="#{true}" immediate="true" disabled="#{kardexInventoryHome.activeKardexEdition and kardexInventoryHome.kardexId!=null}"> 
                                     <f:selectItem itemLabel="#{i18n['common.choice']}" itemValue="#{kardexInventoryHome.kardex.unit_measure}" rendered="#{kardexInventoryHome.kardex.unit_measure!=null}"/> 
                                     <f:selectItems value="#{ui.getMeasuresTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                     <p:ajax update="@this"></p:ajax>
@@ -103,19 +112,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-inputgroup">
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.minimun']}</span>
-                                <p:spinner value="#{kardexInventoryHome.kardex.unit_minimum}" disabled="#{kardexInventoryHome.activeKardexEdition}"
-                                           min="1" immediate="false" styleClass="" >
+                                <p:spinner value="#{kardexInventoryHome.kardex.unit_minimum}" disabled="#{kardexInventoryHome.activeKardexEdition and kardexInventoryHome.kardexId!=null}"
+                                           min="1" immediate="false" styleClass="" required="#{true}">
                                     <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@form:unit_maximun"></p:ajax>
                                 </p:spinner>
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.maximum']}</span>
-                                <p:spinner id="unit_maximun" value="#{kardexInventoryHome.kardex.unit_maximum}" disabled="#{kardexInventoryHome.activeKardexEdition}"
-                                           min="#{kardexInventoryHome.kardex.unit_minimum}" immediate="true" styleClass="">
+                                <p:spinner id="unit_maximun" value="#{kardexInventoryHome.kardex.unit_maximum}" disabled="#{kardexInventoryHome.activeKardexEdition and kardexInventoryHome.kardexId!=null}"
+                                           min="#{kardexInventoryHome.kardex.unit_minimum==null? '1':kardexInventoryHome.kardex.unit_minimum}" immediate="true" 
+                                           styleClass="" required="#{true}">
                                     <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@this"></p:ajax>
                                 </p:spinner>
                             </div>
                         </h:panelGroup>
                     </div>
-                    <div class="ui-g-1" style="text-align: center">
+                    <h:panelGroup class="ui-g-1" style="text-align: center" rendered="#{kardexInventoryHome.kardexId!=null}">
                         <p:commandButton id="btn-edit-kardex-properties" icon="fa fa-pencil-square-o" title="Editar Propiedades"
                                          actionListener="#{kardexInventoryHome.activePanelKardex()}"
                                          disabled="#{!kardexInventoryHome.activeKardexEdition}"
@@ -126,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          disabled="#{kardexInventoryHome.activeKardexEdition}"
                                          update="btn-save-kardex-properties btn-edit-kardex-properties panel-kardex-properties"
                                          styleClass="raised-btn" />
-                    </div>
+                    </h:panelGroup>
                 </div>
                 <div class="ui-g-5">
                     <p:commandButton id="btn-kardexDetail-new" value="#{i18n['common.new']}" icon="fa fa-plus"
@@ -146,7 +156,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h4>#{i18n['common.vaucher']} #{i18n['common.nr']} :</h4>
                     <p:autoComplete id="code" value="#{kardexInventoryHome.kardexDetail.code}"
                                     completeMethod="#{kardexInventoryHome.completeCode}" scrollHeight="250" 
-                                    disabled="#{kardexInventoryHome.kardexDetail.operation_type=='EXISTENCIA_INICIAL'}">
+                                    disabled="#{kardexInventoryHome.kardexDetail.operation_type=='EXISTENCIA_INICIAL' or kardexInventoryHome.kardexDetail.operation_type=='PRODUCCION'}">
                         <p:ajax listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-kardexDetail-save" partialSubmit="true"></p:ajax>
                     </p:autoComplete>
                     <h4>#{i18n['common.quantity']}:</h4>
@@ -186,9 +196,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  selection="#{kardexInventoryHome.selectedBussinesEntities}"
                                  sortOrder="ASCENDING" sortBy="#{kardexDetail.createdOn}"
                                  rowStyleClass="#{kardexDetail.operation_type=='COMPRA' ? 'rowPurchases' : 'rowDefault' 
-                                                  || kardexDetail.operation_type=='VENTA' ? 'rowSales' : 'rowDefault'
-                                                  || kardexDetail.operation_type=='DEVOLUCION_COMPRA' ? 'rowPurchasesDev' : 'rowDefault'
-                                                  || kardexDetail.operation_type=='DEVOLUCION_VENTA' ? 'rowSalesDev' : 'rowDefault  '}">
+                                                  or kardexDetail.operation_type=='VENTA' ? 'rowSales' : 'rowDefault'
+                                                  or kardexDetail.operation_type=='DEVOLUCION_COMPRA' ? 'rowPurchasesDev' : 'rowDefault'
+                                                  or kardexDetail.operation_type=='DEVOLUCION_VENTA' ? 'rowSalesDev' : 'rowDefault  '}">
                         <p:column headerText="#{i18n['common.date.emission']}">
                             <h:outputText value="#{kardexDetail.createdOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
@@ -208,30 +218,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_COMPRA' ? '-' : ''} </label>
                             <h:outputText value="#{kardexDetail.quantity}" 
-                                          rendered="#{kardexDetail.operation_type=='EXISTENCIA_INICIAL' ||  kardexDetail.operation_type=='COMPRA' || kardexDetail.operation_type=='DEVOLUCION_COMPRA'}"/>
+                                          rendered="#{kardexDetail.operation_type=='EXISTENCIA_INICIAL' or kardexDetail.operation_type=='PRODUCCION' 
+                                                      or  kardexDetail.operation_type=='COMPRA' or kardexDetail.operation_type=='DEVOLUCION_COMPRA'}"/>
                         </p:column>
                         <p:column headerText="#{i18n['common.value']}" style="text-align: right">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_COMPRA' ? '-' : ''} </label>
                             <h:outputText value="#{kardexDetail.total_value}"
-                                          rendered="#{kardexDetail.operation_type=='EXISTENCIA_INICIAL' ||  kardexDetail.operation_type=='COMPRA' || kardexDetail.operation_type=='DEVOLUCION_COMPRA'}">
+                                          rendered="#{kardexDetail.operation_type=='EXISTENCIA_INICIAL' or kardexDetail.operation_type=='PRODUCCION' 
+                                                      or kardexDetail.operation_type=='COMPRA' or kardexDetail.operation_type=='DEVOLUCION_COMPRA'}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
                         <p:column headerText="#{i18n['common.quantity.min']}" style="text-align: right">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_VENTA' ? '-' : ''} </label>
-                            <h:outputText value="#{kardexDetail.quantity}" rendered="#{kardexDetail.operation_type=='VENTA' || kardexDetail.operation_type=='DEVOLUCION_VENTA'}"/>
+                            <h:outputText value="#{kardexDetail.quantity}" rendered="#{kardexDetail.operation_type=='VENTA' or kardexDetail.operation_type=='DEVOLUCION_VENTA'}"/>
                         </p:column>
                         <p:column headerText="#{i18n['common.value']}" style="text-align: right">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_VENTA' ? '-' : ''} </label>
-                            <h:outputText value="#{kardexDetail.total_value}" rendered="#{kardexDetail.operation_type=='VENTA' || kardexDetail.operation_type=='DEVOLUCION_VENTA'}">
+                            <h:outputText value="#{kardexDetail.total_value}" rendered="#{kardexDetail.operation_type=='VENTA' or kardexDetail.operation_type=='DEVOLUCION_VENTA'}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
                         <p:column headerText="#{i18n['common.quantity.min']}" style="text-align: right">
-                            <h:outputText value="#{kardexDetail.cummulative_quantity}"/>
+                            <h:outputText value="#{kardexDetail.cummulative_quantity}" style="#{kardexDetail.cummulative_quantity lt 0 ? 'color: #e53935;': ''}"/>
                         </p:column>
                         <p:column headerText="#{i18n['common.value']}" style="text-align: right">
-                            <h:outputText value="#{kardexDetail.cummulative_total_value}">
+                            <h:outputText value="#{kardexDetail.cummulative_total_value lt 0 ? '-': ''}" style="#{kardexDetail.cummulative_total_value lt 0 ? 'color: #e53935;': ''}"/>
+                            <h:outputText value="#{kardexDetail.cummulative_total_value}" style="#{kardexDetail.cummulative_total_value lt 0 ? 'color: #e53935;': ''}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>

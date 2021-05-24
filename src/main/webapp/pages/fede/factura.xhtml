@@ -135,7 +135,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <div class="EmptyBox10"/>
                                 <jlgranda:input id="subject" name="subject" type="text" label="#{i18n['app.documents.task.register.by']}:" disabled="true"
-                                                execute="none" render="subject" value="#{facturaElectronicaHome.facturaElectronica.owner.name}"
+                                                execute="none" render="subject" value="#{facturaElectronicaHome.facturaElectronica.owner.fullName}"
                                                 container="none"/>
                             </div>
                         </div>
@@ -144,13 +144,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="invoice-panel-FacturaElectronicaDetail ui-g-12">
                         <p:dialog id="pDialog-facturaElectronicaDetail-add" header="Agregar detalle" widgetVar="panelDialog-facturaElectronicaDetail" minHeight="40" width="550" showEffect="blind">
                             <h4>#{i18n['common.product']}:</h4>
-                            <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronicaDetail.product}" effect="fade" 
+<!--                            <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronicaDetail.product}" effect="fade" 
                                              immediate="false" required="#{false}" style="width: 100%;"
                                              converter="org.jlgranda.fede.ui.converter.ProductConverter"> 
                                 <f:selectItems value="#{ui.getProductTypesAsSelectItem(facturaElectronicaHome.getProducts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
                                 <p:ajax update="@this"/>
                                 <p:ajax listener="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="true"></p:ajax>
-                            </p:selectOneMenu>
+                            </p:selectOneMenu>-->
+                            <p:autoComplete value="#{facturaElectronicaHome.facturaElectronicaDetail.product}" effect="blind"
+                                            minQueryLength="2" completeMethod="#{facturaElectronicaHome.completeProductType}"
+                                            var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
+                                            converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
+                                            placeholder="#{i18n['common.product.find']}">
+                                <p:ajax event="itemSelect" update="btn-facturaElectronicaDetail-save unit_value" listener="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}" partialSubmit="true"></p:ajax>
+                            </p:autoComplete>
                             <h4>#{i18n['common.description']}:</h4>
                             <p:inputText id="description" value="#{facturaElectronicaHome.facturaElectronicaDetail.description}" required="#{false}">
                                 <p:ajax listener="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="true"></p:ajax>
@@ -175,7 +182,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <f:facet name="footer">
                                 <p:commandButton id="btn-facturaElectronicaDetail-save" value="#{i18n['common.add']}" icon="fa fa-check"
                                                  actionListener="#{facturaElectronicaHome.addFacturaElectronicaDetail()}"
-                                                 update="pDialog-facturaElectronicaDetail-add dataTable-facturaElectronica-details imptsi imptiva12 impt"
+                                                 update="pDialog-facturaElectronicaDetail-add dataTable-facturaElectronica-details imptsi imptiva12 impt fund-request"
                                                  disabled="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}"
                                                  styleClass="secondary-button rounded-btn" style="margin-right: .5rem">
                                 </p:commandButton>
@@ -191,11 +198,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      selection="#{kardexInventoryHome.selectedBussinesEntities}"
                                      sortOrder="ASCENDING" sortBy="#{facturaElectronicaDetail.createdOn}"
                                      styleClass="ui-dataTable">
-                            <p:column headerText="#{i18n['common.description']}" >
-                                <h:outputText value="#{facturaElectronicaDetail.description}"/>
-                            </p:column>
                             <p:column headerText="#{i18n['common.quantity']}">
                                 <h:outputText value="#{facturaElectronicaDetail.quantity}"/>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.description']}" >
+                                <h:outputText value="#{facturaElectronicaDetail.description}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.price.unit']}">
                                 <h:outputText value="#{facturaElectronicaDetail.unit_value}">
@@ -211,7 +218,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <div class="invoice-summary ui-g-12">
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">
-                            <jlgranda:input id="memo" name="memo" type="textarea" required="#{true}" label="#{i18n['common.observations']}"
+                            <jlgranda:input id="memo" name="memo" type="textarea" required="#{false}" label="#{i18n['common.observations']}"
                                             execute="none" render="memo" value="#{facturaElectronicaHome.facturaElectronica.description}"
                                             container="none"/>
                         </div>

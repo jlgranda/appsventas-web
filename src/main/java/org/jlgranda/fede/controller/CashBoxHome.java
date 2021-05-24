@@ -485,7 +485,6 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActivePanelBreakdown() {
-        System.out.println("activePanelBreakdown: " + activePanelBreakdown);
         return activePanelBreakdown;
     }
 
@@ -497,7 +496,6 @@ public class CashBoxHome extends FedeController implements Serializable {
         if (cashBoxGeneral.getId() != null) {
             cashBoxOpen = cashBoxPartialService.findUniqueByNamedQuery("CashBoxPartial.findByCashBoxGeneralAndStatus", this.cashBoxGeneral, CashBoxPartial.Status.OPEN);
         }
-        System.out.println("\ncashboxOpen: " + cashBoxOpen);
         return cashBoxOpen;
     }
 
@@ -843,6 +841,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             if (this.depositAccount.getId().equals(this.selectedAccount.getId())) {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
             } else {
+                //Registrar asiento contable del depósito del valor de caja
                 //registerRecordInJournal(this.selectedAccount, this.depositAccount, this.amountDeposit); //Registar asiento contable
                 calculeSummaryToday();
                 cleanPanelDeposit(); //Resetear los valores del Panel de Depósito

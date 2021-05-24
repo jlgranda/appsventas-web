@@ -51,6 +51,8 @@ import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.sales.KardexDetailService;
+import com.jlgranda.fede.ejb.sales.KardexService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
@@ -66,6 +68,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
@@ -81,8 +84,12 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
+import org.jlgranda.fede.model.sales.Detail;
+import org.jlgranda.fede.model.sales.Kardex;
+import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
+import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -216,7 +223,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     //Variables de FacturaElectronicaDetail para edición
     private Product productSelected;
     private FacturaElectronicaDetail facturaElectronicaDetail;
+    private List<Product> productsTypeProduct;
     private int days;
+
+    @EJB
+    private KardexService kardexService;
+
+    @EJB
+    private KardexDetailService kardexDetailService;
 
     public FacturaElectronicaHome() {
     }
@@ -241,6 +255,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setOutcome("fede-inbox");
 
         setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
+        getProductsByType();
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -427,6 +442,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.facturaElectronicaDetail = facturaElectronicaDetail;
     }
 
+    public List<Product> getProductsTypeProduct() {
+        return productsTypeProduct;
+    }
+
+    public void setProductsTypeProduct(List<Product> productsTypeProduct) {
+        this.productsTypeProduct = productsTypeProduct;
+    }
+
     public int getDays() {
         return days;
     }
@@ -434,7 +457,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     public void setDays(int days) {
         this.days = days;
     }
-    
+
     /**
      * TODO !IMPLEMENTACION TEMPORAL
      *
@@ -814,7 +837,21 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                 facturaElectronica.setCode(UUID.randomUUID().toString());
             }
 
+            //Especificar texto de observación
+            if (facturaElectronica.getDescription().equals("")) {
+                if (facturaElectronica.getFacturaElectronicaDetails().isEmpty()) {
+                    facturaElectronica.setDescription(("Sin detalle").toUpperCase());
+                } else {
+                    facturaElectronica.setDescription("");
+                    for (FacturaElectronicaDetail f : facturaElectronica.getFacturaElectronicaDetails()) {
+                        facturaElectronica.setDescription((facturaElectronica.getDescription() + " " + f.getProduct().getName()).toUpperCase());
+                    }
+                }
+            }
+
             facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
+
+            registerDetailInKardex();
 
             //Registrar asiento contable de la compra
             //registerRecordInJournal();
@@ -1250,6 +1287,16 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return productService.findByOrganization(this.organizationData.getOrganization());
     }
 
+    public void getProductsByType() {
+        this.productsTypeProduct = new ArrayList<>();
+        this.productsTypeProduct = productService.findByOrganizationAndType(this.organizationData.getOrganization(), ProductType.PRODUCT);
+    }
+
+    public List<Product> completeProductType(String query) {
+        String queryLowerCase = query.toLowerCase();
+        return productsTypeProduct.stream().filter(t -> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
+    }
+
     public boolean validatedFacturaElectronicaDetail() {
         if (this.facturaElectronicaDetail.getProduct() != null) {
             this.facturaElectronicaDetail.setUnit_value(this.facturaElectronicaDetail.getProduct().getPrice());
@@ -1285,8 +1332,65 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void calculateDaysExpired() {
-//        this.days = 0;
-//        Date x = this.facturaElectronica.getFechaVencimiento();
+        this.days = 0;
+        Date x = this.facturaElectronica.getFechaVencimiento();
         this.days  = ((int) Dates.calculateNumberOfDaysBetween(Dates.now(), (Date) this.facturaElectronica.getFechaVencimiento()))+1;
     }
+
+    private void registerDetailInKardex() {
+        for (FacturaElectronicaDetail facturaElectronicaDetail1 : this.facturaElectronica.getFacturaElectronicaDetails()) {
+            Kardex kardex = null;
+            KardexDetail kardexDetail = null;
+            kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", facturaElectronicaDetail1.getProduct(), this.organizationData.getOrganization());
+            if (kardex == null) {
+                kardex = kardexService.createInstance();
+                kardex.setOwner(this.subject);
+                kardex.setAuthor(this.subject);
+                kardex.setOrganization(this.organizationData.getOrganization());
+                kardex.setProduct(facturaElectronicaDetail1.getProduct());
+                kardex.setCode("TK-P- " + facturaElectronicaDetail1.getProduct().getId());
+                kardex.setUnit_minimum(1L);
+                kardex.setUnit_maximum(1L);
+            } else {
+                kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
+                kardex.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
+                kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndFacturaAndOperation", kardex, facturaElectronicaDetail1.getFacturaElectronica(), KardexDetail.OperationType.COMPRA);
+            }
+            if (kardexDetail == null) {
+                kardexDetail = kardexDetailService.createInstance();
+                kardexDetail.setOwner(this.subject);
+                kardexDetail.setAuthor(this.subject);
+                kardexDetail.setFacturaElectronica(facturaElectronicaDetail1.getFacturaElectronica());
+                kardexDetail.setOperation_type(KardexDetail.OperationType.COMPRA);
+            } else {
+                //Disminuir los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a aumentar por la venta
+                if (kardexDetail.getQuantity() != null && kardexDetail.getTotal_value() != null) {
+                    kardexDetail.setCummulative_quantity(kardex.getQuantity() - kardexDetail.getQuantity());
+                    kardexDetail.setCummulative_total_value(kardex.getFund().subtract(kardexDetail.getTotal_value()));
+                }
+                kardexDetail.setAuthor(this.subject); //Saber quien lo modificó por última vez
+                kardexDetail.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
+            }
+            kardexDetail.setCode(facturaElectronicaDetail1.getFacturaElectronica().getCode());
+            kardexDetail.setUnit_value(facturaElectronicaDetail1.getUnit_value());
+            kardexDetail.setQuantity(facturaElectronicaDetail1.getQuantity());
+            kardexDetail.setTotal_value(kardexDetail.getUnit_value().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
+
+            if (kardex.getId() == null) {
+                kardexDetail.setCummulative_quantity(kardexDetail.getQuantity());
+                kardexDetail.setCummulative_total_value(kardexDetail.getTotal_value());
+            } else {
+                if (kardex.getQuantity() != null && kardex.getFund() != null) {
+                    kardexDetail.setCummulative_quantity(kardex.getQuantity() + kardexDetail.getQuantity());
+                    kardexDetail.setCummulative_total_value(kardex.getFund().add(kardexDetail.getTotal_value()));
+                }
+            }
+
+            kardex.addKardexDetail(kardexDetail);
+            kardex.setQuantity(kardexDetail.getCummulative_quantity());
+            kardex.setFund(kardexDetail.getCummulative_total_value());
+            kardexService.save(kardex.getId(), kardex);
+        }
+    }
+
 }

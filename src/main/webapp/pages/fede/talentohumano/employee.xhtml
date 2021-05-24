@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.talentohumano.employees']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/talentohumano/employee.jsf">#{employeeHome.employeeId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.employee']}</p:link></li>
+        <li><p:link outcome="/pages/fede/talentohumano/employee.jsf">#{employeeHome.employeeId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.employee']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -80,13 +80,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.name}" />
                             </p:column>
-                            <p:column headerText="#{i18n['remuneration']}" sortBy="#{role.name}">
+                            <p:column headerText="#{i18n['common.remuneration']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.remuneration}" />
                             </p:column>
-                            <p:column headerText="#{i18n['dedication']}" sortBy="#{role.name}">
+                            <p:column headerText="#{i18n['common.dedication']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.dedication}" />
                             </p:column>
-                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.crationDate']}" sortBy="#{role.createdOn}"
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{role.createdOn}"
                                        styleClass="text-right">
                                 <h:outputText value="#{role.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
@@ -110,7 +110,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
                                          actionListener="#{employeeHome.save()}" action="#{employeeHome.redirect()}" 
                                          disabled="#{false}" 
                                          style="width: auto !important;"

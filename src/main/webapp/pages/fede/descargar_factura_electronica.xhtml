@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <f:viewParam name="key" value="#{facturaElectronicaHome.keys}" />
     </f:metadata>
     <h:head>
-        <title>#{i18n['Download']} #{i18n['Invoice']} #{facturaElectronicaHome.keys}</title>
+        <title>#{i18n['common.download']} #{i18n['common.invoice']} #{facturaElectronicaHome.keys}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <!-- Bootstrap -->
         <h:outputStylesheet name="/startbootstrap-sb-admin-2-1.0.7/bower_components/bootstrap/dist/css/bootstrap.min.css" />
@@ -44,12 +44,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                 <div class="ui-g ui-fluid">
                     <div class="ui-g ui-g-12">
-                        <jlgranda:input id="url" name="url" type="text" label="#{i18n['URL']} al ZIP o XML de la factura electrónica" 
+                        <jlgranda:input id="url" name="url" type="text" label="#{i18n['common.URL']} al ZIP o XML de la factura electrónica" 
                                         value="#{facturaElectronicaHome.url}" required="false" inlinehelp="#{messages['url.inlinehelp']}" execute="@this save" render="url"/>
 
-                        <p:commandButton rendered="true" value="#{i18n['Add']}" ajax="true" update="@parent" 
+                        <p:commandButton rendered="true" value="#{i18n['common.add']}" ajax="true" update="@parent" 
                                          actionListener="#{facturaElectronicaHome.addURL()}" disabled="false" />
-                        <p:commandButton rendered="true" value="#{i18n['AddAndDownload']}" ajax="true" update="@parent" 
+                        <p:commandButton rendered="true" value="#{i18n['common.add.download']}" ajax="true" update="@parent" 
                                          styleClass="secondary-button" style="margin-bottom:10px;" 
                                          actionListener="#{facturaElectronicaHome.addURLAndProcesarURLs()}" 
                                          action="#{facturaElectronicaHome.getOutcome()}" disabled="false" />
@@ -57,24 +57,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="ui-g ui-g-12">
                         <p:dataTable rendered="true" id="urls" 
                                      var="url" value="#{facturaElectronicaHome.urls}"
-                                     emptyMessage="#{i18n['AddURLHelp']}">
+                                     emptyMessage="#{i18n['url.add.help']}">
                             <f:facet name="header">
-                                #{i18n['URLs']}
+                                #{i18n['common.URLs']}
                             </f:facet>
-                            <p:column headerText="#{i18n['URL']}">
+                            <p:column headerText="#{i18n['common.URL']}">
                                 <h:outputText value="#{url}" />
                             </p:column>
-                            <p:column headerText="#{i18n['actions']}">
-                                <p:commandButton rendered="true" value="#{i18n['Remove']}" ajax="true" update="urls" 
+                            <p:column headerText="#{i18n['common.actions']}">
+                                <p:commandButton rendered="true" value="#{i18n['common.remove']}" ajax="true" update="urls" 
                                                  actionListener="#{facturaElectronicaHome.removeURL(url)}" disabled="false" />
                             </p:column>
                         </p:dataTable>
                     </div>
                     <div class="ui-g ui-g-12">
-                        <p:commandButton rendered="true" value="#{i18n['Download']}" ajax="false" update="@parent" 
+                        <p:commandButton rendered="true" value="#{i18n['common.download']}" ajax="false" update="@parent" 
                                          actionListener="#{facturaElectronicaHome.procesarURLs()}" 
                                          action="#{facturaElectronicaHome.getOutcome()}" disabled="false" />
-                        <p:commandButton value="#{i18n['Close']}" ajax="true" 
+                        <p:commandButton value="#{i18n['common.close']}" ajax="true" 
                                          styleClass="secondary-button" style="margin-bottom:10px;" 
                                          update="@parent" actionListener="#{facturaElectronicaHome.closeDialog(null)}" disabled="false" />
                     </div>

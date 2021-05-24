@@ -96,6 +96,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     private boolean activeKardexEdition;
     private List<String> listInvoices;
     private List<String> listFacturas;
+    private List<Product> productsWithoutKardex;
 
     @PostConstruct
     private void init() {
@@ -106,6 +107,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         setActiveKardexEdition(true);
         setListInvoices(invoiceService.findByNamedQuery("Invoice.findSequencialByDocumentTypeAndStatusAndOrg", this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString()));
         setListFacturas(facturaElectronicaService.findByNamedQuery("FacturaElectronica.findCodeByOrg", this.organizationData.getOrganization(), true));
+        generateProductsWithoutKardex();
     }
 
     //GETTER AND SETTER
@@ -192,9 +194,43 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         }
     }
 
+    public List<Product> getProductsWithoutKardex() {
+        return productsWithoutKardex;
+    }
+
+    public void setProductsWithoutKardex(List<Product> productsWithoutKardex) {
+        this.productsWithoutKardex = productsWithoutKardex;
+    }
+
     //METHODS
+    public List<Kardex> getKardexs() {
+        return kardexService.findByOrganization(this.organizationData.getOrganization());
+    }
+
     public List<Product> getProducts() {
         return productService.findByOrganization(this.organizationData.getOrganization());
+    }
+
+    public void generateProductsWithoutKardex() {
+        boolean exist = false;
+        this.productsWithoutKardex = new ArrayList<>();
+        for (Product product : getProducts()) {
+            for (Kardex kd2 : getKardexs()) {
+                if (product.equals(kd2.getProduct())) {
+                    exist = true;
+                    break;
+                } else {
+                    exist = false;
+                    break;
+                }
+            }
+            if (exist == false) {
+                this.productsWithoutKardex.add(product);
+            }
+        }
+        if (this.kardexId != null && this.kardex.getProduct() != null) {
+            this.productsWithoutKardex.add(this.kardex.getProduct());
+        }
     }
 
     public void clear() {
@@ -234,7 +270,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public void messagesValidation() { //Emitir mensajes de validación por Cantidad de Producto
-        if (this.kardexId != null) {
+        if (this.kardexId != null && !this.kardex.getKardexDetails().isEmpty()) {
             getKardex(); //Cargar el Kardex del kardexId seleccionado en onRowSelect
             if (this.kardex.getQuantity() < this.kardex.getUnit_minimum()) {
                 this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.kardex.minimum"));
@@ -245,6 +281,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public void asignedMaximum() {
+        if (kardexId == null) {
+            this.kardex.setUnit_maximum(1L);
+        }
         if (this.kardex.getUnit_maximum().compareTo(this.kardex.getUnit_minimum()) == -1) {
             getKardex().setUnit_maximum(getKardex().getUnit_minimum());
         }
@@ -270,34 +309,25 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public void asignedKardexDetailProperties() {//Establecer valores previos para el KardexDetail
-        if (this.kardexId != null) {
+        if (this.kardex.getProduct() != null) {
             this.kardexDetail.setUnit_value(this.kardex.getProduct().getPrice());
+        } else {
+            this.kardexDetail.setUnit_value(BigDecimal.ZERO);
         }
     }
 
     public boolean validatedKardexDetail() {
-        if (this.kardexDetail.getOperation_type() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnit_value() != null) {
-//            if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)) {
-//                this.kardexDetail.setCode(null);
-//                return false;
-//            } else {
-//                return this.kardexDetail.getCode() == null;
-//            }
-            return false;
-        } else {
-            return true;
-        }
+        return !(this.kardexDetail.getOperation_type() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnit_value() != null);
     }
 
     public void addKardexDetail() {
         boolean existTransaction = true;
-        System.out.println("\nkardexId: " + kardexId);
-        if (this.kardexId != null) {
-            System.out.print("\nthis.kardexDetail.getOperation_type(): " + this.kardexDetail.getOperation_type());
-            if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA) && this.kardexDetail.getQuantity() > this.kardex.getQuantity()) {
-                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.sales"));
-            } else {
-                Long residue = 0L;
+//        if (this.kardexId != null) {
+        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA) && this.kardexDetail.getQuantity() > this.kardex.getQuantity()) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.sales"));
+        } else {
+            Long residue = 0L;
+            if (this.kardexId != null) {
                 List<Object[]> objects = kardexDetailService.findByNamedQuery("KardexDetail.findTotalQuantityByKardexAndCode", this.kardex, this.kardexDetail.getCode());
                 for (int i = 0; i < objects.size(); i++) { //Calcular el residuo de las transacciones de un comprobante según el código
                     if (objects.get(i)[0].equals(KardexDetail.OperationType.COMPRA) || objects.get(i)[0].equals(KardexDetail.OperationType.VENTA)) {
@@ -305,128 +335,124 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                     } else if (objects.get(i)[0].equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) || objects.get(i)[0].equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
                         residue = residue - (Long) objects.get(i)[1];
                     }
-                    System.out.print("\nresiduoCurrent: " + residue);
                 }
-                System.out.print("\nresiduo: " + residue);
-                List<KardexDetail> listNewKardexDetails = new ArrayList<>();
-                for (KardexDetail kd : this.kardex.getKardexDetails()) {
-                    System.out.println("\nkdgetId: " + kd.getId());
-                    System.out.println("kdGetCode: " + kd.getCode());
-                    System.out.println("kardexDetailgetCOde(): " + this.kardexDetail.getCode());
-                    if (kd.getId() == (null) && kd.getCode().equals(this.kardexDetail.getCode())) {
-                        listNewKardexDetails.add(kd);
-                        System.out.println("kardexDetailLIst: " + kd.getCode() + "-->" + kd.getQuantity());
-                    }
+            }
+
+            List<KardexDetail> listNewKardexDetails = new ArrayList<>();
+            for (KardexDetail kd : this.kardex.getKardexDetails()) {
+                if (kd.getId() == (null) && kd.getCode().equals(this.kardexDetail.getCode())) {
+                    listNewKardexDetails.add(kd);
                 }
-                System.out.println("\nlistNewKardexDetails.contains(this.kardexDetail): " + listNewKardexDetails.contains(this.kardexDetail));
-                if (!this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)) {
-                    if (!listNewKardexDetails.contains(this.kardexDetail)) {
-                        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.COMPRA)
-                                || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
-                            if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
-                                this.listInvoices.add(this.kardexDetail.getCode());
-                            } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
-                                this.listFacturas.add(this.kardexDetail.getCode());
-                            }
-                        } else {
-                            if ((this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) && this.listFacturas.contains(this.kardexDetail.getCode()))
-                                    || (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && this.listInvoices.contains(this.kardexDetail.getCode()))) {
-                                if (listNewKardexDetails.isEmpty()) {
-                                    residue = residue - this.kardexDetail.getQuantity();
-                                    System.out.print("\nresiduo 5: " + residue);
-                                } else {
-                                    System.out.print("\nresiduo 6: " + residue);
-                                    if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
-                                        for (KardexDetail kd1 : listNewKardexDetails) {
-                                            if (kd1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
-                                                residue = residue + kd1.getQuantity();
-                                                System.out.print("\nresiduo : " + kd1 + " " + residue);
-                                            } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
-                                                residue = residue - this.kardexDetail.getQuantity();
-                                            }
-                                        }
-                                    } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
-                                        for (KardexDetail kd1 : listNewKardexDetails) {
-                                            if (kd1.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
-                                                residue = residue + kd1.getQuantity();
-                                            } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
-                                                residue = residue - this.kardexDetail.getQuantity();
-                                            }
+            }
+
+            if (!this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)
+                    && !this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)) {
+                if (!listNewKardexDetails.contains(this.kardexDetail)) {
+                    if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.COMPRA)
+                            || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                            this.listInvoices.add(this.kardexDetail.getCode());
+                        } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
+                            this.listFacturas.add(this.kardexDetail.getCode());
+                        }
+                    } else {
+                        if ((this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) && this.listFacturas.contains(this.kardexDetail.getCode()))
+                                || (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && this.listInvoices.contains(this.kardexDetail.getCode()))) {
+                            if (listNewKardexDetails.isEmpty()) {
+                                residue = residue - this.kardexDetail.getQuantity();
+                            } else {
+                                if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
+                                    for (KardexDetail kd1 : listNewKardexDetails) {
+                                        if (kd1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
+                                            residue = residue + kd1.getQuantity();
+                                        } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
+                                            residue = residue - this.kardexDetail.getQuantity();
                                         }
                                     }
-                                    residue = residue - this.kardexDetail.getQuantity();
-                                    System.out.print("\nresiduo 8: " + residue);
-                                }
-                                System.out.print("\nresiduo 2: " + residue);
-                            } else {
-                                existTransaction = false;
-                                if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
-                                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.dev.purchases") + this.kardexDetail.getOperation_type());
                                 } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
-                                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.dev.sales") + this.kardexDetail.getOperation_type());
+                                    for (KardexDetail kd1 : listNewKardexDetails) {
+                                        if (kd1.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                                            residue = residue + kd1.getQuantity();
+                                        } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
+                                            residue = residue - this.kardexDetail.getQuantity();
+                                        }
+                                    }
                                 }
+                                residue = residue - this.kardexDetail.getQuantity();
                             }
-                        }
-                    } else {
-                        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
-                            for (KardexDetail kd1 : listNewKardexDetails) {
-                                if (kd1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
-                                    residue = residue + kd1.getQuantity();
-                                } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
-                                    residue = residue - this.kardexDetail.getQuantity();
-                                }
-                            }
-                        } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
-                            for (KardexDetail kd1 : listNewKardexDetails) {
-                                if (kd1.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
-                                    residue = residue + kd1.getQuantity();
-                                } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
-                                    residue = residue - this.kardexDetail.getQuantity();
-                                }
-                            }
-                        }
-                        System.out.print("\nresiduo 3: " + residue);
-                    }
-                }
-                System.out.print("\nresiduo 1: " + residue);
-                if (existTransaction == true) {
-                    if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && (residue < 0)) {
-                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.code.dev.sales"));
-                    } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) && (residue < 0)) {
-                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.code.dev.purchases"));
-                    } else {
-                        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) && this.kardexDetail.getQuantity() > this.kardex.getQuantity()) {
-                            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.dev.purchases"));
                         } else {
-                            this.kardexDetail.setAuthor(this.subject);
-                            this.kardexDetail.setOwner(this.subject);
-                            this.kardexDetail.setTotal_value(this.kardexDetail.getUnit_value().multiply((BigDecimal.valueOf(this.kardexDetail.getQuantity())))); //Calcular valor total del KardexDetail
-                            if (this.kardexDetail.getOperation_type() == KardexDetail.OperationType.EXISTENCIA_INICIAL) {
-                                this.kardexDetail.setCode(I18nUtil.getMessages("common.nonen"));
+                            existTransaction = false;
+                            if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
+                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.dev.purchases") + this.kardexDetail.getOperation_type());
+                            } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
+                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.dev.sales") + this.kardexDetail.getOperation_type());
                             }
-
-                            this.kardex.addKardexDetail(this.kardexDetail);
-                            // Ordenar la lista por el atributo getCreatedOne(), para actualizar el saldo de la Kardex
-                            Collections.sort(this.kardex.getKardexDetails(), (KardexDetail kardexDetail1, KardexDetail other) -> kardexDetail1.getCreatedOn().compareTo(other.getCreatedOn()));
-
-                            for (int i = 1; i < this.kardex.getKardexDetails().size(); i++) { //Calcular Saldo de Kardex
-                                if (this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)
-                                        || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)
-                                        || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.COMPRA)) { //Calcular el Saldo del Kardex
-                                    this.kardex.getKardexDetails().get(i).setCummulative_quantity(this.kardex.getKardexDetails().get(i - 1).getCummulative_quantity() + this.kardex.getKardexDetails().get(i).getQuantity());
-                                    this.kardex.getKardexDetails().get(i).setCummulative_total_value(this.kardex.getKardexDetails().get(i - 1).getCummulative_total_value().add(this.kardex.getKardexDetails().get(i).getTotal_value()));
-                                } else if (this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)
-                                        || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
-                                    this.kardex.getKardexDetails().get(i).setCummulative_quantity(this.kardex.getKardexDetails().get(i - 1).getCummulative_quantity() - this.kardex.getKardexDetails().get(i).getQuantity());
-                                    this.kardex.getKardexDetails().get(i).setCummulative_total_value(this.kardex.getKardexDetails().get(i - 1).getCummulative_total_value().subtract(this.kardex.getKardexDetails().get(i).getTotal_value()));
-                                }
+                        }
+                    }
+                } else {
+                    if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
+                        for (KardexDetail kd1 : listNewKardexDetails) {
+                            if (kd1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
+                                residue = residue + kd1.getQuantity();
+                            } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
+                                residue = residue - this.kardexDetail.getQuantity();
                             }
-                            this.kardex.setQuantity(this.kardexDetail.getCummulative_quantity()); //Actualizar Saldo del Kardex
-                            this.kardex.setFund(this.kardexDetail.getCummulative_total_value());
+                        }
+                    } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
+                        for (KardexDetail kd1 : listNewKardexDetails) {
+                            if (kd1.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                                residue = residue + kd1.getQuantity();
+                            } else if (kd1.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
+                                residue = residue - this.kardexDetail.getQuantity();
+                            }
                         }
                     }
                 }
             }
+            if (existTransaction == true) {
+                if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && (residue < 0)) {
+                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.code.dev.sales"));
+                } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) && (residue < 0)) {
+                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.code.dev.purchases"));
+                } else {
+                    if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA) && this.kardexDetail.getQuantity() > this.kardex.getQuantity()) {
+                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.dev.purchases"));
+                    } else {
+                        this.kardexDetail.setAuthor(this.subject);
+                        this.kardexDetail.setOwner(this.subject);
+                        this.kardexDetail.setTotal_value(this.kardexDetail.getUnit_value().multiply((BigDecimal.valueOf(this.kardexDetail.getQuantity())))); //Calcular valor total del KardexDetail
+                        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)
+                                || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)) {
+                            this.kardexDetail.setCode(I18nUtil.getMessages("common.nonen"));
+                        }
+                        if (this.kardex.getKardexDetails().isEmpty()) {
+                            this.kardexDetail.setCummulative_quantity(this.kardexDetail.getQuantity());
+                            this.kardexDetail.setCummulative_total_value(this.kardexDetail.getTotal_value());
+                        }
+                        this.kardex.addKardexDetail(this.kardexDetail);
+                        // Ordenar la lista por el atributo getCreatedOne(), para actualizar el saldo de la Kardex
+                        Collections.sort(this.kardex.getKardexDetails(), (KardexDetail kardexDetail1, KardexDetail other) -> kardexDetail1.getCreatedOn().compareTo(other.getCreatedOn()));
+
+                        for (int i = 1; i < this.kardex.getKardexDetails().size(); i++) { //Calcular Saldo de Kardex
+                            if (this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)
+                                    || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)
+                                    || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)
+                                    || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.COMPRA)) { //Calcular el Saldo del Kardex
+                                this.kardex.getKardexDetails().get(i).setCummulative_quantity(this.kardex.getKardexDetails().get(i - 1).getCummulative_quantity() + this.kardex.getKardexDetails().get(i).getQuantity());
+                                this.kardex.getKardexDetails().get(i).setCummulative_total_value(this.kardex.getKardexDetails().get(i - 1).getCummulative_total_value().add(this.kardex.getKardexDetails().get(i).getTotal_value()));
+                            } else if (this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)
+                                    || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                                this.kardex.getKardexDetails().get(i).setCummulative_quantity(this.kardex.getKardexDetails().get(i - 1).getCummulative_quantity() - this.kardex.getKardexDetails().get(i).getQuantity());
+                                this.kardex.getKardexDetails().get(i).setCummulative_total_value(this.kardex.getKardexDetails().get(i - 1).getCummulative_total_value().subtract(this.kardex.getKardexDetails().get(i).getTotal_value()));
+                            }
+                        }
+//                        }
+                        this.kardex.setQuantity(this.kardexDetail.getCummulative_quantity()); //Actualizar Saldo del Kardex
+                        this.kardex.setFund(this.kardexDetail.getCummulative_total_value());
+                    }
+                }
+            }
+//            }
         }
         this.kardexDetail = kardexDetailService.createInstance(); //Recargar para la nueva instancia
 //        this.kardexDetail.setOperation_type(null); //Enserar valores
@@ -435,21 +461,34 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     public List<String> completeCode(String query) {
         String queryLowerCase = query.toLowerCase();
         List<String> codeList = new ArrayList<>();
-        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
-            for (String x : getListInvoices()) {
-                codeList.add(x);
-            }
-        } else if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
-            for (String x : getListFacturas()) {
-                codeList.add(x);
-            }
-        } else {
-            codeList.add("null");
+        switch (this.kardexDetail.getOperation_type()) {
+            case DEVOLUCION_VENTA:
+                for (String x : getListInvoices()) {
+                    codeList.add(x);
+                }
+                break;
+            case DEVOLUCION_COMPRA:
+                for (String x : getListFacturas()) {
+                    codeList.add(x);
+                }
+                break;
+            default:
+                codeList.add("null");
+                break;
         }
         return codeList.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
     }
+    
+    public List<Product> completeProductKardex(String query) {
+        String queryLowerCase = query.toLowerCase();
+        return productsWithoutKardex.stream().filter(t-> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
+    }
 
     public void save() { //Guardar el Kardex, con todos sus KardexDetails
+        if (this.kardex.getKardexDetails().isEmpty()) {
+            this.kardex.setQuantity(0L);
+            this.kardex.setFund(BigDecimal.ZERO);
+        }
         if (this.kardex.isPersistent()) {
             this.kardex.setLastUpdate(Dates.now());
         } else {

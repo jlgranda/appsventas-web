@@ -83,10 +83,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:column headerText="#{i18n['common.concept']}" style="width: auto">
                                                 <h:outputText value="#{recordDetail[1]}" />
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.debit']}"  style="width: 15%">
+                                            <p:column headerText="#{i18n['common.debe']}"  style="width: 15%">
                                                 <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='DEBE'}" style="text-align: right"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.credit']}"  style="width: 15%" >
+                                            <p:column headerText="#{i18n['common.haber']}"  style="width: 15%" >
                                                 <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='HABER'}" style="text-align: right"/>
                                             </p:column>
                                             <p:columnGroup type="footer" >
@@ -142,7 +142,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </h:form>
                 </div>
             </div>
-            <!--/.panel-body -->
         </ui:define>
 
         <ui:define name="script">

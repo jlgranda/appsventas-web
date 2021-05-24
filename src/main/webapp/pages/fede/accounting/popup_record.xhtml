@@ -73,7 +73,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                    <!--<f:validateDoubleRange minimum="1"/>-->
                                     <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
                                 </p:inputNumber>
                             </div>
@@ -114,7 +113,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.debit']}" style="width: 15%">
+                                            <p:column headerText="#{i18n['common.debe']}" style="width: 15%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right"/>
@@ -124,7 +123,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </f:facet>
                                                 </p:cellEditor>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.accounting.credit']}" style="width: 15%">
+                                            <p:column headerText="#{i18n['common.haber']}" style="width: 15%">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
@@ -166,7 +165,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </h:form>
                 </div>
             </div>
-            <!--/.panel-body -->
         </ui:define>
 
         <ui:define name="script">

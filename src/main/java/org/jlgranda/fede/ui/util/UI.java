@@ -124,6 +124,22 @@ public class UI {
         }
         return items;
     }
+    
+    public SelectItem[] getProductKardexAsSelectItem(List<Product> entities) {
+        boolean selectOne = true;
+        int size = selectOne ? entities.size() + 1 : entities.size();
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        for (Product x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
+        }
+        return items;
+    }
+    
     public SelectItem[] getInvoiceAsSelectItem(List<Invoice> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
@@ -199,14 +215,16 @@ public class UI {
         items.add(item);
         item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL.toString(), KardexDetail.OperationType.EXISTENCIA_INICIAL.toString());
         items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_COMPRA.toString(), KardexDetail.OperationType.DEVOLUCION_COMPRA.toString());
+        item = new SelectItem(KardexDetail.OperationType.PRODUCCION.toString(), KardexDetail.OperationType.PRODUCCION.toString());
         items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
-        items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
-        items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
-        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
+//        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
+//        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_COMPRA.toString(), KardexDetail.OperationType.DEVOLUCION_COMPRA.toString());
+//        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
+//        items.add(item);
 
         return items;
     }

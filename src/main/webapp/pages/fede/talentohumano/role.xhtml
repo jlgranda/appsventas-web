@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.talentohumano.roles']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/talentohumano/role.jsf">#{jobRoleHome.jobRoleId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.role']}</p:link></li>
+        <li><p:link outcome="/pages/fede/talentohumano/role.jsf">#{jobRoleHome.jobRoleId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.role']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
                                     value="#{jobRoleHome.jobRole.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
 
-                    <jlgranda:input id="remuneration" name="remuneration" type="number" label="#{i18n['app.fede.talentohumano.remuneration']}" 
+                    <jlgranda:input id="remuneration" name="remuneration" type="number" label="#{i18n['common.remuneration']}" 
                                     value="#{jobRoleHome.jobRole.remuneration}" required="false" inlinehelp="#{messages['app.fede.talentohumano.remuneration.inlinehelp']}" execute="@this save" render="remuneration"/>
                     
                     <jlgranda:input id="dedication" name="dedication" type="number" label="#{i18n['app.fede.talentohumano.dedication']}" 
@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="EmptyBox10"></div>
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true" 
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
                                          actionListener="#{jobRoleHome.save()}" action="#{jobRoleHome.redirect()}" 
                                          disabled="#{false}" 
                                          style="width: auto !important;"
