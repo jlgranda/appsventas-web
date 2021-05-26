@@ -54,6 +54,7 @@ import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.sales.KardexDetailService;
 import com.jlgranda.fede.ejb.sales.KardexService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
+import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
@@ -225,6 +226,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private FacturaElectronicaDetail facturaElectronicaDetail;
     private List<Product> productsTypeProduct;
     private int days;
+    private List<Product> products;
 
     @EJB
     private KardexService kardexService;
@@ -239,6 +241,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private Product productNew;
 
     private Group groupSelected;
+    
+    @EJB
+    private ProductCache productCache;
 
     public FacturaElectronicaHome() {
     }
@@ -263,6 +268,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setOutcome("fede-inbox");
 
         setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
+        setProducts(productService.findByOrganization(this.organizationData.getOrganization()));
         getProductsByType();
         setActivePanelProduct(false);
     }
@@ -457,6 +463,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void setProductsTypeProduct(List<Product> productsTypeProduct) {
         this.productsTypeProduct = productsTypeProduct;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     public int getDays() {
@@ -857,45 +871,45 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 //            setOutcome("");
 //            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("ride.infoFactura.total.invalid"));
 //        } else {
-            setOutcome("fede-inbox");
-            facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
-            facturaElectronica.setFilename(null);
-            facturaElectronica.setContenido(null);
-            facturaElectronica.setMoneda("DOLAR");
+        setOutcome("fede-inbox");
+        facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
+        facturaElectronica.setFilename(null);
+        facturaElectronica.setContenido(null);
+        facturaElectronica.setMoneda("DOLAR");
 
-            facturaElectronica.setClaveAcceso(null);
-            facturaElectronica.setFechaAutorizacion(null);
-            facturaElectronica.setNumeroAutorizacion(null);
+        facturaElectronica.setClaveAcceso(null);
+        facturaElectronica.setFechaAutorizacion(null);
+        facturaElectronica.setNumeroAutorizacion(null);
 
-            facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
+        facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
 
-            //facturaElectronica.setAuthor(getSupplier());
-            facturaElectronica.setOwner(subject);
-            facturaElectronica.setOrganization(this.organizationData.getOrganization());
+        //facturaElectronica.setAuthor(getSupplier());
+        facturaElectronica.setOwner(subject);
+        facturaElectronica.setOrganization(this.organizationData.getOrganization());
 
-            //Establecer un codigo por defecto
-            if (Strings.isNullOrEmpty(facturaElectronica.getCode())) {
-                facturaElectronica.setCode(UUID.randomUUID().toString());
-            }
+        //Establecer un codigo por defecto
+        if (Strings.isNullOrEmpty(facturaElectronica.getCode())) {
+            facturaElectronica.setCode(UUID.randomUUID().toString());
+        }
 
-            //Especificar texto de observación
-            if (facturaElectronica.getDescription().equals("")) {
-                if (facturaElectronica.getFacturaElectronicaDetails().isEmpty()) {
-                    facturaElectronica.setDescription(("Sin detalle").toUpperCase());
-                } else {
-                    facturaElectronica.setDescription("");
-                    for (FacturaElectronicaDetail f : facturaElectronica.getFacturaElectronicaDetails()) {
-                        facturaElectronica.setDescription((facturaElectronica.getDescription() + " " + f.getProduct().getName()).toUpperCase());
-                    }
+        //Especificar texto de observación
+        if (facturaElectronica.getDescription().equals("")) {
+            if (facturaElectronica.getFacturaElectronicaDetails().isEmpty()) {
+                facturaElectronica.setDescription(("Sin detalle").toUpperCase());
+            } else {
+                facturaElectronica.setDescription("");
+                for (FacturaElectronicaDetail f : facturaElectronica.getFacturaElectronicaDetails()) {
+                    facturaElectronica.setDescription((facturaElectronica.getDescription() + " " + f.getProduct().getName()).toUpperCase());
                 }
             }
+        }
 
-            facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
+        facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
 
-            registerDetailInKardex();
+        registerDetailInKardex();
 
-            //Registrar asiento contable de la compra
-            //registerRecordInJournal();
+        //Registrar asiento contable de la compra
+        //registerRecordInJournal();
 //        }
     }
 
@@ -1337,10 +1351,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     //Métodos de FacturaElectronicaDetail
-    public List<Product> getProducts() {
-        return productService.findByOrganization(this.organizationData.getOrganization());
-    }
-
+//    public List<Product> getProductsAll() {
+//        this.products = productService.findByOrganization(this.organizationData.getOrganization());
+//    }
     public void getProductsByType() {
         this.productsTypeProduct = new ArrayList<>();
         this.productsTypeProduct = productService.findByOrganizationAndType(this.organizationData.getOrganization(), ProductType.PRODUCT);
@@ -1378,7 +1391,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public boolean validatedFacturaElectronicaDetail() {
         if (this.facturaElectronicaDetail.getProduct() != null) {
-            return !(this.facturaElectronicaDetail.getDescription() != null && this.facturaElectronicaDetail.getUnit_value() != null && this.facturaElectronicaDetail.getQuantity() != null);
+            return !(this.facturaElectronicaDetail.getUnit_value() != null && this.facturaElectronicaDetail.getQuantity() != null);
         } else {
             return true;
         }
@@ -1386,7 +1399,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void addFacturaElectronicaDetail() {
         this.facturaElectronicaDetail.setTotal_value(this.facturaElectronicaDetail.getUnit_value().multiply(BigDecimal.valueOf(this.facturaElectronicaDetail.getQuantity().doubleValue())));
-        if(this.facturaElectronicaDetail.getTax_value()!=null){
+        if (this.facturaElectronicaDetail.getTax_value() != null) {
             this.facturaElectronicaDetail.setTotal_value(this.facturaElectronicaDetail.getTotal_value().add(this.facturaElectronicaDetail.getTax_value().multiply(BigDecimal.valueOf(this.facturaElectronicaDetail.getQuantity().doubleValue()))));
         }
         this.facturaElectronica.addFacturaElectronicaDetail(this.facturaElectronicaDetail);
@@ -1493,6 +1506,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void saveProductNew() {
+        this.productNew.setName(this.productNew.getName().toUpperCase());
         this.productNew.setProductType(ProductType.PRODUCT);
         this.productNew.setDescription(this.productNew.getName().toUpperCase());
         this.productNew.setCategory(this.groupSelected);
@@ -1501,6 +1515,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.productNew.setOwner(this.subject);
         productService.save(this.productNew.getId(), this.productNew); //Volver a guardar el producto para almacenar el ggroup
         this.activePanelProduct = false;
+        //Cargar producto en el cache
+        productCache.load();
+        setProducts(productService.findByOrganization(this.organizationData.getOrganization()));
     }
 
 }
