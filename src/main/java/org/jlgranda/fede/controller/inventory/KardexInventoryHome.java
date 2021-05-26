@@ -320,6 +320,43 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         return !(this.kardexDetail.getOperation_type() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnit_value() != null);
     }
 
+    public void refreshFundKardex() {
+        Kardex kardexUpdate = kardexService.find(this.kardexId);
+        if (kardexUpdate != null) {
+            if (!kardexUpdate.getKardexDetails().isEmpty()) {
+                // Ordenar la lista por el atributo getCreatedOne(), para actualizar el saldo de la Kardex
+                Collections.sort(kardexUpdate.getKardexDetails(), (KardexDetail kardexDetail1, KardexDetail other) -> kardexDetail1.getCreatedOn().compareTo(other.getCreatedOn()));
+
+                for (int i = 0; i < kardexUpdate.getKardexDetails().size(); i++) { //Calcular Saldo de Kardex
+                    if (kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)
+                            || kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)
+                            || kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)
+                            || kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.COMPRA)) { //Calcular el Saldo del Kardex
+                        if (i == 0) {
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_quantity(kardexUpdate.getKardexDetails().get(i).getQuantity());
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_total_value(kardexUpdate.getKardexDetails().get(i).getTotal_value());
+                        } else {
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_quantity(kardexUpdate.getKardexDetails().get(i - 1).getCummulative_quantity() + kardexUpdate.getKardexDetails().get(i).getQuantity());
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_total_value(kardexUpdate.getKardexDetails().get(i - 1).getCummulative_total_value().add(kardexUpdate.getKardexDetails().get(i).getTotal_value()));
+                        }
+                    } else if (kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)
+                            || kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                        if (i == 0) {
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_quantity(kardexUpdate.getKardexDetails().get(i).getQuantity()*-1);
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_total_value(kardexUpdate.getKardexDetails().get(i).getTotal_value().multiply(BigDecimal.valueOf(-1)));
+                        } else {
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_quantity(kardexUpdate.getKardexDetails().get(i - 1).getCummulative_quantity() - kardexUpdate.getKardexDetails().get(i).getQuantity());
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_total_value(kardexUpdate.getKardexDetails().get(i - 1).getCummulative_total_value().subtract(kardexUpdate.getKardexDetails().get(i).getTotal_value()));
+                        }
+                    }
+                    kardexUpdate.setQuantity(kardexUpdate.getKardexDetails().get(i).getCummulative_quantity()); //Actualizar Saldo del Kardex
+                    kardexUpdate.setFund(kardexUpdate.getKardexDetails().get(i).getCummulative_total_value());
+                }
+            }
+            kardexService.save(kardexUpdate.getId(), kardexUpdate);
+        }
+    }
+
     public void addKardexDetail() {
         boolean existTransaction = true;
 //        if (this.kardexId != null) {
@@ -478,10 +515,10 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         }
         return codeList.stream().filter(t -> t.toLowerCase().startsWith(queryLowerCase)).collect(Collectors.toList());
     }
-    
+
     public List<Product> completeProductKardex(String query) {
         String queryLowerCase = query.toLowerCase();
-        return productsWithoutKardex.stream().filter(t-> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
+        return productsWithoutKardex.stream().filter(t -> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
     }
 
     public void save() { //Guardar el Kardex, con todos sus KardexDetails

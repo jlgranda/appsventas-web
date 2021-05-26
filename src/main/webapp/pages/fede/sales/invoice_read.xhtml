@@ -358,7 +358,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ui-g-12">
                                 <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
                                     <f:facet name="left">
-                                        <p:commandButton id="save-button" value="#{i18n['Save']}" ajax="true"  styleClass="success-btn"
+                                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"  styleClass="success-btn"
                                                          actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" disabled="true" 
                                                          type="submit"/>
                                     </f:facet>
@@ -370,7 +370,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                          icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
                                                          />
                                         <p:menuButton value="#{i18n['common.options']}"  styleClass="secondary-button" disabled="true">
-                                            <p:menuitem value="#{i18n['Save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
                                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                                         immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                                         </p:menuButton>

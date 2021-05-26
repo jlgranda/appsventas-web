@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="EmptyBox20"></div>
                     <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
                         <f:facet name="left">
-                            <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                            <p:commandButton value="#{i18n['common.save']}" ajax="true" 
                                              actionListener="#{invoiceHome.save()}" action="preinvoices" disabled="false" 
                                              style="width: auto !important;"
                                              type="submit"/>
@@ -84,7 +84,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                             <p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem value="#{i18n['Save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
                                             actionListener="#{invoiceHome.collect()}" action="preinvoices" icon="fa fa-check" 
                                             immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                             </p:menuButton>
@@ -102,7 +102,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <span class="ui-separator">
                                 <span class="fa fa-ellipsis-v SoftGray" />
                             </span>
-                            <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                            <p:commandButton value="#{i18n['common.save']}" ajax="true" 
                                              actionListener="#{invoiceHome.save()}" action="preinvoices" disabled="false" 
                                              style="width: auto !important;"
                                              type="submit"/>

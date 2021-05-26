@@ -75,8 +75,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
                                     value="#{inventoryHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
 
-                    <jlgranda:input id="price" name="price" type="number" label="#{i18n['common.price']}" 
-                                    value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <jlgranda:input id="priceCost" name="priceCost" type="number" label="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}: " 
+                                            value="#{inventoryHome.product.priceCost}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="priceCost"/>
+                        </div>
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <jlgranda:input id="price" name="price" type="number" label="P.V.P. A:" 
+                                            value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
+                        </div>
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <jlgranda:input id="priceB" name="priceB" type="number" label="P.V.P. B:" 
+                                            value="#{inventoryHome.product.priceB}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="priceB"/>
+                        </div>
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <jlgranda:input id="priceC" name="priceC" type="number" label="P.V.P. C:" 
+                                            value="#{inventoryHome.product.priceC}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="priceC"/>
+                        </div>
+                    </div>
 
                     <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
@@ -84,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:selectOneMenu value="#{inventoryHome.product.taxType}" effect="fade"
                                              required="#{true}" immediate="true"> 
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                                <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>priceCost
                                 <p:ajax update="@form" />
                             </p:selectOneMenu>
                         </div>

@@ -34,6 +34,7 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.sales.Invoice;
 import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Product;
@@ -84,6 +85,10 @@ public class UI {
 
     public EmissionType[] getEmissionTypes() {
         return EmissionType.values();
+    }
+    
+    public FacturaElectronica.DocumentType[] getDocumentFacturaTypes(){
+        return FacturaElectronica.DocumentType.values();
     }
 
     public TaxType[] getTaxTypes() {
@@ -307,6 +312,16 @@ public class UI {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         for (EmissionType t : getEmissionTypes()) {
+            item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+            items.add(item);
+        }
+        return items;
+    }
+    
+    public List<SelectItem> getDocumentFacturaTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (FacturaElectronica.DocumentType t : getDocumentFacturaTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
             items.add(item);
         }

@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <h:head>
-        <title>#{i18n['New']} #{i18n['app.fede.inventory.product']}</title>
+        <title>#{i18n['common.new']} #{i18n['common.product']}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <style type="text/css">
             .ui-widget {
@@ -53,13 +53,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
                         
                         <div class="Wid50 Fleft Responsive50">
-                            <p:commandButton value="#{i18n['Save']}" ajax="true" 
+                            <p:commandButton value="#{i18n['common.save']}" ajax="true" 
                                              actionListener="#{inventoryHome.save()}" disabled="false" 
                                              styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                         </div>
                         <div class="EmptyBox5 ShowOnMobile"></div>
                         <div class="Wid50 Fleft Responsive50">
-                            <p:commandButton value="#{i18n['Cancel']}" 
+                            <p:commandButton value="#{i18n['common.cancel']}" 
                                              actionListener="#{inventoryHome.closeDialog(null)}"
                                              ajax="true" immediate="true" action="home" disabled="false" 
                                              styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>

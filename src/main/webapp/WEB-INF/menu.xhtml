@@ -37,12 +37,9 @@
                             <p:menuitem id="om_search" value="#{i18n['common.historic']}" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/sales/preinvoices_search.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
                         </p:submenu>
                         <p:menuitem id="rm_myoverdues" value="#{i18n['common.overdue']}" icon="fa fa-fw fa-credit-card" url="/pages/fede/sales/overdues.jsf?interval=60&amp;overcome=overdues"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>    
-                        <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/> 
+                        <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-cart-plus" url="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
                         <p:menuitem id="rm_inventory_products" value="#{i18n['common.products']}" icon="fa fa-fw fa-apple" url="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
 
-                        <p:menuitem id="om_accounting_close_cash" value="#{i18n['common.salesvspurchases']}" icon="fa fa-fw fa-usd" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
-                        <p:menuitem id="om_accounting_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="fa fa-fw fa-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/><!-- or request.isUserInRole('CHECKER')-->
-                        
                         <p:submenu id="om_admin" label="#{i18n['common.management']}" icon="fa fa-fw fa-suitcase" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER') or request.isUserInRole('MANAGER')}">
                             <p:menuitem id="om_organizations" value="#{i18n['app.management.organizations']}" icon="fa fa-fw fa-building" outcome="/pages/management/organization/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
                             <p:menuitem id="om_subjects" value="#{i18n['app.management.persons']}" icon="fa fa-fw fa-user" outcome="/pages/fede/admin/subject/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
@@ -52,9 +49,9 @@
                             <p:menuitem id="om_products" value="#{i18n['common.products']}" icon="fa fa-fw fa-apple" outcome="/pages/fede/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                             <p:menuitem id="om_kardex" value="#{i18n['app.fede.inventory.kardex']}" icon="fa fa-fw fa-table" outcome="/pages/fede/inventory/kardex_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                         </p:submenu>
-                        <p:submenu id="om_admin_accounting" label="#{i18n['app.fede.accounting']}" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
-                            <p:menuitem id="om_close_cash" value="#{i18n['common.salesvspurchases']}" icon="fa fa-fw fa-usd" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
-                            <p:menuitem id="om_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="fa fa-fw fa-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                        <p:submenu id="om_admin_accounting" label="#{i18n['app.fede.accounting']}" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER')}">
+                            <p:menuitem id="om_close_cash" value="#{i18n['common.salesvspurchases']}" icon="fa fa-fw fa-usd" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="fa fa-fw fa-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/><!--or request.isUserInRole('CHECKER')-->
                             <p:menuitem id="om_generalLedger" value="#{i18n['app.fede.accounting.generalLedger']}" icon="fa  fa-fw fa-book" outcome="/pages/fede/accounting/account_items.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/><!-- or request.isUserInRole('ACCOUNTING')-->
                             <p:menuitem id="om_journals" value="#{i18n['app.fede.accounting.journals']}" icon="fa fa-sticky-note" outcome="/pages/fede/accounting/journal_items.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/><!-- or request.isUserInRole('ACCOUNTING')-->
                         </p:submenu>

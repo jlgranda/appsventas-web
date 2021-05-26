@@ -95,7 +95,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                             <p:toolbar>
                                 <f:facet name="left">
-                                    <p:commandButton id="save" value="#{i18n['Save']}" 
+                                    <p:commandButton id="save" value="#{i18n['common.save']}" 
                                                      ajax="true" 
                                                      actionListener="#{subjectAdminHome.save()}" 
                                                      action="#{subjectAdminHome.getOutcome()}"
@@ -108,7 +108,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                     <p:menuButton value="#{i18n['common.options']}">
-                                        <p:menuitem rendered="#{subjectAdminHome.subjectEdit.persistent}" value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
+                                        <p:menuitem rendered="#{subjectAdminHome.subjectEdit.persistent}" value="#{i18n['app.signin.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
                                         <p:menuitem value="#{i18n['Send']} #{i18n['common.message']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(false)}" icon="fa fa-magic" 
                                                     immediate="true" rendered="#{!subjectAdminHome.subjectEdit.confirmed}"/>
                                         <p:menuitem value="#{i18n['common.force']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(true)}" icon="fa fa-magic" 
@@ -124,22 +124,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                 </div>
                 <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
-                          header="#{i18n['common.password.change']}" 
+                          header="#{i18n['app.signin.password.change']}" 
                           modal="true" draggable="true" position="center" closable="false" >
                     <div class="Container100">
                         <p:messages id="messagesDlg" showDetail="true" autoUpdate="true" closable="true" />
                         <div class="ContainerIndent">
                             <div class="Card ShadowEffect ui-fluid">
-                                <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
+                                <jlgranda:input id="password" name="password" type="password" label="#{i18n['common.password']}" 
                                                 value="#{subjectAdminHome.clave}"  placeholder="true"
                                                 execute="@this save" render="password">
                                 </jlgranda:input>
-                                <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['password']}" 
+                                <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['app.signin.password.confirm']}" 
                                                 value="#{subjectAdminHome.confirmarClave}"  placeholder="true"
                                                 execute="@this save" render="confirmar-password"/>
                                 <div class="EmptyBox10"></div>
                                 <div class="Wid50 Fleft Responsive">
-                                    <p:commandButton value="#{i18n['Save']}"  icon="fa fa-save Fs14"
+                                    <p:commandButton value="#{i18n['common.save']}"  icon="fa fa-save Fs14"
                                                      update="@form:messages,@form:password,@form:confirmar-password"
                                                      action="#{subjectAdminHome.changePassword()}"
                                                      onsuccess="PF('dlgCambiarClave').hide()"
