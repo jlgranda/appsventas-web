@@ -90,8 +90,18 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>inventory-kardexs</from-outcome>
+            <to-view-id>/pages/fede/inventory/kardex_items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>close-cash</from-outcome>
             <to-view-id>/pages/fede/accounting/close_cash.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ajust-cash</from-outcome>
+            <to-view-id>/pages/fede/accounting/cash_ajust.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

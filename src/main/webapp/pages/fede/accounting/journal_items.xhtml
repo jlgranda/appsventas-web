@@ -22,56 +22,61 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}"/>
-        <ui:define name="title">#{i18n['app.name']}</ui:define>
+        <!--<ui:param name="sitename" value="#{i18n['Sitename']}"/>-->
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <!--<f:viewParam name="" value="" />-->
+            </f:metadata>
+        </ui:define>
         <ui:define name="viewname">
-            <li>#{i18n['app.name']}</li>
+            <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/journal_items.jsf">#{i18n['app.fede.accouting.journals']}</p:link></li>
+            <li><p:link outcome="/pages/fede/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['Start']}</label>
+                        <label class="Gray">#{i18n['common.from']}</label>
                         <p:calendar value="#{generalJournalHome.start}" class="input-sm">
                             <!--<p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" oncomplete="form.submit();"/>-->
                         </p:calendar>
-                        <label class="Gray">#{i18n['End']}</label>
+                        <label class="Gray">#{i18n['common.to']}</label>
                         <p:calendar value="#{generalJournalHome.end}" class="input-sm">
                             <!--<p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" oncomplete="form.submit();"/>-->
                         </p:calendar>                        
-                        <label class="Gray">#{i18n['Find']}</label>
+                        <label class="Gray">#{i18n['common.keyword']}</label>
                         <p:inputText value="#{generalJournalHome.keyword}" class="input-sm"></p:inputText>
-                        <p:commandButton value="#{i18n['Find']}" style="margin-bottom: 10px;" styleClass="raised-btn"
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom: 10px;" styleClass="raised-btn"
                                          actionListener="#{generalJournalHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <!--<p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/accounting/journal.jsf"/>-->
-                        <p:commandButton value="#{i18n['New']}" style="margin-bottom: 10px;" styleClass="danger-btn"
+                        <!--<p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/accounting/journal.jsf"/>-->
+                        <p:commandButton value="#{i18n['common.new']}" style="margin-bottom: 10px;" styleClass="danger-btn"
                                          actionListener="#{generalJournalHome.validateNewJournal()}" ajax="false">
                         </p:commandButton>
                     </div>
                     <div class="card">
-                        <p:dataTable var="journal"
-                                     value="#{generalJournalHome.lazyDataModel}"
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{generalJournalHome.selectedBussinesEntities}"
-                                     rowKey="#{journal.id}"
-                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                        <p:dataTable id="dataTable-purchases" draggableColumns="true" lazy="true" liveResize="true"
+                                     paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{journal.id}"
+                                     rows="25" scrollRows="25"
+                                     value="#{generalJournalHome.lazyDataModel}" var="journal"
+                                     selection="#{generalJournalHome.selectedBussinesEntities}"
+                                     sortOrder="DESCENDING" sortBy="#{journal.createdOn}">
                             <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
                             <p:column headerText="#{i18n['common.code.UUID']}" sortBy="#{journal.code}">
                                 <h:outputText value="#{journal.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['Label']}" sortBy="#{journal.name}">
+                            <p:column headerText="#{i18n['common.label']}" sortBy="#{journal.name}" style="width: 45%">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{journal.createdOn}"
-                                       styleClass="text-right">
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{journal.createdOn}"
+                                       styleClass="text-right" style="width: auto">
                                 <h:outputText value="#{journal.createdOn}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>

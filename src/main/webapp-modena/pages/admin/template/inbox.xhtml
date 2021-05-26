@@ -71,11 +71,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:menuButton>
                         </f:facet>
                         <f:facet name="right">
-                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                             <p:calendar value="#{templateHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
-                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                             <p:calendar value="#{templateHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>

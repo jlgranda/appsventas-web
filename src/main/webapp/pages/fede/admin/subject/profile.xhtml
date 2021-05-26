@@ -26,11 +26,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['Profile']}" />
+        <ui:define name="title">#{i18n['common.profile']} - #{subjectAdminHome.subject.fullName}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="subjectId" value="#{subjectAdminHome.subjectId}" />       
             </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li><p:link outcome="home">#{i18n['common.profile']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g ui-fluid">
@@ -56,31 +60,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                     <div class="ui-g ui-fluid">
                         <div class="ui-g ui-lg-12">
-                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
                                             value="#{subjectAdminHome.subjectEdit.code}" validator="#{subjectAdminHome.subjectEdit.nonnative ? 'safeTextUTF8Validator' : 'ciValidator'}"
                                             required="#{!subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
-                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
-                                            value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
-                            <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
+                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstname']}" 
+                                            value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['common.firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                            <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastname']}" 
                                             value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
-                                            inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+                                            inlinehelp="#{messages['common.lastname.inlinehelp']}" execute="@this save" render="lstn"/>
 
-                            <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
+                            <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
                                             value="#{subjectAdminHome.subjectEdit.description}" required="false" 
                                             inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
 
-                            <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
+                            <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
                                             value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                             required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                             execute="@this save" render="email"/>
 
-                            <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['phone']}" 
+                            <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
                                             value="#{subjectAdminHome.subjectEdit.mobileNumber}"
                                             required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                             execute="@this save" render="mobileNumber"/>
 
-                            <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                            <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
+                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
                                             execute="@this save" render="bio"/>
 
                             <p:panel rendered="#{!subjectAdminHome.subjectEdit.persistent}">
@@ -89,7 +93,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                                 execute="@this save" render="clave">
                                 </jlgranda:input>
-                                <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['common.confirmPassword']}" 
+                                <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['common.confirm.password']}" 
                                                 value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="true"
                                                 execute="@this save" render="confirmar-clave"/>
                             </p:panel>
@@ -102,7 +106,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                     <p:toolbar>
                         <f:facet name="left">
-                            <p:commandButton id="save" value="#{i18n['Save']}" 
+                            <p:commandButton id="save" value="#{i18n['common.save']}" 
                                              ajax="true" 
                                              actionListener="#{subjectAdminHome.saveValidado()}" 
                                              action="#{subjectAdminHome.getOutcome()}"

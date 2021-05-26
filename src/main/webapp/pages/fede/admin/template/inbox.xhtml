@@ -38,14 +38,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="card">
                         <h1>#{i18n['app.mail.templates']}</h1>
                         <div class="EmptyBox10"></div>
-                        <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
                         <p:inputText value="#{templateHome.keyword}" class="input-sm">
                         </p:inputText>
                         
-                        <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{templateHome.clear()}" ajax="false">
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{templateHome.clear()}" ajax="false">
                         </p:commandButton>
                         
-                        <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/admin/template/template.jsf"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/admin/template/template.jsf"/>
                     </div>
                     <div class="card card-w-title">
                         <p:dataTable var="_template" 
@@ -65,10 +65,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['app.mail.template.title']}" sortBy="#{_template.title}">
                                 <h:outputText value="#{_template.title}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{_template.createdOn}"
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_template.createdOn}"
                                        styleClass="text-right">
                                 <h:outputText value="#{_template.createdOn}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>

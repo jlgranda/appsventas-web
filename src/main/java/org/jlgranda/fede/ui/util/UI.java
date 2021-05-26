@@ -34,6 +34,9 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.fede.model.sales.Invoice;
+import org.jlgranda.fede.model.sales.KardexDetail;
+import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
@@ -106,7 +109,52 @@ public class UI {
         }
         return items;
     }
-
+    
+    public SelectItem[] getProductTypesAsSelectItem(List<Product> entities) {
+        boolean selectOne = true;
+        int size = selectOne ? entities.size() + 1 : entities.size();
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        for (Product x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
+        }
+        return items;
+    }
+    
+    public SelectItem[] getProductKardexAsSelectItem(List<Product> entities) {
+        boolean selectOne = true;
+        int size = selectOne ? entities.size() + 1 : entities.size();
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        for (Product x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
+        }
+        return items;
+    }
+    
+    public SelectItem[] getInvoiceAsSelectItem(List<Invoice> entities) {
+        boolean selectOne = true;
+        int size = selectOne ? entities.size() + 1 : entities.size();
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        for (Invoice x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
+        }
+        return items;
+    }
+    
     public List<SelectItem> getGroupTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -157,6 +205,91 @@ public class UI {
         item = new SelectItem("HABER", "HABER");
         items.add(item);
 
+        return items;
+    }
+    
+    public List<SelectItem> getOperationTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL.toString(), KardexDetail.OperationType.EXISTENCIA_INICIAL.toString());
+        items.add(item);
+        item = new SelectItem(KardexDetail.OperationType.PRODUCCION.toString(), KardexDetail.OperationType.PRODUCCION.toString());
+        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
+//        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
+//        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_COMPRA.toString(), KardexDetail.OperationType.DEVOLUCION_COMPRA.toString());
+//        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
+//        items.add(item);
+
+        return items;
+    }
+    
+    public List<SelectItem> getMeasuresTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+//        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+//        items.add(item);
+        item = new SelectItem("UNIDAD", "[Unit] Unidad");
+        items.add(item);
+        item = new SelectItem("KILOGRAMO", "[kg] Kilogramo");
+        items.add(item);
+        item = new SelectItem("GRAMO", "[g] Gramo");
+        items.add(item);
+        item = new SelectItem("MILIGRAMO", "[mg] Miligramo");
+        items.add(item);
+        item = new SelectItem("LITRO", "[l] Litro");
+        items.add(item);
+        item = new SelectItem("MILILITRO", "[ml] Mililitro");
+        items.add(item);
+
+        return items;
+    }
+    
+    public List<SelectItem> getDenominationBillsAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        item = new SelectItem("$ 100", "$ 100");
+        items.add(item);
+        item = new SelectItem("$ 50", "$ 50");
+        items.add(item);
+        item = new SelectItem("$ 20", "$ 20");
+        items.add(item);
+        item = new SelectItem("$ 10", "$ 10");
+        items.add(item);
+        item = new SelectItem("$ 5", "$ 5");
+        items.add(item);
+        item = new SelectItem("$ 2", "$ 2");
+        items.add(item);
+        item = new SelectItem("$ 1 (billete)", "$ 1");
+        items.add(item);
+        
+        return items;
+    }
+    public List<SelectItem> getDenominationMoneysAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        item = new SelectItem("$ 1 (moneda)", "$ 1");
+        items.add(item);
+        item = new SelectItem("50 ¢", "50 ¢");
+        items.add(item);
+        item = new SelectItem("25 ¢", "25 ¢");
+        items.add(item);
+        item = new SelectItem("10 ¢", "10 ¢");
+        items.add(item);
+        item = new SelectItem("5 ¢", "5 ¢");
+        items.add(item);
+        item = new SelectItem("1 ¢", "1 ¢");
+        items.add(item);
+        
         return items;
     }
 
@@ -234,8 +367,6 @@ public class UI {
     public List<SelectItem> getPaymentMethodsAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
-        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-        items.add(item);
         item = new SelectItem("EFECTIVO", "EFECTIVO");
         items.add(item);
         item = new SelectItem("TARJETA CREDITO", "TARJETA CREDITO");

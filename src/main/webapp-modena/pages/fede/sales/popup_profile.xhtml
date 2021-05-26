@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                             <div class="Container100">
-                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" 
+                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
                                                 required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
                                 <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 

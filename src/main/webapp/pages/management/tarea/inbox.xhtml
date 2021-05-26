@@ -74,11 +74,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:menuButton>
                         </f:facet>
                         <f:facet name="right">
-                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                             <p:calendar value="#{tareaHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
-                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                             <p:calendar value="#{tareaHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                             </p:calendar>
@@ -164,7 +164,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{tarea.createdOn}"
                                        styleClass="text-right">
                                 <h:outputText value="#{tarea.createdOn}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>

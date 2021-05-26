@@ -26,34 +26,37 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-
-    <ui:define name="title">#{i18n['app.name']}</ui:define>
-
-    <ui:define name="viewname">
-        <li>#{i18n['app.name']}</li>
-        <li>/</li>
-        <li><p:link outcome="/pages/fede/sales/preinvoices.jsf">#{i18n['app.fede.allmysales']}</p:link></li>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <!--<f:viewParam name="" value="" />-->
+        </f:metadata>
     </ui:define>
-
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/sales/preinvoices_search.jsf">#{i18n['common.historic']}</p:link></li>
+    </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jpapi.model.StatusType" />
         <div class="ui-g">
             <div class="ui-g-12">
                 <div class="card">
-                    <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.keyword']}&nbsp;</label>
                     <p:inputText value="#{invoiceHome.keyword}" class="input-sm">
                         <p:ajax listener="#{invoiceHome.clear()}" />
                     </p:inputText>  
 
                     <h:panelGroup id="controles-busqueda-avanzada" >
                         <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                             <p:calendar value="#{invoiceHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
                             </p:calendar>
                         </h:panelGroup>
                         <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                             <p:calendar value="#{invoiceHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> 
                             </p:calendar>                            
@@ -62,9 +65,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:selectBooleanCheckbox value="#{invoiceHome.busquedaAvanzada}">
                         <p:ajax event="change" update="controles-busqueda-avanzada" />
                     </p:selectBooleanCheckbox>
-                    <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
+                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
                     </p:commandButton>
-                    <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=preinvoices_search"/>
+                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=preinvoices_search"/>
                 </div>
                 <div class="card">
                     <!--Busqueda-->
@@ -77,11 +80,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <span class="Fs16 DispBlock">
                                                 #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
                                             </span>
-                                            <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.fede.sales.invoice.owner']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.lastUpdate']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comandaNumber']}: <strong>#{entity.code}</strong></span>
+                                            <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.customer']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.update.last']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comanda.number']}: <strong>#{entity.code}</strong></span>
                                             <hr></hr>
                                         </div>
                                         <div class="Container40">
-                                            <p:commandButton title="#{i18n['app.fede.sales.invoice.rollback']}" 
+                                            <p:commandButton title="#{i18n['common.rollback']}" 
                                                              icon="fa fa-undo"
                                                              styleClass="GrayButton Fright"
                                                              action="#{invoiceHome.reopen(entity.id)}"

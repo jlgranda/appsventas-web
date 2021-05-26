@@ -22,6 +22,8 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
+import com.jlgranda.fede.ejb.sales.KardexDetailService;
+import com.jlgranda.fede.ejb.sales.KardexService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
 import java.io.IOException;
@@ -65,6 +67,8 @@ import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jlgranda.fede.model.sales.Invoice;
+import org.jlgranda.fede.model.sales.Kardex;
+import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
@@ -95,8 +99,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     private static final long serialVersionUID = 115507468383355922L;
 
     Logger logger = LoggerFactory.getLogger(InvoiceHome.class);
-    
-//    private static final double IVA=0d;
 
     @Inject
     private Subject subject;
@@ -129,7 +131,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Set<Product> recents = new HashSet<>();
 
     private Payment payment;
-    
+
     @EJB
     private GroupService groupService;
 
@@ -184,9 +186,15 @@ public class InvoiceHome extends FedeController implements Serializable {
     private String sortOrder = "DESCENDING";
 
     private Long interval; //Intervalo de tiempo
-    
+
     @Inject
     private OrganizationData organizationData;
+
+    @EJB
+    private KardexService kardexService;
+
+    @EJB
+    private KardexDetailService kardexDetailService;
 
     @PostConstruct
     private void init() {
@@ -529,6 +537,7 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String collect() {
         collect(StatusType.CLOSE.toString());
+        registerDetailInKardex();
         return getOutcome();
     }
 
@@ -578,7 +587,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setStatus(status);
             save(true);
         } else {
-            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
             setOutcome("");
         }
         return "failed";
@@ -665,7 +674,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         if (getPayment().getDiscount().compareTo(BigDecimal.ZERO) > 0 && getInvoice().getDescription().equals("")) {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.description"));
             setOutcome("");
-        }else{
+        } else {
             if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
                 getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
                 getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
@@ -858,7 +867,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public boolean addCandidateDetail() {
         Product p = candidateDetail.getProduct();
-        if (touch(p)){
+        if (touch(p)) {
             //Agregar a lista de últimos agregados desde autocomplete
             getRecents().add(p);
         }
@@ -866,9 +875,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public boolean touch(Product product) {
-        if (product == null){
+        if (product == null) {
             addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.requiredMessage"));
-            logger.error("No se seleccionó un producto.");
+            logger.error(I18nUtil.getMessages("common.selected.product.none"));
             return false;
         }
         setCandidateDetail(detailService.createInstance(1));
@@ -1039,7 +1048,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(fillSeries);
-        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales.net"));
 
         LineChartSeries purchases = new LineChartSeries();
         purchases.setFill(fillSeries);
@@ -1080,19 +1089,19 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.addSeries(profits);
 //        areaModel.addSeries(fixedCosts);
 
-        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
-        areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
+        areaModel.setTitle(I18nUtil.getMessages("linechart.salesvspurchases"));
+        areaModel.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "ne"));
         areaModel.setExtender("skinChart");
         //areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.day"));
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-500")));
-        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.max", "500")));
+        yAxis.setLabel(I18nUtil.getMessages("common.dollars"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "-500")));
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
 
         return areaModel;
     }
@@ -1142,6 +1151,62 @@ public class InvoiceHome extends FedeController implements Serializable {
 //        setEnd(Dates.maximumDate(Dates.now()));
 //        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
 //    }
+    private void registerDetailInKardex() {
+        for (Detail candidateDetail1 : getCandidateDetails()) {
+            Kardex kardex = null;
+            KardexDetail kardexDetail = null;
+            kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
+            if (kardex == null) {
+                kardex = kardexService.createInstance();
+                kardex.setOwner(this.subject);
+                kardex.setAuthor(this.subject);
+                kardex.setOrganization(this.organizationData.getOrganization());
+                kardex.setProduct(candidateDetail1.getProduct());
+                kardex.setCode("TK-P- "+candidateDetail1.getProduct().getId());
+                kardex.setUnit_minimum(1L);
+                kardex.setUnit_maximum(1L);
+            } else {
+                kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
+                kardex.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
+                kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndInvoiceAndOperation", kardex, candidateDetail1.getInvoice(), KardexDetail.OperationType.VENTA);
+            }
+            if (kardexDetail == null) {
+                kardexDetail = kardexDetailService.createInstance();
+                kardexDetail.setOwner(this.subject);
+                kardexDetail.setAuthor(this.subject);
+                kardexDetail.setInvoice(candidateDetail1.getInvoice());
+                kardexDetail.setOperation_type(KardexDetail.OperationType.VENTA);
+            } else {
+                //Aumentar los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a disminuir por la venta
+                if (kardexDetail.getQuantity() != null && kardexDetail.getTotal_value()!= null) {
+                    kardexDetail.setCummulative_quantity(kardex.getQuantity() + kardexDetail.getQuantity());
+                    kardexDetail.setCummulative_total_value(kardex.getFund().add(kardexDetail.getTotal_value()));
+                }
+                kardexDetail.setAuthor(this.subject); //Saber quien lo modificó por última vez
+                kardexDetail.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
+            }
+            kardexDetail.setCode(candidateDetail1.getInvoice().getSequencial());
+            kardexDetail.setUnit_value(candidateDetail1.getPrice());
+            kardexDetail.setQuantity((long) candidateDetail1.getAmount());
+            kardexDetail.setTotal_value(kardexDetail.getUnit_value().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
+
+            if (kardex.getId() == null) {
+                kardexDetail.setCummulative_quantity(kardexDetail.getQuantity()*-1);
+                kardexDetail.setCummulative_total_value(kardexDetail.getTotal_value().multiply(BigDecimal.valueOf(-1)));
+            } else {
+                if (kardex.getQuantity() != null && kardex.getFund() != null) {
+                    kardexDetail.setCummulative_quantity(kardex.getQuantity() - kardexDetail.getQuantity());
+                    kardexDetail.setCummulative_total_value(kardex.getFund().subtract(kardexDetail.getTotal_value()));
+                }
+            }
+
+            kardex.addKardexDetail(kardexDetail);
+            kardex.setQuantity(kardexDetail.getCummulative_quantity());
+            kardex.setFund(kardexDetail.getCummulative_total_value());
+            kardexService.save(kardex.getId(), kardex);
+        }
+    }
+
     @Override
     protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades

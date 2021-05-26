@@ -5,16 +5,17 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
                 template="/WEB-INF/template.xhtml">
-
-    <ui:define name="title">#{i18n['common.dashboard']} - #{subject.fullName}</ui:define>
-
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.smart']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
+            <!--<f:viewParam name="" value="" />-->
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li><p:link outcome="dashboard">#{i18n['common.dashboard']} - #{subject.fullName}</p:link></li>
+        <li>#{i18n['app.fede.smart']}</li>
+        <li>/</li>
+        <li><p:link outcome="dashboard">#{i18n['app.fede.smart.dashboard']}</p:link></li>
     </ui:define>
     <ui:define name="content" rendered="#{true}">
         <div class="layout-dashboard">
@@ -22,7 +23,7 @@
                 <div class="ui-g-12 ui-md-6 ui-lg-6">
                     <div class="overview-box sales">
                         <p:graphicImage name="images/icon-sales.png" library="ecuador-layout"  styleClass="image-icon" />
-                        <div class="overview-title">#{i18n['app.fede.sales.goal']} #{i18n['app.fede.sales']}</div>
+                        <div class="overview-title">#{i18n['app.fede.smart.goal']} #{i18n['app.fede.sales.net']}</div>
                         <div class="overview-numbers">
                             <h:outputText value="#{summaryHome.countSalesToday()}">
                             </h:outputText>                          
@@ -42,7 +43,7 @@
                 <div class="ui-g-12 ui-md-6 ui-lg-6">
                     <div class="overview-box views">
                         <p:graphicImage name="images/icon-sales.png" library="ecuador-layout" styleClass="image-icon" style="margin-top:10px"/>
-                        <div class="overview-title">#{i18n['app.fede.sales.goal']} #{i18n['common.purchases']}</div>
+                        <div class="overview-title">#{i18n['app.fede.smart.goal']} #{i18n['common.purchases']}</div>
                         <div class="overview-numbers">
                             <!--#{facturaElectronicaHome.countRowsByTag("own")}-->
                             #{facturaElectronicaHome.countRowsByTag("org")}
@@ -51,13 +52,13 @@
                             <div class="ui-g-6 progressbar">
                                 <div class="progress view"></div>
                             </div>
-                            <!--<span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("own")} #{i18n['common.more']}</span>-->
-                            <span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("org")} #{i18n['common.more']}</span>
+                            <!--<span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("own")} #{i18n['common.more.min']}</span>-->
+                            <span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("org")} #{i18n['common.more.min']}</span>
                         </div>
                     </div>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel header="#{i18n['common.statistics']}" styleClass="statistics ui-g">
+                    <p:panel header="#{i18n['app.fede.smart.statistic']}" styleClass="statistics ui-g">
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
 <!--                                                        <i class="fa fa-level-up"></i>
                                                         <span class="icon-label">Mejora</span>
@@ -67,7 +68,7 @@
                                                         </div>-->
                             <i class="fa fa-usd"></i>
                             <!--30 días-->
-                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.date.range.month", "30")} #{i18n['common.days']}</span>
+                            <span class="icon-label">#{i18n['app.fede.smart.average.last']} #{settingHome.getValue("app.fede.date.range.month", "30")} #{i18n['common.days']}</span>
                             <span>
                                 <h:outputText value="#{summaryHome.calculeProfitRateAverage(30)}">
                                     <f:convertNumber type="percent" />
@@ -77,7 +78,7 @@
                                 <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(30) * 100}%"></div>
                             </div>
                             <!--7 días-->
-                            <span class="icon-label">#{i18n['app.fede.sales.average.last']} #{settingHome.getValue("app.fede.date.range.week", "7")} #{i18n['common.days']}</span>
+                            <span class="icon-label">#{i18n['app.fede.smart.average.last']} #{settingHome.getValue("app.fede.date.range.week", "7")} #{i18n['common.days']}</span>
                             <span>
                                 <h:outputText value="#{summaryHome.calculeProfitRateAverage(7)}">
                                     <f:convertNumber type="percent" />
@@ -88,7 +89,7 @@
                             </div>
 
                             <!-- Ayer -->
-                            <span class="icon-label">#{i18n['app.date,yesterday']}</span>
+                            <span class="icon-label">#{i18n['common.date.yesterday']}</span>
                             <span>
                                 <h:outputText value="#{summaryHome.calculeProfitRateAverage(1)}">
                                     <f:convertNumber type="percent" />
@@ -122,7 +123,7 @@
                             </div>
                             <div class="details">
                                 <h:link outcome="/pages/fede/sales/summary.jsf">
-                                    <span>#{i18n['VerDetalles']}</span>
+                                    <span>#{i18n['common.view']} #{i18n['common.details']}</span>
                                     <i class="fa fa-chevron-right"></i>
                                 </h:link>
                             </div>
@@ -131,7 +132,7 @@
                 </div>
                 <!-- Listado de clientes recientes -->
                 <div class="ui-g-12 ui-md-12 ui-lg-6">
-                    <p:panel header="#{i18n['app.fede.sales.invoice.owners']}" styleClass="contacts">
+                    <p:panel header="#{i18n['common.customers']}" styleClass="contacts">
                         <ul>
                             <ui:repeat value="#{subjectAdminHome.lazyDataModel.resultList}" var="entity">
                                 <li>
@@ -158,15 +159,15 @@
                 <div class="ui-g-12 ui-md-12 ui-lg-6">
                     <p:panel styleClass="tasks">
                         <f:facet name="header">
-                            #{i18n['PreInvoices']}
-                            <p:button icon="fa fa-plus" title="#{i18n['PreInvoice']}" styleClass="secondary-button" outcome="/pages/fede/sales/invoice.jsf"/>
+                            #{i18n['common.orders']}
+                            <p:button icon="fa fa-plus" title="#{i18n['common.orders']}" styleClass="secondary-button" outcome="/pages/fede/sales/invoice.jsf"/>
                         </f:facet>
                         <ul>
                             <ui:repeat value="#{invoiceHome.myLastlastPreInvoices}" var="entity">
                                 <li>
                                     <span>#{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i></span> 
                                     <div class="Fright">
-                                        <p:button title="#{i18n['app.fede.collect']}" 
+                                        <p:button title="#{i18n['common.collect']}" 
                                                   icon="fa fa-dollar"
                                                   styleClass="secondary-button"
                                                   outcome="/pages/fede/sales/invoice.jsf?invoiceId=#{entity.id}"
@@ -181,7 +182,7 @@
                     </p:panel>
                 </div>
 <!--                <div class="ui-g-12 ui-md-12 ui-lg-12">
-                    <p:panel header="#{i18n['common.uncomming.events']}" style="height:100%">
+                    <p:panel header="#{i18n['app.setting.events.uncomming']}" style="height:100%">
                         <p:schedule value="#{scheduleView.eventModel}"/>
                     </p:panel>
                 </div>-->

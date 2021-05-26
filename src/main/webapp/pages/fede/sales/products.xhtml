@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="viewname">
         <li>#{i18n['app.name']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/sales/products.jsf">#{i18n['app.fede.summary.products']}</p:link></li>
+        <li><p:link outcome="/pages/fede/sales/products.jsf">#{i18n['app.fede.sales.product.report']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -38,22 +38,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <div class="ui-g">
             <div class="ui-g-12">
                 <div class="card">
-                    <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                     <p:calendar value="#{summaryHome.start}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{summaryHome.refresh()}" oncomplete="form.submit();"/>
                     </p:calendar>
-                    <label class="Gray">#{i18n['End']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                     <p:calendar value="#{summaryHome.end}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{summaryHome.refresh()}" oncomplete="form.submit();"/>
                     </p:calendar>
-                    <label class="Gray">#{i18n['common.date.group']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.selected.fast']}&nbsp;</label>
                     <p:calendar value="#{summaryHome.grupoFechas}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{summaryHome.refreshPorGrupoFechas()}" oncomplete="form.submit();"/>
                     </p:calendar>
                 </div>
                 <div class="card">
                     <div class="EmptyBox10"></div>
-                    <h3 class="CardTopic">#{i18n['app.fede.summary.products']}</h3>
+                    <h3 class="CardTopic">#{i18n['app.fede.sales.product.report']}</h3>
                     
                     <div class="SeparatorFull"></div>
                     <div class="EmptyBox10"></div>

@@ -294,7 +294,6 @@ public class SummaryHome extends FedeController implements Serializable {
             this.paxTotal = 0L;
         }
 
-        this.salesTotal = this.salesTotal.subtract(this.discountTotal);
         this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
 
     }
@@ -491,57 +490,58 @@ public class SummaryHome extends FedeController implements Serializable {
     private BarChartModel createBarModelAmount() {
         BarChartModel model = new BarChartModel();
 //        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween");
-        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetweenOrg");
+        ChartSeries product = createProductsSeries(I18nUtil.getMessages("common.quantity"), "Product.findTopProductIdsBetweenOrg");
 
         model.addSeries(product);
-        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
-                + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
-        model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
+                + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+        model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
         model.setAnimate(true);
         model.setShowPointLabels(false);
         model.setExtender("skinBar");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.barchart.sales.axis"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.product"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.amount.axis"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.sales.min", "0")));
-        double scale;
-        if (!product.getData().isEmpty()) {
-            scale = (double) product.getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
-            yAxis.setMax(scale);
-        }
-
+        yAxis.setLabel(I18nUtil.getMessages("common.units"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "0")));
+//        double scale;
+//        if (!product.getData().isEmpty()) {
+//            scale = (double) product.getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
+//            yAxis.setMax(scale);
+//        }
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "250")));
         return model;
     }
 
     private BarChartModel createbarModelSales() {
         BarChartModel model = new BarChartModel();
 //        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice");
-        ChartSeries product = createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPriceOrg");
+        ChartSeries product = createProductsSeries(I18nUtil.getMessages("common.total"), "Product.findTopProductIdsBetweenPriceOrg");
 
         model.addSeries(product);
-        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
-        model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+                + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+        model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
         model.setAnimate(true);
         model.setShowPointLabels(false);
         model.setExtender("skinBar2");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.barchart.sales.axis"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.product"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.price.axis"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.sales.min", "0")));
-        double scale; //Aumentar un poco más la escala
-        if (!product.getData().isEmpty()) {
-            scale = (double) product.getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
-            yAxis.setMax(scale);
-        }
-
+        yAxis.setLabel(I18nUtil.getMessages("common.dollars"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "0")));
+//        double scale; //Aumentar un poco más la escala
+//        if (!product.getData().isEmpty()) {
+//            scale = (double) product.getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
+//            yAxis.setMax(scale);
+//        }
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
         return model;
     }
     
@@ -559,28 +559,29 @@ public class SummaryHome extends FedeController implements Serializable {
 
     private BarChartModel createbarModelCategory() {
         BarChartModel model = new BarChartModel();
-        ChartSeries product = createCategoriesSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenCategoryOrg");
+        ChartSeries product = createCategoriesSeries(I18nUtil.getMessages("common.total"), "Product.findTopProductIdsBetweenCategoryOrg");
 
         model.addSeries(product);
-        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
-        model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+                + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+        model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
         model.setAnimate(true);
         model.setShowPointLabels(false);
         model.setExtender("skinBar2");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.barchart.category.axis"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.groups"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.price.axis"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.sales.min", "0")));
-        double scale; //Aumentar un poco más la escala
-        if (!product.getData().isEmpty()) {
-            scale = (double) product.getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
-            yAxis.setMax(scale);
-        }
-
+        yAxis.setLabel(I18nUtil.getMessages("common.dollars"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.min", "0")));
+//        double scale; //Aumentar un poco más la escala
+//        if (!product.getData().isEmpty()) {
+//            scale = (double) product.getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
+//            yAxis.setMax(scale);
+//        }
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "250")));
         return model;
     }
 
@@ -589,11 +590,12 @@ public class SummaryHome extends FedeController implements Serializable {
 
 //        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetween"));
 //        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPrice"));
-        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.amount"), "Product.findTopProductIdsBetweenOrg"));
-        model.addSeries(createProductsSeries(I18nUtil.getMessages("app.fede.barchart.sales.label.prices"), "Product.findTopProductIdsBetweenPriceOrg"));
+        model.addSeries(createProductsSeries(I18nUtil.getMessages("common.quantity"), "Product.findTopProductIdsBetweenOrg"));
+        model.addSeries(createProductsSeries(I18nUtil.getMessages("common.total"), "Product.findTopProductIdsBetweenPriceOrg"));
 
-        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
-        model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+                + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+        model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
         model.setAnimate(true);
         model.setShadow(false);
@@ -601,18 +603,18 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setExtender("skinHorizontalBar");
 
         Axis xAxis = model.getAxis(AxisType.X);
-        xAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.label.amount") + "/" + I18nUtil.getMessages("app.fede.barchart.sales.price.axis"));
+        xAxis.setLabel(I18nUtil.getMessages("common.quantity") + "/" + I18nUtil.getMessages("common.dollars"));
         xAxis.setMin(0);
-        double scale; //Aumentar un poco más la escala
-        if (!model.getSeries().get(1).getData().isEmpty()) {
-            scale = (double) model.getSeries().get(1).getData().values().toArray()[1] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
-            xAxis.setMax(scale);
-        }
-
+//        double scale; //Aumentar un poco más la escala
+//        if (!model.getSeries().get(1).getData().isEmpty()) {
+//            scale = (double) model.getSeries().get(1).getData().values().toArray()[1] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
+//            xAxis.setMax(scale);
+//        }
+        xAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
         Axis yAxis = model.getAxis(AxisType.Y);
 
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.axis"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.sales.min", "0")));
+        yAxis.setLabel(I18nUtil.getMessages("common.product"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "0")));
 
         return model;
     }
@@ -636,10 +638,11 @@ public class SummaryHome extends FedeController implements Serializable {
     private HorizontalBarChartModel createHorizontalPurchasesBarModel() {
         HorizontalBarChartModel model = new HorizontalBarChartModel();
 //        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
-        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetweenOrg"));
+        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.total"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetweenOrg"));
 
-        model.setTitle(I18nUtil.getMessages("app.fede.barchart.sales.date.a") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) + " " + I18nUtil.getMessages("app.fede.barchart.sales.date.b") + Dates.toString(getEnd(), "dd/MM/yyyy"));
-        model.setLegendPosition(settingHome.getValue("app.fede.barchart.sales.legendPosition", "e"));
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+                + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+        model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
         model.setAnimate(true);
         model.setShadow(false);
@@ -647,16 +650,17 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setExtender("skinHorizontalBar");
 
         Axis xAxis = model.getAxis(AxisType.X);
-        xAxis.setLabel(I18nUtil.getMessages("ride.infoFactura.importeTotal"));
+        xAxis.setLabel(I18nUtil.getMessages("ride.infoFactura.total"));
         xAxis.setMin(0);
-        double scale; //Aumentar un poco más la escala
-        if (!model.getSeries().get(0).getData().isEmpty()) {
-            scale = (double) model.getSeries().get(0).getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
-            xAxis.setMax(scale);
-        }
+//        double scale; //Aumentar un poco más la escala
+//        if (!model.getSeries().get(0).getData().isEmpty()) {
+//            scale = (double) model.getSeries().get(0).getData().values().toArray()[0] * Double.valueOf(settingHome.getValue("app.fede.barchart.sales.multiply.scale", "1.2"));
+//            xAxis.setMax(scale);
+//        }
+        xAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
         Axis yAxis = model.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.barchart.sales.axis.provider"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.sales.min", "0")));
+        yAxis.setLabel(I18nUtil.getMessages("common.supplier"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "0")));
 
         return model;
     }
@@ -668,13 +672,13 @@ public class SummaryHome extends FedeController implements Serializable {
 
         LineChartSeries fixedCosts = new LineChartSeries();
         fixedCosts.setFill(!fillSeries);
-        fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
+        fixedCosts.setLabel(I18nUtil.getMessages("common.costs.fixed"));
         fixedCosts.setShowMarker(false);
         fixedCosts.setSmoothLine(false);
 
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(fillSeries);
-        sales.setLabel(I18nUtil.getMessages("app.fede.sales"));
+        sales.setLabel(I18nUtil.getMessages("app.fede.sales.net"));
 
         LineChartSeries purchases = new LineChartSeries();
         purchases.setFill(fillSeries);
@@ -686,7 +690,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
         LineChartSeries customers = new LineChartSeries();
         customers.setFill(fillSeries);
-        customers.setLabel(I18nUtil.getMessages("app.fede.sales.invoice.owners"));
+        customers.setLabel(I18nUtil.getMessages("common.customers"));
 
         Date _start = getStart();
         if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
@@ -725,7 +729,7 @@ public class SummaryHome extends FedeController implements Serializable {
         areaModel.addSeries(fixedCosts);
         areaModel.addSeries(customers);
 
-        areaModel.setTitle(I18nUtil.getMessages("app.fede.chart.salesvspurchases"));
+        areaModel.setTitle(I18nUtil.getMessages("linechart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
         areaModel.setStacked(false);
         areaModel.setAnimate(false);
@@ -734,13 +738,13 @@ public class SummaryHome extends FedeController implements Serializable {
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.chart.date.day.scale"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.day"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("app.fede.chart.sales.scale"));
-        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.min", "-250")));
-        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.sales.scale.max", "500")));
+        yAxis.setLabel(I18nUtil.getMessages("common.dollars"));
+        yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.chart.scale.min", "-250")));
+        yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.chart.scale.max", "500")));
 
         return areaModel;
     }

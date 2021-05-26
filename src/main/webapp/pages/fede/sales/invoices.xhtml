@@ -93,11 +93,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
                                     <p:ajax event="change" oncomplete="form.submit();"/>
                                 </p:selectOneMenu>
-                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                                 <p:calendar value="#{invoiceHome.start}" class="input-sm">
                                     <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                                 </p:calendar>
-                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                                 <p:calendar value="#{invoiceHome.end}" class="input-sm">
                                     <p:ajax event="dateSelect" oncomplete="form.submit();"/>
                                 </p:calendar>
@@ -197,7 +197,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:column  id="createdOn"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{entity.createdOn}"
                                            styleClass="text-right">
                                     <h:outputText value="#{entity.createdOn}">
-                                        <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                        <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>
                                 </p:column>
                             </p:dataTable>

@@ -32,9 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
 
-    <ui:define name="title">#{i18n['app.fede.talentohumano.registrar']}</ui:define>
+    <ui:define name="title">#{i18n['common.register']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.talentohumano.registrar']}</li>
+        <li>#{i18n['common.register']}</li>
     </ui:define>
 
     <ui:define name="content">
@@ -71,12 +71,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g-8">
                                 <p:commandButton value="#{i18n['app.fede.talentohumano.check']}" id="check-btn" 
                                                  actionListener="#{journalHome.check()}" action="#{journalHome.redirect()}" icon="fa fa-handshake-o">
-                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                    <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                 </p:commandButton>
                             </div>
                             <p:commandButton value="#{i18n['Add']} #{i18n['common.rest']}" id="rest-btn" rendered="false"
                                              actionListener="#{journalHome.checkRest()}" action="#{journalHome.redirect()}" icon="fa fa-spoon" styleClass="warning-btn" >
-                                <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['common.confirm.message']}" icon="fa fa-exclamation-triangle" />
+                                <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                             </p:commandButton>
 
                             <p:defaultCommand target="check-btn" />
@@ -96,19 +96,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
                                         <h:outputText value="#{journal.id}" />
                                     </p:column>
-                                    <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                                    <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
                                         <h:outputText value="#{journal.name}" />
                                     </p:column>
                                     <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
                                                styleClass="text-right">
                                         <h:outputText value="#{journal.beginTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}" timeZone="#{ui.timeZone}"/>
+                                            <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}"/>
                                         </h:outputText>
                                     </p:column>                    
                                     <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
                                                styleClass="text-right">
                                         <h:outputText value="#{journal.beginTime}">
-                                            <f:convertDateTime pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                            <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                         </h:outputText>
                                     </p:column>                    
                                 </p:dataTable>

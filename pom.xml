@@ -441,8 +441,8 @@
                 <configuration>
                     <modules-path>
                         <paths>
-                            <jboss-home>/home/opt/wildfly-13.0.0.Final</jboss-home>
-                            <modules-path>/home/opt/wildfly-13.0.0.Final/modules</modules-path>
+                            <jboss-home>/home/opt/wildfly-17.0.1.Final</jboss-home>
+                            <modules-path>/home/opt/wildfly-17.0.1.Final/modules</modules-path>
                         </paths>
                     </modules-path>
                 </configuration>

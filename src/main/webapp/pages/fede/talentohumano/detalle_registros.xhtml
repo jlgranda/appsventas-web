@@ -33,25 +33,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
 
-    <ui:define name="title">#{i18n['app.fede.talentohumano.detalle_registro']}</ui:define>
+    <ui:define name="title">#{i18n['app.fede.talentohumano.register.detail']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.talentohumano.detalle_registro']}</li>
+        <li>#{i18n['app.fede.talentohumano.register.detail']}</li>
     </ui:define>
 
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12">
-                <h1 class="SoftGray BigTopic">#{i18n['app.fede.talentohumano.detalle_registro']}:</h1>
+                <h1 class="SoftGray BigTopic">#{i18n['app.fede.talentohumano.register.detail']}</h1>
                 <p class=" Gray">#{journalHome.employee.owner.code} - #{journalHome.employee.owner.fullName}</p>
                     
                 <div class="ui-g">
                     <div class="ui-g-12">
                         <div class="card">
-                            <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                             <p:calendar value="#{journalHome.start}" class="input-sm">
                                 <p:ajax event="dateSelect" listener="#{journalHome.clear()}" oncomplete="form.submit();"/>
                             </p:calendar>
-                            <label class="Gray">#{i18n['End']}&nbsp;</label>
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                             <p:calendar value="#{journalHome.end}" class="input-sm">
                                 <p:ajax event="dateSelect" listener="#{journalHome.clear()}" oncomplete="form.submit();"/>
                             </p:calendar>
@@ -71,19 +71,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
                                     <h:outputText value="#{journal.id}" />
                                 </p:column>
-                                <p:column headerText="#{i18n['name']}" sortBy="#{journal.name}">
+                                <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
                                     <h:outputText value="#{journal.name}" />
                                 </p:column>
                                 <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
                                            styleClass="text-right">
                                     <h:outputText value="#{journal.beginTime}">
-                                        <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}" timeZone="#{ui.timeZone}"/>
+                                        <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}"/>
                                     </h:outputText>
                                 </p:column>                    
                                 <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
                                            styleClass="text-right">
                                     <h:outputText value="#{journal.beginTime}">
-                                        <f:convertDateTime pattern="#{settingHome.getValue('fede.talentohumano.time.pattern', 'HH:mm')}" timeZone="#{ui.timeZone}"/>
+                                        <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.talentohumano.time.pattern', 'HH:mm')}"/>
                                     </h:outputText>
                                 </p:column>                   
                             </p:dataTable>

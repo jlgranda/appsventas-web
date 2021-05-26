@@ -25,38 +25,37 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.purchases']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{facturaElectronicaHome.tags}" />
             </f:metadata>
         </ui:define>
-        <ui:define name="title">#{i18n['app.name']}</ui:define>
         <ui:define name="viewname">
-            <li>#{i18n['app.name']}</li>
-            <li>/</li>
-            <li><p:link outcome="/pages/fede/inventory/items.jsf">#{i18n['app.fede.inventory.products']}</p:link></li>
+            <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['common.purchases']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                        <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                         <p:calendar value="#{facturaElectronicaHome.start}" class="input-sm">
                             <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
-                        <label class="Gray">#{i18n['End']}&nbsp;</label>
+                        <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                         <p:calendar value="#{facturaElectronicaHome.end}" class="input-sm">
                             <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
-                        <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
-                        <p:commandButton id="commandAddFromFile" value="#{i18n['Upload']} desde archivo"
+                        <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
+                        <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
                                          styleClass="secondary-button" style="margin-bottom:10px;"
                                          actionListener="#{facturaElectronicaHome.mostrarFormularioCargaFacturaElectronica()}">
                             <p:ajax event="dialogReturn" update="@form"
                                     listener="#{facturaElectronicaHome.handleReturn}">
                             </p:ajax>
                         </p:commandButton>
-                        <p:commandButton id="commandAddFromURL" value="#{i18n['Download']} desde #{i18n['URL']}"
+                        <p:commandButton id="commandAddFromURL" value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
                                          styleClass="secondary-button" style="margin-bottom:10px;"
                                          actionListener="#{facturaElectronicaHome.mostrarFormularioDescargaFacturaElectronica()}">
                             <p:ajax event="dialogReturn" update="@form"
@@ -65,42 +64,37 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:commandButton>
                     </div>
                     <div class="card">
-                        <!-- /.row -->
-                        <p:dataTable var="facturaElectronica" 
-                                     value="#{facturaElectronicaHome.lazyDataModel}" 
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{facturaElectronicaHome.selectedBussinesEntities}" 
-                                     rowKey="#{facturaElectronica.id}" 
-                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
-
+                        <p:dataTable id="dataTable-purchases" draggableColumns="true" lazy="true" liveResize="true"
+                                     paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{facturaElectronica.id}"
+                                     rows="25" scrollRows="25"
+                                     value="#{facturaElectronicaHome.lazyDataModel}" var="facturaElectronica"
+                                     selection="#{facturaElectronicaHome.selectedBussinesEntities}"
+                                     sortOrder="DESCENDING" sortBy="#{facturaElectronica.fechaEmision}">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                            <p:column headerText="#{i18n['ride.no']}" sortBy="#{facturaElectronica.code}">
+                            <p:column headerText="#{i18n['common.code']}">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{facturaElectronica.author.initials}">
+                            <p:column headerText="#{i18n['common.comany.name']}" sortBy="#{facturaElectronica.author}">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}" sortBy="#{facturaElectronica.author.initials}">
+                            <p:column headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{facturaElectronica.importeTotal}"
-                                      styleClass="text-right">
+                            <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}" styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{facturaElectronica.fechaEmision}"
-                                       styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.fechaEmision}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.emissionType']}" sortBy="#{facturaElectronica.emissionType}"
+                            <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}"
                                       styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.emissionType}">
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" styleClass="text-right">
+                                <h:outputText value="#{facturaElectronica.fechaEmision}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>
@@ -108,9 +102,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div>
             </div>
         </ui:define>
-        
         <ui:define name="script">
-            
         </ui:define>
     </ui:composition>
 </html>

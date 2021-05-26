@@ -25,21 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['Profile']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.profile']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="subjectId" value="#{invoiceHome.subjectAdminHome.subjectId}" />    
                 <f:viewAction action="#{invoiceHome.loadSessionParameters}" />
             </f:metadata>
         </ui:define>
-        <ui:define name="subheader">
-
-        </ui:define>
         <ui:define name="viewname">
-            <li>#{i18n['app.name']}</li>
+            <li>#{i18n['common.customer']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/sales/popup_profile.jsf">#{invoiceHome.subjectAdminHome.subjectId == null ? i18n['New'].concat(' ').concat(i18n['Profile']).concat(': ') : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
+            <li><p:link outcome="/pages/fede/sales/popup_profile.jsf">#{invoiceHome.subjectAdminHome.subjectId == null ? i18n['common.new'].concat(' ').concat(i18n['common.profile']) : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -47,69 +44,68 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Container100">
                         <div class="ui-g-12">
                             <div class="ui-g-4">
-                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['subject.code']}" rendered="true"
+                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="true"
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.code}" 
                                                 validator="#{invoiceHome.nonnative ? 'safeTextUTF8Validator' : 'ciValidator'}"
                                                 required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" 
                                                 execute="@this save" render="code"/>
-                                <h:outputText value=" #{i18n['common.nonnative']}" />
+                                <h:outputText value=" #{i18n['common.nonnative']} " />
                                 <p:selectBooleanCheckbox value="#{invoiceHome.nonnative}">
                                     <p:ajax update="code" listener="#{invoiceHome.updateNonnative()}" />
                                 </p:selectBooleanCheckbox>
                             </div>
                             <div class="ui-g-4">
-                                <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['firstname']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.firstname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                                <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstnames']}" 
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.firstname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" 
+                                                inlinehelp="#{messages['common.firstnames.inlinehelp']}" execute="@this save" render="fstn"/>
                             </div>
                             <div class="ui-g-4">
-                                <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['lastname']}" 
+                                <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastnames']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.surname}" required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}"
-                                                inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+                                                inlinehelp="#{messages['common.lastnames.inlinehelp']}" execute="@this save" render="lstn"/>
                             </div>
                         </div>
                         <div class="ui-g-12">
                             <div class="ui-g-4">
-                                <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['phone']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.mobileNumber}"
-                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
-                                        execute="@this save" render="phone"/>
+                                <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.mobileNumber}"
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                                execute="@this save" render="phone"/>
                             </div>
                             <div class="ui-g-8">
-                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                        required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
-                                        execute="@this save" render="email"/>
-                                <h:outputText value=" No tiene correo " />
+                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                                execute="@this save" render="email"/>
+                                <h:outputText value="#{i18n['common.email.none']} " />
                                 <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultEmail}">
                                     <p:ajax update="email" listener="#{invoiceHome.updateDefaultEmail}" />
                                 </p:selectBooleanCheckbox>
                             </div>
                         </div>
-                        
                         <div class="ui-g-12">
                             <div class="ui-g-6">
-                                <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 
-                                        inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
+                                <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                                inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
                             </div>
                             <div class="ui-g-6">
-                                <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['bio']}" 
-                                        value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
-                                        execute="@this save" render="bio"/>
+                                <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
+                                                execute="@this save" render="bio"/>
                             </div>
                         </div>
                         <div class="ui-g-12">
                             <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
-                                <p:outputLabel for="contactable" value="¿Quiere participar de mejores promociones y descuentos?:" />
+                                <p:outputLabel for="contactable" value="#{i18n['app.phrase.profile.promotion']}" />
                                 <p:selectBooleanCheckbox id="contactable" value="#{invoiceHome.subjectAdminHome.subjectEdit.contactable}" />
                             </h:panelGrid>
                         </div>
                     </div>
                     <div class="EmptyBox10"></div>
-
                     <p:toolbar>
                         <f:facet name="left">
-                            <p:commandButton id="save" value="#{i18n['Save']}" 
+                            <p:commandButton id="save" value="#{i18n['common.save']}" 
                                              ajax="false" 
                                              actionListener="#{invoiceHome.saveCustomer()}" 
                                              style="width: auto !important;"
@@ -127,10 +123,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div>
             </div>
             <!--/.panel-body -->
-
         </ui:define>
         <ui:define name="script">
-
         </ui:define>
     </ui:composition>
 </html>

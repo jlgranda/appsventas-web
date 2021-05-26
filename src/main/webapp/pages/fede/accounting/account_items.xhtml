@@ -22,59 +22,151 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}"/>
-        <ui:define name="title">#{i18n['app.name']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewAction action="#{accountHome.closeFormularioLedger(accountHome.accountSelected)}" />
+            </f:metadata>
+        </ui:define>
         <ui:define name="viewname">
-            <li>#{i18n['app.name']}</li>
+            <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/account_items.jsf">#{i18n['app.fede.accouting.accounts']}</p:link></li>
+            <li><p:link outcome="/pages/fede/accounting/account_items.jsf">#{i18n['app.fede.accounting.generalLedger']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-<!--                        <label class="Gray">#{i18n['Start']}</label>
+<!--                        <label class="Gray">#{i18n['common.from']}</label>
                         <p:calendar value="#{accountHome.start}" class="input-sm">
                             <p:ajax event="dateSelect" listener="#{accountHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
-                        <label class="Gray">#{i18n['End']}</label>
+                        <label class="Gray">#{i18n['common.to']}</label>
                         <p:calendar value="#{accountHome.end}" class="input-sm">
                             <p:ajax event="dateSelect" listener="#{accountHome.clear()}" oncomplete="form.submit();"/>
-                        </p:calendar>                        -->
-                        <label class="Gray">#{i18n['Find']}</label>
+                        </p:calendar>                        
+                        <label class="Gray">#{i18n['common.keyword']}</label>
                         <p:inputText value="#{accountHome.keyword}" class="input-sm"></p:inputText>
-                        <p:commandButton value="#{i18n['Find']}" style="margin-bottom: 10px;" styleClass="raised-btn"
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom: 10px;" styleClass="raised-btn"
                                          actionListener="#{accountHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/accounting/account.jsf"/>
+                        <label class="Gray">#{i18n['common.find']}</label>-->
+                        <h2 class="BigTopic" style="font-weight: bolder">#{i18n['app.fede.accounting.accounts.plan']}
+                            <p:button value="#{i18n['common.newa']} #{i18n['common.account']}" styleClass="danger-btn" outcome="/pages/fede/accounting/account.jsf"/>
+                        </h2>
                     </div>
                     <div class="card">
-                        <p:dataTable var="account"
-                                     value="#{accountHome.lazyDataModel}"
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                     reflow="true" selection="#{accountHome.selectedBussinesEntities}"
-                                     rowKey="#{account.id}"
-                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                            <p:ajax event="rowSelect" listener="#{accountHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                            <p:column headerText="#{i18n['common.code']}" sortBy="#{account.code}">
+                        <!--<h:form id="form">-->
+                        <p:treeTable id="treeTable-generalLedger" liveResize="true"
+                                     paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true"
+                                     rows="25" tableStyle="table-layout: auto"
+                                     value="#{accountHome.treeDataModel}" var="account"
+                                     selection="#{accountHome.singleSelectedNode}"
+                                     sortOrder="ASCENDING" sortBy="#{account.code}"
+                                     filteredNode="#{accountHome.singleSelectedNode}" selectionMode="single">
+                            <p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>
+                            <p:column headerText="#{i18n['common.code']}" sortBy="#{account.code}" filterable="false">
                                 <h:outputText value="#{account.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['name']}" sortBy="#{account.name}">
+                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{account.name}" filterBy="#{account.name}" style="width: 60%">
                                 <h:outputText value="#{account.name}" />
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{account.createdOn}"
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{account.createdOn}" filterable="false"
                                        styleClass="text-right">
                                 <h:outputText value="#{account.createdOn}">
-                                    <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                        </p:dataTable>
+                            <p:column style="text-align: center">
+                                <p:commandButton id="button-generalLedger" update="form"
+                                                 title="#{i18n['app.fede.accounting.generalLedger']}" icon="fa fa-book"
+                                                 actionListener="#{accountHome.mostrarFormularioLedger(account)}">
+                                    <!--<f:setPropertyActionListener value="#{account}" target="#{account}"/>-->
+                                    <p:ajax event="dialogReturn" update="@form"
+                                            listener="#{accountHome.handleReturn}">
+                                    </p:ajax>
+                                </p:commandButton>
+                            </p:column>
+                        </p:treeTable>
                     </div>
                 </div>
             </div>
         </ui:define>
     </ui:composition>
 </html>
+                                <!--                                    <p:commandButton id="button-generalLedger" update="form" oncomplete="PF('generalLedgerDialog').show()"
+                                                                                     title="#{i18n['app.fede.accounting.generalLedger']}" icon="fa fa-book" action="#{accountHome.findRecordDetailAccountTop()}">
+                                                                        <f:setPropertyActionListener value="#{account}" target="#{accountHome.accountSelected}"/>
+                                                                    </p:commandButton>-->
+                        <!--                            <p:dialog widgetVar="generalLedgerDialog" modal="true" resizable="false" 
+                                                              showEffect="fade" hideEffect="fade" closeOnEscape="true" fitViewport="true"
+                                                              class="Container100 Responsive50" style="text-align: right" width="50%">
+                                                        <p:outputPanel id="generalLedger">
+                                                            <p:dataTable id="recordsDataTable" widgetVar="dataTable_wv" var="recordDetail"
+                                                                         value="#{accountHome.objectsRecordDetail}" rowKey="#{recordDetail.id}" 
+                                                                         paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '10')}" paginatorAlwaysVisible="false"
+                                                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}"
+                                                                         scrollable="true" liveScroll="true" scrollRows="10" scrollHeight="175"
+                                                                         lazy="false" reflow="true">
+                                                                <f:facet name="header">
+                                                                    <h:outputText value="#{accountHome.accountSelected.name}"/>
+                                                                </f:facet>
+                                                                <p:columnGroup type="header">
+                                                                    <p:row>
+                                                                        <p:column rowspan="2" colspan="2" headerText="Monto acumulado anterior" style="text-align: right"/>
+                                                                    </p:row>
+                                                                    <p:row>
+                                                                        <p:column headerText="$#{accountHome.amountDebeRdOld}" style="text-align: right"/>
+                                                                        <p:column headerText="$#{accountHome.amountHaberRdOld}" style="text-align: right"/>
+                                                                    </p:row>
+                                                                    <p:row>
+                                                                        <p:column headerText="#{i18n['common.crationDate']}"/>
+                                                                        <p:column headerText="#{i18n['common.concept']}"/>
+                                                                        <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}"/>
+                                                                        <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}"/>
+                                                                    </p:row>
+                                                                </p:columnGroup>
+                                                                <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" style="width: 10%">
+                                                                    <h:outputText value="#{recordDetail[0]}">
+                                                                        <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
+                                                                    </h:outputText>
+                                                                </p:column>
+                                                                <p:column headerText="#{i18n['common.concept']}" style="width: 60%">
+                                                                    <h:outputText value="#{recordDetail[1]}" />
+                                                                </p:column>
+                                                                <p:column headerText="#{i18n['app.fede.sales.journal.record.debe']}" style="width: auto">
+                                                                    <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='DEBE'}" style="text-align: right"/>
+                                                                </p:column>
+                                                                <p:column headerText="#{i18n['app.fede.sales.journal.record.haber']}" style="width: auto">
+                                                                    <h:outputText value="$#{recordDetail[2]}" rendered="#{recordDetail[3]=='HABER'}" style="text-align: right"/>
+                                                                </p:column>
+                                                                <p:columnGroup type="footer" >
+                                                                    <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                                                                        <span class="ui-g-6" style=" font-weight: bolder;">#{i18n['Saldo']}: </span>
+                                                                        <span class="ui-g-3" style="font-weight: bold; color: #005b9f;">
+                                                                            <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount gt 0}" style="text-align: right"/>
+                                                                        </span>
+                                                                        <span class="ui-g-3" style="font-weight: bold; color: #C03213;">
+                                                                            <h:outputText value="$#{accountHome.amountAccount}" rendered="#{accountHome.amountAccount lt 0}" style="text-align: right"/>
+                                                                        </span>
+                                                                    </span>
+                                                                </p:columnGroup>
+                                                            </p:dataTable>
+                                                            <span class="ui-g-10">
+                                                                <p:selectOneMenu id="select-account" value="#{accountHome.depositAccount}" effect="fade" style="width: 100%"
+                                                                                 required="#{false}" immediate="true" rendered="#{accountHome.amountAccount gt 0}"
+                                                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                                                    <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                                                    <p:ajax update="@this"></p:ajax>
+                                                                </p:selectOneMenu>                                                    
+                                                            </span>
+                                                            <span class="ui-g-2">
+                                                                <p:commandButton id="btn-deposit" ajax="true" immediate="true" styleClass="p-mt-3"
+                                                                                 value="Depósito" icon="fa fa-exchange" update="@form" rendered="#{accountHome.amountAccount gt 0}"
+                                                                                 actionListener="#{accountHome.validateDeposit()}"/>
+                                                            </span>
+                                                        </p:outputPanel>
+                                                    </p:dialog>-->
+                        <!--</h:form>-->

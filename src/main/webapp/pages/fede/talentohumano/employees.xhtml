@@ -36,20 +36,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.talentohumano.employees']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/talentohumano/employee.jsf">#{inventoryHome.productId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.employee']}</p:link></li>
+        <li><p:link outcome="/pages/fede/talentohumano/employee.jsf">#{inventoryHome.productId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.employee']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12">
                 <div class="card">
-                    <label class="Gray">#{i18n['Find']}&nbsp;</label>
+                    <label class="Gray">#{i18n['common.find']}&nbsp;</label>
                     <p:inputText value="#{employeeHome.keyword}" class="input-sm">
                     </p:inputText>
-                    <p:commandButton value="#{i18n['Find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{employeeHome.clear()}" ajax="false">
+                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{employeeHome.clear()}" ajax="false">
                     </p:commandButton>
 
-                    <p:button value="#{i18n['New']}" styleClass="danger-btn" outcome="/pages/fede/talentohumano/employee.jsf"/>
+                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/talentohumano/employee.jsf"/>
                 </div>
                 <div class="card">
                     <p:dataTable var="employee" 
@@ -62,16 +62,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  id="dataTable" widgetVar="dataTable_wv" lazy="true">
                         <p:ajax event="rowSelect" listener="#{employeeHome.onRowSelect}"/>
                         <p:column selectionMode="single" style="width:32px;text-align:center"/>
-                        <p:column headerText="#{i18n['name']}" sortBy="#{employee.owner.fullName}">
+                        <p:column headerText="#{i18n['common.names.full']}" sortBy="#{employee.owner.fullName}">
                             <h:outputText value="#{employee.owner.fullName}" />
                         </p:column>
                         <p:column headerText="#{i18n['app.fede.talentohumano.role']}" sortBy="#{employee.role.name}">
                             <h:outputText value="#{employee.role.name}" />
                         </p:column>
-                        <p:column  id="fechaIngreso"  headerText="#{i18n['common.crationDate']}" sortBy="#{employee.activationTime}"
+                        <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{employee.activationTime}"
                                    styleClass="text-right">
                             <h:outputText value="#{employee.activationTime}">
-                                <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
                         </p:column>
                     </p:dataTable>

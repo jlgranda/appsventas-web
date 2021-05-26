@@ -57,11 +57,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  required="#{false}" immediate="true"> 
                                     <f:selectItems value="#{inventoryHome.modesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
                                 </p:selectOneMenu>
-                                <label class="Gray">#{i18n['Start']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                                 <p:calendar value="#{inventoryHome.start}" class="input-sm">
                                     <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{inventoryHome.cleanChartModels()}"/>
                                 </p:calendar>
-                                <label class="Gray">#{i18n['End']}&nbsp;</label>
+                                <label class="Gray">#{i18n['common.to']}&nbsp;</label>
                                 <p:calendar value="#{inventoryHome.end}" class="input-sm">
                                     <p:ajax event="dateSelect" oncomplete="form.submit();" listener="#{inventoryHome.cleanChartModels()}"/>
                                 </p:calendar>

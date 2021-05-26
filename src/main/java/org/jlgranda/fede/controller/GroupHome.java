@@ -195,7 +195,6 @@ public class GroupHome extends FedeController implements Serializable {
     }
 
     public void setGroupType(Group.Type groupType) {
-        System.out.println(">>>>>>>>>>>>>>>>>> Group.Type: " + groupType);
         this.groupType = groupType;
     }
 

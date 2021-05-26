@@ -14,12 +14,19 @@ and open the template in the editor.
       xmlns:o="http://omnifaces.org/ui"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.documents.task']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="organizationId" value="#{organizationHome.organizationId}" />       
+                <f:viewParam name="organizationId" value="#{organizationHome.organizationId}" /> 
             </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li>#{i18n['app.management.organizations']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/management/organization/organization.jsf">#{organizationHome.organizationId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.management.organization']) : i18n['common.edit'].concat(': ')} #{organizationHome.organization.initials}</p:link></li>
         </ui:define>
         <ui:define name="subheader">
             #{organizationHome.organizationId == null ? i18n['New_a'].concat(' ').concat(i18n['organization']).concat(': ') : i18n['common.edit'].concat(': ')} #{organizationHome.organization.name}
@@ -32,22 +39,22 @@ and open the template in the editor.
                         <div class="ui-g ui-fluid">
                             <div class="ui-g ui-fluid">
                                 <div class="ui-g ui-lg-12">
-                                    <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['RUC']}" 
+                                    <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['common.ruc']}" 
                                                     value="#{organizationHome.organization.ruc}" required="true" 
-                                                    inlinehelp="#{messages['RUC.inlinehelp']}" execute="@this save" render="ruc"
+                                                    inlinehelp="#{messages['common.ruc.inlinehelp']}" execute="@this save" render="ruc"
                                                     container="none"/>
-                                    <jlgranda:input id="nm" name="name" type="text" label="#{i18n['name']}"
+                                    <jlgranda:input id="nm" name="name" type="text" label="#{i18n['common.names.full']}"
                                                     value="#{organizationHome.organization.name}" required="true" 
-                                                    inlinehelp="#{messages['name.inlinehelp']}" execute="@this save" render="nm"
+                                                    inlinehelp="#{messages['app.management.organization.name.inlinehelp']}" execute="@this save" render="nm"
                                                     container="none"/>
                                     <jlgranda:input id="type" name="type" type="select" label="#{i18n['common.type']}" 
                                                     value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
                                                     converter="omnifaces.SelectItemsConverter"
-                                                    required="true" inlinehelp="#{messages['common.type.inlinehelp']}" 
+                                                    required="true" inlinehelp="#{messages['app.management.organization.type.inlinehelp']}" 
                                                     onchange="return;"
                                                     execute="@this save" render="type"
                                                     container="none"/>
-                                    <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['initials']}" 
+                                    <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['common.company.initials']}" 
                                                     value="#{organizationHome.organization.initials}" required="true" 
                                                     inlinehelp="#{messages['initials.inlinehelp']}" execute="@this save" render="intls"
                                                     container="none"/>
@@ -62,7 +69,7 @@ and open the template in the editor.
                             <p:toolbar>
                                 <f:facet name="left">
 
-                                    <p:commandButton value="#{i18n['Save']}" ajax="false" 
+                                    <p:commandButton value="#{i18n['common.save']}" ajax="false" 
                                                      actionListener="#{organizationHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
                                                      action="#{organizationHome.getOutcome()}" type="submit"/>

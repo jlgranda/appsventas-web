@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 kellypaulinc
+ * Copyright (C) 2021 author
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  */
 package org.jlgranda.fede.ui.model;
 
-import com.jlgranda.fede.ejb.GeneralJournalService;
+import com.jlgranda.fede.ejb.sales.KardexService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jlgranda.fede.model.accounting.GeneralJournal;
-import org.jlgranda.fede.model.accounting.GeneralJournal_;
-import org.jpapi.model.BussinesEntity;
+import org.jlgranda.fede.model.sales.Kardex;
+import org.jlgranda.fede.model.sales.Kardex_;
 import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -39,47 +38,26 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author kellypaulinc
+ * @author author
  */
-public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> implements Serializable {
+public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
-    private static final long serialVersionUID = -3989947588787365293L;
-
-    Logger logger = LoggerFactory.getLogger(LazyGeneralJournalDataModel.class);
-
-    private List<GeneralJournal> resultList;
-
+    private KardexService bussinesEntityService;
+    private List<Kardex> resultList;
     private int firstResult = 0;
 
-    private GeneralJournalService bussinesEntityService;
-    
-    private String filterValue;
-    
-    private Subject owner;
-    
-    private Organization organization;
-    /**
-     * Lista de etiquetas para filtrar facturas
-     */
-    private String tags;
-    
-    /**
-     * Inicio del rango de fecha
-     */
-    private Date start;
+    Logger logger = LoggerFactory.getLogger(LazyKardexDataModel.class);
 
-    /**
-     * Fin del rango de fecha
-     */
+    //Filtros para el Lazy
+    private Organization organization;
+    private Subject owner;
+    private Date start;
     private Date end;
-    
-    private BussinesEntity[] selectedBussinesEntities;
-    
-    private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
-    
-    
-    public LazyGeneralJournalDataModel(GeneralJournalService bussinesEntityService) {
+    private String filterValue;
+    private String tags;
+
+    public LazyKardexDataModel(KardexService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
         this.bussinesEntityService = bussinesEntityService;
@@ -88,8 +66,8 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     @PostConstruct
     public void init() {
     }
-    
-    public List<GeneralJournal> getResultList() {
+
+    public List<Kardex> getResultList() {
         logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
@@ -114,82 +92,30 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     public int getPreviousFirstResult() {
         return this.getPageSize() >= firstResult ? 0 : firstResult - this.getPageSize();
     }
+
     
-    public boolean isPreviousExists(){
-        return firstResult>0;
+    public boolean isPreviousExists() {
+        return firstResult > 0;
     }
-    
-    public boolean isNextExists(){
+
+    public boolean isNextExists() {
         return bussinesEntityService.count() > this.getPageSize() + firstResult;
     }
 
-    public String getFilterValue() {
-        return filterValue;
+    public Organization getOrganization() {
+        return organization;
     }
 
-    public void setFilterValue(String filterValue) {
-        this.filterValue = filterValue;
-    }
-      
-    
-    
-    @Override
-    public GeneralJournal getRowData(String rowKey) {
-        return bussinesEntityService.find(Long.valueOf(rowKey));
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
-    @Override
-    public Object getRowKey(GeneralJournal entity) {
-        return entity.getId();
+    public Subject getOwner() {
+        return owner;
     }
-    
-    @Override
-    public List<GeneralJournal> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
 
-        int end = first + pageSize;
-
-        QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
-        }
-        Map<String, Object> _filters = new HashMap<>();
-        Map<String, Date> range = new HashMap<>();
-        if (getStart() != null) {
-            range.put("start", getStart());
-            if (getEnd() != null) {
-                range.put("end", getEnd());
-            } else {
-                range.put("end", Dates.now());
-            }
-        }
-        if (!range.isEmpty()){
-            _filters.put(GeneralJournal_.createdOn.getName(), range); //Filtro de fecha inicial
-        }
-        
-        if(getOwner()!=null){
-        _filters.put(GeneralJournal_.owner.getName(), getOwner());
-        }
-        
-        if (getOrganization() != null) {
-            _filters.put(GeneralJournal_.organization.getName(), getOrganization()); //Filtro por  defecto organization
-        }
-        
-        if (getTags() != null && !getTags().isEmpty()) {
-            _filters.put("tag", getTags()); //Filtro de etiquetas
-        }
-
-        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
-            _filters.put("keyword", getFilterValue()); //Filtro general
-        }
-
-        _filters.putAll(filters);
-
-        if (sortField == null){
-            sortField = GeneralJournal_.createdOn.getName();
-        }
-        QueryData<GeneralJournal> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
-        this.setRowCount(qData.getTotalResultCount().intValue());
-        return qData.getResult();
+    public void setOwner(Subject owner) {
+        this.owner = owner;
     }
 
     public Date getStart() {
@@ -208,23 +134,14 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
         this.end = end;
     }
 
-    
-    public Subject getOwner() {
-        return owner;
+    public String getFilterValue() {
+        return filterValue;
     }
 
-    public void setOwner(Subject owner) {
-        this.owner = owner;
+    public void setFilterValue(String filterValue) {
+        this.filterValue = filterValue;
     }
 
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-    
     public String getTags() {
         return tags;
     }
@@ -232,21 +149,64 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     public void setTags(String tags) {
         this.tags = tags;
     }
-    
-    public BussinesEntity[] getSelectedBussinesEntities() {
-        return selectedBussinesEntities;
+
+    @Override
+    public Kardex getRowData(String rowKey) {
+        return bussinesEntityService.find(Long.valueOf(rowKey));
     }
 
-    public void setSelectedBussinesEntities(BussinesEntity[] selectedBussinesEntities) {
-        this.selectedBussinesEntities = selectedBussinesEntities;
+    @Override
+    public Object getRowKey(Kardex entity) {
+        return entity.getId();
     }
 
-    public BussinesEntity getSelectedBussinesEntity() {
-        return selectedBussinesEntity;
+    @Override
+    public List<Kardex> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+        int end = first + pageSize;
+
+        QuerySortOrder order = QuerySortOrder.DESC;
+        if (sortOrder == SortOrder.ASCENDING) {
+            order = QuerySortOrder.ASC;
+        }
+
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+
+        Map<String, Object> _filters = new HashMap<>();
+        if(!range.isEmpty()){
+            _filters.put(Kardex_.createdOn.getName(), range); //Filtro de fechas
+        }
+        if(getOwner()!=null){
+            _filters.put(Kardex_.owner.getName(), getOwner()); //Filtro de Subject
+        }
+        if (getOrganization() != null) {
+            _filters.put(Kardex_.organization.getName(), getOrganization()); //Filtro de org
+
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+        if(sortField == null){
+            sortField = Kardex_.createdOn.getName();
+        }
+        
+        QueryData<Kardex> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        this.setRowCount(qData.getTotalResultCount().intValue());
+        return qData.getResult();
     }
 
-    public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
-        this.selectedBussinesEntity = selectedBussinesEntity;
-    }
-    
 }
