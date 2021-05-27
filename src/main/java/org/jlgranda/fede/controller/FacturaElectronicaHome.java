@@ -1366,7 +1366,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public List<Product> completeProduct(String query) {
         String queryLowerCase = query.toLowerCase();
-        return getProducts().stream().filter(t -> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
+        products = productService.findByOrganization(this.organizationData.getOrganization());
+        return products.stream().filter(t -> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
     }
 
     public boolean asignedPropiertiesProduct() {

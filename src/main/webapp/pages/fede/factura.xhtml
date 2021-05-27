@@ -197,17 +197,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                     <!--<div class="ui-g-12">-->
                                     <div class="ui-g-4">
-                                        <jlgranda:input id="priceCost" name="priceCost" type="number" label="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}: " 
-                                                        value="#{facturaElectronicaHome.productNew.priceCost}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="priceCost"/>
+<!--                                        <jlgranda:input id="priceCost" name="priceCost" type="number" label="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}: " 
+                                                        value="#{facturaElectronicaHome.productNew.priceCost}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="priceCost"/>-->
+                                        <label class="BigTopic">#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}:&nbsp;</label>
+                                        <p:inputNumber id="priceCost" value="#{facturaElectronicaHome.productNew.priceCost}" required="true" 
+                                                       inputStyle="text-align: right" symbol="$"
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                        </p:inputNumber>
                                     </div>
                                     <div class="ui-g-3">
-                                        <jlgranda:input id="price" name="price" type="number" label="P.V.P. A:" 
-                                                        value="#{facturaElectronicaHome.productNew.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
+<!--                                        <jlgranda:input id="price" name="price" type="number" label="P.V.P. A:" 
+                                                        value="#{facturaElectronicaHome.productNew.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>-->
+                                                                                <label class="BigTopic">P.V.P. A:&nbsp;</label>
+                                                                                <p:inputNumber id="price" value="#{facturaElectronicaHome.productNew.price}" required="true" 
+                                                                                               inputStyle="text-align: right" symbol="$"
+                                                                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                                                                </p:inputNumber>                
                                     </div>
                                     <div class="ui-g-4">
-                                        <div class="EmptyBox10"/>
+                                        <!--<div class="EmptyBox10"/>-->
                                         <label class="BigTopic">#{i18n['common.tax.type']}&nbsp;</label>
-                                        <div class="EmptyBox10"/>
+                                        <!--<div class="EmptyBox10"/>-->
                                         <p:selectOneMenu value="#{facturaElectronicaHome.productNew.taxType}" effect="fade"
                                                          required="#{true}" immediate="true"> 
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
@@ -216,7 +230,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:selectOneMenu>
                                     </div>
                                     <div class="ui-g-1">
-                                        <div class="EmptyBox40"/>
+                                        <div class="EmptyBox20"/>
                                         <p:commandButton id="btn-save-kardex-properties" icon="fa fa-floppy-o" title="Guardar Producto"
                                                          actionListener="#{facturaElectronicaHome.saveProductNew()}"
                                                          update="panel-new-product btn-new-product"
@@ -233,6 +247,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
                                                 converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
                                                 placeholder="#{i18n['common.product.find']}">
+                                    <p:column>
+                                        <h:outputText value="#{entidad.name} [$ #{entidad.priceCost}]"/>
+                                    </p:column>
                                     <p:ajax event="itemSelect" listener="#{facturaElectronicaHome.asignedPropiertiesProduct()}" 
                                             update="btn-facturaElectronicaDetail-save unit_value btn-new-product panel-new-product" partialSubmit="true"></p:ajax>
                                 </p:autoComplete>
@@ -342,8 +359,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                <p:ajax listener="#{facturaElectronicaHome.calcularTotalFactura()}" update="impt" partialSubmit="true"></p:ajax>
-                                <p:ajax listener="#{facturaElectronicaHome.montoPorPagar()}" update="fund-request" partialSubmit="true"></p:ajax>
+                                    <p:ajax listener="#{facturaElectronicaHome.calcularTotalFactura()}" update="impt" partialSubmit="true"></p:ajax>
+                                    <p:ajax listener="#{facturaElectronicaHome.montoPorPagar()}" update="fund-request" partialSubmit="true"></p:ajax>
                                 </p:inputNumber>
                             </div>
                             <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.0']}</div>
