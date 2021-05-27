@@ -179,26 +179,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <h:panelGroup rendered="#{facturaElectronicaHome.activePanelProduct}" style="border: #EFEFEF 0.5px solid">
                                 <!--<p:fieldset legend="#{i18n['common.new']} #{i18n['common.product']} " rendered="#{facturaElectronicaHome.activePanelProduct}" >rendered="#{facturaElectronicaHome.activePanelProduct}"-->
                                     <div class="ui-g-12">
-                                        <!--<div class="ui-g-6">-->
                                         <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.firstname']} #{i18n['common.of']} #{i18n['common.product']}" 
                                                         value="#{facturaElectronicaHome.productNew.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
-                                        <!--</div>-->
-                                        <!--                                        <div class="ui-g-6">
-                                                                                    <div class="EmptyBox10"/>
-                                                                                    <label>#{i18n['app.fede.inventory.categories']}&nbsp;</label>
-                                                                                    <div class="EmptyBox10"/>
-                                                                                    <p:selectOneMenu value="#{facturaElectronicaHome.groupSelected}" effect="fade"
-                                                                                                     required="#{true}" immediate="true" style="width: 110%"
-                                                                                                     converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
-                                                                                        <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                                                                        <p:ajax update="@this" />
-                                                                                    </p:selectOneMenu>
-                                                                                </div>-->
                                     </div>
-                                    <!--<div class="ui-g-12">-->
                                     <div class="ui-g-4">
-<!--                                        <jlgranda:input id="priceCost" name="priceCost" type="number" label="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}: " 
-                                                        value="#{facturaElectronicaHome.productNew.priceCost}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="priceCost"/>-->
                                         <label class="BigTopic">#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}:&nbsp;</label>
                                         <p:inputNumber id="priceCost" value="#{facturaElectronicaHome.productNew.priceCost}" required="true" 
                                                        inputStyle="text-align: right" symbol="$"
@@ -208,15 +192,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-3">
-<!--                                        <jlgranda:input id="price" name="price" type="number" label="P.V.P. A:" 
-                                                        value="#{facturaElectronicaHome.productNew.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>-->
-                                                                                <label class="BigTopic">P.V.P. A:&nbsp;</label>
-                                                                                <p:inputNumber id="price" value="#{facturaElectronicaHome.productNew.price}" required="true" 
-                                                                                               inputStyle="text-align: right" symbol="$"
-                                                                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                                                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                                                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                                                </p:inputNumber>                
+                                        <label class="BigTopic">P.V.P. A:&nbsp;</label>
+                                        <p:inputNumber id="price" value="#{facturaElectronicaHome.productNew.price}" required="true" 
+                                                       inputStyle="text-align: right" symbol="$"
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                        </p:inputNumber>                
                                     </div>
                                     <div class="ui-g-4">
                                         <!--<div class="EmptyBox10"/>-->
