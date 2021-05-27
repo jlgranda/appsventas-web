@@ -24,120 +24,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
-    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['fede']}" />
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:param name="title" value="#{i18n['app.name']} - #{i18n['common.processes']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{instanciaProcesoHome.tags}" />
             </f:metadata>
         </ui:define>
-        <ui:define name="subheader">
-            <p:menuButton value="#{i18n['app.documents.instanciaproceso.procesos']}" iconPos="right"
-                          styleClass="MarRight10"
-                          buttonStyleClass="ToolbarButton Fs18" 
-                          iconStyleClass="Gray"
-                          menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['app.documents.tasks']}" icon="fa fa-tasks" 
-                            url="/pages/management/tarea/inbox.jsf?faces-redirect=true"
-                            disabled="#{false}">
-                </p:menuitem>
-            </p:menuButton>
-        </ui:define>
-        <ui:define name="toolbar">
-            <!-- SUB TOPBAR START -->
-            <div class="Container100 UserLinks">
-                <div class="Card ShadowEffect">
-                    <p:toolbar id="toolbar">
-                        <f:facet name="left">
-                            <p:commandButton type="button" icon="fa fa-arrow-left" styleClass="ToolbarButton Fs14" 
-                                             onclick="triggerHiddenCommandLinkBack();
-                                                     return false;" />
-                            <span class="ui-separator">
-                                <span class="fa fa-ellipsis-v SoftGray" />
-                            </span>
-                            <p:menuButton value="#{i18n['More']}" iconPos="right"
-                                          styleClass="MarRight10"
-                                          buttonStyleClass="ToolbarButton Fs14" 
-                                          iconStyleClass="Gray"
-                                          menuStyleClass="Gray">
-                            </p:menuButton>
-                            <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
-                                          styleClass="MarRight10"
-                                          buttonStyleClass="ToolbarButton Fs14" 
-                                          iconStyleClass="Gray"
-                                          menuStyleClass="Gray">
-                            </p:menuButton>
-                        </f:facet>
-                        <f:facet name="right">
-                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
-                            <p:calendar value="#{instanciaProcesoHome.start}" class="input-sm">
-                                <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                            </p:calendar>
-                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
-                            <p:calendar value="#{instanciaProcesoHome.end}" class="input-sm">
-                                <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                            </p:calendar>
-                            <span id="pagination-info" class=""></span>
-                            <div class="ui-inputfield ui-button ui-widget GrayButton">
-                                <button id="pagination-previous" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-left"></i></button>
-                                &nbsp;
-                                <button id="pagination-next" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-right"></i></button>
-                            </div>
-                        </f:facet>
-                    </p:toolbar>
-
-
-                    <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
-                            outcome="/pages/management/tarea/dashboard.jsf?faces-redirect=true">
-                    </h:link>
-                    <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
-                                    showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
-                                    my="left bottom" at="left bottom">
-                        <pe:triStateManyCheckbox id="labelTriBasic"  
-                                                 value="#{instanciaProcesoHome.selectedTriStateGroups}"  
-                                                 layout="pageDirection"  
-                                                 styleClass=""
-                                                 stateOneTitle=""  
-                                                 stateTwoTitle=""  
-                                                 stateThreeTitle=""
-                                                 stateTwoIcon="ui-icon-check"  
-                                                 stateThreeIcon="ui-icon-minus" 
-                                                 rendered="#{not empty instanciaProcesoHome.selectedBussinesEntities}">  
-                            <f:selectItems value="#{instanciaProcesoHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
-                        </pe:triStateManyCheckbox> 
-                    </p:overlayPanel>
-                </div>
-            </div>
-            <!-- SUB TOPBAR END -->
-        </ui:define>
-
-        <!--./toolbar-->
-        <ui:define name="sidebar">
-            <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/tarea/tarea.jsf"/>
-            </div>
-            <div class="EmptyBox10"></div>
-            <div class="Container100 Responsive100">
-                <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
-                    <li class="" role="menuitem">
-                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf" 
-                           class="menulink ripplelink #{instanciaProcesoHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
-                    </li>
-                    <ui:repeat var="tag" value="#{instanciaProcesoHome.groups}">
-                        <li class="" role="menuitem">
-                            <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}" 
-                               class="menulink ripplelink #{instanciaProcesoHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
-                        </li>
-                    </ui:repeat>
-                </ul>
-            </div>
+        <ui:define name="viewname">
+            <li><p:link outcome="/pages/management/proceso/inbox.jsf">#{i18n['common.processes']}</p:link></li>
         </ui:define>
         <ui:define name="content">
-            <!-- /.row -->
-            <div class="Container100 Responsive100">
-                <div class="Card ShadowEffect">
-                    <div class="dataTable_wrapper">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="card">
+                        <label class="Gray">#{i18n['common.from']}&nbsp;</label>
+                        <p:calendar value="#{instanciaProcesoHome.start}" class="input-sm">
+                            <p:ajax event="dateSelect" listener="#{instanciaProcesoHome.clear()}" oncomplete="form.submit();"/>
+                        </p:calendar>
+                        <label class="Gray">#{i18n['common.to']}&nbsp;</label>
+                        <p:calendar value="#{instanciaProcesoHome.end}" class="input-sm">
+                            <p:ajax event="dateSelect" listener="#{instanciaProcesoHome.clear()}" oncomplete="form.submit();"/>
+                        </p:calendar>
+                        <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf"/>
+                    </div>
+                    <div class="card">
                         <p:dataTable var="instanciaProceso" 
                                      value="#{instanciaProcesoHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
@@ -174,57 +85,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
         </ui:define>
         <ui:define name="script">
-            <style>
-                /*Ocultar el paginador de primefaces */
-                .ui-paginator {
-                    display: none;
-                }
-
-            </style>
-            <script>
-
-                $(document).ready(function() {
-
-                    $("#globalFilter").keyup(function() {
-                        //onkeyup="PF('dataTable_wv').filter()" 
-                        //var dataTable = $('#dataTable_wv').dataTable();
-                        //dataTable.fnFilter(this.value);
-                        var dataTable = PF('dataTable_wv');
-                        dataTable.filter();
-                    });
-
-                    $("#pagination-next").click(function() {
-                        var dataTable = PF('dataTable_wv');
-                        dataTable.getPaginator().nextLink.click();
-                        //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
-                    });
-
-                    $("#pagination-previous").click(function() {
-                        var dataTable = PF('dataTable_wv');
-                        dataTable.getPaginator().prevLink.click();
-                        //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
-                    });
-
-                    $("ul.dropdown-menu.mega-dropdown-menu").on('click', function(event) {
-                        //The event won't be propagated to the document NODE and 
-                        // therefore events delegated to document won't be fired
-                        event.stopPropagation();
-                    });
-                });
-
-                function triggerHiddenEventAddFromFile() {
-                    document.getElementById("form:hiddenCommandAddFromFile").click();
-                }
-                function triggerHiddenEventAddFromURL() {
-                    document.getElementById("form:hiddenCommandAddFromURL").click();
-                }
-                function triggerHiddenEventShowRIDE() {
-                    document.getElementById("form:hiddenCommandShowRIDE").click();
-                }
-                function triggerHiddenCommandLinkBack() {
-                    document.getElementById("form:hiddenCommandLinkBack").click();
-                }
-            </script>
+            
         </ui:define>
     </ui:composition>
 </html>

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
-    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
+    <ui:composition template="/WEB-INF/templates.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
         <ui:param name="title" value="#{i18n['fede']}" />
         <ui:define name="params">
@@ -32,110 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <f:viewParam name="tags" value="#{tareaHome.tags}" />
             </f:metadata>
         </ui:define>
-        <ui:define name="subheader">
-            <p:menuButton value="#{i18n['app.documents.tasks']}" iconPos="right"
-                          styleClass="MarRight10"
-                          buttonStyleClass="ToolbarButton Fs18" 
-                          iconStyleClass="Gray"
-                          menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['app.documents.instanciaproceso.procesos']}" icon="fa fa-stack-overflow" 
-                            url="/pages/management/proceso/inbox.jsf?faces-redirect=true"
-                            disabled="#{false}">
-                </p:menuitem>
-                <p:menuitem value="#{i18n['Dashboard']}" icon="fa fa-dashboard" 
-                            url="/pages/management/tarea/dashboard.jsf?faces-redirect=true"
-                            disabled="#{false}">
-                </p:menuitem>
-            </p:menuButton>
-        </ui:define>
-        <ui:define name="toolbar">
-            <!-- SUB TOPBAR START -->
-            <div class="Container100 UserLinks">
-                <div class="Card ShadowEffect">
-                    <p:toolbar id="toolbar">
-                        <f:facet name="left">
-                            <p:commandButton type="button" icon="fa fa-arrow-left" styleClass="ToolbarButton Fs14" 
-                                             onclick="triggerHiddenCommandLinkBack();
-                                                     return false;" />
-                            <span class="ui-separator">
-                                <span class="fa fa-ellipsis-v SoftGray" />
-                            </span>
-                            <p:menuButton value="#{i18n['More']}" iconPos="right"
-                                          styleClass="MarRight10"
-                                          buttonStyleClass="ToolbarButton Fs14" 
-                                          iconStyleClass="Gray"
-                                          menuStyleClass="Gray">
-                            </p:menuButton>
-                            <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
-                                          styleClass="MarRight10"
-                                          buttonStyleClass="ToolbarButton Fs14" 
-                                          iconStyleClass="Gray"
-                                          menuStyleClass="Gray">
-                            </p:menuButton>
-                        </f:facet>
-                        <f:facet name="right">
-                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
-                            <p:calendar value="#{tareaHome.start}" class="input-sm">
-                                <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                            </p:calendar>
-                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
-                            <p:calendar value="#{tareaHome.end}" class="input-sm">
-                                <p:ajax event="dateSelect" oncomplete="form.submit();"/>
-                            </p:calendar>
-                            <span id="pagination-info" class=""></span>
-                            <div class="ui-inputfield ui-button ui-widget GrayButton">
-                                <button id="pagination-previous" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-left"></i></button>
-                                &nbsp;
-                                <button id="pagination-next" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only Fs18 FloatNoneOnMobile GrayButton"><i class="fa fa-angle-right"></i></button>
-                            </div>
-                        </f:facet>
-                    </p:toolbar>
-
-
-                    <h:link id="hiddenCommandLinkBack" rendered="#{true}" style="display:none" 
-                            outcome="/pages/management/tarea/dashboard.jsf?faces-redirect=true">
-                    </h:link>
-                    <p:overlayPanel id="labelsOverlayPanel" for="labelsMenuButton" widgetVar="overlay" 
-                                    showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
-                                    my="left bottom" at="left bottom">
-                        <pe:triStateManyCheckbox id="labelTriBasic"  
-                                                 value="#{tareaHome.selectedTriStateGroups}"  
-                                                 layout="pageDirection"  
-                                                 styleClass=""
-                                                 stateOneTitle=""  
-                                                 stateTwoTitle=""  
-                                                 stateThreeTitle=""
-                                                 stateTwoIcon="ui-icon-check"  
-                                                 stateThreeIcon="ui-icon-minus" 
-                                                 rendered="#{not empty tareaHome.selectedBussinesEntities}">  
-                            <f:selectItems value="#{tareaHome.groups}"  var="g" itemValue="#{g.code}" itemLabel="#{g.name}" />  
-                        </pe:triStateManyCheckbox> 
-                    </p:overlayPanel>
-                </div>
-            </div>
-            <!-- SUB TOPBAR END -->
-        </ui:define>
-
-        <!--./toolbar-->
-        <ui:define name="sidebar">
-            <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf"/>
-            </div>
-            <div class="EmptyBox10"></div>
-            <div class="Container100 Responsive100">
-                <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
-                    <li class="" role="menuitem">
-                        <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf" 
-                           class="menulink ripplelink #{tareaHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
-                    </li>
-                    <ui:repeat var="tag" value="#{tareaHome.groups}">
-                        <li class="" role="menuitem">
-                            <a href="#{facesContext.externalContext.requestContextPath}/pages/management/tarea/inbox.jsf?tags=#{tag.code}" 
-                               class="menulink ripplelink #{tareaHome.tags eq tag.code ? 'active-menu active-menu-restore' : ''}">#{tag.name}</a>
-                        </li>
-                    </ui:repeat>
-                </ul>
-            </div>
+        <ui:define name="viewname">
+            <li><p:link outcome="/pages/management/tarea/inbox.jsf">#{i18n['common.tasks']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <!-- /.row -->

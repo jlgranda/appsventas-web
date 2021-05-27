@@ -125,7 +125,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     public void init() {
         int amount = 0;
         try {
-            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
+            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "30"));
         } catch (java.lang.NumberFormatException nfe) {
             amount = 30;
         }
@@ -263,9 +263,9 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         try {
             //1. Obtener tarea pendiente, para actualizar descripción y estado
             prepareTarea(todo, getTarea().getDescription(), EstadoTipo.RESUELTO);
-            for (Documento doc : getTarea().getDocumentos()) {
+            getTarea().getDocumentos().forEach(doc -> {
                 todo.addDocumento(doc);
-            }
+            });
             procesarDocumentos(todo);
             eliminarDocumentos();
             //2. Crear siguiente tarea
@@ -361,12 +361,14 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     }
 
     public void eliminarDocumentos() {
-        for (Documento doc : documentosRemovidos) {
+        documentosRemovidos.stream().map(doc -> {
             if (doc.isPersistent()) {
                 documentoService.remove(doc.getId(), doc);
             }
+            return doc;
+        }).forEachOrdered(doc -> {
             documentosRemovidos.remove(doc);
-        }
+        });
     }
 
     public void removerDocumento(Documento doc, Tarea t) {

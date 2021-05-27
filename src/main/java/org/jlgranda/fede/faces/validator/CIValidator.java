@@ -17,9 +17,7 @@
  */
 package org.jlgranda.fede.faces.validator;
 
-import com.jlgranda.fede.ejb.SubjectService;
 import java.util.regex.Pattern;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -27,7 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Interpolator;
 

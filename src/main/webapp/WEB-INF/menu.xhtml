@@ -22,6 +22,12 @@
                         </p:selectOneMenu>
                     </div>
                     <pe:menu widgetVar="me">
+                        
+                        <p:submenu id="om_documents" label="#{i18n['common.documents']}" icon="fa fa-fw fa-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
+                            <p:menuitem id="om_process" value="#{i18n['common.processes']}" icon="fa fa-fw fa-tasks" outcome="/pages/management/proceso/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
+                        </p:submenu>
+                        
+                        
                         <p:menuitem id="om_home" value="#{i18n['common.home']}" icon="fa fa-fw fa-home" outcome="home"  rendered="#{request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER') or request.isUserInRole('USER')}"/>
                         <p:menuitem id="om_profile" value="#{i18n['common.profile']}" icon="fa fa-fw fa-user" outcome="/pages/fede/gifts/profile.jsf"  rendered="#{request.isUserInRole('USER')}"/>
 
@@ -74,6 +80,7 @@
                         <p:submenu id="om_templates" label="#{i18n['app.fede.crm']}" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN')}">
                             <p:menuitem id="om_templates_management" value="#{i18n['app.mail.templates']} #{i18n['common.of']} #{i18n['common.email']}" icon="fa fa-fw fa-bars" outcome="/pages/fede/admin/template/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
+                        
 
 <!--<p:menuitem id="om_gifts" value="#{i18n['app.gifts.my']}" icon="fa fa-fw fa-cog" outcome="/pages/fede/gifts/gifts.jsf" rendered="#{request.isUserInRole('USER')}"/>-->
 
