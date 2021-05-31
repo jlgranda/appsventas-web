@@ -162,6 +162,11 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>procesos</from-outcome>
+            <to-view-id>/pages/management/proceso/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>tareas</from-outcome>
             <to-view-id>/pages/management/tarea/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>

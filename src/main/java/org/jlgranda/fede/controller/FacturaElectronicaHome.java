@@ -31,12 +31,10 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.inject.Named;
 import javax.mail.MessagingException;
-import org.jlgranda.fede.controller.GeneralJournalHome;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.sri.jaxb.exception.FacturaXMLReadException;
 import org.jlgranda.fede.util.FacturaUtil;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jpapi.model.CodeType;
@@ -98,6 +96,7 @@ import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
 import org.jpapi.util.Strings;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.file.UploadedFile;
 
 /**
  * Controlador de aplicaciones de factura electrónica
@@ -576,13 +575,13 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         String xml = null;
         try {
             if (file.getFileName().endsWith(".xml")) {
-                byte[] content = IOUtils.toByteArray(file.getInputstream());
+                byte[] content = IOUtils.toByteArray(file.getInputStream());
                 xml = new String(content);
                 procesarFactura(FacturaUtil.read(xml), xml, file.getFileName(), SourceType.FILE);
                 this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Su factura electrónica " + file.getFileName() + " ahora empieza a generar valor para ud!");
-                IOUtils.closeQuietly(file.getInputstream());
+                IOUtils.closeQuietly(file.getInputStream());
             } else if (file.getFileName().endsWith(".zip")) {
-                ZipInputStream zis = new ZipInputStream(file.getInputstream());
+                ZipInputStream zis = new ZipInputStream(file.getInputStream());
                 try {
                     ZipEntry entry = null;
                     ByteArrayOutputStream fout = null;
@@ -604,7 +603,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                     zis.close();
 
                 } finally {
-                    IOUtils.closeQuietly(file.getInputstream());
+                    IOUtils.closeQuietly(file.getInputStream());
                     IOUtils.closeQuietly(zis);
                 }
             }

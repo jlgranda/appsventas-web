@@ -32,7 +32,9 @@ import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,18 +133,23 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     }
 
     @Override
-    public Object getRowKey(Subject entity) {
+    public String getRowKey(Subject entity) {
         return entity.getName();
     }
 
     @Override
-    public List<Subject> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<Subject> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
-        int end = first + pageSize;
-
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         
@@ -184,7 +191,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
             sortField = Subject_.createdOn.getName();
         }
 
-        QueryData<Subject> qData = service.find(first, end, sortField, order, _filters);
+        QueryData<Subject> qData = service.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

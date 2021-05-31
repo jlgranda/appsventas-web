@@ -33,7 +33,9 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +99,7 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
     public List<Journal> getResultList() {
         logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
-            resultList = load(0, MAX_RESULTS, null, SortOrder.ASCENDING, null);
+            resultList = load(0, MAX_RESULTS, new HashMap<>(), null);
         }
         return resultList;
     }
@@ -209,18 +211,24 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
     }
 
     @Override
-    public Object getRowKey(Journal entity) {
-        return entity.getId();
+    public String getRowKey(Journal entity) {
+        return "" + entity.getId();
     }
 
     @Override
-    public List<Journal> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    //public List<Journal> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<Journal> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
-        int end = first + pageSize;
-
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
@@ -257,7 +265,7 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
             sortField = Journal_.beginTime.getName(); //ordenar por fecha de registro
         }
 
-        QueryData<Journal> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<Journal> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
@@ -277,4 +285,5 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
+
 }

@@ -32,7 +32,9 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,17 +142,22 @@ public class LazyOrganizationDataModel extends LazyDataModel<Organization> imple
     }
 
     @Override
-    public Object getRowKey(Organization entity) {
+    public String getRowKey(Organization entity) {
         return entity.getName();
     }
 
-    public List<Organization> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<Organization> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
-        int end = first + pageSize;
-
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         
@@ -179,7 +186,7 @@ public class LazyOrganizationDataModel extends LazyDataModel<Organization> imple
             sortField = Organization_.createdOn.getName();
         }
 
-        QueryData<Organization> qData = service.find(first, end, sortField, order, _filters);
+        QueryData<Organization> qData = service.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

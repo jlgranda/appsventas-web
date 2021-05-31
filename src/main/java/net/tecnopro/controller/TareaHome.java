@@ -55,14 +55,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
+import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jpapi.util.Dates;
-import org.primefaces.context.RequestContext;
-import org.primefaces.model.UploadedFile;
+import org.primefaces.PrimeFaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.file.UploadedFile;
 
 /**
  *
@@ -76,6 +77,10 @@ public class TareaHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(TareaHome.class);
 
+    @Inject
+    private OrganizationData organizationData;
+
+    @Inject
     private Subject subject;
 
     private Subject solicitante;
@@ -560,7 +565,7 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void handleFileUploadEdit(FileUploadEvent event) {
         if (documentoAceptar != null) {
-            documentoAceptar.setContents(event.getFile().getContents());
+            documentoAceptar.setContents(event.getFile().getContent());
             documentoAceptar.setMimeType(event.getFile().getContentType());
             documentoAceptar.setFileName(event.getFile().getFileName());
             documentoAceptar.setRuta(settingHome.getValue("app.management.tarea.documentos.ruta", "/tmp") + "//" + event.getFile().getFileName());
@@ -651,7 +656,7 @@ public class TareaHome extends FedeController implements Serializable {
          * con dichos bytes generar el documento digital y guardarlo en la ruta
          * definida
          */
-        doc.setContents(file.getContents());
+        doc.setContents(file.getContent());
         return doc;
     }
 
@@ -708,8 +713,7 @@ public class TareaHome extends FedeController implements Serializable {
             System.out.println(e);
         }
 
-        RequestContext context = RequestContext.getCurrentInstance();
-        context.execute("PF('dlgDocumento').show();");
+        PrimeFaces.current().executeScript("PF('dlgDocumento').show();");
     }
 
     public Long getDocumentoId() {
@@ -740,9 +744,10 @@ public class TareaHome extends FedeController implements Serializable {
         StreamedContent fileDownload = null;
         try {
             if (doc != null) {
-                InputStream stream = new FileInputStream(new File(doc.getRuta()));
-
-                fileDownload = new DefaultStreamedContent(stream, doc.getMimeType(), doc.getFileName());
+                String contentType = doc.getMimeType();
+                String name = doc.getName();
+                InputStream is = new FileInputStream(new File(doc.getRuta()));
+                fileDownload = DefaultStreamedContent.builder().contentType(contentType).name(name).stream(() -> is).build();
             }
         } catch (FileNotFoundException e) {
         }

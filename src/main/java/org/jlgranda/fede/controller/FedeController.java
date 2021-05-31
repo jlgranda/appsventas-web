@@ -38,7 +38,6 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.PrimeFaces;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -274,7 +273,7 @@ public abstract class FedeController {
 //        List<String> values = new ArrayList<String>();
 //        values.add(bookName);
 //        params.put("bookName", values);
-        RequestContext.getCurrentInstance().openDialog(name, options, params);
+        PrimeFaces.current().dialog().openDynamic(name, options, params);
         //logger.info("Popup '{}' abierto, con opciones {}. Context: {}", name, options, RequestContext.getCurrentInstance());
     }
 
@@ -353,7 +352,7 @@ public abstract class FedeController {
     }
 
     public void closeDialog(Object data) {
-        RequestContext.getCurrentInstance().closeDialog(data);
+        PrimeFaces.current().dialog().closeDynamic(data);
         
         //logger.info("Popup '{}' cerrado, con data {}. Context: {}", "activo", data, RequestContext.getCurrentInstance());
     }

@@ -31,7 +31,9 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,17 +158,22 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
     }
 
     @Override
-    public Object getRowKey(Kardex entity) {
-        return entity.getId();
+    public String getRowKey(Kardex entity) {
+        return "" + entity.getId();
     }
 
     @Override
-    public List<Kardex> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        int end = first + pageSize;
-
+    public List<Kardex> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
 
         Map<String, Date> range = new HashMap<>();
@@ -204,7 +211,7 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
             sortField = Kardex_.createdOn.getName();
         }
         
-        QueryData<Kardex> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<Kardex> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

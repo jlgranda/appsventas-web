@@ -1297,3 +1297,43 @@ body .ui-panel .ui-panel-content {
     background-color: #f9e09e !important;
     font-weight: 700;
 }
+
+.Separator {
+    width: 100%;
+    border-top: 1px dotted #d8d8d8;
+}
+
+.DispBlockDocuments {
+    margin: 15px 0;
+    clear: both;
+}
+
+.task-badge.status-resuelto {
+    background: #C8E6C9;
+    color: #256029;
+}
+
+.task-badge.status-espera {
+    background: #FEEDAF;
+    color: #8A5340;
+}
+
+.task-badge.status-ready {
+    background: #d8d8d8;
+    color: #8A5340;
+}
+
+.task-badge {
+    border-radius: 2px;
+    padding: 0.25em 0.5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+}
+
+
+
+.subjectimg {
+  border-radius: 50%;
+}

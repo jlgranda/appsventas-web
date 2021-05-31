@@ -34,7 +34,9 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,18 +223,23 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
     }
 
     @Override
-    public Object getRowKey(Employee entity) {
-        return entity.getId();
+    public String getRowKey(Employee entity) {
+        return "" + entity.getId();
     }
 
     @Override
-    public List<Employee> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<Employee> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
-        int end = first + pageSize;
-
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
@@ -269,7 +276,7 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
             sortField = Employee_.createdOn.getName();
         }
 
-        QueryData<Employee> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<Employee> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

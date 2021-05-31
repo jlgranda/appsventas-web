@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:selectOneMenu>-->
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{kardexInventoryHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/inventory/kardex.jsf" disabled="#{empty kardexInventoryHome.productsWithoutKardex}"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/inventory/kardex.jsf" disabled="#{not kardexInventoryHome.hasProductsWithoutKardex()}"/>
                     </div>
                     <div class="card">
                         <p:dataTable id="dataTable-kardexs" draggableColumns="true" lazy="true" liveResize="true"
@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      rows="25" scrollRows="25"
                                      value="#{kardexInventoryHome.lazyDataModel}" var="kardex"
                                      selection="#{kardexInventoryHome.selectedBussinesEntities}"
-                                     sortOrder="DESCENDING" sortBy="#{kardex.createdOn}">
+                                     sortBy="#{kardex.createdOn}">
                             <p:ajax event="rowSelect" listener="#{kardexInventoryHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
                             <p:column headerText="#{i18n['common.code.UUID']}">

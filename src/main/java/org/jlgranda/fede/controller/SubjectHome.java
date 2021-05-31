@@ -351,7 +351,7 @@ public class SubjectHome extends FedeController implements Serializable {
     }
     
     public void handlePhotoUpload(FileUploadEvent event) {
-        setPhoto(event.getFile().getContents());
+        setPhoto(event.getFile().getContent());
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getSessionMap().put("photoUser", getPhoto()); //Para cargar desde memoria
         addSuccessMessage(I18nUtil.getMessages("subject.upload.photo"), I18nUtil.getMessages("subject.upload.photo"));

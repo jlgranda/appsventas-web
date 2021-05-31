@@ -26,14 +26,17 @@ import javax.annotation.PostConstruct;
 import net.tecnopro.document.ejb.InstanciaProcesoService;
 import net.tecnopro.document.model.InstanciaProceso;
 import net.tecnopro.document.model.InstanciaProceso_;
+import org.jlgranda.fede.model.sales.Product_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.model.profile.Subject_;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +77,7 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
     private BussinesEntity[] selectedBussinesEntities;
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
     private String filterValue;
+    private Organization organization;
 
     public LazyInstanciaProcesoDataModel(InstanciaProcesoService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -163,6 +167,14 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
         this.typeName = typeName;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
     public void setFirstResult(Integer firstResult) {
         logger.info("set first result + firstResult");
         this.firstResult = firstResult;
@@ -183,19 +195,24 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
     }
 
     @Override
-    public Object getRowKey(InstanciaProceso entity) {
+    public String getRowKey(InstanciaProceso entity) {
         System.err.println("//--> getRowKey:entity" + entity);
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     @Override
-    public List<InstanciaProceso> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-
-        int end = first + pageSize;
-
+    public List<InstanciaProceso> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
+        
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
@@ -210,8 +227,15 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
         if (!range.isEmpty()){
             _filters.put(InstanciaProceso_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-        _filters.put(InstanciaProceso_.owner.getName(), getOwner()); //Filtro por defecto
+        
+        if (getOrganization() != null) {
+            _filters.put(InstanciaProceso_.organization.getName(), getOrganization()); //Filtro de organizacion
+        }
+        
+        if (getOwner() != null){
+            //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+            _filters.put(InstanciaProceso_.owner.getName(), getOwner()); //Filtro por defecto
+        }
         
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
@@ -226,8 +250,7 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
         if (sortField == null) {
             sortField = InstanciaProceso_.createdOn.getName();
         }
-
-        QueryData<InstanciaProceso> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<InstanciaProceso> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

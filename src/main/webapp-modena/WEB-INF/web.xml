@@ -32,10 +32,6 @@
         <param-value>/WEB-INF/jlgranda.taglib.xml</param-value>
     </context-param>
     <context-param>
-        <param-name>primefaces.THEME</param-name>
-        <param-value>modena</param-value>
-    </context-param>
-    <context-param>
         <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
         <param-value>true</param-value>
     </context-param>
@@ -43,6 +39,42 @@
         <param-name>primefaces.UPLOADER</param-name>
         <param-value>auto</param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>primefaces.MOVE_SCRIPTS_TO_BOTTOM</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>primefaces.CSP</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>primefaces.TRANSFORM_METADATA</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>primefaces.COOKIES_SAME_SITE</param-name>
+        <param-value>Strict</param-value>
+    </context-param>
+    <context-param>
+        <param-name>primefaces.CACHE_PROVIDER</param-name>
+        <param-value>org.primefaces.showcase.util.EHCache3Provider</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>com.sun.faces.numberOfViewsInSession</param-name>
+        <param-value>5</param-value>
+    </context-param>
+    <context-param>
+    	<param-name>com.sun.faces.serializeServerState</param-name>
+    	<param-value>false</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.MULTI_VIEW_STATE_STORE</param-name>
+        <param-value>client-window</param-value>
+    </context-param>
+    
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -66,14 +98,24 @@
         <error-code>500</error-code>
         <location>/error.jsf</location>
     </error-page>
-    <filter>
+<!--    <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <servlet-name>Faces Servlet</servlet-name>
-    </filter-mapping>
+    </filter-mapping>-->
+    
+    <servlet>
+        <servlet-name>FileUpload Resume Servlet</servlet-name>
+        <servlet-class>org.primefaces.webapp.FileUploadChunksServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FileUpload Resume Servlet</servlet-name>
+        <url-pattern>/file/resume/</url-pattern>
+    </servlet-mapping>
+    
     <!-- JSF Ajax tunning -->
     <!-- http://stackoverflow.com/questions/15057932/jsf-cache-static-resources-filter/35567540#35567540 -->
     <!-- http://stackoverflow.com/questions/977944/what-is-the-best-method-to-gzip-a-jsf-seam-web-app-pages/35567295#35567295 -->

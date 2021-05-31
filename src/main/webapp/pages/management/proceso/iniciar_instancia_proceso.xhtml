@@ -49,15 +49,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
                                 <p:autoComplete id="applicant" value="#{instanciaProcesoHome.solicitante}" effect="fade" 
                                                 minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
+                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" multiple="false" 
                                                 maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                                 converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
                                                 forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
                                     <p:column>
-                                        <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
+                                        <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
                                     </p:column>
                                 </p:autoComplete>
                             </h:panelGroup>
+                            <!-- //Solicitante -->
+                            
                             <!-- Cuerpo del mensaje -->
                             <jlgranda:input id="ip-nme" name="ip-name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
                                             execute="@this save" render="ip-nme" value="#{instanciaProcesoHome.instanciaProceso.name}" required="true"
@@ -68,51 +70,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
                                             container="none"/>
                             <!-- TAREA 0 -->
-                            <span class="Fs20 BoldGray">#{i18n['app.documents.start.task']}</span>
                             <!-- Destinatario -->
-                            <div class="Container100  Responsive50">
-                                <h:panelGroup layout="block" class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.documents.task.consignee']}</h2>
-                                    <p:autoComplete value="#{instanciaProcesoHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{subjectHome.find}"
-                                                    var="entidad" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
-                                                    converter="org.jlgranda.fede.ui.converter.SubjectConverter" forceSelection="true">
-                                        <p:column>
-                                            <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
-                                        </p:column>
-                                    </p:autoComplete>
-                                </h:panelGroup>
-                            </div>
-                            <!-- Cuerpo del mensaje -->
-                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
-                                            execute="@this save" render="nme" value="#{instanciaProcesoHome.tarea.name}" required="true"
-                                            container="none"/>
+                            <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
+                                <p:outputLabel for="consignee" value="#{i18n['app.documents.task.consignee']}" />
+                            </h:panelGroup>
+                            <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
+                                <p:autoComplete id="consignee" value="#{instanciaProcesoHome.destinatario}" effect="fade" 
+                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" multiple="false" 
+                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
+                                    <p:column>
+                                        <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
+                                    </p:column>
+                                </p:autoComplete>
+                            </h:panelGroup>
+                            <!-- //Destinatario -->
+                            <div class="DispBlockDocuments">
+                                <div class="Separator"></div>
+                                <div class="EmptyBox20"></div>
+                                <!-- Aduntos -->
+                                <div class="ui-g ui-fluid">
+                                    <h:panelGroup id="documentPanel" layout="block" class="ui-lg-12 ui-md-12">
+                                        <p:dataList id="documentList" value="#{instanciaProcesoHome.tarea.documentos}" var="documento" 
+                                                    type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
+                                                    paginatorAlwaysVisible="false" rendered="#{not empty instanciaProcesoHome.tarea.documentos}">
 
-                            <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
-                                            value="#{instanciaProcesoHome.tarea.description}" execute="@this save" render="descrpn" 
-                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
-                                            container="none"/>
-                            <!-- Aduntos -->
-                            <div class="Container100  Responsive50">
-                                <h:panelGroup id="documentPanel" layout="block" class="ContainerIndent">
-                                    <p:dataList id="documentList" value="#{instanciaProcesoHome.tarea.documentos}" var="documento" 
-                                                type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
-                                                paginatorAlwaysVisible="false" rendered="#{not empty instanciaProcesoHome.tarea.documentos}">
+                                            <p:commandLink title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
+                                                           update="@form" immediate="true" actionListener="#{instanciaProcesoHome.editarDocumento(documento)}">
+                                                <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
+                                                &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
+                                            </p:commandLink>
+                                            <p:commandLink update="@form:documentList" ajax="@this" 
+                                                           actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
+                                                           title="#{i18n['Close']}" styleClass="" style="margin-right:10px;display:inline-block"
+                                                           onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                                               return false;">
+                                                <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
+                                            </p:commandLink>
 
-                                        <p:commandLink title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                       update="@form" immediate="true" actionListener="#{instanciaProcesoHome.editarDocumento(documento)}">
-                                            <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
-                                            &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
-                                        </p:commandLink>
-                                        <p:commandLink update="@form:documentList" ajax="@this" 
-                                                       actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
-                                                       title="#{i18n['Close']}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                       onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
-                                                                           return false;">
-                                            <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
-                                        </p:commandLink>
-
-                                    </p:dataList>
-                                </h:panelGroup>
+                                        </p:dataList>
+                                    </h:panelGroup>
+                                </div>
                             </div>
 
                             <div class="EmptyBox10"></div>
@@ -153,8 +153,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:panelGrid columns="3" layout="grid">
                                     <jlgranda:input id="documentName" name="documentName" type="text" 
                                                     placeholder="true" label="#{i18n['common.name']}" 
-                                                    value="#{instanciaProcesoHome.documento.name}" required="false" 
-                                                    container="default"/>
+                                                    value="#{instanciaProcesoHome.documento.name}" required="false" />
 
                                     <jlgranda:input id="documentType" name="documentType" type="select" 
                                                     placeholder="true" label="#{i18n['common.type']}" 
@@ -162,19 +161,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     converter="omnifaces.SelectItemsConverter"
                                                     required="false" 
                                                     execute="none" listener="none" render="none"
-                                                    onchange="return;"
-                                                    container="default"/>
+                                                    onchange="return;"/>
 
-                                    <p:fileUpload fileUploadListener="#{instanciaProcesoHome.handleFileUpload}"
+                                    <p:fileUpload listener="#{instanciaProcesoHome.handleFileUpload}"
                                                   mode="advanced" dragDropSupport="true" auto="true" 
                                                   process="@form" update="documentPanel" 
                                                   oncomplete="overlay.hide();"
                                                   immediate="true" multiple="true"
-                                                  label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
-                                                  cancelLabel="#{i18n['Cancel']}"
+                                                  label="#{i18n['common.choose']}" uploadLabel="#{i18n['common.upload']}" 
+                                                  cancelLabel="#{i18n['common.cancel']}"
                                                   sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
                                                   fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
-                                                  allowTypes="#{settingHome.getValue('app.management.tarea.documentos.allowTypes', '')}"/>
+                                                  allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc?||xls?|od?)$/"/>
                                 </p:panelGrid>
                             </p:overlayPanel >
                         </div>

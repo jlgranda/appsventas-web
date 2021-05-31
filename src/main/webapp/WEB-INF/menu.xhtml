@@ -12,7 +12,7 @@
                 <h:form id="menuform">
                     <div class="layout-menu-title">#{i18n['common.menu.main']}</div>
                     <div class="layout-menu-title">
-                        <p:selectOneMenu id="organization" value="#{organizationData.organization}" effect="fade"
+                        <p:selectOneMenu id="organization" value="#{organizationData.organization}"
                                          required="true" immediate="true"
                                          onchange="submit()"> 
                             <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
@@ -23,8 +23,9 @@
                     </div>
                     <pe:menu widgetVar="me">
                         
-                        <p:submenu id="om_documents" label="#{i18n['common.documents']}" icon="fa fa-fw fa-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
-                            <p:menuitem id="om_process" value="#{i18n['common.processes']}" icon="fa fa-fw fa-tasks" outcome="/pages/management/proceso/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
+                        <p:submenu id="om_documents" label="#{i18n['common.documents']}" icon="fa fa-fw fa-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}">
+                            <p:menuitem id="om_process" value="#{i18n['app.documents.start']}" icon="fa fa-fw fa-hourglass-start" outcome="/pages/management/proceso/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
+                            <p:menuitem id="om_tasks" value="#{i18n['app.documents.tasks']}" icon="fa fa-fw fa-tasks" outcome="/pages/management/tarea/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
                         </p:submenu>
                         
                         

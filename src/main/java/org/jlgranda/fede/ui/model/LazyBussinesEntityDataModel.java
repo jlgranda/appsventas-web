@@ -35,7 +35,9 @@ import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,25 +144,30 @@ public class LazyBussinesEntityDataModel extends LazyDataModel<BussinesEntity> i
     }
 
     @Override
-    public Object getRowKey(BussinesEntity entity) {
+    public String getRowKey(BussinesEntity entity) {
         return entity.getName();
     }
 
     @Override
-    public List<BussinesEntity> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<BussinesEntity> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
-        int end = first + pageSize;
-
-        QuerySortOrder order = QuerySortOrder.ASC;
-        if (sortOrder == SortOrder.DESCENDING) {
-            order = QuerySortOrder.DESC;
+        int _end = first + pageSize;
+        String sortField = null;
+        QuerySortOrder order = QuerySortOrder.DESC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
         _filters.put(BussinesEntity_.owner.getName(), getOwner()); //Filtro por defecto
         _filters.putAll(filters);
 
-        QueryData<BussinesEntity> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<BussinesEntity> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

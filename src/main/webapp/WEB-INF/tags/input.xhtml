@@ -133,9 +133,9 @@ limitations under the License.
                             </p:inputTextarea>
                         </c:when>
                         <c:when test="#{type == 'richtext'}">
-                            <p:editor id="#{name}" value="#{value}" 
-                                      required="#{required}" class="#{class}">
-                            </p:editor>
+                            <p:textEditor id="#{name}" value="#{value}" 
+                                          required="#{required}" class="#{class}" secure="false">
+                            </p:textEditor>
                         </c:when>
                         <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
                             <p:selectOneMenu value="#{value}" effect="fade" id="#{name}"

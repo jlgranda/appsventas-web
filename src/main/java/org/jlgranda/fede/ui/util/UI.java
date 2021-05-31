@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
@@ -515,16 +516,10 @@ public class UI {
      */
     public static StreamedContent translateImageFromDB(byte[] image) throws IOException {
         if (image != null) {
-            FacesContext context = FacesContext.getCurrentInstance();
-
-            if (context.getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-                // So, we're rendering the HTML. Return a stub StreamedContent so that it will generate right URL.
-                return new DefaultStreamedContent(new ByteArrayInputStream(image),
-                        "image/png");
-            } else {
-                return new DefaultStreamedContent(new ByteArrayInputStream(image),
-                        "image/png");
-            }
+            String contentType = "image/png";
+            String name = UUID.randomUUID().toString();
+            ByteArrayInputStream is = new ByteArrayInputStream(image);
+            return DefaultStreamedContent.builder().contentType(contentType).name(name).stream(() -> is).build();
         } else {
             return new DefaultStreamedContent();
         }
@@ -537,6 +532,10 @@ public class UI {
 
     public String truncateString(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.gift.summary.length", "28")));
+    }
+    
+    public String truncateFilename(String string) {
+        return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.documents.filename.length", "14")));
     }
 
     public static void main(String[] args) {

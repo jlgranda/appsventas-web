@@ -16,13 +16,17 @@ import net.tecnopro.document.ejb.TareaService;
 import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.Tarea;
 import net.tecnopro.document.model.Tarea_;
+import org.jlgranda.fede.model.sales.Product_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +73,8 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
 
     private String filterValue;
+    
+    private Organization organization;
 
     public LazyTareaDataModel(TareaService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -131,19 +137,32 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
     }
 
     @Override
-    public Object getRowKey(Tarea entity) {
-        return entity.getId();
+    public String getRowKey(Tarea entity) {
+        return "" + entity.getId();
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     @Override
-    public List<Tarea> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<Tarea> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
         
-        int end = first + pageSize;
-
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
@@ -158,8 +177,15 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
         if (!range.isEmpty()) {
             _filters.put(Tarea_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-        _filters.put(Tarea_.owner.getName(), getOwner()); //Filtro por defecto
+        
+        if (getOrganization() != null) {
+            _filters.put(Tarea_.organization.getName(), getOrganization()); //Filtro de organizacion
+        }
+        
+        if (getOwner() != null){
+            //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+            _filters.put(Tarea_.owner.getName(), getOwner()); //Filtro por defecto
+        }
 
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
@@ -179,7 +205,7 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
             sortField = Tarea_.createdOn.getName();
         }
 
-        QueryData<Tarea> qData = tareaService.find(first, end, sortField, order, _filters);
+        QueryData<Tarea> qData = tareaService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }

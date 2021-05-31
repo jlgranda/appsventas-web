@@ -169,7 +169,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     public void handlePhotoUpload(FileUploadEvent event) {
-        this.subjectEdit.setPhoto(event.getFile().getContents());
+        this.subjectEdit.setPhoto(event.getFile().getContent());
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getSessionMap().put("photoUser", this.subjectEdit.getPhoto());
         addSuccessMessage(I18nUtil.getMessages("subject.upload.photo"), I18nUtil.getMessages("subject.upload.photo"));

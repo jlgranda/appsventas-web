@@ -20,6 +20,7 @@ import com.jlgranda.fede.ejb.FacturaElectronicaService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.KardexDetailService;
 import com.jlgranda.fede.ejb.sales.KardexService;
+import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -97,6 +98,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     private List<String> listInvoices;
     private List<String> listFacturas;
     private List<Product> productsWithoutKardex;
+    
+    @EJB
+    private ProductCache productCache;
 
     @PostConstruct
     private void init() {
@@ -107,7 +111,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         setActiveKardexEdition(true);
         setListInvoices(invoiceService.findByNamedQuery("Invoice.findSequencialByDocumentTypeAndStatusAndOrg", this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString()));
         setListFacturas(facturaElectronicaService.findByNamedQuery("FacturaElectronica.findCodeByOrg", this.organizationData.getOrganization(), true));
-        generateProductsWithoutKardex();
+        //generateProductsWithoutKardex();
     }
 
     //GETTER AND SETTER
@@ -208,29 +212,41 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public List<Product> getProducts() {
-        return productService.findByOrganization(this.organizationData.getOrganization());
+        //return productService.findByOrganization(this.organizationData.getOrganization());
+        //Obtener los productos desde el cache, filtrar por organization
+        //productCache.load();
+        return productCache.filterByOrganization(this.organizationData.getOrganization());
     }
 
     public void generateProductsWithoutKardex() {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> generateProductsWithoutKardex " + Dates.now());
         boolean exist = false;
-        this.productsWithoutKardex = new ArrayList<>();
-        for (Product product : getProducts()) {
-            for (Kardex kd2 : getKardexs()) {
-                if (product.equals(kd2.getProduct())) {
-                    exist = true;
-                    break;
-                } else {
-                    exist = false;
-                    break;
-                }
-            }
-            if (exist == false) {
-                this.productsWithoutKardex.add(product);
-            }
-        }
+        this.productsWithoutKardex = this.productService.findWhithoutKardex(this.organizationData.getOrganization());
+//        List<Kardex> kardexs = this.getKardexs();
+//        
+//            for (Kardex kd2 : kardexs) {
+//                for (Product product : getProducts()) {
+//                if (product.equals(kd2.getProduct())) {
+//                    exist = true;
+//                    break;
+//                } else {
+//                    exist = false;
+//                    break;
+//                }
+//            }
+//            if (exist == false) {
+//                this.productsWithoutKardex.add(product);
+//            }
+//        }
         if (this.kardexId != null && this.kardex.getProduct() != null) {
             this.productsWithoutKardex.add(this.kardex.getProduct());
         }
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //generateProductsWithoutKardex " + Dates.now());
+    }
+    
+    public boolean hasProductsWithoutKardex() {
+        return this.productService.count("Product.countWhithoutKardex", this.organizationData.getOrganization()) > 0;
     }
 
     public void clear() {
@@ -480,6 +496,11 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
     
     public List<Product> completeProductKardex(String query) {
+        
+        if (productsWithoutKardex.isEmpty()){
+            generateProductsWithoutKardex(); //intentar cargar la lista
+        }
+        
         String queryLowerCase = query.toLowerCase();
         return productsWithoutKardex.stream().filter(t-> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
     }

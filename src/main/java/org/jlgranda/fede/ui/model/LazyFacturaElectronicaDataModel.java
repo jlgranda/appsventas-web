@@ -34,7 +34,9 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,18 +199,23 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     }
 
     @Override
-    public Object getRowKey(FacturaElectronica entity) {
+    public String getRowKey(FacturaElectronica entity) {
         return entity.getName();
     }
 
     @Override
-    public List<FacturaElectronica> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<FacturaElectronica> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
-        int end = first + pageSize;
-
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
@@ -242,7 +249,7 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
             sortField = FacturaElectronica_.fechaEmision.getName();
         }
 
-        QueryData<FacturaElectronica> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<FacturaElectronica> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
@@ -262,4 +269,6 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
+
+    
 }

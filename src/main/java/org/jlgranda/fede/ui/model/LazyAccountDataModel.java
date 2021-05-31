@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.Account_;
 import org.jpapi.model.Organization;
+import org.primefaces.model.FilterMeta;
+import org.primefaces.model.SortMeta;
 
 
 /**
@@ -140,18 +142,23 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
     }
 
     @Override
-    public Object getRowKey(Account entity) {
-        return entity.getId();
+    public String getRowKey(Account entity) {
+        return "" + entity.getId();
     }
     
     @Override
-    public List<Account> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<Account> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
-        int end = first + pageSize;
-
+        int _end = first + pageSize;
+        String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
@@ -184,7 +191,7 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
         if (sortField == null){
             sortField = Account_.createdOn.getName();
         }
-        QueryData<Account> qData = bussinesEntityService.find(first, end, sortField, order, _filters);
+        QueryData<Account> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
