@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <h:head>
-        <title>#{i18n['common.password.change']}</title>
+        <title>#{i18n['app.signin.password.change']}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <!-- Bootstrap -->
 
@@ -41,15 +41,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <jlgranda:input id="password" name="password" type="password" label="#{i18n['password']}" 
+                            <jlgranda:input id="password" name="password" type="password" label="#{i18n['common.password']}" 
                                             value="#{subjectAdminHome.subjectEdit.password}" required="true" placeholder="true"
                                             execute="@this save" render="password"/>
-                            <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['password']}" 
+                            <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['app.signin.password.confirm']}" 
                                             value="#{subjectAdminHome.confirmarClave}" required="true" placeholder="true"
                                             execute="@this save" render="confirmar-password"/>
                             <p:toolbar>
                                 <f:facet name="left">
-                                    <p:commandButton value="#{i18n['Save']}"  ajax="false"
+                                    <p:commandButton value="#{i18n['common.save']}"  ajax="false"
                                                      action="#{subjectAdminHome.changePassword()}"
                                                      style="width: auto !important;" >
                                     </p:commandButton>

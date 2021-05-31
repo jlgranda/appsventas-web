@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <f:metadata>
             <f:viewParam name="kardexId" value="#{kardexInventoryHome.kardexId}" />
             <f:viewAction action="#{kardexInventoryHome.messagesValidation()}" />
+            <f:viewAction action="#{kardexInventoryHome.refreshFundKardex()}" />
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">

@@ -148,14 +148,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                         <f:facet name="right">
                             <p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem rendered="#{subjectHome.signup.persistent}" value="#{i18n['common.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
+                                <p:menuitem rendered="#{subjectHome.signup.persistent}" value="#{i18n['app.signin.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
                             </p:menuButton>
                         </f:facet>
 
                     </p:toolbar>
                 </div>
                 <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
-                          header="#{i18n['common.password.change']}" 
+                          header="#{i18n['app.signin.password.change']}" 
                           modal="true" draggable="true" position="center" closable="false" >
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12 ui-lg-9">

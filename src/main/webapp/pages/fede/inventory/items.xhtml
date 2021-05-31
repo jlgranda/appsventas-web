@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <label class="Gray">#{i18n['common.keyword']}&nbsp;</label>
                         <p:inputText value="#{inventoryHome.keyword}" class="input-sm" style="width: 30%;">
                         </p:inputText>
-                        <!--                        <label class="Gray">#{i18n['common.from']}&nbsp;</label>
+<!--                        <label class="Gray">#{i18n['common.from']}&nbsp;</label>
                         <p:calendar value="#{inventoryHome.start}" class="input-sm">
                             <p:ajax event="dateSelect" listener="#{inventoryHome.clear()}"/> oncomplete="form.submit();"
                         </p:calendar>
@@ -79,11 +79,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['app.fede.inventory.category']}" sortBy="#{product.category}">
                                 <h:outputText value="#{product.category.name}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.price.unit']} #{i18n['common.money.letter']}" sortBy="#{product.price}"
+                            <p:column headerText="P.V.P A" sortBy="#{product.price}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.price}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
+                            </p:column>
+                            <p:column headerText="P.V.P B" sortBy="#{product.priceB}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{product.priceB}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="P.V.P C" sortBy="#{product.priceC}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{product.priceC}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}" sortBy="#{product.priceCost}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{product.priceCost}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.tax']}" sortBy="#{product.taxType}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{product.taxType}"/>
                             </p:column>
                             <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}"
                                        styleClass="text-right" style="width: auto">
