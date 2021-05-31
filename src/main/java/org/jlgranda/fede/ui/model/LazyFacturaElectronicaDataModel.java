@@ -200,7 +200,7 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
 
     @Override
     public String getRowKey(FacturaElectronica entity) {
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     @Override
