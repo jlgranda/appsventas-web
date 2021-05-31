@@ -191,11 +191,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         listFacturas.stream().forEach((Object object) -> {
             this.listFacturas.add((String) object);
         });
-        for (KardexDetail kardexDetail1 : this.kardex.getKardexDetails()) {
-            if (kardexDetail1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
-                this.listInvoices.add(kardexDetail1.getCode());
-            }
-        }
+        this.kardex.getKardexDetails().stream().filter(kardexDetail1 -> (kardexDetail1.getOperation_type().equals(KardexDetail.OperationType.COMPRA))).forEachOrdered(kardexDetail1 -> {
+            this.listInvoices.add(kardexDetail1.getCode());
+        });
     }
 
     public List<Product> getProductsWithoutKardex() {
