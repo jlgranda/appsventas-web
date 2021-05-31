@@ -191,6 +191,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>record-templates</from-outcome>
+            <to-view-id>/pages/accounting/admin/record_templates.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>signin</from-outcome>
             <to-view-id>/signin.jsf</to-view-id>
             <redirect />

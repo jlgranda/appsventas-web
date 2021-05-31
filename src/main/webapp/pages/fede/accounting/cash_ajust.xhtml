@@ -239,7 +239,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
                                                          rows="10"
                                                          value="#{cashBoxHome.cashBoxsClosedBills(cashBoxs)}" var="cashBoxDetail"
-                                                         sortOrder="DESCENDING" sortBy="#{cashBoxDetail.valuer}">
+                                                         sortBy="#{cashBoxDetail.valuer}">
                                                 <f:facet name="header">
                                                     <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                                 </f:facet>
@@ -268,7 +268,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
                                                          rows="10"
                                                          value="#{cashBoxHome.cashBoxsClosedMoneys(cashBoxs)}" var="cashBoxDetail"
-                                                         sortOrder="DESCENDING" sortBy="#{cashBoxDetail.valuer}">
+                                                         sortBy="#{cashBoxDetail.valuer}">
                                                 <f:facet name="header">
                                                     <label class="bold-capital">#{i18n['common.money.moneys']}</label>
                                                 </f:facet>
@@ -323,7 +323,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="ui-g-2">
                                         <div class="EmptyBox20"/>
                                         <h4>#{i18n['common.money.bills']}</h4>
-                                        <p:selectOneMenu id="select-bill" value="#{cashBoxHome.cashBoxDetail.denomination}" effect="blind" style="width: 100%"
+                                        <p:selectOneMenu id="select-bill" value="#{cashBoxHome.cashBoxDetail.denomination}" style="width: 100%"
                                                          required="#{false}" immediate="true" disabled="#{cashBoxHome.activeSelectMenuBill}"> 
                                             <f:selectItems value="#{ui.getDenominationBillsAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                             <p:ajax listener="#{cashBoxHome.activeSelectMoney()}" update="@this select-money"></p:ajax>
@@ -332,7 +332,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="ui-g-2">
                                         <div class="EmptyBox20"/>
                                         <h4>#{i18n['common.money.moneys']}</h4>
-                                        <p:selectOneMenu id="select-money" value="#{cashBoxHome.cashBoxDetail.denomination}" effect="blind" style="width: 100%"
+                                        <p:selectOneMenu id="select-money" value="#{cashBoxHome.cashBoxDetail.denomination}" style="width: 100%"
                                                          required="#{false}" immediate="true" disabled="#{cashBoxHome.activeSelectMenuMoney}"> 
                                             <f:selectItems value="#{ui.getDenominationMoneysAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                             <p:ajax listener="#{cashBoxHome.activeSelectBill()}" update="@this select-bill"></p:ajax>

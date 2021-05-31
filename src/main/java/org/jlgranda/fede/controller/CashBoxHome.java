@@ -761,8 +761,15 @@ public class CashBoxHome extends FedeController implements Serializable {
         if (this.cashBoxDetail.getDenomination() != null && this.cashBoxDetail.getQuantity() != null) {
             calculateValuerAndType(); //Calcular el valor y tipo según la denominación
             this.cashBoxDetail.setAmount(this.cashBoxDetail.getValuer().multiply(BigDecimal.valueOf(this.cashBoxDetail.getQuantity()))); //Calcular monto de denominación
+             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        System.out.println("getCashBoxDetails().indexOf(cashBoxDetail): " + this.cashBoxDetail);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
             this.cashBoxPartial.addCashBoxDetail(this.cashBoxDetail);//Agregar el CashBoxDetail al CashBox Instanciado
-            this.cashBoxDetail = cashBoxDetailService.createInstance();//Preparar para un nuevo detalle del CashBox Instanciado
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        System.out.println("getCashBoxDetails().indexOf(cashBoxDetail): " + this.cashBoxDetail);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+           
+        this.cashBoxDetail = cashBoxDetailService.createInstance();//Preparar para un nuevo detalle del CashBox Instanciado
             this.activeSelectMenuBill = false; //Habilitar los selects del Panel de Detalle para Billetes y Monedas
             this.activeSelectMenuMoney = false;
             reloadDataCashBox(); //Recargar la vista con los datos del CashBox Instanciado
