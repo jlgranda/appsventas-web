@@ -267,7 +267,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setOutcome("fede-inbox");
 
         setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
-        setProducts(productService.findByOrganization(this.organizationData.getOrganization()));
+        //setProducts(productService.findByOrganization(this.organizationData.getOrganization()));
+        setProducts(productCache.filterByOrganization(this.organizationData.getOrganization()));
         getProductsByType();
         setActivePanelProduct(false);
     }
@@ -1506,6 +1507,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void saveProductNew() {
+        
         this.productNew.setName(this.productNew.getName().toUpperCase());
         this.productNew.setProductType(ProductType.PRODUCT);
         this.productNew.setDescription(this.productNew.getName().toUpperCase());
@@ -1515,9 +1517,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.productNew.setOwner(this.subject);
         productService.save(this.productNew.getId(), this.productNew); //Volver a guardar el producto para almacenar el ggroup
         this.activePanelProduct = false;
+        
         //Cargar producto en el cache
         productCache.load();
-        setProducts(productService.findByOrganization(this.organizationData.getOrganization()));
+        setProducts(productCache.filterByOrganization(this.organizationData.getOrganization()));
     }
 
 }

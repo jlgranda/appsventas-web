@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-    @ViewScoped
+@ViewScoped
 @Named
 public class SummaryHome extends FedeController implements Serializable {
 
@@ -254,7 +254,7 @@ public class SummaryHome extends FedeController implements Serializable {
     }
     
     public void calculeSummary(Date _start, Date _end) {
-
+        
         this.costTotal = BigDecimal.ZERO;
 //        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
         List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
@@ -295,7 +295,6 @@ public class SummaryHome extends FedeController implements Serializable {
         }
 
         this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
-
     }
 
     /**
