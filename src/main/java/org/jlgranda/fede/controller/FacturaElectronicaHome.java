@@ -19,7 +19,6 @@ package org.jlgranda.fede.controller;
 
 import javax.ejb.EJB;
 import com.jlgranda.fede.ejb.FacturaElectronicaService;
-import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.mail.reader.FacturaElectronicaMailReader;
 import com.jlgranda.fede.ejb.mail.reader.FacturaReader;
@@ -74,6 +73,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
@@ -236,13 +236,16 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private boolean activeTaxType;
 
     private boolean activePanelProduct;
+    private boolean activeButtonProduct;
 
     private Product productNew;
 
     private Group groupSelected;
-    
+
     @EJB
     private ProductCache productCache;
+
+    private String productName;
 
     public FacturaElectronicaHome() {
     }
@@ -497,6 +500,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.activePanelProduct = activePanelProduct;
     }
 
+    public boolean isActiveButtonProduct() {
+        return activeButtonProduct;
+    }
+
+    public void setActiveButtonProduct(boolean activeButtonProduct) {
+        this.activeButtonProduct = activeButtonProduct;
+    }
+
     public Product getProductNew() {
         return productNew;
     }
@@ -511,6 +522,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void setGroupSelected(Group groupSelected) {
         this.groupSelected = groupSelected;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     /**
@@ -1350,10 +1369,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return recordDetailGeneral;
     }
 
-    //Métodos de FacturaElectronicaDetail
-//    public List<Product> getProductsAll() {
-//        this.products = productService.findByOrganization(this.organizationData.getOrganization());
-//    }
     public void getProductsByType() {
         this.productsTypeProduct = new ArrayList<>();
         this.productsTypeProduct = productService.findByOrganizationAndType(this.organizationData.getOrganization(), ProductType.PRODUCT);
@@ -1374,12 +1389,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         if (this.facturaElectronicaDetail.getProduct() != null) {
             this.facturaElectronicaDetail.setDescription(this.facturaElectronicaDetail.getProduct().getName().toUpperCase());
             this.facturaElectronicaDetail.setUnit_value(this.facturaElectronicaDetail.getProduct().getPriceCost());
-            this.activePanelProduct = false;
+            if (this.facturaElectronicaDetail.getUnit_value() == null) {
+                this.facturaElectronicaDetail.setUnit_value(BigDecimal.ZERO);
+            }
+            return validatedFacturaElectronicaDetail();
+        } else {
+            return true;
         }
-        if (this.facturaElectronicaDetail.getUnit_value() == null) {
-            this.facturaElectronicaDetail.setUnit_value(BigDecimal.ZERO);
-        }
-        return validatedFacturaElectronicaDetail();
+
     }
 
     public void calculateIVAProduct() {
@@ -1392,7 +1409,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public boolean validatedFacturaElectronicaDetail() {
         if (this.facturaElectronicaDetail.getProduct() != null) {
-            return !(this.facturaElectronicaDetail.getUnit_value() != null && this.facturaElectronicaDetail.getQuantity() != null);
+            if (this.facturaElectronicaDetail.getProduct().getId() != null) {
+                return !(this.facturaElectronicaDetail.getUnit_value() != null && this.facturaElectronicaDetail.getQuantity() != null);
+            }else{
+                return true;
+            }
         } else {
             return true;
         }
@@ -1432,6 +1453,44 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         Date x = this.facturaElectronica.getFechaVencimiento();
         if (this.facturaElectronica.getFechaVencimiento() != null) {
             this.days = ((int) Dates.calculateNumberOfDaysBetween(Dates.now(), (Date) this.facturaElectronica.getFechaVencimiento())) + 1;
+        }
+    }
+
+    public void openPanelDetail() {
+        this.activePanelProduct = false;
+    }
+
+    public void openPanelProduct() {
+        this.productNew = this.facturaElectronicaDetail.getProduct();
+        this.activePanelProduct = true;
+    }
+
+    public boolean saveButtonProduct() {
+        return !(this.productNew.getName() != null && this.productNew.getTaxType() != null
+                && this.productNew.getPriceCost() != null && this.productNew.getPrice() != null);
+    }
+
+    public void saveProductNew() {
+        this.productNew.setName(this.productNew.getName().toUpperCase());
+        this.productNew.setProductType(ProductType.PRODUCT);
+        this.productNew.setDescription(this.productNew.getName().toUpperCase());
+        this.productNew.setCategory(this.groupSelected);
+        this.productNew.setAuthor(this.subject);
+        this.productNew.setOrganization(this.organizationData.getOrganization());
+        this.productNew.setOwner(this.subject);
+        productService.save(this.productNew.getId(), this.productNew); //Volver a guardar el producto para almacenar el ggroup
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se añadió correctamente el producto " + this.productNew.getName() + " al Inventario");
+        this.activePanelProduct = false;
+
+        //Cargar producto en el cache
+        productCache.load();
+        setProducts(productCache.filterByOrganization(this.organizationData.getOrganization()));
+        asignedPropiertiesProduct();
+    }
+
+    public void messageAlert() {
+        if (this.facturaElectronica.getAuthor() == null) {
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Para iniciar el registro seleccione un proveedor");
         }
     }
 
@@ -1495,32 +1554,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             kardex.setFund(kardexDetail.getCummulative_total_value());
             kardexService.save(kardex.getId(), kardex);
         }
-    }
-
-    public void openPanelProduct() {
-        if (this.facturaElectronicaDetail.getProduct() == null) {
-            this.activePanelProduct = true;
-            productNew = productService.createInstance();
-        } else {
-            this.activePanelProduct = false;
-        }
-    }
-
-    public void saveProductNew() {
-        
-        this.productNew.setName(this.productNew.getName().toUpperCase());
-        this.productNew.setProductType(ProductType.PRODUCT);
-        this.productNew.setDescription(this.productNew.getName().toUpperCase());
-        this.productNew.setCategory(this.groupSelected);
-        this.productNew.setAuthor(this.subject);
-        this.productNew.setOrganization(this.organizationData.getOrganization());
-        this.productNew.setOwner(this.subject);
-        productService.save(this.productNew.getId(), this.productNew); //Volver a guardar el producto para almacenar el ggroup
-        this.activePanelProduct = false;
-        
-        //Cargar producto en el cache
-        productCache.load();
-        setProducts(productCache.filterByOrganization(this.organizationData.getOrganization()));
     }
 
 }
