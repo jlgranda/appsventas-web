@@ -196,7 +196,6 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
 
     @Override
     public String getRowKey(InstanciaProceso entity) {
-        System.err.println("//--> getRowKey:entity" + entity);
         return "" + entity.getId();
     }
 

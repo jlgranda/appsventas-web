@@ -189,7 +189,7 @@ public class LazyGiftDataModel extends LazyDataModel<GiftEntity> implements Seri
 
     @Override
     public String getRowKey(GiftEntity entity) {
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     @Override

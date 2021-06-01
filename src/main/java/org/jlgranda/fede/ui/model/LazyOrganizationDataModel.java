@@ -143,7 +143,7 @@ public class LazyOrganizationDataModel extends LazyDataModel<Organization> imple
 
     @Override
     public String getRowKey(Organization entity) {
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     public List<Organization> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {

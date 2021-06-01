@@ -16,7 +16,6 @@ import net.tecnopro.document.ejb.TareaService;
 import net.tecnopro.document.model.EstadoTipo;
 import net.tecnopro.document.model.Tarea;
 import net.tecnopro.document.model.Tarea_;
-import org.jlgranda.fede.model.sales.Product_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.Organization;

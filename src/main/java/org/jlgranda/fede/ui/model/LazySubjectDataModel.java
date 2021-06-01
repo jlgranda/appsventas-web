@@ -134,7 +134,7 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
 
     @Override
     public String getRowKey(Subject entity) {
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     @Override

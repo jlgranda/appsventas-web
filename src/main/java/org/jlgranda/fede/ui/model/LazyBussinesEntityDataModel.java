@@ -145,7 +145,7 @@ public class LazyBussinesEntityDataModel extends LazyDataModel<BussinesEntity> i
 
     @Override
     public String getRowKey(BussinesEntity entity) {
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     @Override

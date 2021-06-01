@@ -31,7 +31,6 @@ import org.jlgranda.fede.model.sales.Product_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.Group;
-import org.jpapi.model.Group_;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;

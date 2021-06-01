@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaElectronica_;
 import org.jlgranda.fede.model.management.BalancedScoreCard;
 import org.jpapi.model.BussinesEntity;
@@ -188,8 +187,7 @@ public class LazyBalancedScoreCardDataModel extends LazyDataModel<BalancedScoreC
 
     @Override
     public String getRowKey(BalancedScoreCard entity) {
-        System.err.println("//--> getRowKey:entity" + entity);
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     @Override

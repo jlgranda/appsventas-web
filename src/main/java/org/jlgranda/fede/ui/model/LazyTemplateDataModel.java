@@ -142,7 +142,7 @@ public class LazyTemplateDataModel extends LazyDataModel<Template> implements Se
 
     @Override
     public String getRowKey(Template entity) {
-        return entity.getName();
+        return "" + entity.getId();
     }
 
     @Override

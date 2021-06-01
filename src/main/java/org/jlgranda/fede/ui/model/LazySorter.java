@@ -36,6 +36,7 @@ public class LazySorter implements Comparator<BussinesEntity> {
         this.sortOrder = sortOrder;
     }
  
+    @Override
     public int compare(BussinesEntity be1, BussinesEntity be2) {
         try {
             Object value1 = BussinesEntity.class.getField(this.sortField).get(be1);
