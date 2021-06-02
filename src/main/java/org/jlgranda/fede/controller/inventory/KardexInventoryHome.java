@@ -98,7 +98,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     private List<String> listInvoices;
     private List<String> listFacturas;
     private List<Product> productsWithoutKardex;
-    
+
     @EJB
     private ProductCache productCache;
 
@@ -239,10 +239,10 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         if (this.kardexId != null && this.kardex.getProduct() != null) {
             this.productsWithoutKardex.add(this.kardex.getProduct());
         }
-        
+
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //generateProductsWithoutKardex " + Dates.now());
     }
-    
+
     public boolean hasProductsWithoutKardex() {
         return this.productService.count("Product.countWhithoutKardex", this.organizationData.getOrganization()) > 0;
     }
@@ -324,7 +324,11 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public void asignedKardexDetailProperties() {//Establecer valores previos para el KardexDetail
         if (this.kardex.getProduct() != null) {
-            this.kardexDetail.setUnit_value(this.kardex.getProduct().getPrice());
+            if (this.kardex.getProduct().getPriceCost() != null) {
+                this.kardexDetail.setUnit_value(this.kardex.getProduct().getPriceCost());
+            } else {
+                this.kardexDetail.setUnit_value(BigDecimal.ZERO);
+            }
         } else {
             this.kardexDetail.setUnit_value(BigDecimal.ZERO);
         }
@@ -354,9 +358,10 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                             kardexUpdate.getKardexDetails().get(i).setCummulative_total_value(kardexUpdate.getKardexDetails().get(i - 1).getCummulative_total_value().add(kardexUpdate.getKardexDetails().get(i).getTotal_value()));
                         }
                     } else if (kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)
-                            || kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                            || kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.VENTA)
+                            || kardexUpdate.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.SALIDA_INVENTARIO)) {
                         if (i == 0) {
-                            kardexUpdate.getKardexDetails().get(i).setCummulative_quantity(kardexUpdate.getKardexDetails().get(i).getQuantity()*-1);
+                            kardexUpdate.getKardexDetails().get(i).setCummulative_quantity(kardexUpdate.getKardexDetails().get(i).getQuantity() * -1);
                             kardexUpdate.getKardexDetails().get(i).setCummulative_total_value(kardexUpdate.getKardexDetails().get(i).getTotal_value().multiply(BigDecimal.valueOf(-1)));
                         } else {
                             kardexUpdate.getKardexDetails().get(i).setCummulative_quantity(kardexUpdate.getKardexDetails().get(i - 1).getCummulative_quantity() - kardexUpdate.getKardexDetails().get(i).getQuantity());
@@ -373,8 +378,8 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public void addKardexDetail() {
         boolean existTransaction = true;
-//        if (this.kardexId != null) {
-        if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA) && this.kardexDetail.getQuantity() > this.kardex.getQuantity()) {
+        if ((this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA) || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.SALIDA_INVENTARIO))
+                && this.kardexDetail.getQuantity() > this.kardex.getQuantity()) {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.sales"));
         } else {
             Long residue = 0L;
@@ -388,7 +393,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                     }
                 }
             }
-
+            System.out.println("residue A: " + residue);
             List<KardexDetail> listNewKardexDetails = new ArrayList<>();
             for (KardexDetail kd : this.kardex.getKardexDetails()) {
                 if (kd.getId() == (null) && kd.getCode().equals(this.kardexDetail.getCode())) {
@@ -397,7 +402,8 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             }
 
             if (!this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)
-                    && !this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)) {
+                    && !this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)
+                    && !this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.SALIDA_INVENTARIO)) {
                 if (!listNewKardexDetails.contains(this.kardexDetail)) {
                     if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.COMPRA)
                             || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
@@ -441,6 +447,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                         }
                     }
                 } else {
+                    System.out.println("residue: B" + residue);
                     if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
                         for (KardexDetail kd1 : listNewKardexDetails) {
                             if (kd1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
@@ -458,7 +465,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                             }
                         }
                     }
+                    System.out.println("residue: C" + residue);
                 }
+                System.out.println("residue: D" + residue);
             }
             if (existTransaction == true) {
                 if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && (residue < 0)) {
@@ -473,7 +482,8 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                         this.kardexDetail.setOwner(this.subject);
                         this.kardexDetail.setTotal_value(this.kardexDetail.getUnit_value().multiply((BigDecimal.valueOf(this.kardexDetail.getQuantity())))); //Calcular valor total del KardexDetail
                         if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.EXISTENCIA_INICIAL)
-                                || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)) {
+                                || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.PRODUCCION)
+                                || this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.SALIDA_INVENTARIO)) {
                             this.kardexDetail.setCode(I18nUtil.getMessages("common.nonen"));
                         }
                         if (this.kardex.getKardexDetails().isEmpty()) {
@@ -492,21 +502,19 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                                 this.kardex.getKardexDetails().get(i).setCummulative_quantity(this.kardex.getKardexDetails().get(i - 1).getCummulative_quantity() + this.kardex.getKardexDetails().get(i).getQuantity());
                                 this.kardex.getKardexDetails().get(i).setCummulative_total_value(this.kardex.getKardexDetails().get(i - 1).getCummulative_total_value().add(this.kardex.getKardexDetails().get(i).getTotal_value()));
                             } else if (this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)
-                                    || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.VENTA)) {
+                                    || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.VENTA)
+                                    || this.kardex.getKardexDetails().get(i).getOperation_type().equals(KardexDetail.OperationType.SALIDA_INVENTARIO)) {
                                 this.kardex.getKardexDetails().get(i).setCummulative_quantity(this.kardex.getKardexDetails().get(i - 1).getCummulative_quantity() - this.kardex.getKardexDetails().get(i).getQuantity());
                                 this.kardex.getKardexDetails().get(i).setCummulative_total_value(this.kardex.getKardexDetails().get(i - 1).getCummulative_total_value().subtract(this.kardex.getKardexDetails().get(i).getTotal_value()));
                             }
                         }
-//                        }
                         this.kardex.setQuantity(this.kardexDetail.getCummulative_quantity()); //Actualizar Saldo del Kardex
                         this.kardex.setFund(this.kardexDetail.getCummulative_total_value());
                     }
                 }
             }
-//            }
         }
         this.kardexDetail = kardexDetailService.createInstance(); //Recargar para la nueva instancia
-//        this.kardexDetail.setOperation_type(null); //Enserar valores
     }
 
     public List<String> completeCode(String query) {
@@ -531,11 +539,11 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public List<Product> completeProductKardex(String query) {
-        
-        if (productsWithoutKardex.isEmpty()){
+
+        if (productsWithoutKardex.isEmpty()) {
             generateProductsWithoutKardex(); //intentar cargar la lista
         }
-        
+
         String queryLowerCase = query.toLowerCase();
         return productsWithoutKardex.stream().filter(t -> t.getName().toLowerCase().contains(queryLowerCase)).collect(Collectors.toList());
     }

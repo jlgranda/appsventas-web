@@ -24,6 +24,7 @@ import com.jlgranda.fede.ejb.CashBoxPartialService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -46,7 +47,9 @@ import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.accounting.RecordDetail.RecordTDetailType;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
+import org.jpapi.model.Setting;
 import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -176,8 +179,7 @@ public class CashBoxHome extends FedeController implements Serializable {
 
 //        setCashBoxGeneral(cashBoxGeneralService.createInstance());
 //        setCashBoxPartial(cashBoxPartialService.createInstance());
-        setCashBoxDetail(cashBoxDetailService.createInstance());
-
+//        setCashBoxDetail(cashBoxDetailService.createInstance());
         setGrossSalesTotal(BigDecimal.ZERO);
         setDiscountTotal(BigDecimal.ZERO);
         setSalesTotal(BigDecimal.ZERO);
@@ -748,28 +750,49 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.activePanelDeposit = false; //Ocultar el Panel de Depósito
         isActiveButtonCloseCash(); //Deshabilitar el Botón de CashBox General
         this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("common.start") + " " + I18nUtil.getMessages("app.fede.accounting.ajust.breakdown"));
+        generateKardexDetails();
+        System.out.println("--->"+this.cashBoxPartial.getCashBoxDetails().size());
     }
-    
+
     public void cleanPanelDetail() { //Resetear los inserts del Panel de Detalle de CashBoxDetail
         this.cashBoxDetail.setDenomination(null);
         this.cashBoxDetail.setQuantity(null);
         this.activeSelectMenuBill = false; //Habilitar los selects del Panel de Detalle para Billetes y Monedas
         this.activeSelectMenuMoney = false;
     }
-    
+
+    private void generateKardexDetails() {
+        List<Setting> denominations = settingHome.findByCodeType(CodeType.DENOMINATION.toString());
+        if (this.cashBoxPartial.getCashBoxDetails().isEmpty()) {
+            for (Setting d : denominations) {
+                this.cashBoxDetail = cashBoxDetailService.createInstance();
+                if (d.getCategory().equals(CashBoxDetail.DenominationType.BILL.toString())) {
+                    this.cashBoxDetail.setDenomination_type(CashBoxDetail.DenominationType.BILL);
+                } else if (d.getCategory().equals(CashBoxDetail.DenominationType.MONEY.toString())) {
+                    this.cashBoxDetail.setDenomination_type(CashBoxDetail.DenominationType.MONEY);
+                }
+                this.cashBoxDetail.setDenomination(d.getLabel());
+                this.cashBoxDetail.setQuantity(0L);
+                this.cashBoxDetail.setValuer(new BigDecimal(d.getValue()));
+                this.cashBoxDetail.setAmount(this.cashBoxDetail.getValuer().multiply(BigDecimal.valueOf(this.cashBoxDetail.getQuantity())));
+                this.cashBoxPartial.addCashBoxDetail(this.cashBoxDetail);//Agregar el CashBoxDetail al CashBox Instanciado
+            }
+        }
+    }
+
     public void addCashDetail() { //Agrega un CashBoxDetail al CashBox Instanciado
         if (this.cashBoxDetail.getDenomination() != null && this.cashBoxDetail.getQuantity() != null) {
             calculateValuerAndType(); //Calcular el valor y tipo según la denominación
             this.cashBoxDetail.setAmount(this.cashBoxDetail.getValuer().multiply(BigDecimal.valueOf(this.cashBoxDetail.getQuantity()))); //Calcular monto de denominación
-             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
-        System.out.println("getCashBoxDetails().indexOf(cashBoxDetail): " + this.cashBoxDetail);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+            System.out.println("getCashBoxDetails().indexOf(cashBoxDetail): " + this.cashBoxDetail);
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
             this.cashBoxPartial.addCashBoxDetail(this.cashBoxDetail);//Agregar el CashBoxDetail al CashBox Instanciado
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
-        System.out.println("getCashBoxDetails().indexOf(cashBoxDetail): " + this.cashBoxDetail);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
-           
-        this.cashBoxDetail = cashBoxDetailService.createInstance();//Preparar para un nuevo detalle del CashBox Instanciado
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+            System.out.println("getCashBoxDetails().indexOf(cashBoxDetail): " + this.cashBoxDetail);
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+
+            this.cashBoxDetail = cashBoxDetailService.createInstance();//Preparar para un nuevo detalle del CashBox Instanciado
             this.activeSelectMenuBill = false; //Habilitar los selects del Panel de Detalle para Billetes y Monedas
             this.activeSelectMenuMoney = false;
             reloadDataCashBox(); //Recargar la vista con los datos del CashBox Instanciado
@@ -793,7 +816,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         }
         cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
     }
-    
+
     private void updateProperties() { //Cargar los atributos del CashBoxParcial y CashBoxGeneral Instanciado
         this.cashBoxPartial.setCashPartial(this.cashTotal);
         this.cashBoxPartial.setSaldoPartial(this.saldoCash);

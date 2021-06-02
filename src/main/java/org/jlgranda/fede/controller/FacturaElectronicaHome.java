@@ -1489,7 +1489,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void messageAlert() {
-        if (this.facturaElectronica.getAuthor() == null) {
+        if (this.facturaElectronicaId == null) {
             this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Para iniciar el registro seleccione un proveedor");
         }
     }
