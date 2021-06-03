@@ -91,7 +91,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{facturaElectronica.emissionType}">
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" styleClass="text-right">
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc" styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

@@ -136,7 +136,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </div>
                             <div class="ui-g-4">
                                 <div class="ui-g-12">
-                                    <div class="ui-g-4">
+                                    <div class="ui-g-5">
                                         <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
                                                         execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
                                                         validator="comandaValidator" placeholder="false"
@@ -155,11 +155,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                         placeholder="false"
                                                         decimalPlaces="0" container="none" rendered="true"/>
                                     </div>
-                                    <div class="ui-g-4">
-                                        <jlgranda:input id="pax" name="pax" type="number" label="#{i18n['app.fede.sales.invoice.pax']}" 
-                                                        execute="@this save-button" render="pax" value="#{invoiceHome.invoice.pax}" 
-                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.pax.required']}"
-                                                        placeholder="false" container="none" rendered="true"/>
+                                    <div class="ui-g-3">
+                                        <label>#{i18n['app.fede.sales.invoice.pax']}</label>
+                                        <div class="EmptyBox20"/>
+                                        <p:spinner id="pax" value="#{invoiceHome.invoice.pax}" min="1" immediate="true"
+                                                   required="true" requiredMessage="#{i18n['app.fede.sales.invoice.pax.required']}" styleClass="" >
+                                        </p:spinner>
                                     </div>
                                 </div>
                             </div>

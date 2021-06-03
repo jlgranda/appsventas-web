@@ -65,22 +65,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 inlinehelp="#{messages['common.lastnames.inlinehelp']}" execute="@this save" render="lstn"/>
                             </div>
                         </div>
-                        <div class="ui-g-12">
+                        <div class="ui-g-12" style="border: red 1px solid">
                             <div class="ui-g-4">
                                 <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.mobileNumber}"
                                                 required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                                 execute="@this save" render="phone"/>
                             </div>
-                            <div class="ui-g-8">
+                            <div class="ui-g-4">
                                 <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                                 required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                                 execute="@this save" render="email"/>
-                                <h:outputText value="#{i18n['common.email.none']} " />
+                                <h:outputText value="#{i18n['app.email.none']} " />
                                 <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultEmail}">
                                     <p:ajax update="email" listener="#{invoiceHome.updateDefaultEmail}" />
                                 </p:selectBooleanCheckbox>
+                            </div>
+                            <div class="ui-g-4">
+                                <label>Fecha de Nacimiento (dd/mm/aa) *</label>
+                                <div class="EmptyBox20"/>
+                                <p:calendar id="date-bird" value="#{invoiceHome.subjectAdminHome.subjectEdit.date_birth}" class="input-sm" immediate="#{true}" required="#{true}">
+                                </p:calendar>
                             </div>
                         </div>
                         <div class="ui-g-12">

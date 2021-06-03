@@ -219,7 +219,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:accordionPanel activeIndex="-1" class="ui-g-12 ">
                                 <c:forEach var="cashBoxs" items="#{cashBoxHome.cashBoxsClosed}">
                                     <p:tab title="#{cashBoxs.name} - #{cashBoxs.lastUpdate.hours}:#{cashBoxs.lastUpdate.minutes}:#{cashBoxs.lastUpdate.seconds}">
-                                        <div class="card ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
                                             <p:dataTable id="cashBoxs-bills" draggableColumns="true" lazy="false"
                                                          paginator="true" paginatorAlwaysVisible="false"
                                                          paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
@@ -247,7 +247,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </p:columnGroup>
                                             </p:dataTable>
                                         </div>
-                                        <div class="card ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
                                             <p:dataTable id="cashBoxs-moneys" draggableColumns="true" lazy="false"
                                                          paginator="true" paginatorAlwaysVisible="false"
                                                          paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
@@ -275,20 +275,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </p:columnGroup>
                                             </p:dataTable>
                                         </div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-9 ui-md-9 container-right capital Fs15">#{i18n['app.fede.accounting.ajust.breakdown']}<div class="EmptyBox5"/>
+                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right capital Fs15">#{i18n['app.fede.accounting.ajust.breakdown']}<div class="EmptyBox5"/>
                                             <h:outputText class="bold-capital Fs40" value="#{cashBoxs.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
                                         </div>
-                                        <h:panelGroup id="panel-cashBoxs-totals" class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3 container-right">
-                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 container-right">#{i18n['common.total']}:</div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-center">
+                                        <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1"></div>
+                                        <h:panelGroup id="panel-cashBoxs-totals" class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3">
+                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 ">#{i18n['common.total']}:</div>
+                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
                                                 <h:outputText value="#{cashBoxs.totalCashBreakdown}"><f:convertNumber type="currency"/></h:outputText>
                                             </div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.missing']}:</div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-center">
+                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 ">#{i18n['common.missing']}:</div>
+                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                                                 <h:outputText value="#{cashBoxs.missCashPartial}" style="#{cashBoxs.missCashPartial lt 0 ? 'color: #e53935;': 'color: #000000'};"><f:convertNumber type="currency"/></h:outputText>
                                             </div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.excess']}:</div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-center">
+                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.excess']}:</div>
+                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                                                 <h:outputText value="#{cashBoxs.excessCashPartial}"><f:convertNumber type="currency"/></h:outputText>
                                             </div>
                                         </h:panelGroup>
@@ -306,7 +307,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </h:panelGroup>
                                 <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                                    <div class="card ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
                                         <p:dataTable id="dataTable-bills" draggableColumns="true" lazy="false"
                                                      paginator="true" paginatorAlwaysVisible="false"
                                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
@@ -322,7 +323,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                                 <h:outputText value="#{cashBoxDetail.denomination}"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.quantity']}" >
+                                            <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem" >
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
@@ -349,12 +350,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </p:row>
                                             </p:columnGroup>--> 
                                         </p:dataTable>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-7 ui-md-7 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.bills']} :</div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3 Fs13 container-right">
+                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.bills']} :</div>
+                                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
                                             <h:outputText id="subtotal-bills" value="#{cashBoxHome.cashBoxPartial.totalcashBills}"><f:convertNumber type="currency"/></h:outputText>
                                         </div>
                                     </div>
-                                    <div class="card ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
                                         <p:dataTable id="dataTable-moneys" draggableColumns="true" lazy="false"
                                                      paginator="true" paginatorAlwaysVisible="false"
                                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
@@ -369,7 +370,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                                 <h:outputText value="#{cashBoxDetail.denomination}"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.quantity']}" >
+                                            <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem">
                                                 <p:cellEditor>
                                                     <f:facet name="output">
                                                         <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
@@ -396,8 +397,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                                             </p:row>
                                                                                         </p:columnGroup>-->
                                         </p:dataTable>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-7 ui-md-7 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.bills']} :</div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3 Fs13 container-right">
+                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.moneys']} :</div>
+                                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
                                             <h:outputText id="subtotal-moneys" value="#{cashBoxHome.cashBoxPartial.totalcashMoneys}"><f:convertNumber type="currency"/></h:outputText>
                                         </div>
                                     </div>
@@ -500,7 +501,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script type="text/javascript">
             //<![CDATA[
             $(document).ready(function () {
-                $('input[id*="spinner"]').attr('type', 'number');
+            $('input[id*="spinner"]').attr('type', 'number');
                 $(this).select();
             });
             $('input[id*="spinner"]').focus(function () {

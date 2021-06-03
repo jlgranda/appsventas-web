@@ -124,13 +124,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g ui-panelgrid-cell ui-g-7 ui-md-7">
                                 <p:panel rendered="#{facturaElectronicaHome.facturaElectronica.emissionType==EmissionType.PURCHASE_CREDIT}"> 
                                     <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">
-                                        <label class="Gray">Días plazo</label>
+                                        <label class="Gray">Días</label>
                                         <p:spinner id="days-expired" value="#{facturaElectronicaHome.days}" min="1" immediate="false" styleClass="" >
                                             <p:ajax listener="#{facturaElectronicaHome.calculateDateExpired()}" update="date-expired" partialSubmit="true"></p:ajax>
                                         </p:spinner>
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">
-                                        <label class="Gray">#{i18n['common.date.expired']}</label>
+                                        <label class="Gray">Vencimiento</label>
                                         <p:calendar id="date-expired" value="#{facturaElectronicaHome.facturaElectronica.fechaVencimiento}" class="input-sm" immediate="#{true}" required="#{true}">
                                             <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.calculateDaysExpired()}" oncomplete="form.submit()" update="days-expired"/>
                                         </p:calendar>
@@ -205,7 +205,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <h:panelGroup id="panel-add-details">
                                     <h:panelGroup rendered="#{not empty facturaElectronicaHome.facturaElectronicaDetail.product.id}">
-                                       <!--<div class="ui-g-2"/>-->
                                         <div class="ui-g-4">
                                             <h4>#{i18n['common.quantity']}:</h4>
                                             <p:spinner id="quantity" value="#{facturaElectronicaHome.facturaElectronicaDetail.quantity}" min="1" immediate="true" 
@@ -232,7 +231,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:selectBooleanCheckbox id="select-active-iva" value="#{facturaElectronicaHome.activeTaxType}" title="I.V.A 12%" style="padding-left: 15px">
                                                 <p:ajax event="change" listener="#{facturaElectronicaHome.calculateIVAProduct()}" update="" />
                                             </p:selectBooleanCheckbox>
-
                                         </div>
                                     </h:panelGroup>
                                 </h:panelGroup>
@@ -247,9 +245,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:inputText>
                                 </div>
                                 <div class="ui-g-4">
-                                    <!--<div class="EmptyBox10"/>-->
                                     <label class="BigTopic">#{i18n['common.tax']}&nbsp;</label>
-                                    <!--<div class="EmptyBox10"/>-->
                                     <p:selectOneMenu value="#{facturaElectronicaHome.productNew.taxType}"
                                                      required="#{false}" immediate="false"> 
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
@@ -295,18 +291,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                             </h:panelGroup>
                         </h:panelGroup> 
-
                         <f:facet name="footer">
                             <p:commandButton id="btn-facturaElectronicaDetail-save" value="#{i18n['common.add']}" icon="fa fa-check"
                                              actionListener="#{facturaElectronicaHome.addFacturaElectronicaDetail()}"
                                              update="pDialog-facturaElectronicaDetail-add dataTable-facturaElectronica-details
-                                             panel-facturaElectronicaDetail-add imptsi imptiva0 imptiva12 impt fund-request"
+                                             panel-facturaElectronicaDetail-add imptsi imptiva0 imptiva12 impt fund-request payment-tracking"
                                              disabled="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}"
                                              styleClass="secondary-button rounded-btn" style="margin-right: .5rem">
                             </p:commandButton>
                         </f:facet>
-
-
                     </p:dialog>
                     <div class="invoice-items ui-g-12">
                         <p:dataTable id="dataTable-facturaElectronica-details" draggableColumns="true" lazy="false" liveResize="false"
@@ -370,7 +363,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
                                     <p:ajax listener="#{facturaElectronicaHome.calcularTotalFactura()}" update="impt" partialSubmit="true"></p:ajax>
-                                    <p:ajax listener="#{facturaElectronicaHome.montoPorPagar()}" update="fund-request" partialSubmit="true"></p:ajax>
+                                    <p:ajax listener="#{facturaElectronicaHome.montoPorPagar()}" update="total fund-request" partialSubmit="true"></p:ajax>
                                 </p:inputNumber>
                             </div>
                             <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.0']}</div>
@@ -405,22 +398,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </div>
                 </div>
-
                 <div class="EmptyBox10"></div>
-
                 <!-- Lista de pagos para facturas a crédito -->
-                <p:panel id="payment-tracking" styleClass="Container100 Responsive100" 
+                <p:panel id="payment-tracking"
                          rendered="#{facturaElectronicaHome.facturaElectronica.emissionType == EmissionType.PURCHASE_CREDIT}">
-                    <div class="invoice-payments card ui-g-12">
                         <label style="text-transform: uppercase"><b>#{i18n['app.fede.sales.payments.tracking']}</b></label>
-                        <p:panelGrid class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12" columns="9" layout="grid" style="border:0px !important; background:none;" styleClass="ui-panelgrid-blank">
+                    <div class="invoice-payments card ui-g-12">
                             <div style="text-align: center">
-                                <h4>#{i18n['common.fund']} #{i18n['common.pending']}
+                                <h4>#{i18n['common.fund']} #{i18n['common.pending']}:
                                     <h:outputText style="font-weight: bolder;" id="fund-request" value="#{facturaElectronicaHome.montoPorPagar()}">
                                         <f:convertNumber type="currency"/>
                                     </h:outputText>
                                 </h4> 
                             </div>
+                        <div class="EmptyBox10"/>
+                        <p:panelGrid class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12" columns="6" layout="grid" style="border:0px !important; background:none; align-content: center" styleClass="ui-panelgrid-blank">
                             <p:inputNumber id="total" value="#{facturaElectronicaHome.payment.amount}" required="#{false}" disabled="#{facturaElectronicaHome.payableTotal}"
                                            styleClass="" placeholder="#{i18n['app.fede.sales.payment.cash.paid']}"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 

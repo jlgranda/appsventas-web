@@ -175,7 +175,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         //Inicialización de variables, objetos, métodos.
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(getEnd()));
-        setOutcome("close-cash");
+        setOutcome("home");
 
         setCashBoxDetail(cashBoxDetailService.createInstance());
         setGrossSalesTotal(BigDecimal.ZERO);

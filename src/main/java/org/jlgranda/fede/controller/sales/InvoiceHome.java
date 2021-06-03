@@ -1215,7 +1215,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 kardex.setAuthor(this.subject);
                 kardex.setOrganization(this.organizationData.getOrganization());
                 kardex.setProduct(candidateDetail1.getProduct());
-                kardex.setCode("TK-P- "+candidateDetail1.getProduct().getId());
+//                kardex.setCode("TK-P- " + candidateDetail1.getProduct().getId());
                 kardex.setUnit_minimum(1L);
                 kardex.setUnit_maximum(1L);
             } else {
@@ -1231,7 +1231,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 kardexDetail.setOperation_type(KardexDetail.OperationType.VENTA);
             } else {
                 //Aumentar los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a disminuir por la venta
-                if (kardexDetail.getQuantity() != null && kardexDetail.getTotal_value()!= null) {
+                if (kardexDetail.getQuantity() != null && kardexDetail.getTotal_value() != null) {
                     kardex.setQuantity(kardex.getQuantity() + kardexDetail.getQuantity());
                     kardex.setFund(kardex.getFund().add(kardexDetail.getTotal_value()));
                     kardexDetail.setCummulative_quantity(kardex.getQuantity());
@@ -1245,7 +1245,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             kardexDetail.setQuantity((long) candidateDetail1.getAmount());
             kardexDetail.setTotal_value(kardexDetail.getUnit_value().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
             if (kardex.getId() == null) {
-                kardexDetail.setCummulative_quantity(kardexDetail.getQuantity()*-1);
+                kardexDetail.setCummulative_quantity(kardexDetail.getQuantity() * -1);
                 kardexDetail.setCummulative_total_value(kardexDetail.getTotal_value().multiply(BigDecimal.valueOf(-1)));
             } else {
                 if (kardex.getQuantity() != null && kardex.getFund() != null) {
