@@ -299,9 +299,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </h:panelGroup>
                     <h:panelGroup id="panel-breakdown-cash" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                         <h:panelGroup rendered="#{cashBoxHome.activePanelBreakdown and (cashBoxHome.cashBoxPartial.id == null || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN')}">
-                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <h:panelGroup id="panel-cashBoxDetail" class="card ui-g ui-panelgrid-cell ui-g-4 ui-md-4">
-                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-center capital Fs15">#{i18n['app.fede.accounting.ajust.breakdown']}<div class="EmptyBox5"/>
+                            <div class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                                <h:panelGroup id="panel-cashBoxDetail" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs15">#{i18n['app.fede.accounting.ajust.breakdown']}<div class="EmptyBox5"/>
                                         <h:outputText class="bold-capital Fs40" id="saldo-cash" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
                                     </div>
                                 </h:panelGroup>
