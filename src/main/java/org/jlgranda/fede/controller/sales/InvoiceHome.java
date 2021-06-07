@@ -1206,6 +1206,11 @@ public class InvoiceHome extends FedeController implements Serializable {
 //            kardexService.save(kardex.getId(), kardex);
 //        }
         for (Detail candidateDetail1 : getCandidateDetails()) {
+            if(candidateDetail1.getProduct()==null){
+                System.out.println(candidateDetail1.getAmount());
+                System.out.println(candidateDetail1.getPrice());
+                System.out.println(candidateDetail1.getUnit());
+            }
             Kardex kardex = null;
             KardexDetail kardexDetail = null;
             kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
