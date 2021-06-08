@@ -325,8 +325,8 @@ public class TareaHome extends FedeController implements Serializable {
     
     public void sendNotification(InstanciaProceso instanciaProceso, String templateName, boolean displayMessage) {
         if (instanciaProceso.isPersistent()) {
-            //Notificar alta en appsventas
-            String url = settingHome.getValue("app.documents.url.process.detail", "http://localhost:8080/appsventas/pages/management/proceso/instancia_proceso.jsf?uuid=");
+            //Notificar inicio de instancia de proceso
+            String url = settingHome.getValue("app.documents.url.process.detail", "http://emporiolojano.com:8080/appsventas-web/pages/management/proceso/instancia_proceso.jsf?instanciaProc");
             String url_title = instanciaProceso.getName();
             Map<String, Object> values = new HashMap<>();
             
@@ -347,7 +347,7 @@ public class TareaHome extends FedeController implements Serializable {
     public void sendNotification(Tarea tarea, String templateName, boolean displayMessage) {
         if (tarea.isPersistent()) {
             //Notificar alta en appsventas
-            String url = settingHome.getValue("app.documents.url.task.detail", "http://localhost:8080/appsventas/pages/management/proceso/instancia_prooceso.jsf?id=");
+            String url = settingHome.getValue("app.documents.url.task.detail", "http://emporiolojano.com:8080/appsventas-web/pages/management/proceso/instancia_proceso.jsf?instanciaProc");
             String url_title = tarea.getName();
             Map<String, Object> values = new HashMap<>();
             
@@ -397,12 +397,14 @@ public class TareaHome extends FedeController implements Serializable {
     }
 
     public void eliminarDocumentos() {
-        for (Documento doc : documentosRemovidos) {
+        documentosRemovidos.stream().map(doc -> {
             if (doc.isPersistent()) {
                 documentoService.remove(doc.getId(), doc);
             }
+            return doc;
+        }).forEachOrdered(doc -> {
             documentosRemovidos.remove(doc);
-        }
+        });
     }
 
     public BigDecimal countRowsByTag(String tag) {

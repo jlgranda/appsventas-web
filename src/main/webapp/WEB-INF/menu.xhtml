@@ -23,7 +23,7 @@
                     </div>
                     <pe:menu widgetVar="me">
 
-                        <p:submenu id="om_documents" label="#{i18n['common.documents']}" icon="fa fa-fw fa-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}">
+                        <p:submenu id="om_documents" label="#{i18n['app.documents']}" icon="fa fa-fw fa-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}">
                             <p:menuitem id="om_process" value="#{i18n['app.documents.start']}" icon="fa fa-fw fa-hourglass-start" outcome="/pages/management/proceso/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
                             <p:menuitem id="om_tasks" value="#{i18n['app.documents.tasks']}" icon="fa fa-fw fa-tasks" outcome="/pages/management/tarea/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
                         </p:submenu>
