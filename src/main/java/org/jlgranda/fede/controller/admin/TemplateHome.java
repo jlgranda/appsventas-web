@@ -36,6 +36,7 @@ import net.tecnopro.document.model.Template;
 import net.tecnopro.helper.mail.VelocityHelper;
 import net.tecnopro.mailing.Message;
 import net.tecnopro.mailing.Notification;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -239,8 +240,8 @@ public class TemplateHome extends FedeController implements Serializable {
                 txt = VelocityHelper.getRendererMessage(template.getBody(), values);
                 Notification notification = notificationService.createInstance();
                 Message message = messageService.createInstance();
-                message.setSubject(title);
-                message.setHtml(body);
+                message.setSubject(StringEscapeUtils.escapeHtml4(title));
+                message.setHtml(StringEscapeUtils.escapeHtml4(body));
                 message.setText(txt);
                 messageService.save(message);
                 
