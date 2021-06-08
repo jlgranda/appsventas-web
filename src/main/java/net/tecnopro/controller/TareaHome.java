@@ -332,7 +332,7 @@ public class TareaHome extends FedeController implements Serializable {
             
             //TODO implementar una forma de definición de parametros desde configuración
             values.put("instanciaProceso", instanciaProceso);
-            values.put("url", url + instanciaProceso.getCode());
+            values.put("url", url + instanciaProceso.getId());
             values.put("url_title", url_title);
 
             if (templateHome.sendEmail(instanciaProceso.getAuthor(), settingHome.getValue(templateName, templateName), values)
@@ -347,7 +347,7 @@ public class TareaHome extends FedeController implements Serializable {
     public void sendNotification(Tarea tarea, String templateName, boolean displayMessage) {
         if (tarea.isPersistent()) {
             //Notificar alta en appsventas
-            String url = settingHome.getValue("app.documents.url.process.detail", "http://localhost:8080/appsventas/pages/management/proceso/instancia_prooceso.jsf?id=");
+            String url = settingHome.getValue("app.documents.url.task.detail", "http://localhost:8080/appsventas/pages/management/proceso/instancia_prooceso.jsf?id=");
             String url_title = tarea.getName();
             Map<String, Object> values = new HashMap<>();
             

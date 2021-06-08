@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
@@ -58,7 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
                             <p:ajax event="rowSelect" listener="#{instanciaProcesoHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" styleClass="text-center"/>
                             
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{instanciaProceso.code}">
                                 <h:outputText value="#{instanciaProceso.code}" />
@@ -72,7 +71,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:column>
 
                             <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{instanciaProceso.createdOn}"
-                                       styleClass="text-right">
+                                       styleClass="text-right ui-lg-1">
                                 <h:outputText value="#{instanciaProceso.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

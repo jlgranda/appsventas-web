@@ -143,8 +143,9 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         setInstanciaProceso(instanciaProcesoService.createInstance());
         setTarea(tareaService.createInstance()); //Siempre listo para recibir la respuesta del proceso
         setDocumento(documentoService.createInstance());
-        //TODO Establecer temporalmente la organización por defecto
-        //getOrganizationHome().setOrganization(organizationService.find(1L));
+        
+        //Inicializar solicitante al usuario logeado
+        this.setSolicitante(this.subject);
     }
 
     public Long getInstanciaProcesoId() {
