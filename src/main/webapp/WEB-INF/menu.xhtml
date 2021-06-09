@@ -24,7 +24,8 @@
                     <pe:menu widgetVar="me">
 
                         <p:submenu id="om_documents" label="#{i18n['app.documents']}" icon="fa fa-fw fa-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}">
-                            <p:menuitem id="om_process" value="#{i18n['app.documents.start']}" icon="fa fa-fw fa-hourglass-start" outcome="/pages/management/proceso/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
+                            <p:menuitem id="om_process_start" value="#{i18n['app.documents.active']}" icon="fa fa-fw fa-hourglass-start" outcome="/pages/management/proceso/inbox.jsf?statusType=ACTIVE"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
+                            <p:menuitem id="om_process_close" value="#{i18n['app.documents.close']}" icon="fa fa-fw fa-hourglass-end" outcome="/pages/management/proceso/inbox.jsf?statusType=CLOSE"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
                             <p:menuitem id="om_tasks" value="#{i18n['app.documents.tasks']}" icon="fa fa-fw fa-tasks" outcome="/pages/management/tarea/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
                         </p:submenu>
                         <p:menuitem id="om_home" value="#{i18n['common.home']}" icon="fa fa-fw fa-home" outcome="home"  rendered="#{request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER') or request.isUserInRole('USER')}"/>
