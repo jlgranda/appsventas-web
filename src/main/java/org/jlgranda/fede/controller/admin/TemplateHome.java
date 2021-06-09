@@ -240,8 +240,8 @@ public class TemplateHome extends FedeController implements Serializable {
                 txt = VelocityHelper.getRendererMessage(template.getBody(), values);
                 Notification notification = notificationService.createInstance();
                 Message message = messageService.createInstance();
-                message.setSubject(StringEscapeUtils.escapeHtml4(title));
-                message.setHtml(StringEscapeUtils.escapeHtml4(body));
+                message.setSubject(title);
+                message.setHtml(body);
                 message.setText(txt);
                 messageService.save(message);
                 

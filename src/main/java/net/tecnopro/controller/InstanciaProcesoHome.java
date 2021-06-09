@@ -364,7 +364,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     }
 
     public void procesarUploadFile(UploadedFile file) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>><<< 1");
         if (file == null) {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
             return;
@@ -375,10 +374,8 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             return;
         }
         try {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>><<< 2");
             Documento doc = crearDocumento(file);
             
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>><<< 3");
             if (getTarea() != null && doc != null) {
                 getTarea().getDocumentos().add(doc);
             } else {
@@ -386,7 +383,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             }
             //Encerar el obeto para edición de nuevo documento
             setDocumento(documentoService.createInstance());
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>><<< 4");
         } catch (Exception e) {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), e.getMessage());
         }

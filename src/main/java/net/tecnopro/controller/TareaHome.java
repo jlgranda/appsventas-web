@@ -326,7 +326,7 @@ public class TareaHome extends FedeController implements Serializable {
     public void sendNotification(InstanciaProceso instanciaProceso, String templateName, boolean displayMessage) {
         if (instanciaProceso.isPersistent()) {
             //Notificar inicio de instancia de proceso
-            String url = settingHome.getValue("app.documents.url.process.detail", "http://emporiolojano.com:8080/appsventas-web/pages/management/proceso/instancia_proceso.jsf?instanciaProc");
+            String url = settingHome.getValue("app.documents.url.process.detail", "http://emporiolojano.com:8080/appsventas-web/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=");
             String url_title = instanciaProceso.getName();
             Map<String, Object> values = new HashMap<>();
             
@@ -335,11 +335,19 @@ public class TareaHome extends FedeController implements Serializable {
             values.put("url", url + instanciaProceso.getId());
             values.put("url_title", url_title);
 
-            if (templateHome.sendEmail(instanciaProceso.getAuthor(), settingHome.getValue(templateName, templateName), values)
-                    && templateHome.sendEmail(instanciaProceso.getOwner(), settingHome.getValue(templateName, templateName), values)){
-                if (displayMessage) addDefaultSuccessMessage();
+            if (instanciaProceso.getAuthor().equals(instanciaProceso.getOwner())){
+                if (templateHome.sendEmail(instanciaProceso.getAuthor(), settingHome.getValue(templateName, templateName), values)){
+                    if (displayMessage) addDefaultSuccessMessage();
+                } else {
+                    if (displayMessage) addDefaultErrorMessage();
+                }
             } else {
-                if (displayMessage) addDefaultErrorMessage();
+                if (templateHome.sendEmail(instanciaProceso.getAuthor(), settingHome.getValue(templateName, templateName), values)
+                        && templateHome.sendEmail(instanciaProceso.getOwner(), settingHome.getValue(templateName, templateName), values)){
+                    if (displayMessage) addDefaultSuccessMessage();
+                } else {
+                    if (displayMessage) addDefaultErrorMessage();
+                }
             }
         }
     }
@@ -347,7 +355,7 @@ public class TareaHome extends FedeController implements Serializable {
     public void sendNotification(Tarea tarea, String templateName, boolean displayMessage) {
         if (tarea.isPersistent()) {
             //Notificar alta en appsventas
-            String url = settingHome.getValue("app.documents.url.task.detail", "http://emporiolojano.com:8080/appsventas-web/pages/management/proceso/instancia_proceso.jsf?instanciaProc");
+            String url = settingHome.getValue("app.documents.url.task.detail", "http://emporiolojano.com:8080/appsventas-web/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=");
             String url_title = tarea.getName();
             Map<String, Object> values = new HashMap<>();
             
@@ -356,11 +364,19 @@ public class TareaHome extends FedeController implements Serializable {
             values.put("url", url + tarea.getInstanciaProceso().getId());
             values.put("url_title", url_title);
 
-            if (templateHome.sendEmail(tarea.getAuthor(), settingHome.getValue(templateName, templateName), values)
-                    && templateHome.sendEmail(tarea.getOwner(), settingHome.getValue(templateName, templateName), values)){
-                if (displayMessage) addDefaultSuccessMessage();
+            if (tarea.getAuthor().equals(tarea.getOwner())){
+                if (templateHome.sendEmail(tarea.getAuthor(), settingHome.getValue(templateName, templateName), values)){
+                    if (displayMessage) addDefaultSuccessMessage();
+                } else {
+                    if (displayMessage) addDefaultErrorMessage();
+                }
             } else {
-                if (displayMessage) addDefaultErrorMessage();
+                if (templateHome.sendEmail(tarea.getAuthor(), settingHome.getValue(templateName, templateName), values)
+                    && templateHome.sendEmail(tarea.getOwner(), settingHome.getValue(templateName, templateName), values)){
+                    if (displayMessage) addDefaultSuccessMessage();
+                } else {
+                    if (displayMessage) addDefaultErrorMessage();
+                }
             }
         }
     }
