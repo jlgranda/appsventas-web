@@ -183,7 +183,7 @@ public class SettingHome extends FedeController implements Serializable {
     protected List<Setting> findByCodeType(CodeType codeType) {
         Map<String, Object> filters = new HashMap<>();
         filters.put("codeType", codeType);
-        QueryData<Setting> queryData = settingService.find(-1, -1, "value", QuerySortOrder.DESC, filters);
+        QueryData<Setting> queryData = settingService.find(-1, -1, "category", QuerySortOrder.DESC, filters);
         return queryData.getResult();
     }
     
