@@ -560,12 +560,21 @@ public class CashBoxHome extends FedeController implements Serializable {
                 if (existBreakdownSecondary() == true || getCashBoxOpen() != null) {
                     setActivePanelDeposit(false);
                     activeButtonBreakdown = true;
+                }else{
+                    setActivePanelDeposit(true);
                 }
             }
         } else {
-            if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.CLOSED) || getCashBoxOpen() != null) {
-                setActivePanelDeposit(false);
-                activeButtonBreakdown = true;
+            if (this.cashBoxGeneral.getId() != null) {
+                if (CashBoxGeneral.Status.CLOSED.equals(this.cashBoxGeneral.getStatusCashBoxGeneral())) {
+                    setActivePanelDeposit(false);
+                    activeButtonBreakdown = true;
+                }
+            } else {
+                if (getCashBoxOpen() != null) {
+                    setActivePanelDeposit(false);
+                    activeButtonBreakdown = true;
+                }
             }
         }
         return activeButtonBreakdown;
@@ -653,8 +662,10 @@ public class CashBoxHome extends FedeController implements Serializable {
     public boolean isPanelVerification() {
         if (getCashBoxInitialFinish() != null) {
             if (this.cashBoxPartial.getId() == null) {
-                if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.OPEN)) {
-                    panelVerification = true;
+                if (this.cashBoxGeneral.getId() != null) {
+                    if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.OPEN)) {
+                        panelVerification = true;
+                    }
                 }
             } else {
                 if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.OPEN)) {
