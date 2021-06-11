@@ -26,17 +26,20 @@ import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.beanutils.BeanUtils;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.CashBoxPartial;
 import org.jlgranda.fede.model.accounting.CashBoxDetail;
@@ -149,8 +152,6 @@ public class CashBoxHome extends FedeController implements Serializable {
     //Calcular el dinero obtenido del cierre de caja
     private BigDecimal cashTotal;
     private BigDecimal saldoCash;
-    private boolean activeSelectMenuBill;
-    private boolean activeSelectMenuMoney;
 
     //Desglosar el efectivo de Caja
     private List<CashBoxDetail> cashBoxBills;
@@ -163,7 +164,6 @@ public class CashBoxHome extends FedeController implements Serializable {
     private List<CashBoxDetail> cashBoxsClosedMoneys;
     private CashBoxPartial cashBoxOpen;
     private boolean activeButtonCloseCash;
-    private boolean activeButtonSave;
 
     //Calcular el dinero restante luego del depósito del Cierre de Caja
     private BigDecimal saldoCashFund;
@@ -212,16 +212,10 @@ public class CashBoxHome extends FedeController implements Serializable {
         setTransactionDebit(BigDecimal.ZERO);
         setTransactionCredit(BigDecimal.ZERO);
         setTransactionTotal(BigDecimal.ZERO);
-
         setSaldoInitial(BigDecimal.ZERO);
-
         setCashTotal(BigDecimal.ZERO);
         setSaldoCash(BigDecimal.ZERO);
-
-        setActiveButtonSave(true);
-        setActivePanelDeposit(false);
         setActiveIndex(0);
-        setPanelVerification(false);
 
         calculeSummaryToday();
         findCashBoxs();
@@ -318,44 +312,12 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.listDiscount = listDiscount;
     }
 
-    public boolean isActiveButtonBreakdown() {
-        return activeButtonBreakdown;
-    }
-
-    public void setActiveButtonBreakdown(boolean activeButtonBreakdown) {
-        this.activeButtonBreakdown = activeButtonBreakdown;
-    }
-
-    public boolean isActivePanelDeposit() {
-        return activePanelDeposit;
-    }
-
-    public void setActivePanelDeposit(boolean activePanelDeposit) {
-        this.activePanelDeposit = activePanelDeposit;
-    }
-
-    public boolean isActiveSelectDeposit() {
-        return activeSelectDeposit;
-    }
-
-    public void setActiveSelectDeposit(boolean activeSelectDeposit) {
-        this.activeSelectDeposit = activeSelectDeposit;
-    }
-
     public BigDecimal getAmountDeposit() {
         return amountDeposit;
     }
 
     public void setAmountDeposit(BigDecimal amountDeposit) {
         this.amountDeposit = amountDeposit;
-    }
-
-    public boolean isActiveButtonSelectDeposit() {
-        return activeButtonSelectDeposit;
-    }
-
-    public void setActiveButtonSelectDeposit(boolean activeButtonSelectDeposit) {
-        this.activeButtonSelectDeposit = activeButtonSelectDeposit;
     }
 
     public Account getSelectedAccount() {
@@ -470,28 +432,12 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.saldoCash = saldoCash;
     }
 
-    public boolean isActiveSelectMenuBill() {
-        return activeSelectMenuBill;
+    public BigDecimal getSaldoCashFund() {
+        return saldoCashFund;
     }
 
-    public void setActiveSelectMenuBill(boolean activeSelectMenuBill) {
-        this.activeSelectMenuBill = activeSelectMenuBill;
-    }
-
-    public boolean isActiveSelectMenuMoney() {
-        return activeSelectMenuMoney;
-    }
-
-    public void setActiveSelectMenuMoney(boolean activeSelectMenuMoney) {
-        this.activeSelectMenuMoney = activeSelectMenuMoney;
-    }
-
-    public void activeSelectBill() {
-        this.activeSelectMenuBill = true;
-    }
-
-    public void activeSelectMoney() {
-        this.activeSelectMenuMoney = true;
+    public void setSaldoCashFund(BigDecimal saldoCashFund) {
+        this.saldoCashFund = saldoCashFund;
     }
 
     public List<CashBoxDetail> getCashBoxBills() {
@@ -510,17 +456,12 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.cashBoxMoneys = cashBoxMoneys;
     }
 
-    public boolean isActivePanelBreakdown() {
-        return activePanelBreakdown;
-    }
-
-    public void setActivePanelBreakdown(boolean activePanelBreakdown) {
-        this.activePanelBreakdown = activePanelBreakdown;
-    }
-
     public CashBoxPartial getCashBoxOpen() {
         if (cashBoxGeneral.getId() != null) {
-            cashBoxOpen = cashBoxPartialService.findUniqueByNamedQuery("CashBoxPartial.findByCashBoxGeneralAndStatus", this.cashBoxGeneral, CashBoxPartial.Status.OPEN);
+            List<CashBoxPartial> cashBoxOpens = cashBoxPartialService.findByNamedQueryWithLimit("CashBoxPartial.findByCashBoxGeneralAndStatus", 1, this.cashBoxGeneral, CashBoxPartial.Status.OPEN);
+            if (!cashBoxOpens.isEmpty()) {
+                cashBoxOpen = cashBoxOpens.get(0);
+            }
         }
         return cashBoxOpen;
     }
@@ -531,7 +472,6 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     public List<CashBoxPartial> getCashBoxsClosed() {
         if (cashBoxGeneral.getId() != null) {
-//            cashBoxsClosed = cashBoxPartialService.findByNamedQuery("CashBoxPartial.findByCashBoxGeneralAndStatus", this.cashBoxGeneral, CashBoxPartial.Status.CLOSED);
             cashBoxsClosed = cashBoxPartialService.findByNamedQuery("CashBoxPartial.findByCashBoxGeneralAndStatusAndStatusPriority", this.cashBoxGeneral, CashBoxPartial.Status.CLOSED, CashBoxPartial.StatusPriority.INTERMEDIATE);
         }
         return cashBoxsClosed;
@@ -539,68 +479,6 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     public void setCashBoxsClosed(List<CashBoxPartial> cashBoxsClosed) {
         this.cashBoxsClosed = cashBoxsClosed;
-    }
-
-    public List<CashBoxDetail> cashBoxsClosedBills(CashBoxPartial cashBoxPartial) {
-        cashBoxsClosedBills = new ArrayList<>();
-        for (CashBoxDetail cbDetail : cashBoxPartial.getCashBoxDetails()) {
-            if (cbDetail.getDenomination_type().equals(CashBoxDetail.DenominationType.BILL)) {
-                cashBoxsClosedBills.add(cbDetail);
-            }
-        }
-        return cashBoxsClosedBills;
-    }
-
-    public List<CashBoxDetail> cashBoxsClosedMoneys(CashBoxPartial cashBoxPartial) {
-        cashBoxsClosedMoneys = new ArrayList<>();
-        for (CashBoxDetail cbDetail : cashBoxPartial.getCashBoxDetails()) {
-            if (cbDetail.getDenomination_type().equals(CashBoxDetail.DenominationType.MONEY)) {
-                cashBoxsClosedMoneys.add(cbDetail);
-            }
-        }
-        return cashBoxsClosedMoneys;
-    }
-
-    public boolean isActiveButtonCloseCash() {
-        if (cashBoxOpen != null || this.cashBoxGeneral.getId() == null) {
-            activeButtonCloseCash = true; //Deshabilitar Botón Cierre de Caja General, porque existe un Cierre de Caja Parcial abierto
-        } else {
-            if (cashBoxGeneral.getId() != null && cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.OPEN)) {
-//                    && (cashBoxPartial.getId() == null || (cashBoxPartial.getId() != null && cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.CLOSED)))) {
-                activeButtonCloseCash = false;
-            } else {
-                activeButtonCloseCash = true;
-            }
-        }
-        return activeButtonCloseCash;
-    }
-
-    public void setActiveButtonCloseCash(boolean activeButtonCloseCash) {
-        this.activeButtonCloseCash = activeButtonCloseCash;
-    }
-
-    public boolean isActiveButtonSave() {
-        return activeButtonSave;
-    }
-
-    public void setActiveButtonSave(boolean activeButtonSave) {
-        this.activeButtonSave = activeButtonSave;
-    }
-
-    public BigDecimal getSaldoCashFund() {
-        return saldoCashFund;
-    }
-
-    public void setSaldoCashFund(BigDecimal saldoCashFund) {
-        this.saldoCashFund = saldoCashFund;
-    }
-
-    public boolean isActivePanelBreakdownFund() {
-        return activePanelBreakdownFund;
-    }
-
-    public void setActivePanelBreakdownFund(boolean activePanelBreakdownFund) {
-        this.activePanelBreakdownFund = activePanelBreakdownFund;
     }
 
     public List<CashBoxGeneral> getCashBoxGeneralInitial() {
@@ -631,6 +509,22 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.cashBoxInitialFinish = cashBoxInitialFinish;
     }
 
+    public List<CashBoxDetail> cashBoxsClosedBills(CashBoxPartial cashBoxPartial) {
+        cashBoxsClosedBills = new ArrayList<>();
+        cashBoxPartial.getCashBoxDetails().stream().filter(cbDetail -> (cbDetail.getDenomination_type().equals(CashBoxDetail.DenominationType.BILL))).forEachOrdered(cbDetail -> {
+            cashBoxsClosedBills.add(cbDetail);
+        });
+        return cashBoxsClosedBills;
+    }
+
+    public List<CashBoxDetail> cashBoxsClosedMoneys(CashBoxPartial cashBoxPartial) {
+        cashBoxsClosedMoneys = new ArrayList<>();
+        cashBoxPartial.getCashBoxDetails().stream().filter(cbDetail -> (cbDetail.getDenomination_type().equals(CashBoxDetail.DenominationType.MONEY))).forEachOrdered(cbDetail -> {
+            cashBoxsClosedMoneys.add(cbDetail);
+        });
+        return cashBoxsClosedMoneys;
+    }
+
     public List<CashBoxDetail> cashBoxsInitialBills(CashBoxPartial cashBoxPartial) {
         cashBoxsInitialBills = new ArrayList<>();
         cashBoxPartial.getCashBoxDetails().stream().filter(cbDetail -> (cbDetail.getDenomination_type().equals(CashBoxDetail.DenominationType.BILL))).forEachOrdered(cbDetail -> {
@@ -647,6 +541,107 @@ public class CashBoxHome extends FedeController implements Serializable {
         return cashBoxsInitialMoneys;
     }
 
+    public boolean existBreakdownSecondary() {
+        if (this.cashBoxGeneral.getId() != null) {
+            return !cashBoxPartialService.findByNamedQuery("CashBoxPartial.findByCashBoxGeneralAndOwnerAndPriorityOrder", this.cashBoxGeneral, this.subject, CashBoxPartial.Priority.SECONDARY).isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isActiveButtonBreakdown() {
+        if (this.cashBoxGeneral.getId() != null && this.cashBoxPartial.getId() != null) {
+            if (this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.OPEN)) {
+                activeButtonBreakdown = true; //Deshabilitar el botón
+                setActivePanelBreakdown(true); //Mostrar el panel de desglose del CashBoxPartial Abierto
+                setActivePanelDeposit(false); //Ocultar el panel de depósito
+            } else {
+                setActivePanelBreakdown(false); //Ocultar el panel de desglose
+                if (existBreakdownSecondary() == true || getCashBoxOpen() != null) {
+                    setActivePanelDeposit(false);
+                    activeButtonBreakdown = true;
+                }
+            }
+        } else {
+            if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.CLOSED) || getCashBoxOpen() != null) {
+                setActivePanelDeposit(false);
+                activeButtonBreakdown = true;
+            }
+        }
+        return activeButtonBreakdown;
+    }
+
+    public boolean isActivePanelBreakdown() {
+        chargeListCashBoxBillMoney(); //Cargar por defecto el detalle del CashBoxPartial en las tablas de la vista
+        return activePanelBreakdown;
+    }
+
+    public void setActivePanelBreakdown(boolean activePanelBreakdown) {
+        this.activePanelBreakdown = activePanelBreakdown;
+    }
+
+    public void setActiveButtonBreakdown(boolean activeButtonBreakdown) {
+        this.activeButtonBreakdown = activeButtonBreakdown;
+    }
+
+    public boolean isActivePanelDeposit() {
+//        if (this.cashBoxGeneral.getId() != null && existBreakdownSecondary() == false) {
+//            if (this.cashBoxPartial.getId() == null) {
+//                activePanelDeposit = true;
+//            } else {
+//                if (this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.CLOSED)) {
+//                    return true;
+//                }
+//            }
+//        }
+        return activePanelDeposit;
+    }
+
+    public void setActivePanelDeposit(boolean activePanelDeposit) {
+        this.activePanelDeposit = activePanelDeposit;
+    }
+
+    public boolean isActiveSelectDeposit() {
+        return activeSelectDeposit;
+    }
+
+    public void setActiveSelectDeposit(boolean activeSelectDeposit) {
+        this.activeSelectDeposit = activeSelectDeposit;
+    }
+
+    public boolean isActiveButtonSelectDeposit() {
+        return activeButtonSelectDeposit;
+    }
+
+    public void setActiveButtonSelectDeposit(boolean activeButtonSelectDeposit) {
+        this.activeButtonSelectDeposit = activeButtonSelectDeposit;
+    }
+
+    public boolean isActiveButtonCloseCash() {
+        if (cashBoxOpen != null || this.cashBoxGeneral.getId() == null) {
+            activeButtonCloseCash = true; //Deshabilitar Botón Cierre de Caja General, porque existe un Cierre de Caja Parcial abierto
+        } else {
+            if (cashBoxGeneral.getId() != null && cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.OPEN)) {
+                activeButtonCloseCash = false;
+            } else {
+                activeButtonCloseCash = true;
+            }
+        }
+        return activeButtonCloseCash;
+    }
+
+    public void setActiveButtonCloseCash(boolean activeButtonCloseCash) {
+        this.activeButtonCloseCash = activeButtonCloseCash;
+    }
+
+    public boolean isActivePanelBreakdownFund() {
+        return activePanelBreakdownFund;
+    }
+
+    public void setActivePanelBreakdownFund(boolean activePanelBreakdownFund) {
+        this.activePanelBreakdownFund = activePanelBreakdownFund;
+    }
+
     public int getActiveIndex() {
         return activeIndex;
     }
@@ -656,12 +651,18 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isPanelVerification() {
-        if (getCashBoxInitialFinish() != null && this.cashBoxPartial.getId() != null) {
-            if (this.cashBoxInitialFinish.getCashBoxGeneral().getId().equals(this.cashBoxPartial.getCashBoxGeneral().getId())
-                    && this.cashBoxInitialFinish.getOwner().equals(this.cashBoxPartial.getOwner())) {
-                panelVerification = false;
+        if (getCashBoxInitialFinish() != null) {
+            if (this.cashBoxPartial.getId() == null) {
+                if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.OPEN)) {
+                    panelVerification = true;
+                }
             } else {
-                panelVerification = true;
+                if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.OPEN)) {
+                    panelVerification = true;
+                } else if (this.cashBoxInitialFinish.getCashBoxGeneral().getId().equals(this.cashBoxPartial.getCashBoxGeneral().getId())
+                        && !this.cashBoxInitialFinish.getOwner().equals(this.cashBoxPartial.getOwner())) {
+                    panelVerification = true;
+                }
             }
         }
         return panelVerification;
@@ -811,35 +812,52 @@ public class CashBoxHome extends FedeController implements Serializable {
             if (!partialExit.isEmpty()) {
                 this.cashBoxPartial = partialExit.get(0);
             }
+            this.saldoCashFund = this.cashBoxGeneral.getTotalBreakdownFinal(); //Saldo registrado según el último cierre de caja
         }
         if (this.cashBoxPartial == null) {
             this.cashBoxPartial = cashBoxPartialService.createInstance();
-            getCashBoxOpen();
-            if (cashBoxOpen == null) {
-                this.activeButtonBreakdown = this.saldoCash.compareTo(BigDecimal.ZERO) == 1; //Habilitar o deshabilitar el botón de desgloce según el saldoCash > 0
-            } else {
-                this.activeButtonBreakdown = false;
-            }
-        } else {
-            if (this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.OPEN)) {
-                setActiveIndex(-1);
-                this.activeButtonBreakdown = false; //Deshabilitar el botón si ya se existe el CashBox, y sólo se va a editar
-            } else {
-                if (cashBoxPartialService.findByNamedQuery("CashBoxPartial.findByCashBoxGeneralAndOwnerAndPriorityOrder", this.cashBoxGeneral, this.subject, CashBoxPartial.Priority.SECONDARY).isEmpty()) {
-                    activeButtonBreakdown = true; //Deshabilitar el botón de desglose
-                }
-            }
-            this.activePanelBreakdown = this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.OPEN); //Mostrar/Ocultar el Panel de Detalle según estado del CashBox
-            chargeListCashBoxBillMoney();
-
-            this.saldoCashFund = this.cashBoxGeneral.getTotalBreakdownFinal(); //Saldo registrado según el último cierre de caja
-            if (this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.CLOSED)) {
-                this.activePanelDeposit = true;
-            }
         }
-
-        this.activeSelectMenuBill = false; //Habilitar los Selects del Panel de Detalle para Billetes y Monedas
-        this.activeSelectMenuMoney = false;
+        isActiveButtonBreakdown(); //Verificar estado del botón de Desglose
+        if (this.saldoCash.compareTo(BigDecimal.ZERO) == 0 || this.saldoCash.compareTo(BigDecimal.ZERO) == -1) {
+            setActiveButtonBreakdown(true);
+        }
+        System.out.println("this.cashBoxGeneral" + this.cashBoxGeneral);
+        System.out.println("this.cashBoxPartial" + this.cashBoxPartial);
+        System.out.println("<-------------------------->");
+//        
+//        else {
+//            if (this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.OPEN)) {
+//                setActiveIndex(-1);
+//                this.activeButtonBreakdown = false; //Deshabilitar el botón si ya se existe el CashBox, y sólo se va a editar
+//            } else {
+//                if (cashBoxPartialService.findByNamedQuery("CashBoxPartial.findByCashBoxGeneralAndOwnerAndPriorityOrder", this.cashBoxGeneral, this.subject, CashBoxPartial.Priority.SECONDARY).isEmpty()) {
+//                    activeButtonBreakdown = true; //Deshabilitar el botón de desglose
+//                }
+//            }
+//            this.activePanelBreakdown = this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.OPEN); //Mostrar/Ocultar el Panel de Detalle según estado del CashBox
+//            chargeListCashBoxBillMoney();
+//
+//            this.saldoCashFund = this.cashBoxGeneral.getTotalBreakdownFinal(); //Saldo registrado según el último cierre de caja
+//            if (this.cashBoxPartial.getStatusCashBoxPartial().equals(CashBoxPartial.Status.CLOSED)) {
+//                this.activePanelDeposit = true;
+//            }
+//        }
+//        if (this.cashBoxGeneral.getId() != null) {
+//            if (this.cashBoxGeneral.getStatusCashBoxGeneral().equals(CashBoxGeneral.Status.CLOSED)) {
+//                this.activePanelDeposit = false;
+//            }
+//        }
+//
+//        if (getCashBoxOpen() == null) {
+//            this.activeButtonBreakdown = this.saldoCash.compareTo(BigDecimal.ZERO) == 1; //Habilitar o deshabilitar el botón de desgloce según el saldoCash > 0
+//        } else {
+//            this.activeButtonBreakdown = true;
+//        }
+//        this.activeSelectMenuBill = false; //Habilitar los Selects del Panel de Detalle para Billetes y Monedas
+//        this.activeSelectMenuMoney = false;
+//        System.out.println("this.cashBoxGeneral" + this.cashBoxGeneral);
+//        System.out.println("this.cashBoxPartial" + this.cashBoxPartial);
+//        System.out.println("<-------------------------->");
     }
 
     private void generateCashBoxPartialDetails() {
@@ -885,12 +903,16 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public void openPanelBreakdown() { //Construir el Panel de Detalle
-        this.activePanelBreakdown = true; //Mostrar el Panel de Detalle de CashBox Instanciado
-        this.activeSelectDeposit = false; //Desactivar el Detalle del Panel de Depósito
-        this.activePanelDeposit = false; //Ocultar el Panel de Depósito
-        this.activeButtonBreakdown = false;
+        setActiveButtonBreakdown(true); //Deshabilitar el botón de inicio de desglose
+        setActivePanelBreakdown(true); //Mostrar el Panel de Detalle de CashBox Instanciado
+//        this.activePanelBreakdown = true; //Mostrar el Panel de Detalle de CashBox Instanciado
+//        this.activeSelectDeposit = false; //Desactivar el Detalle del Panel de Depósito
+//        this.activePanelDeposit = false; //Ocultar el Panel de Depósito
+//        this.activeButtonBreakdown = false;
+        setActiveIndex(-1);
         isActiveButtonCloseCash(); //Deshabilitar el Botón de CashBox General
         this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("common.start") + " " + I18nUtil.getMessages("app.fede.accounting.ajust.breakdown"));
+        this.cashBoxPartial = cashBoxPartialService.createInstance();
         generateCashBoxPartialDetails();
     }
 
@@ -910,15 +932,44 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.cashBoxPartial.setMissCashPartial(BigDecimal.ZERO);
         this.cashBoxPartial.setExcessCashPartial(BigDecimal.ZERO);
         for (CashBoxDetail cashBoxBill : this.cashBoxBills) {
-            if (this.cashBoxPartial.getCashBoxDetails().contains(cashBoxBill)) {
-                this.cashBoxPartial.addCashBoxDetail(cashBoxBill);
-                this.cashBoxPartial.setTotalcashBills(this.cashBoxPartial.getTotalcashBills().add(cashBoxBill.getAmount()));
+            if (cashBoxBill.getQuantity() > 0) {
+                for (CashBoxDetail cashBoxDetail : this.cashBoxPartial.getCashBoxDetails()) {
+                    if (cashBoxBill.getDenomination().equals(cashBoxDetail.getDenomination())) {
+                        cashBoxDetail.setQuantity(cashBoxBill.getQuantity());
+                        cashBoxDetail.setAmount(cashBoxBill.getAmount());
+                    }
+                }
             }
+//            if (this.cashBoxPartial.getCashBoxDetails().contains(cashBoxBill)) {
+//                this.cashBoxPartial.addCashBoxDetail(cashBoxBill);
+//                this.cashBoxPartial.setTotalcashBills(this.cashBoxPartial.getTotalcashBills().add(cashBoxBill.getAmount()));
+//            }
         }
         for (CashBoxDetail cashBoxMoney : this.cashBoxMoneys) {
-            if (this.cashBoxPartial.getCashBoxDetails().contains(cashBoxMoney)) {
-                this.cashBoxPartial.addCashBoxDetail(cashBoxMoney);
-                this.cashBoxPartial.setTotalcashMoneys(this.cashBoxPartial.getTotalcashMoneys().add(cashBoxMoney.getAmount()));
+            if (cashBoxMoney.getQuantity() > 0) {
+                for (CashBoxDetail cashBoxDetail : this.cashBoxPartial.getCashBoxDetails()) {
+                    if (cashBoxMoney.getDenomination().equals(cashBoxDetail.getDenomination())) {
+                        cashBoxDetail.setQuantity(cashBoxMoney.getQuantity());
+                        cashBoxDetail.setAmount(cashBoxMoney.getAmount());
+                    }
+                }
+            }
+//            if (this.cashBoxPartial.getCashBoxDetails().contains(cashBoxBill)) {
+//                this.cashBoxPartial.addCashBoxDetail(cashBoxBill);
+//                this.cashBoxPartial.setTotalcashBills(this.cashBoxPartial.getTotalcashBills().add(cashBoxBill.getAmount()));
+//            }
+        }
+//        for (CashBoxDetail cashBoxMoney : this.cashBoxMoneys) {
+//            if (this.cashBoxPartial.getCashBoxDetails().contains(cashBoxMoney)) {
+//                this.cashBoxPartial.addCashBoxDetail(cashBoxMoney);
+//                this.cashBoxPartial.setTotalcashMoneys(this.cashBoxPartial.getTotalcashMoneys().add(cashBoxMoney.getAmount()));
+//            }
+//        }
+        for (CashBoxDetail cashBoxDetail1 : this.cashBoxPartial.getCashBoxDetails()) {
+            if (cashBoxDetail1.getDenomination_type().equals(CashBoxDetail.DenominationType.BILL)) {
+                this.cashBoxPartial.setTotalcashBills(this.cashBoxPartial.getTotalcashBills().add(cashBoxDetail1.getAmount()));
+            } else if (cashBoxDetail1.getDenomination_type().equals(CashBoxDetail.DenominationType.MONEY)) {
+                this.cashBoxPartial.setTotalcashMoneys(this.cashBoxPartial.getTotalcashMoneys().add(cashBoxDetail1.getAmount()));
             }
         }
         this.cashBoxPartial.setTotalCashBreakdown(this.cashBoxPartial.getTotalcashBills().add(this.cashBoxPartial.getTotalcashMoneys()));
@@ -986,17 +1037,21 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void closeCashBoxChecker() {
         this.cashBoxPartial.setStatusCashBoxPartial(CashBoxPartial.Status.CLOSED); //Cambiar el estado del CashBox Instanciado (Cerrar)
         save(); //Guardar el CashBoxGeneral, con todos sus CashBoxs y CashBoxDetails
-        this.activePanelBreakdown = false;
-        getCashBoxsClosed(); //Recargar lista de CashBox Cerrados
-        isActiveButtonCloseCash();
+//        this.activePanelBreakdown = false;
         this.saldoCashFund = this.cashBoxPartial.getTotalCashBreakdown(); //Saldo en efectivo más o menos el exceso y faltante de dinero
-        this.activePanelDeposit = true; //Preparar para iniciar el déposito y el nuevo Desgloce de depósito
+//        this.activePanelDeposit = true; //Preparar para iniciar el déposito y el nuevo Desgloce de depósito
         if (this.cashBoxPartial.getPriority_order().equals(CashBoxPartial.Priority.SECONDARY)) {
-            this.activePanelBreakdownFund = false;
+//            this.activePanelBreakdownFund = false;
         }
+        setActivePanelBreakdownFund(false);//ocultar el Panel de desglose Fund;
         updateFinishCashBoxPartial();
+        findCashBoxs();
         getCashBoxInitialFinish(); //Recargar el último cashBoxPartial
-        this.cashBoxPartial = cashBoxPartialService.createInstance();
+        getCashBoxsClosed(); //Recargar lista de CashBox Cerrados
+        isActiveButtonBreakdown();
+        isActiveButtonCloseCash();
+        isPanelVerification();
+//        this.cashBoxPartial = cashBoxPartialService.createInstance();
     }
 
     public void updateFinishCashBoxPartial() {
@@ -1020,15 +1075,16 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void closeCashBoxGeneral() {
         this.cashBoxGeneral.setStatusCashBoxGeneral(CashBoxGeneral.Status.CLOSED); //Cambiar el estado del CashBoxGeneral Instanciado (Cerrar)
         cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral); //Guardar el CashBoxGeneral, con todos sus CashBoxs y CashBoxDetails
-        this.activeButtonBreakdown = false;
-        this.activePanelDeposit = false;//Ocultar el Panel de Depósito
+//        this.activeButtonBreakdown = false;
+//        this.activePanelDeposit = false;//Ocultar el Panel de Depósito
+        isPanelVerification();
     }
 
     //REGISTRO DE ASIENTOS CONTABLES
     public void cleanPanelDeposit() { //Resetear los valores del Panel de Depósito
         this.depositAccount = null;
         this.amountDeposit = BigDecimal.ZERO;
-        this.activeButtonSelectDeposit = true; //Desahibiltar el Button y Select del Panel de Depósito
+//        this.activeButtonSelectDeposit = true; //Deshaibiltar el Button y Select del Panel de Depósito
     }
 
     public void validateAmountDeposit() { //Validar monto de depósito (Mensajes de validación)
@@ -1045,24 +1101,27 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public void validateDeposit() {
-        this.activePanelBreakdownFund = false;
+//        this.activePanelBreakdownFund = false;
         if (this.depositAccount != null) {
             if (this.depositAccount.getId().equals(this.selectedAccount.getId())) {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
-                this.activePanelBreakdownFund = false;
+//                this.activePanelBreakdownFund = false;
             } else {
                 registerRecordInJournal(this.selectedAccount, this.depositAccount, this.amountDeposit); //Registrar asiento contable del depósito del valor de caja
                 calculeSummaryToday();//Calcular el resumen de dinero con las transacciones
+                this.cashBoxPartial = cashBoxPartialService.createInstance();
                 setActiveIndex(-1);
                 generateCashBoxPartialFund();
                 cleanPanelDeposit();
-                this.activePanelBreakdownFund = true;
-                this.activeButtonSave = false; //Ocultar el botón de Guardar  
-                this.activeSelectDeposit = false;
+                setActiveSelectDeposit(false);//Ocultar el Panel de depósito
+                setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
+                setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
+//                this.activePanelBreakdownFund = true;
+//                this.activeSelectDeposit = false;
             }
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
-            this.activePanelBreakdownFund = false;
+//            this.activePanelBreakdownFund = false;
         }
     }
 
@@ -1079,7 +1138,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             this.cashBoxInitialFinish.getCashBoxGeneral().addCashBoxPartial(this.cashBoxInitialFinish);
             cashBoxGeneralService.save(this.cashBoxInitialFinish.getCashBoxGeneral().getId(), this.cashBoxInitialFinish.getCashBoxGeneral());
             this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Gracias por su verificación, ahora puede iniciar el desglose actual");
-            activeButtonBreakdown = true; //Habilitar el botón de desglose
+//            activeButtonBreakdown = true; //Habilitar el botón de desglose
             generatePartialFinalToInitial();//Crear el nuevo cashBoxPartial con los datos del último CashBoxPartial Final
             isPanelVerification();
         }
@@ -1091,7 +1150,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             this.cashBoxInitialFinish.getCashBoxGeneral().addCashBoxPartial(this.cashBoxInitialFinish);
             cashBoxGeneralService.save(this.cashBoxInitialFinish.getCashBoxGeneral().getId(), this.cashBoxInitialFinish.getCashBoxGeneral());
             this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Gracias por su verificación, ahora puede iniciar el desglose actual");
-            activeButtonBreakdown = true; //Habilitar el botón de desglose
+//            activeButtonBreakdown = true; //Habilitar el botón de desglose
             generatePartialFinalToInitial();//Crear el nuevo cashBoxPartial con los datos del último CashBoxPartial Final
             isPanelVerification();
         }
@@ -1099,18 +1158,27 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     private void generatePartialFinalToInitial() {
         generateCashBoxPartialDetails();
-        this.cashBoxPartial.setCashBoxDetails(this.cashBoxInitialFinish.getCashBoxDetails()); //Copiar el detalle del último CashBoxPartial Finalizado
+        for (CashBoxDetail cashBoxDetailFinal : this.cashBoxInitialFinish.getCashBoxDetails()) {
+            if (cashBoxDetailFinal.getQuantity() > 0) {
+                for (CashBoxDetail cashBoxDetail : this.cashBoxPartial.getCashBoxDetails()) {
+                    if (cashBoxDetailFinal.getDenomination().equals(cashBoxDetail.getDenomination())) {
+                        cashBoxDetail.setQuantity(cashBoxDetailFinal.getQuantity());
+                        cashBoxDetail.setAmount(cashBoxDetailFinal.getAmount());
+                    }
+                }
+            }
+        }
         chargeListCashBoxBillMoney();
         calculateTotals(saldoCash);
         setActiveIndex(-1);
-        activePanelBreakdown = true;
-        this.activePanelDeposit = false;
+//        activePanelBreakdown = true;
+//        this.activePanelDeposit = false;
     }
 
     public void messageValidate() {
         if (isPanelVerification() == true) {
             this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Por favor primero verifique el Saldo del último Registro de Efectivo Finalizado, antes de empezar el nuevo desglose de caja");
-            activeButtonBreakdown = false; //Deshabilitar el botón de desglose
+//            activeButtonBreakdown = false; //Deshabilitar el botón de desglose
         }
     }
 

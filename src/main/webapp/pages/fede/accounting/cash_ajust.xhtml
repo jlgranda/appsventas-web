@@ -143,25 +143,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="ui-g-12"><p:separator class="line-separator"/></div>
                     </h:panelGroup>
-<!--                    <h:panelGroup id="panel-cash-now" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13">ESTADO DE CAJA ACTUAL</div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right"
-                             style="#{cashBoxHome.transactionTotal lt 0 ? 'color: #e53935;': 'color: #000000'}">
-                            <h:outputText value="#{cashBoxHome.transactionTotal lt 0 ? '- ' : '+ '}"/>
-                            <h:outputText id="cash-now" value="#{cashBoxHome.transactionTotal lt 0 ? cashBoxHome.transactionTotal*-1: cashBoxHome.transactionTotal}">
-                                <f:convertNumber type="currency"/>
-                            </h:outputText>
-                        </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">Exceso en Caja: </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
-                            <h:outputText id="cash-now-excess" value="#{cashBoxHome.cashBoxGeneral.excessCashFinal}"><f:convertNumber type="currency"/></h:outputText>
-                        </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">Faltante en Caja: </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
-                            <h:outputText id="cash-now-miss" value="#{cashBoxHome.cashBoxGeneral.missCashFinal}"><f:convertNumber type="currency"/></h:outputText>
-                        </div>
-                        <div class="ui-g-12"><p:separator class="line-separator"/></div>
-                    </h:panelGroup>-->
                     <h:panelGroup id="cash-saldo" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                         <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 capital Fs15">#{i18n['app.fede.accounting.account.fund.book']} </div>
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 capital Fs15 container-right">
@@ -175,8 +156,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
                         <p:commandButton id="btn-breakdown" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" icon="fa fa-play-circle"
                                          action="#{cashBoxHome.openPanelBreakdown()}" 
-                                         update="btn-breakdown panel-deposit panel-breakdown-cash cash-saldo saldo-cash btn-close-cash-general"
-                                         disabled="#{!cashBoxHome.activeButtonBreakdown}"
+                                         update="btn-breakdown panel-deposit panel-breakdown-cash cash-saldo saldo-cash btn-close-cash-general panel-cashBox-initial"
+                                         disabled="#{cashBoxHome.activeButtonBreakdown}"
                                          rendered="#{request.isUserInRole('CHECKER')}"
                                          styleClass="info-btn" class="capital">
                             <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
@@ -292,7 +273,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </h:panelGroup>
                 <div class="cash-detail ui-g-8 ui-lg-8 ui-md-8">
                     <h:panelGroup id="panel-breakdown-cash">
-                        <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activePanelBreakdown and (cashBoxHome.cashBoxPartial.id == null || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN')}">
+                        <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activePanelBreakdown}">
                             <h:panelGroup id="panel-cashBoxDetail" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
                                 <label class="capital Fs18">#{i18n['app.fede.accounting.ajust.breakdown']}:
                                     <h:outputText class="bold-capital Fs20" id="saldo-cash" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
@@ -410,17 +391,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:commandButton id="btn-save" value="#{i18n['common.save']}" 
                                                      actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
                                                      styleClass="success-btn" style="width: auto !important;" 
-                                                     update="panel-breakdown-cash"/><!-- disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}" -->
+                                                     update="panel-breakdown-cash"/>
                                     <p:commandButton id="btn-close-cash-partial" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}" icon="fa fa-check"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
                                                      update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash panel-deposit panel-cashBox-initial"
-                                                     styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"-->
+                                                     styleClass="info-btn" style="width: auto !important;" >
                                         <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
                                     </p:commandButton>
-                                    <!--                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                                                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
-                                                                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
-                                                                        </p:confirmDialog>-->
+<!--                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
+                                        <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
+                                    </p:confirmDialog>-->
                                 </f:facet>
                                 <f:facet name="right">
                                     <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 

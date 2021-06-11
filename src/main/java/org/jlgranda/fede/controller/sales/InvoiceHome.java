@@ -577,20 +577,29 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
-        calculeChange(); //Calcular el cambio sobre el objeto payment en edición
-        if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
-            getInvoice().setDocumentType(documentType); //Se convierte en factura
-            //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
-            //Agregar el pago
-            getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
-            getInvoice().addPayment(getPayment());
-            getInvoice().setStatus(status);
-            save(true);
-        } else {
-            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
-            setOutcome("");
+        System.out.println("Invoice: " + getInvoice());
+        if (!documentType.equals(DocumentType.OVERDUE)) {
+            List<Payment> paymentRegister = paymentService.findByNamedQueryWithLimit("Payment.findByInvoice", 1, getInvoice());
+            if (!paymentRegister.isEmpty()) {
+                setPayment(paymentRegister.get(0));
+                getPayment().setLastUpdate(Dates.now());
+            } 
+            calculeChange(); //Calcular el cambio sobre el objeto payment en edición
+            if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+                getInvoice().setDocumentType(documentType); //Se convierte en factura
+                //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
+                //Agregar el pago
+                getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
+                getInvoice().addPayment(getPayment());
+                getInvoice().setStatus(status);
+                save(true);
+            } else {
+                addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
+                setOutcome("");
+            }
         }
-        return "failed";
+//        return "failed";
+        return getOutcome();
     }
 
     public String print() {
@@ -1206,7 +1215,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 //            kardexService.save(kardex.getId(), kardex);
 //        }
         for (Detail candidateDetail1 : getCandidateDetails()) {
-            if(candidateDetail1.getProduct()==null){
+            if (candidateDetail1.getProduct() == null) {
                 System.out.println(candidateDetail1.getAmount());
                 System.out.println(candidateDetail1.getPrice());
                 System.out.println(candidateDetail1.getUnit());

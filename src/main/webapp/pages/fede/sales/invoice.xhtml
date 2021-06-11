@@ -283,7 +283,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="ui-g-3">
                                             <div class="Container100 Responsive50">
                                                 <h:outputText value="#{i18n['app.fede.sales.payment.method']}"/>
-                                                <p:selectOneMenu value="#{invoiceHome.payment.method}" effect="blind"
+                                                <p:selectOneMenu value="#{invoiceHome.payment.method}"
                                                                  required="#{true}" immediate="true"> 
                                                     <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                     <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
