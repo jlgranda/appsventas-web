@@ -178,7 +178,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <h:outputText class="bold-capital Fs20" value="#{cashBoxHome.cashBoxInitialFinish.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
                                         </label>
                                     </div>
-                                    <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 container-right" rendered="#{cashBoxHome.panelVerification}">
+                                    <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 container-right" rendered="#{cashBoxHome.activePanelVerification}">
                                         <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">Confirmar saldo </div>
                                         <p:commandButton icon="fa fa-check" label="CORRECTO"
                                                          actionListener="#{cashBoxHome.verificatedCorrectFund()}"
@@ -394,7 +394,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      update="panel-breakdown-cash"/>
                                     <p:commandButton id="btn-close-cash-partial" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}" icon="fa fa-check"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
-                                                     update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash panel-deposit panel-cashBox-initial"
+                                                     update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash panel-deposit panel-cashBox-initial btn-breakdown"
                                                      styleClass="info-btn" style="width: auto !important;" >
                                         <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
                                     </p:commandButton>
@@ -586,7 +586,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:facet name="left">
                                     <p:commandButton id="btn-close-cash-partial-fund" value="Registrar Desglose Final de Caja Parcial" icon="fa fa-check"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
-                                                     update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash-fund panel-deposit panel-cashBox-initial"
+                                                     update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash-fund panel-deposit panel-cashBox-initial btn-breakdown"
                                                      styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"-->
                                         <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
                                     </p:commandButton>
