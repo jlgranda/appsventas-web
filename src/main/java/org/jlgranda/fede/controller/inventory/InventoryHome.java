@@ -109,6 +109,7 @@ public class InventoryHome extends FedeController implements Serializable {
     
     @Inject
     private OrganizationData organizationData;
+   
 
     @PostConstruct
     private void init() {
@@ -126,30 +127,13 @@ public class InventoryHome extends FedeController implements Serializable {
 
         setProduct(productService.createInstance());
         getProduct().setProductType(ProductType.PRODUCT);
-        setProductType(ProductType.PRODUCT);
-
-        //Lista de productos a gráficar por defecto
-        List<BussinesEntity> defaultProducts = new ArrayList<>();
-        defaultProducts.add(productCache.lookup(80L)); //Queso
-        defaultProducts.add(productCache.lookup(81L)); //Cebolla
-        defaultProducts.add(productCache.lookup(370L)); //Empapizza
-        //defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
-        //defaultProducts.add(productService.find(47763L)); //Empapizza de tocino
-        //defaultProducts.add(productService.find(4563L)); //Verde
-        //defaultProducts.add(productService.find(6660L)); //Tamal
-        //defaultProducts.add(productService.find(6846L)); //Humita
-        defaultProducts.add(productCache.lookup(87L)); //Chocolate
-        defaultProducts.add(productCache.lookup(101L)); //Cafe
-        defaultProducts.add(productCache.lookup(78L)); //Capuchino
-        //defaultProducts.add(productService.find(416L)); //Jugos
-        //defaultProducts.add(productService.find(39640L)); //Frapuchino
-        //defaultProducts.add(productService.find(39527L)); //Helado
-
-        setSelectedBussinesEntities(defaultProducts);
+        
+        //setProductType(ProductType.PRODUCT);
 
         setMode("app.fede.chart.gap.total");
 
         setOutcome("inventory-inbox");
+        initializeActions();
     }
 
     public Long getProductId() {
@@ -296,17 +280,7 @@ public class InventoryHome extends FedeController implements Serializable {
      * palabra clave dada.
      */
     public List<Product> find(String keyword) {
-        
         return productCache.lookup(keyword, ProductType.PRODUCT); //sólo productos
-//        keyword = keyword.trim();
-//        Map<String, Object> filters = new HashMap<>();
-//        Map<String, String> columns = new HashMap<>();
-//        columns.put("code", keyword);
-//        columns.put("name", keyword);
-//        filters.put("productType", getProductType());
-//        filters.put("dummy", columns);
-//        QueryData<Product> queryData = productService.find(-1, -1, "code, name", QuerySortOrder.ASC, filters);
-//        return queryData.getResult();
     }
 
     /**
@@ -342,7 +316,6 @@ public class InventoryHome extends FedeController implements Serializable {
     }
 
     private Double countProduct(Long id, Organization organization, Date minimumDate, Date maximumDate) {
-//        List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProduct", 0, id, minimumDate, maximumDate);
         List<Object[]> objects = productService.findObjectsByNamedQueryWithLimit("Product.countProductOrg", 0, id, organization, minimumDate, maximumDate);
         Double result = Double.valueOf(0);
         for (Object[] object : objects) {
@@ -637,4 +610,81 @@ public class InventoryHome extends FedeController implements Serializable {
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    
+    public void execute(){
+        Product p = null;
+        if (this.isActionExecutable()){
+            if ("desactivar".equalsIgnoreCase(this.selectedAction)){
+                for (BussinesEntity be : this.getSelectedBussinesEntities()){
+                    p = (Product) be;
+                    p.setProductType(ProductType.DEPRECATED);
+                    this.productService.save(p.getId(), p); //Actualizar el tipo de producto
+                }
+                setOutcome("");
+            } else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
+                for (BussinesEntity be : this.getSelectedBussinesEntities()){
+                    p = (Product) be;
+                    p.setCategory(this.getGroupSelected());
+                    this.productService.save(p.getId(), p); //Actualizar el tipo de producto
+                }
+                setOutcome("");
+            } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType()!= null){
+                for (BussinesEntity be : this.getSelectedBussinesEntities()){
+                    p = (Product) be;
+                    p.setProductType(this.getProductType());
+                    this.productService.save(p.getId(), p); //Actualizar el tipo de producto
+                }
+                setOutcome("");
+            }
+        }
+    }
+    
+    public boolean isActionExecutable(){
+        if ("desactivar".equalsIgnoreCase(this.selectedAction)){
+            return true;
+        } else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
+            return true;
+        } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType()!= null){
+            return true;
+        }
+        return false;
+    }
+
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+        
+        item = new SelectItem("desactivar", "Desactivar");
+        actions.add(item);
+        
+        item = new SelectItem("moveto", "Mover a categoría");
+        actions.add(item);
+        
+        item = new SelectItem("changeto", "Cambiar tipo a");
+        actions.add(item);
+    }
+    
+    /**
+     //Lista de productos a gráficar por defecto
+        List<BussinesEntity> defaultProducts = new ArrayList<>();
+        defaultProducts.add(productCache.lookup(80L)); //Queso
+        defaultProducts.add(productCache.lookup(81L)); //Cebolla
+        defaultProducts.add(productCache.lookup(370L)); //Empapizza
+        //defaultProducts.add(productService.find(8005L)); //Empapizza de pollo
+        //defaultProducts.add(productService.find(47763L)); //Empapizza de tocino
+        //defaultProducts.add(productService.find(4563L)); //Verde
+        //defaultProducts.add(productService.find(6660L)); //Tamal
+        //defaultProducts.add(productService.find(6846L)); //Humita
+        defaultProducts.add(productCache.lookup(87L)); //Chocolate
+        defaultProducts.add(productCache.lookup(101L)); //Cafe
+        defaultProducts.add(productCache.lookup(78L)); //Capuchino
+        //defaultProducts.add(productService.find(416L)); //Jugos
+        //defaultProducts.add(productService.find(39640L)); //Frapuchino
+        //defaultProducts.add(productService.find(39527L)); //Helado
+
+        setSelectedBussinesEntities(defaultProducts);
+     */
 }

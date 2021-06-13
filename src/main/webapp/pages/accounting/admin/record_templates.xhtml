@@ -22,17 +22,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.recordtemplates']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <f:viewAction action="#{accountHome.closeFormularioLedger(accountHome.accountSelected)}" />
+                <f:viewAction action="#{recordTemplateHome.closeFormularioRecordTemplateEdicion(recordTemplateHome.recordTemplateSelected)}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/account_items.jsf">#{i18n['app.fede.accounting.generalLedger']}</p:link></li>
+            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['app.fede.accounting.recordtemplates']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -43,39 +43,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </h2>
                     </div>
                     <div class="card">
-                        <!--<h:form id="form">-->
-                        <p:treeTable id="treeTable-generalLedger" liveResize="true"
-                                     paginator="true" paginatorAlwaysVisible="false"
-                                     paginatorPosition="bottom" resizableColumns="true"
-                                     rows="25" tableStyle="table-layout: auto"
-                                     value="#{accountHome.treeDataModel}" var="account"
-                                     selection="#{accountHome.singleSelectedNode}"
-                                     sortBy="#{account.code}"
-                                     selectionMode="single">
-                            <p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>
-                            <p:column headerText="#{i18n['common.code']}" sortBy="#{account.code}" filterable="false">
-                                <h:outputText value="#{account.code}" />
+                        <p:dataTable var="recordTemplate" 
+                                     value="#{recordTemplateHome.lazyDataModel}" 
+                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                     sortMode="single"
+                                     reflow="true" selection="#{recordTemplateHome.selectedBussinesEntities}" 
+                                     rowKey="#{recordTemplate.id}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                            <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
+                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            
+                            <p:column headerText="#{i18n['common.code']}" sortBy="#{recordTemplate.code}">
+                                <h:outputText value="#{recordTemplate.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{account.name}" filterBy="#{account.name}" style="width: 60%">
-                                <h:outputText value="#{account.name}" />
+                            <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
+                                <h:outputText value="#{recordTemplate.name}" />
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{account.createdOn}" filterable="false"
-                                       styleClass="text-right">
-                                <h:outputText value="#{account.createdOn}">
+                            
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{recordTemplate.createdOn}">
+                                <h:outputText value="#{recordTemplate.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column style="text-align: center">
+                            <p:column>
                                 <p:commandButton id="button-generalLedger" update="form"
                                                  title="#{i18n['app.fede.accounting.generalLedger']}" icon="fa fa-book"
-                                                 actionListener="#{accountHome.mostrarFormularioLedger(account)}">
-                                    <!--<f:setPropertyActionListener value="#{account}" target="#{account}"/>-->
+                                                 actionListener="#{recordTemplateHome.mostrarFormularioEdicion(recordTemplate)}">
                                     <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{accountHome.handleReturn}">
+                                            listener="#{recordTemplateHome.handleReturn}">
                                     </p:ajax>
                                 </p:commandButton>
                             </p:column>
-                        </p:treeTable>
+                        </p:dataTable>
                     </div>
                 </div>
             </div>
