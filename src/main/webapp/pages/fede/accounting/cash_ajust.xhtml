@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="params">
         <f:metadata>
             <!--<f:viewParam name="" value=""/>-->
-            <!--<f:viewAction action="" />-->
+            <f:viewAction action="#{cashBoxHome.messageValidate()}" />
         </f:metadata>
     </ui:define>
 
@@ -153,16 +153,283 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:outputText id="saldo-total" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
                     </h:panelGroup>
-                    <h:panelGroup id="panel-deposit" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12" rendered="#{request.isUserInRole('CHECKER')}">
-                        <h:panelGroup rendered="#{cashBoxHome.activePanelDeposit}">
-                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">#{i18n['app.fede.accouting.validate.deposit.message']} </div>
-                            <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1 container-lefth">
-                                <p:selectBooleanCheckbox id="select-active-deposit" value="#{cashBoxHome.activeSelectDeposit}">
+                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
+                        <p:commandButton id="btn-breakdown" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" icon="fa fa-play-circle"
+                                         action="#{cashBoxHome.openPanelBreakdown()}" 
+                                         update="btn-breakdown panel-deposit panel-breakdown-cash cash-saldo saldo-cash btn-close-cash-general panel-cashBox-initial"
+                                         disabled="#{cashBoxHome.activeButtonBreakdown}"
+                                         rendered="#{request.isUserInRole('CHECKER')}"
+                                         styleClass="info-btn" class="capital">
+                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="blind" hideEffect="blind" responsive="true" width="350">
+                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
+                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
+                        </p:confirmDialog>
+                    </div>
+                </div>
+                <h:panelGroup id="panel-cashBox-initial">
+                    <h:panelGroup class="ui-g-8 ui-lg-8 ui-md-8" rendered="#{not empty cashBoxHome.cashBoxInitialFinish}">
+                        <p:accordionPanel activeIndex="#{cashBoxHome.activeIndex}" class="ui-g-12">
+                            <p:tab title="Último Registro de Efectivo FINALIZADO: #{cashBoxHome.cashBoxInitialFinish.lastUpdate} - #{cashBoxHome.cashBoxInitialFinish.owner.fullName}">
+                                <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 ">
+                                    <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 capital">
+                                        <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
+                                            <h:outputText class="bold-capital Fs20" value="#{cashBoxHome.cashBoxInitialFinish.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
+                                        </label>
+                                    </div>
+                                    <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 container-right" rendered="#{cashBoxHome.activePanelVerification}">
+                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">Confirmar saldo </div>
+                                        <p:commandButton icon="fa fa-check" label="CORRECTO"
+                                                         actionListener="#{cashBoxHome.verificatedCorrectFund()}"
+                                                         update="@form:btn-breakdown @form:panel-cashBox-initial @form:panel-breakdown-cash @form:panel-deposit"
+                                                         styleClass="success-btn"/>
+                                        <p:commandButton icon="pi pi-times" label="INCORRECTO"
+                                                         actionListener="#{cashBoxHome.verificatedIncorrectFund()}"
+                                                         update="@form:btn-breakdown @form:panel-cashBox-initial @form:panel-breakdown-cash @form:panel-deposit"
+                                                         styleClass="danger-btn"/>
+                                    </h:panelGroup>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <p:dataTable id="cashBox-bills" draggableColumns="true" lazy="false"
+                                                 paginator="true" paginatorAlwaysVisible="false"
+                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
+                                                 rows="10"
+                                                 value="#{cashBoxHome.cashBoxsInitialBills(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail">
+                                        <f:facet name="header">
+                                            <label class="bold-capital">#{i18n['common.money.bills']}</label>
+                                        </f:facet>
+                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                            <h:outputText value="#{cashBoxDetail.denomination}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.quantity']}">
+                                            <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.amount']}" >
+                                            <h:outputText  class="container-right" value="#{cashBoxDetail.amount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:columnGroup type="footer" >
+                                            <p:row>
+                                                <p:column colspan="2" footerText="#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.bills']}"/>
+                                                <p:column style="text-align: right" footerText="$#{cashBoxHome.cashBoxInitialFinish.totalcashBills}"/>
+                                            </p:row>
+                                        </p:columnGroup>
+                                    </p:dataTable>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <p:dataTable id="cashBox-moneys" draggableColumns="true" lazy="false"
+                                                 paginator="true" paginatorAlwaysVisible="false"
+                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
+                                                 rows="10"
+                                                 value="#{cashBoxHome.cashBoxsInitialMoneys(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail">
+                                        <f:facet name="header">
+                                            <label class="bold-capital">#{i18n['common.money.moneys']}</label>
+                                        </f:facet>
+                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                            <h:outputText value="#{cashBoxDetail.denomination}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.quantity']}">
+                                            <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.amount']}" >
+                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:columnGroup type="footer" >
+                                            <p:row>
+                                                <p:column colspan="2" footerText="#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.moneys']}"/>
+                                                <p:column style="text-align: right" footerText="$#{cashBoxHome.cashBoxInitialFinish.totalcashMoneys}"/>
+                                            </p:row>
+                                        </p:columnGroup>
+                                    </p:dataTable>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">
+                                    <jlgranda:input id="description-initial" name="description-initial" type="textarea" label="#{i18n['common.observations']}" 
+                                                    execute="none" render="description-initial" value="#{cashBoxHome.cashBoxInitialFinish.description}"
+                                                    required="false" requiredMessage="#{i18n['common.observation']}"
+                                                    container="none"/>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1"></div>
+                                <h:panelGroup id="panel-cashBox-totals" class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3">
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 ">#{i18n['common.total']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
+                                        <h:outputText value="#{cashBoxHome.cashBoxInitialFinish.totalCashBreakdown}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 ">#{i18n['common.missing']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                        <h:outputText value="#{cashBoxHome.cashBoxInitialFinish.missCashPartial}" style="#{cashBoxHome.cashBoxInitialFinish.missCashPartial le 0 ? 'color: #000000': 'color: #e53935'};"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.excess']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                        <h:outputText value="#{cashBoxHome.cashBoxInitialFinish.excessCashPartial}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                </h:panelGroup>
+                            </p:tab>
+                        </p:accordionPanel>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <div class="cash-detail ui-g-8 ui-lg-8 ui-md-8">
+                    <h:panelGroup id="panel-breakdown-cash">
+                        <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activePanelBreakdown}">
+                            <h:panelGroup id="panel-cashBoxDetail" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
+                                <label class="capital Fs18">#{i18n['app.fede.accounting.ajust.breakdown']}:
+                                    <h:outputText class="bold-capital Fs20" id="saldo-cash" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
+                                </label>
+                            </h:panelGroup>
+                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                                <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <p:dataTable id="dataTable-bills" draggableColumns="true" lazy="false"
+                                                 paginator="true" paginatorAlwaysVisible="false"
+                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
+                                                 rows="10"  
+                                                 value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
+                                                 selection="#{cashBoxHome.selectedBussinesEntities}"
+                                                 sortBy="#{cashBoxDetail.valuer}"
+                                                 editable="true">
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills @form:panel-breakdown-totals" partialSubmit="true"/> subtotal-bills subtotal-bills
+                                        <f:facet name="header">
+                                            <label class="bold-capital">#{i18n['common.money.bills']}</label>
+                                        </f:facet>
+                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                            <h:outputText value="#{cashBoxDetail.denomination}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem" >
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:spinner id="quantity-bill" value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                               styleClass="" required="#{false}">
+                                                    </p:spinner>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.amount']}" >
+                                            <h:outputText id="amount-bill" class="container-right" value="#{cashBoxDetail.amount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column style="width:3.5rem">
+                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.bills']} :</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
+                                        <h:outputText id="subtotal-bills" value="#{cashBoxHome.cashBoxPartial.totalcashBills}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <p:dataTable id="dataTable-moneys" draggableColumns="true" lazy="false"
+                                                 paginator="true" paginatorAlwaysVisible="false"
+                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
+                                                 rows="10"
+                                                 value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
+                                                 selection="#{cashBoxHome.selectedBussinesEntities}"
+                                                 sortBy="#{cashBoxDetail.valuer}" editable="true">
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="true"/>
+                                        <f:facet name="header">
+                                            <label class="capital">#{i18n['common.money.moneys']}</label>
+                                        </f:facet>
+                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                            <h:outputText value="#{cashBoxDetail.denomination}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:spinner id="quantity-bill" value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                               styleClass="" required="#{false}">
+                                                    </p:spinner>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.amount']}" >
+                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                            </h:outputText>
+                                        </p:column> 
+                                        <p:column style="width:3.5rem">
+                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.moneys']} :</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
+                                        <h:outputText id="subtotal-moneys" value="#{cashBoxHome.cashBoxPartial.totalcashMoneys}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">
+                                    <jlgranda:input id="description" name="description" type="textarea" label="#{i18n['common.observations']}" 
+                                                    execute="none" render="description" value="#{cashBoxHome.cashBoxPartial.description}"
+                                                    required="false" requiredMessage="#{i18n['common.observation']}"
+                                                    container="none"/>
+                                </div>
+                                <h:panelGroup id="panel-breakdown-totals" class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 container-right">#{i18n['common.total']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
+                                        <h:outputText id="breakdown-Total" value="#{cashBoxHome.cashBoxPartial.totalCashBreakdown}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.missing']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                        <h:outputText id="cash-missing" value="#{cashBoxHome.cashBoxPartial.missCashPartial}" style="#{cashBoxHome.cashBoxPartial.missCashPartial le 0 ? 'color: #000000': 'color: #e53935'};">
+                                            <f:convertNumber type="currency"/>
+                                        </h:outputText>
+                                    </div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.excess']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                        <h:outputText id="cash-excess" value="#{cashBoxHome.cashBoxPartial.excessCashPartial}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                            <p:toolbar id="toolbar-close-partial" class="ui-g-12" rendered="#{empty cashBoxHome.cashBoxPartial.id || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN'}">
+                                <f:facet name="left">
+                                    <p:commandButton id="btn-save" value="#{i18n['common.save']}" 
+                                                     actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
+                                                     styleClass="success-btn" style="width: auto !important;" 
+                                                     update="panel-breakdown-cash"/>
+                                    <p:commandButton id="btn-close-cash-partial" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}" icon="fa fa-check"
+                                                     action="#{cashBoxHome.closeCashBoxChecker()}"
+                                                     update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash panel-deposit panel-cashBox-initial btn-breakdown"
+                                                     styleClass="info-btn" style="width: auto !important;" >
+                                        <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
+                                    </p:commandButton>
+<!--                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
+                                        <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
+                                    </p:confirmDialog>-->
+                                </f:facet>
+                                <f:facet name="right">
+                                    <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
+                                                     action="#{cashBoxHome.redirect()}"
+                                                     icon="fa fa-trash" styleClass="secondary-button" 
+                                                     type="submit"/>
+                                </f:facet>
+                            </p:toolbar>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <h:panelGroup id="panel-deposit" rendered="#{request.isUserInRole('CHECKER')}">
+                        <h:panelGroup  class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12" rendered="#{cashBoxHome.activePanelDeposit}" style="background-color: #E9E9E9">
+                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8" >
+                                <label class="capital Fs15">Efectivo Registrado en Caja: 
+                                    <h:outputText class="bold-capital" id="saldo-cash-fund" value="#{cashBoxHome.saldoCashFund}"><f:convertNumber type="currency"/></h:outputText>
+                                </label>
+                                <div class="EmptyBox5"/>
+                                <label>Dinero en Efectivo + Dinero Sobrante - Dinero Faltante</label>
+                            </div>
+                            <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1 container-right">
+                                <p:selectBooleanCheckbox id="select-active-deposit" value="#{cashBoxHome.activeSelectDeposit}"
+                                                         disabled="#{cashBoxHome.saldoCashFund lt 0}">
                                     <p:ajax event="change" update="panel-deposit-enable" />
                                 </p:selectBooleanCheckbox>
                             </div>
-                            <h:panelGroup id="panel-deposit-enable" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <h:panelGroup rendered="#{cashBoxHome.activeSelectDeposit}">
+                            <div class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3 container-lefth">#{i18n['app.fede.accouting.validate.deposit.message']} </div>
+                            <h:panelGroup id="panel-deposit-enable">
+                                <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activeSelectDeposit}">
                                     <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">#{i18n['common.amount']}
                                         <p:inputNumber id="amount-deposit" value="#{cashBoxHome.amountDeposit}" required="true" 
                                                        inputStyle="text-align: right" symbol="$" disabled="#{!cashBoxHome.activeButtonSelectDeposit}"
@@ -184,7 +451,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">
                                         <p:commandButton id="btn-deposit" value="#{i18n['common.deposit']}" icon="fa fa-exchange"
                                                          actionListener="#{cashBoxHome.validateDeposit()}"
-                                                         update="panel-deposit-enable panel-transactions cash-saldo panel-deposit panel-breakdown-cash panel-cashBoxDetail"
+                                                         update="panel-deposit-enable panel-transactions cash-saldo panel-deposit panel-breakdown-cash-fund @form:panel-cashBox-initial"
                                                          disabled="#{cashBoxHome.activeButtonSelectDeposit}"
                                                          styleClass="info-btn" style="width: auto !important"/>
                                         <p:commandButton id="clean-deposit" value="#{i18n['common.clean']}" icon="fa fa-eraser" 
@@ -197,280 +464,254 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </h:panelGroup>
                         </h:panelGroup>
                     </h:panelGroup>
-                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
-                        <p:commandButton id="btn-breakdown" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" icon="fa fa-play-circle"
-                                         action="#{cashBoxHome.openPanelBreakdown()}" 
-                                         update="btn-breakdown panel-deposit panel-breakdown-cash cash-saldo saldo-cash btn-close-cash-general"
-                                         disabled="#{!cashBoxHome.activePanelDeposit}"
-                                         rendered="#{request.isUserInRole('CHECKER')}"
-                                         styleClass="info-btn" class="capital">
-                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
-                        </p:commandButton>
-                        <p:confirmDialog global="true" showEffect="blind" hideEffect="blind" responsive="true" width="350">
-                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
-                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
-                        </p:confirmDialog>
-                    </div>
-                </div>
-                <div class="cash-detail ui-g-8 ui-lg-8 ui-md-8">
-                    <h:panelGroup id="panel-cashBoxs-partial" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                        <h:panelGroup rendered="#{not empty cashBoxHome.cashBoxsClosed}">
-                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs20">#{i18n['app.fede.accounting.close.cashs.partials']}</div>
-                            <p:accordionPanel activeIndex="-1" class="ui-g-12 ">
-                                <c:forEach var="cashBoxs" items="#{cashBoxHome.cashBoxsClosed}">
-                                    <p:tab title="#{cashBoxs.name} - #{cashBoxs.lastUpdate.hours}:#{cashBoxs.lastUpdate.minutes}:#{cashBoxs.lastUpdate.seconds}">
-                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                            <p:dataTable id="cashBoxs-bills" draggableColumns="true" lazy="false"
-                                                         paginator="true" paginatorAlwaysVisible="false"
-                                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                         rows="10"
-                                                         value="#{cashBoxHome.cashBoxsClosedBills(cashBoxs)}" var="cashBoxDetail">
-                                                <f:facet name="header">
-                                                    <label class="bold-capital">#{i18n['common.money.bills']}</label>
-                                                </f:facet>
-                                                <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
-                                                    <h:outputText value="#{cashBoxDetail.denomination}"/>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.quantity']}">
+                    <div class="EmptyBox5"/>
+                    <h:panelGroup id="panel-breakdown-cash-fund">
+                        <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activePanelBreakdownFund}">
+                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                                <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="No olvide desglosar el dinero que quedará en Caja" style="width: 100%"/>
+                            </div>
+                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
+                                <label class="capital Fs18">DESGLOSE DE EFECTIVO REGISTRADO: 
+                                    <h:outputText class="bold-capital Fs20" value="#{cashBoxHome.saldoCashFund}"><f:convertNumber type="currency"/></h:outputText>
+                                </label>
+                            </div>
+                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                                <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <p:dataTable id="dataTable-bills-fund" draggableColumns="true" lazy="false"
+                                                 paginator="true" paginatorAlwaysVisible="false"
+                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
+                                                 rows="10"  
+                                                 value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
+                                                 selection="#{cashBoxHome.selectedBussinesEntities}"
+                                                 sortBy="#{cashBoxDetail.valuer}"
+                                                 editable="true">
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/> subtotal-bills subtotal-bills
+                                        <f:facet name="header">
+                                            <label class="bold-capital">#{i18n['common.money.bills']}</label>
+                                        </f:facet>
+                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                            <h:outputText value="#{cashBoxDetail.denomination}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem" >
+                                            <p:cellEditor>
+                                                <f:facet name="output">
                                                     <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.amount']}" >
-                                                    <h:outputText  class="container-right" value="#{cashBoxDetail.amount}">
-                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
-                                                    </h:outputText>
-                                                </p:column>
-                                                <p:columnGroup type="footer" >
-                                                    <p:row>
-                                                        <p:column colspan="2" footerText="#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.bills']}"/>
-                                                        <p:column style="text-align: right" footerText="$#{cashBoxs.totalcashBills}"/>
-                                                    </p:row>
-                                                </p:columnGroup>
-                                            </p:dataTable>
-                                        </div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                            <p:dataTable id="cashBoxs-moneys" draggableColumns="true" lazy="false"
-                                                         paginator="true" paginatorAlwaysVisible="false"
-                                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                         rows="10"
-                                                         value="#{cashBoxHome.cashBoxsClosedMoneys(cashBoxs)}" var="cashBoxDetail">
-                                                <f:facet name="header">
-                                                    <label class="bold-capital">#{i18n['common.money.moneys']}</label>
                                                 </f:facet>
-                                                <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
-                                                    <h:outputText value="#{cashBoxDetail.denomination}"/>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.quantity']}">
+                                                <f:facet name="input">
+                                                    <p:spinner id="quantity-bill" value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                               styleClass="" required="#{false}">
+                                                    </p:spinner>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.amount']}" >
+                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column style="width:3.5rem">
+                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.bills']} :</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
+                                        <h:outputText id="subtotal-bills-fund" value="#{cashBoxHome.cashBoxPartial.totalcashBills}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <p:dataTable id="dataTable-moneys-fund" draggableColumns="true" lazy="false"
+                                                 paginator="true" paginatorAlwaysVisible="false"
+                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
+                                                 rows="10"
+                                                 value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
+                                                 selection="#{cashBoxHome.selectedBussinesEntities}"
+                                                 sortBy="#{cashBoxDetail.valuer}" editable="true">
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="true"/>
+                                        <f:facet name="header">
+                                            <label class="capital">#{i18n['common.money.moneys']}</label>
+                                        </f:facet>
+                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                            <h:outputText value="#{cashBoxDetail.denomination}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
                                                     <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.amount']}" >
-                                                    <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
-                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
-                                                    </h:outputText>
-                                                </p:column>
-                                                <p:columnGroup type="footer" >
-                                                    <p:row>
-                                                        <p:column colspan="2" footerText="#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.moneys']}"/>
-                                                        <p:column style="text-align: right" footerText="$#{cashBoxs.totalcashMoneys}"/>
-                                                    </p:row>
-                                                </p:columnGroup>
-                                            </p:dataTable>
-                                        </div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right capital Fs15">#{i18n['app.fede.accounting.ajust.breakdown']}<div class="EmptyBox5"/>
-                                            <h:outputText class="bold-capital Fs40" value="#{cashBoxs.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
-                                        </div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1"></div>
-                                        <h:panelGroup id="panel-cashBoxs-totals" class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3">
-                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 ">#{i18n['common.total']}:</div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
-                                                <h:outputText value="#{cashBoxs.totalCashBreakdown}"><f:convertNumber type="currency"/></h:outputText>
-                                            </div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 ">#{i18n['common.missing']}:</div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
-                                                <h:outputText value="#{cashBoxs.missCashPartial}" style="#{cashBoxs.missCashPartial lt 0 ? 'color: #e53935;': 'color: #000000'};"><f:convertNumber type="currency"/></h:outputText>
-                                            </div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.excess']}:</div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
-                                                <h:outputText value="#{cashBoxs.excessCashPartial}"><f:convertNumber type="currency"/></h:outputText>
-                                            </div>
-                                        </h:panelGroup>
-                                    </p:tab>
-                                </c:forEach>
-                            </p:accordionPanel>
-                        </h:panelGroup>
-                    </h:panelGroup>
-                    <h:panelGroup id="panel-breakdown-cash" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                        <h:panelGroup rendered="#{cashBoxHome.activePanelBreakdown and (cashBoxHome.cashBoxPartial.id == null || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN')}">
-                            <div class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <h:panelGroup id="panel-cashBoxDetail" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs15">#{i18n['app.fede.accounting.ajust.breakdown']}<div class="EmptyBox5"/>
-                                        <h:outputText class="bold-capital Fs40" id="saldo-cash" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                               styleClass="" required="#{false}">
+                                                    </p:spinner>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.amount']}" >
+                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                            </h:outputText>
+                                        </p:column> 
+                                        <p:column style="width:3.5rem">
+                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.moneys']} :</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
+                                        <h:outputText id="subtotal-moneys-fund" value="#{cashBoxHome.cashBoxPartial.totalcashMoneys}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                </div>
+                                <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">
+                                    <jlgranda:input id="description-fund" name="description-fund" type="textarea" label="#{i18n['common.observations']}" 
+                                                    execute="none" render="description-fund" value="#{cashBoxHome.cashBoxPartial.description}"
+                                                    required="false" requiredMessage="#{i18n['common.observation']}"
+                                                    container="none"/>
+                                </div>
+                                <h:panelGroup id="panel-breakdown-totals-fund" class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 container-right">#{i18n['common.total']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
+                                        <h:outputText id="breakdown-Total-fund" value="#{cashBoxHome.cashBoxPartial.totalCashBreakdown}"><f:convertNumber type="currency"/></h:outputText>
+                                    </div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.missing']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                        <h:outputText id="cash-missing-fund" value="#{cashBoxHome.cashBoxPartial.missCashPartial}" style="#{cashBoxHome.cashBoxPartial.missCashPartial le 0 ? 'color: #000000': 'color: #e53935'};">
+                                            <f:convertNumber type="currency"/>
+                                        </h:outputText>
+                                    </div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.excess']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                                        <h:outputText id="cash-excess-fund" value="#{cashBoxHome.cashBoxPartial.excessCashPartial}"><f:convertNumber type="currency"/></h:outputText>
                                     </div>
                                 </h:panelGroup>
-                                <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                            </div>
+                            <p:toolbar id="toolbar-close-partial-fund" class="ui-g-12" rendered="#{empty cashBoxHome.cashBoxPartial.id || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN'}">
+                                <f:facet name="left">
+                                    <p:commandButton id="btn-close-cash-partial-fund" value="Registrar Desglose Final de Caja Parcial" icon="fa fa-check"
+                                                     action="#{cashBoxHome.closeCashBoxChecker()}"
+                                                     update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash-fund panel-deposit panel-cashBox-initial btn-breakdown"
+                                                     styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"-->
+                                        <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
+                                    </p:commandButton>
+                                    <!--                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                                                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
+                                                                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
+                                                                        </p:confirmDialog>-->
+                                </f:facet>
+                                <f:facet name="right">
+                                    <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
+                                                     action="#{cashBoxHome.redirect()}"
+                                                     icon="fa fa-trash" styleClass="secondary-button" 
+                                                     type="submit"/>
+                                </f:facet>
+                            </p:toolbar>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                    <div class="messages ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                        <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center Fs15" 
+                                      rendered="#{request.isUserInRole('CHECKER') and (not empty cashBoxHome.cashBoxOpen and cashBoxHome.cashBoxOpen.id!=cashBoxHome.cashBoxPartial.id and cashBoxHome.cashBoxPartial.statusCashBoxPartial!='CLOSED')}">
+                            <label>#{i18n['app.fede.accounting.close.cash.impossible']} </label>
+                            <div class="EmptyBox5"/>
+                            <label class="bold-capital">#{cashBoxHome.cashBoxOpen.name} #{i18n['common.active.is']}</label>
+                        </h:panelGroup>
+                        <h:panelGroup id="panel-message-finish" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs20">
+                            <h:panelGroup rendered="#{cashBoxHome.cashBoxGeneral.statusCashBoxGeneral=='CLOSED'}">
+                                <label>#{i18n['app.fede.accounting.close.cash']} #{i18n['common.general']}:
+                                    <h:outputText value="#{cashBoxHome.cashBoxGeneral.lastUpdate}">
+                                        <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
+                                    </h:outputText>
+                                </label>
+                                <div class="EmptyBox5"/>
+                                <label style="color: #07b750">#{i18n['common.finished']} </label>
+                            </h:panelGroup>  
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <h:panelGroup id="panel-cashBoxs-partial">
+                    <h:panelGroup class="card ui-g-12 ui-lg-12 ui-md-12" rendered="#{not empty cashBoxHome.cashBoxsClosed}">
+                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth Fs15">#{i18n['app.fede.accounting.close.cashs.partials.history']}</div>
+                        <p:accordionPanel activeIndex="-1" class="ui-g-12 ">
+                            <c:forEach var="cashBoxs" items="#{cashBoxHome.cashBoxsClosed}">
+                                <p:tab title="#{cashBoxs.name} - #{cashBoxs.lastUpdate.hours}:#{cashBoxs.lastUpdate.minutes}:#{cashBoxs.lastUpdate.seconds}">
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                        <p:dataTable id="dataTable-bills" draggableColumns="true" lazy="false"
+                                        <p:dataTable id="cashBoxs-bills" draggableColumns="true" lazy="false"
                                                      paginator="true" paginatorAlwaysVisible="false"
                                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                     rows="10"  
-                                                     value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
-                                                     selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                     sortBy="#{cashBoxDetail.valuer}"
-                                                     editable="true">
-                                            <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills @form:panel-breakdown-totals" partialSubmit="true"/> subtotal-bills subtotal-bills
+                                                     rows="10"
+                                                     value="#{cashBoxHome.cashBoxsClosedBills(cashBoxs)}" var="cashBoxDetail">
                                             <f:facet name="header">
                                                 <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                             </f:facet>
                                             <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                                 <h:outputText value="#{cashBoxDetail.denomination}"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem" >
-                                                <p:cellEditor>
-                                                    <f:facet name="output">
-                                                        <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
-                                                    </f:facet>
-                                                    <f:facet name="input">
-                                                        <p:spinner id="quantity-bill" value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
-                                                                   styleClass="" required="#{false}">
-                                                        </p:spinner>
-                                                    </f:facet>
-                                                </p:cellEditor>
+                                            <p:column headerText="#{i18n['common.quantity']}">
+                                                <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
                                             <p:column headerText="#{i18n['common.amount']}" >
-                                                <h:outputText id="amount-bill" class="container-right" value="#{cashBoxDetail.amount}">
+                                                <h:outputText  class="container-right" value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                                 </h:outputText>
                                             </p:column>
-                                            <p:column style="width:3.5rem">
-                                                <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
-                                            </p:column>
-                                            <!--<p:columnGroup id="group-bills" type="footer" >
+                                            <p:columnGroup type="footer" >
                                                 <p:row>
                                                     <p:column colspan="2" footerText="#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.bills']}"/>
-                                                    <p:column  id="subtotal-bills" style="text-align: right" footerText="$#{cashBoxHome.cashBoxPartial.totalcashBills}"/>
+                                                    <p:column style="text-align: right" footerText="$#{cashBoxs.totalcashBills}"/>
                                                 </p:row>
-                                            </p:columnGroup>--> 
+                                            </p:columnGroup>
                                         </p:dataTable>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.bills']} :</div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
-                                            <h:outputText id="subtotal-bills" value="#{cashBoxHome.cashBoxPartial.totalcashBills}"><f:convertNumber type="currency"/></h:outputText>
-                                        </div>
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                        <p:dataTable id="dataTable-moneys" draggableColumns="true" lazy="false"
+                                        <p:dataTable id="cashBoxs-moneys" draggableColumns="true" lazy="false"
                                                      paginator="true" paginatorAlwaysVisible="false"
                                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
                                                      rows="10"
-                                                     value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
-                                                     selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                     sortBy="#{cashBoxDetail.valuer}" editable="true">
-                                            <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="true"/> subtotal-bills subtotal-bills
+                                                     value="#{cashBoxHome.cashBoxsClosedMoneys(cashBoxs)}" var="cashBoxDetail">
                                             <f:facet name="header">
-                                                <label class="capital">#{i18n['common.money.moneys']}</label>
+                                                <label class="bold-capital">#{i18n['common.money.moneys']}</label>
                                             </f:facet>
                                             <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                                 <h:outputText value="#{cashBoxDetail.denomination}"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem">
-                                                <p:cellEditor>
-                                                    <f:facet name="output">
-                                                        <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
-                                                    </f:facet>
-                                                    <f:facet name="input">
-                                                        <p:spinner id="quantity-bill" value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
-                                                                   styleClass="" required="#{false}">
-                                                        </p:spinner>
-                                                    </f:facet>
-                                                </p:cellEditor>
+                                            <p:column headerText="#{i18n['common.quantity']}">
+                                                <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
                                             <p:column headerText="#{i18n['common.amount']}" >
                                                 <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                                 </h:outputText>
                                             </p:column>
-                                            <p:column style="width:3.5rem">
-                                                <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
-                                            </p:column>
-                                            <!--                                            <p:columnGroup type="footer" >
-                                                                                            <p:row>
-                                                                                                <p:column colspan="2" footerText="#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.moneys']}"/>
-                                                                                                <p:column  id="subtotal-moneys" style="text-align: right" footerText="$#{cashBoxHome.cashBoxPartial.totalcashMoneys}"/>
-                                                                                            </p:row>
-                                                                                        </p:columnGroup>-->
+                                            <p:columnGroup type="footer" >
+                                                <p:row>
+                                                    <p:column colspan="2" footerText="#{i18n['common.subtotal']} #{i18n['common.of']} #{i18n['common.money.moneys']}"/>
+                                                    <p:column style="text-align: right" footerText="$#{cashBoxs.totalcashMoneys}"/>
+                                                </p:row>
+                                            </p:columnGroup>
                                         </p:dataTable>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.moneys']} :</div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
-                                            <h:outputText id="subtotal-moneys" value="#{cashBoxHome.cashBoxPartial.totalcashMoneys}"><f:convertNumber type="currency"/></h:outputText>
-                                        </div>
                                     </div>
-                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">
-                                        <jlgranda:input id="description" name="description" type="textarea" label="#{i18n['common.observations']}" 
-                                                        execute="none" render="description" value="#{cashBoxHome.cashBoxPartial.description}"
-                                                        required="false" requiredMessage="#{i18n['common.observation']}"
-                                                        container="none"/>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right capital Fs15">#{i18n['app.fede.accounting.ajust.breakdown']}: <div class="EmptyBox5"/>
+                                        <h:outputText class="bold-capital Fs30" value="#{cashBoxs.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
                                     </div>
-                                    <h:panelGroup id="panel-breakdown-totals" class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
-                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 container-right">#{i18n['common.total']}:</div>
+                                    <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1"></div>
+                                    <h:panelGroup id="panel-cashBoxs-totals" class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3">
+                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13 ">#{i18n['common.total']}:</div>
                                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
-                                            <h:outputText id="breakdown-Total" value="#{cashBoxHome.cashBoxPartial.totalCashBreakdown}"><f:convertNumber type="currency"/></h:outputText>
+                                            <h:outputText value="#{cashBoxs.totalCashBreakdown}"><f:convertNumber type="currency"/></h:outputText>
                                         </div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.missing']}:</div>
+                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 ">#{i18n['common.missing']}:</div>
                                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
-                                            <h:outputText id="cash-missing" value="#{cashBoxHome.cashBoxPartial.missCashPartial*-1}" style="#{cashBoxHome.cashBoxPartial.missCashPartial lt 0 ? 'color: #e53935;': 'color: #000000'};">
-                                                <f:convertNumber type="currency"/>
-                                            </h:outputText>
+                                            <h:outputText value="#{cashBoxs.missCashPartial}" style="#{cashBoxs.missCashPartial le 0 ? 'color: #000000': 'color: #e53935'};"><f:convertNumber type="currency"/></h:outputText>
                                         </div>
-                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">#{i18n['common.excess']}:</div>
+                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.excess']}:</div>
                                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
-                                            <h:outputText id="cash-excess" value="#{cashBoxHome.cashBoxPartial.excessCashPartial}"><f:convertNumber type="currency"/></h:outputText>
+                                            <h:outputText value="#{cashBoxs.excessCashPartial}"><f:convertNumber type="currency"/></h:outputText>
                                         </div>
                                     </h:panelGroup>
-                                </div>
-                                <p:toolbar id="toolbar-close-partial" class="ui-g-12" rendered="#{empty cashBoxHome.cashBoxPartial.id || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN'}">
-                                    <f:facet name="left">
-                                        <p:commandButton id="btn-save" value="#{i18n['common.save']}" 
-                                                         actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
+                                </p:tab>
+                            </c:forEach>
+                        </p:accordionPanel>
+                    </h:panelGroup>
+                </h:panelGroup>
 
-                                                         styleClass="success-btn" style="width: auto !important;" 
-                                                         type="submit"/><!-- disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}" -->
-                                        <p:commandButton id="btn-close-cash-partial" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}" icon="fa fa-check"
-                                                         action="#{cashBoxHome.closeCashBoxChecker()}"
-                                                         disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"
-                                                         update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash"
-                                                         styleClass="info-btn" style="width: auto !important;" >
-                                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>
-                                        </p:commandButton>
-                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
-                                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
-                                        </p:confirmDialog>
-                                    </f:facet>
-                                    <f:facet name="right">
-                                        <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
-                                                         action="#{cashBoxHome.redirect()}"
-                                                         icon="fa fa-trash" styleClass="secondary-button" 
-                                                         type="submit"/>
-                                    </f:facet>
-                                </p:toolbar>
-                            </div>
-                        </h:panelGroup>
-                    </h:panelGroup>
-                    <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center Fs15" 
-                                  rendered="#{request.isUserInRole('CHECKER') and (not empty cashBoxHome.cashBoxOpen and cashBoxHome.cashBoxOpen.id!=cashBoxHome.cashBoxPartial.id and cashBoxHome.cashBoxPartial.statusCashBoxPartial!='CLOSED')}">
-                        <label>#{i18n['app.fede.accounting.close.cash.impossible']} </label>
-                        <div class="EmptyBox5"/>
-                        <label class="bold-capital">#{cashBoxHome.cashBoxOpen.name} #{i18n['common.active.is']}</label>
-                    </h:panelGroup>
-                    <h:panelGroup id="panel-message-finish" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs20">
-                        <h:panelGroup rendered="#{cashBoxHome.cashBoxGeneral.statusCashBoxGeneral=='CLOSED'}">
-                            <label>#{i18n['app.fede.accounting.close.cash']} #{i18n['common.general']}: </label>
-                            <h:outputText value="#{cashBoxHome.cashBoxGeneral.lastUpdate}">
-                                <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
-                            </h:outputText>
-                            <div class="EmptyBox5"/>
-                            <label style="color: #07b750">#{i18n['common.finished']} </label>
-                        </h:panelGroup>  
-                    </h:panelGroup>
-                </div>
+
+
                 <div class="EmptyBox20"></div>
                 <h:panelGroup id="toolbar-close">
                     <p:toolbar rendered="#{not empty cashBoxHome.cashBoxsClosed and request.isUserInRole('CHECKER')}">
@@ -478,13 +719,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:commandButton id="btn-close-cash-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
                                              action="#{cashBoxHome.closeCashBoxGeneral()}" disabled="#{cashBoxHome.activeButtonCloseCash}"
                                              update="toolbar-close panel-deposit btn-breakdown panel-cashBoxs-partial panel-breakdown-cash panel-message-finish"
-                                             style="width: auto !important;" >
-                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>
+                                             style="width: auto !important;">
+                                <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
                             </p:commandButton>
-                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                <p:commandButton value="#{i18n['common.yes']}" type="button" />
-                                <p:commandButton value="#{i18n['common.no']}" type="button" />
-                            </p:confirmDialog>
+                            <!--                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                                            <p:commandButton value="#{i18n['common.yes']}" type="button" />
+                                                            <p:commandButton value="#{i18n['common.no']}" type="button" />
+                                                        </p:confirmDialog>-->
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
@@ -501,7 +742,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script type="text/javascript">
             //<![CDATA[
             $(document).ready(function () {
-            $('input[id*="spinner"]').attr('type', 'number');
+                $('input[id*="spinner"]').attr('type', 'number');
                 $(this).select();
             });
             $('input[id*="spinner"]').focus(function () {
