@@ -18,7 +18,10 @@
 package org.jlgranda.fede.controller.sales;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.AccountService;
+import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
@@ -56,10 +59,10 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.SubjectHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
-import org.jlgranda.fede.controller.gift.GiftHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
 import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
@@ -198,6 +201,15 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private KardexDetailService kardexDetailService;
+    
+    @EJB
+    private RecordService recordService;
+    
+    @EJB
+    private GeneralJournalService generalJournalService;
+    
+    @EJB
+    private AccountService accountService;
 
     @PostConstruct
     private void init() {
@@ -533,15 +545,12 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     /**
-     * Guarda la entidad marcandola como INVOICE y generando un secuencial
+     * Guarda la entidad marcandola como CLOSE y generando un secuencial
      * valido TODO debe generar también una factura electrónica
      *
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        //collect(StatusType.CLOSE.toString());
-        //Registrar en KARDEX
-        //registerDetailInKardex();
         //Ejecutar regla de registro contable
         RecordTemplate recordTemplate = new RecordTemplate();
         recordTemplate.setRule("global org.jlgranda.fede.model.accounting.Record record;\n" +
@@ -552,7 +561,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 "\n" +
 "rule \"Registro de venta\"\n" +
 "when\n" +
-"	invoice:Invoice(  boardNumber==\"999\" )\n" +
+"	invoice:Invoice(  emissionType.toString() == \"SALE\" && total > 0 )\n" +
 "then\n" +
 "	RecordDetail recordDetail = new RecordDetail();\n" +
 "        recordDetail.setRecordDetailTypeFromName(\"DEBE\");\n" +
@@ -569,7 +578,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 "        record.setName(\"Registro de venta\" + invoice.getEmissionType());\n" +
 "end");
         
-        Record record = new Record();
+        Record record = recordService.createInstance();
         
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.emissionType: " + invoice.getEmissionType());
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.total: " + invoice.getTotal());
@@ -578,6 +587,34 @@ public class InvoiceHome extends FedeController implements Serializable {
         //TODO Procesar recordOut que contiene el resultado de la ejecución de la regla
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record: " + recordOut.getName());
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetails: " + recordOut.getRecordDetails());
+        record.getRecordDetails().stream().map(rd -> {
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail name: " + rd.getAccountName());
+            return rd;
+        }).map(rd -> {
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail type: " + rd.getRecordDetailType());
+            return rd;
+        }).forEachOrdered(rd -> {
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail amount: " + rd.getAmount());
+        });
+        
+        record.setOwner(this.subject);
+        record.setAuthor(this.subject);
+        record.setJournal(generalJournalService.find(Dates.now(), this.organizationData.getOrganization()));
+        
+        //Corregir objetos cuenta en los detalles
+        record.getRecordDetails().forEach(rd -> {
+            rd.setLastUpdate(Dates.now());
+            rd.setLastUpdate(Dates.now());
+            rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
+        });
+        
+        recordService.save(recordOut); 
+        //Registrar en KARDEX
+        //registerDetailInKardex();
+        
+        //Guardar cambios en la entidad invoice
+        //collect(StatusType.CLOSE.toString());
+        
         
         return getOutcome();
     }
