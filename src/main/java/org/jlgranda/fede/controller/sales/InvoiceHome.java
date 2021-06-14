@@ -59,6 +59,8 @@ import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.gift.GiftHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
+import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -72,6 +74,7 @@ import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
+import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.StatusType;
@@ -149,7 +152,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private ProductCache productCache;
-
+    
     private LazyInvoiceDataModel lazyDataModel;
 
     private DocumentType documentType;
@@ -536,8 +539,41 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        collect(StatusType.CLOSE.toString());
-        registerDetailInKardex();
+        //collect(StatusType.CLOSE.toString());
+        //Registrar en KARDEX
+        //registerDetailInKardex();
+        //Ejecutar regla de registro contable
+        RecordTemplate recordTemplate = new RecordTemplate();
+        recordTemplate.setRule("global org.slf4j.Logger logger\n" +
+"global org.jlgranda.fede.model.accounting.Record record;\n" +
+"import org.jlgranda.fede.model.document.EmissionType;\n" +
+"import org.jlgranda.fede.model.sales.Invoice;\n" +
+"import org.jlgranda.fede.model.accounting.RecordDetail;\n" +
+"\n" +
+"\n" +
+"rule \"Registro de venta\"\n" +
+"    when\n" +
+"        $recordDetail : RecordDetail();\n" +
+"        invoiceIntance:Invoice( emissionType.toString() == \"INVOICE\" || total == total);\n" +
+"    then\n" +
+"        $recordDetail.setRecordDetailTypeFromName(\"DEBE\");\n" +
+"        $recordDetail.setAmount(invoiceIntance.getTotal());\n" +
+"        insert( $recordDetail );\n" +
+"        record.setName(\"Desde Drools\");\n" +
+"      	record.addRecordDetail($recordDetail);\n" +
+"      	\n" +
+"      	logger.info(\"\\t==> Executing RULE 'Registro de venta' for Object: \" + record.getName());\n" +
+"end");
+        
+        
+        Record record = new Record();
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.emissionType: " + invoice.getEmissionType());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.total: " + invoice.getTotal());
+        Record recordOut = new RuleRunner().run(recordTemplate, this.invoice, record); //El registro contable
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record: " + recordOut.getName());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetails: " + recordOut.getRecordDetails());
         return getOutcome();
     }
 
@@ -562,6 +598,7 @@ public class InvoiceHome extends FedeController implements Serializable {
      * Guarda la entidad marcandola como INVOICE y generando un secuencial
      * valido TODO debe generar también una factura electrónica
      *
+     * @param status
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(String status) {
@@ -624,7 +661,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice(); //recargar la instancia actual
             //Imprimir reporte
             Map<String, String> settings = new HashMap<>();
-            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "48"));
+            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "42"));
             //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
             settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "8"));
             settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));

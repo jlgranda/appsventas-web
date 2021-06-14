@@ -264,7 +264,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             return;
         }
         try {
-            if (!tarea.isPersistent()) {//Id nulo, es tarea nueva
+            if (!this.tarea.isPersistent()) {//Id nulo, es tarea nueva
                 //Crear proceso y asignar a tarea
                 this.instanciaProceso.setCode(SerialService.getGenerator().next()); //Crear un generador de Process ID
                 this.instanciaProceso.setAuthor(subject);
@@ -278,7 +278,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
                 getTarea().setName(this.instanciaProceso.getName());
                 getTarea().setDescription(this.instanciaProceso.getDescription());
                 
-                Tarea next = buildTarea( tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.getInstanciaProceso());
+                Tarea next = buildTarea( this.tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.getInstanciaProceso());
                 
                 getTarea().getDocumentos().stream().forEach((doc) -> {
                     next.addDocumento(doc);
@@ -371,10 +371,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         _tarea.setInstanciaProceso(instanciaProceso);
         //Es temporral hasta que se pueda seleccionar una organización
         _tarea.setDepartamento("temporal");
-        _tarea.setOrganization(organization);
+        _tarea.setOrganization(organization == null ? instanciaProceso.getOrganization() : organization);
         _tarea.setAuthor(author); //usuario logeado
         _tarea.setOwner(owner); //destinatario
-        _tarea.setEstadoTipo(tarea.getEstadoTipo());//La tarea se completa al iniciar el proceso
+        _tarea.setEstadoTipo(tarea.getEstadoTipo() == null ? EstadoTipo.ESPERA : tarea.getEstadoTipo());//La tarea se completa al iniciar el proceso
         return _tarea;
     }
 
