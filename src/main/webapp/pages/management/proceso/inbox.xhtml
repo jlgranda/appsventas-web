@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
@@ -29,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{instanciaProcesoHome.tags}" />
+                <f:viewParam name="statusType" value="#{instanciaProcesoHome.statusType}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -72,15 +72,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:column>
 
                             <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{instanciaProceso.createdOn}"
-                                       styleClass="text-right">
+                                       styleClass="text-right ui-lg-1">
                                 <h:outputText value="#{instanciaProceso.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-<!--                            <p:column  id="tipo"  headerText="#{i18n['common.type']}" sortBy="#{instanciaProceso.procesoTipo}"
-                                       styleClass="text-right">
-                                <h:outputText value="#{instanciaProceso.procesoTipo}"/>
-                            </p:column>-->
                         </p:dataTable>
                     </div>
                     <!--/.panel-body -->

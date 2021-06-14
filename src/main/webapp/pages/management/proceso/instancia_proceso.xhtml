@@ -98,7 +98,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_REDIRECCIONAR, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.owner ==  subject}"
-                                                                     icon="fa fa-mail-forward" styleClass="success-btn" title="#{i18n['app.documents.task.fordwar']}"
+                                                                     icon="fa fa-mail-forward" styleClass="success-btn" title="#{i18n['app.documents.task.forward']}"
+                                                                     style="width:36px; height: 36px;">
+                                                    </p:commandButton>
+                                                    <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
+                                                                     actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_FINALIZAR, tarea)}" 
+                                                                     disabled="#{false}" rendered="#{tarea.instanciaProceso.owner ==  subject}"
+                                                                     icon="fa fa-hourglass-end" styleClass="danger-btn" title="#{i18n['app.documents.task.finalize']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
                                                 </p:panel>
@@ -147,10 +153,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:panel styleClass="ui-g ui-fluid" rendered="#{instanciaProcesoHome.tareaSeleccionada.checkStatus(EstadoTipo.ESPERA)}">
                                 <!-- Destinatario -->
                                 <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                    <p:outputLabel for="applicant" value="#{i18n['app.documents.task.applicant']}" />
+                                    <p:outputLabel for="consignee" value="#{i18n['app.documents.task.consignee']}" />
                                 </h:panelGroup>
                                 <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                    <p:autoComplete id="applicant" value="#{instanciaProcesoHome.destinatario}" effect="fade" 
+                                    <p:autoComplete id="consignee" value="#{instanciaProcesoHome.destinatario}" effect="fade" 
                                                     minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
                                                     var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" multiple="false" 
                                                     maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 

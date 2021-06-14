@@ -29,6 +29,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -79,6 +80,15 @@ public abstract class FedeController {
     protected List<Group> groups = new ArrayList<>();
     
     protected boolean validated;
+    
+    protected List<SelectItem> actions = new ArrayList<>();
+    
+    /**
+     * Acción seleccionada para ejecutar sobre elementos seleccionados del controlador
+     */
+    protected String selectedAction;
+    
+    //protected Categ
 
     public List<BussinesEntity> getSelectedBussinesEntities() {
         return selectedBussinesEntities;
@@ -94,6 +104,22 @@ public abstract class FedeController {
 
     public void setSelectedTriStateGroups(Map<String, String> selectedTriStateGroups) {
         this.selectedTriStateGroups = selectedTriStateGroups;
+    }
+
+    public List<SelectItem> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<SelectItem> actions) {
+        this.actions = actions;
+    }
+
+    public String getSelectedAction() {
+        return selectedAction;
+    }
+
+    public void setSelectedAction(String selectedAction) {
+        this.selectedAction = selectedAction;
     }
 
     public String redirect(){
@@ -181,9 +207,9 @@ public abstract class FedeController {
      */
     public void addErrorMessages(List<String> messages) {
 
-        for (String message : messages) {
+        messages.forEach(message -> {
             addErrorMessage(message, "");
-        }
+        });
     }
 
     /**

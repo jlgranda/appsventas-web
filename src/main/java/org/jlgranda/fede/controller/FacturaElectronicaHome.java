@@ -55,9 +55,7 @@ import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
-import java.math.RoundingMode;
 import java.nio.charset.Charset;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,7 +71,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
@@ -83,7 +80,6 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
-import org.jlgranda.fede.model.sales.Detail;
 import org.jlgranda.fede.model.sales.Kardex;
 import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Payment;
@@ -270,8 +266,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setOutcome("fede-inbox");
 
         setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
-        //setProducts(productService.findByOrganization(this.organizationData.getOrganization()));
-        setProducts(productCache.filterByOrganization(this.organizationData.getOrganization()));
+        if (this.organizationData.getOrganization() != null){
+            setProducts(productCache.filterByOrganization(this.organizationData.getOrganization()));
+        }
         getProductsByType();
         setActivePanelProduct(false);
     }

@@ -554,7 +554,7 @@ public class UI {
     public String truncateFilename(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.documents.filename.length", "14")));
     }
-
+    
     public static void main(String[] args) {
         System.out.println(new org.apache.commons.codec.digest.Crypt().crypt("f3d3"));
 

@@ -15,13 +15,38 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>TODO supply a title</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+      xmlns:o="http://omnifaces.org/ui">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:param name="sitename" value="#{i18n['Sitename']}" />
+        <ui:param name="title" value="#{i18n['app.documents.task']}" />
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="recordTemplateId" value="#{recordTemplateHome.recordTemplateId}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['app.fede.accounting.recordtemplates']}</p:link></li>
+            <li>#{recordTemplateHome.recordTemplateId == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.recordtemplate']).concat(' ') : ''} #{recordTemplateHome.recordTemplate.name}</li>
+        </ui:define>
+        <ui:define name="content">
+            <o:importConstants type="net.tecnopro.document.model.EstadoTipo" />
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-12 ui-lg-12 ui-md-12">
+                    <!-- INTANCIA PROCESO -->
+                    <h1 class="BigTopic">#{recordTemplateHome.recordTemplate.name}</h1>
+                    <div class="card ui-widget-content">
+                        
+                    </div><!-- contenedor principal -->
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
 </html>

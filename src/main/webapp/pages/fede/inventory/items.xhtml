@@ -40,39 +40,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
-                    <div class="card">
-                        <label class="Gray">#{i18n['app.fede.inventory.category']}&nbsp;</label>
-                        <p:selectOneMenu value="#{inventoryHome.groupSelected}" effect="fade" style="width: 30%;"
+                    <div class="ui-g ui-lg-12 ui-md-12">
+                        <label class="Gray" style="padding-top: 8px;">#{i18n['app.fede.inventory.category']}&nbsp;</label>
+                        <p:selectOneMenu value="#{inventoryHome.groupSelected}"
                                          immediate="true"
                                          converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
                             <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                            <!--<p:ajax update="@form" />-->
                         </p:selectOneMenu>
-                        <label class="Gray">#{i18n['common.keyword']}&nbsp;</label>
-                        <p:inputText value="#{inventoryHome.keyword}" class="input-sm" style="width: 30%;">
+                        <label class="Gray" style="padding-top: 8px;">#{i18n['common.type']}&nbsp;</label>
+                        <p:selectOneMenu value="#{inventoryHome.productType}"
+                                 required="#{false}" immediate="true">
+                            <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                            <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                        </p:selectOneMenu>
+                        <label class="Gray" style="padding-top: 8px;">#{i18n['common.keyword']}&nbsp;</label>
+                        <p:inputText value="#{inventoryHome.keyword}">
                         </p:inputText>
-<!--                        <label class="Gray">#{i18n['common.from']}&nbsp;</label>
-                        <p:calendar value="#{inventoryHome.start}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{inventoryHome.clear()}"/> oncomplete="form.submit();"
-                        </p:calendar>
-                        <label class="Gray">#{i18n['common.to']}&nbsp;</label>
-                        <p:calendar value="#{inventoryHome.end}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{inventoryHome.clear()}"/> oncomplete="form.submit();"
-                        </p:calendar>-->
-                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{inventoryHome.clear()}" ajax="false">
+                        <p:commandButton value="#{i18n['common.find']}" styleClass="btn raised-btn" actionListener="#{inventoryHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/inventory/product.jsf"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="btn danger-btn" outcome="/pages/fede/inventory/product.jsf"/>
                     </div>
-                    <div class="card">
+                    <div class="EmptyBox10"></div>
+                    <div class="ui-g ui-lg-12 ui-md-12">
                         <p:dataTable id="dataTable-products" draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{product.id}"
                                      rows="25" scrollRows="25"
                                      value="#{inventoryHome.lazyDataModel}" var="product"
                                      selection="#{inventoryHome.selectedBussinesEntities}"
-                                     sortOrder="DESCENDING" sortBy="#{product.createdOn}">
+                                     sortBy="#{product.createdOn}">
+                            
                             <p:ajax event="rowSelect" listener="#{inventoryHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                            <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar"/>
+                            <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar"/>
+                            <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                            
+                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{product.name}" style="width: 30%">
                                 <h:outputText value="#{product.name}" />
                             </p:column>
@@ -107,14 +110,52 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                       styleClass="text-right">
                                 <h:outputText value="#{product.taxType}"/>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}"
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}"
                                        styleClass="text-right" style="width: auto">
                                 <h:outputText value="#{product.createdOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
+                            <p:column headerText="#{i18n['app.fede.inventory.product.type']}" sortBy="#{product.productType}"
+                                      styleClass="text-right">
+                                <h:outputText value="#{product.productType}"/>
+                            </p:column>
                         </p:dataTable>
+                        
                     </div>
+                    <div class="EmptyBox10"></div>
+                    <p:panel id="panelSelectedToolBar">
+                        <p:toolbar id="selectedToolBar" rendered="#{not empty inventoryHome.selectedBussinesEntities}">
+                            <f:facet name="left">
+                                <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
+                                <p:selectOneMenu value="#{inventoryHome.selectedAction}">
+                                    <f:selectItems value="#{inventoryHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                    <f:ajax render="selectedToolBar"></f:ajax>
+                                </p:selectOneMenu>
+                                <p:panel id="panelMoverTo" rendered="#{inventoryHome.selectedAction eq 'moveto'}">
+                                    <p:selectOneMenu value="#{inventoryHome.groupSelected}"
+                                                     immediate="true"
+                                                     converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
+                                        <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                        <f:ajax render="selectedToolBar"></f:ajax>
+                                    </p:selectOneMenu>
+                                </p:panel>
+                                <p:panel id="panelChangeTo" rendered="#{inventoryHome.selectedAction eq 'changeto'}">
+                                    <p:selectOneMenu value="#{inventoryHome.productType}"
+                                             required="#{true}" immediate="true">
+                                        <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                        <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                        <p:ajax update="selectedToolBar" />
+                                    </p:selectOneMenu>
+                                </p:panel>
+                                <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="false"
+                                                 actionListener="#{inventoryHome.execute()}" action="#{inventoryHome.getOutcome()}"
+                                                 disabled="#{not inventoryHome.actionExecutable}"
+                                                 style="width: auto !important;"
+                                                 type="submit"/>
+                            </f:facet>
+                        </p:toolbar>
+                    </p:panel>
                 </div>
             </div>
         </ui:define>

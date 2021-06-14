@@ -71,8 +71,7 @@ and open the template in the editor.
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <p:dataTable var="entity" 
                                      value="#{tareaHome.lazyDataModel}" 
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                      reflow="true" 
                                      rowKey="#{tarea.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 

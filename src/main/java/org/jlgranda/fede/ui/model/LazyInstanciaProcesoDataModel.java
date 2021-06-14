@@ -26,10 +26,11 @@ import javax.annotation.PostConstruct;
 import net.tecnopro.document.ejb.InstanciaProcesoService;
 import net.tecnopro.document.model.InstanciaProceso;
 import net.tecnopro.document.model.InstanciaProceso_;
-import org.jlgranda.fede.model.sales.Product_;
+import org.bouncycastle.util.Strings;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.Organization;
+import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
@@ -62,6 +63,8 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
      * Lista de etiquetas para filtrar facturas
      */
     private String tags;
+    
+    private StatusType statusType;
 
     /**
      * Inicio del rango de fecha
@@ -123,7 +126,15 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
     public void setTags(String tags) {
         this.tags = tags;
     }
+    
+    public StatusType getStatusType() {
+        return statusType;
+    }
 
+    public void setStatusType(StatusType statusType) {
+        this.statusType = statusType;
+    }
+    
     public Date getStart() {
         return start;
     }
@@ -239,6 +250,9 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
         if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
+        if (getStatusType() != null){
+            _filters.put(InstanciaProceso_.status.getName(), Strings.toLowerCase(getStatusType().toString())); //Filtro de etiquetas
+        }
         
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
@@ -269,4 +283,5 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
+
 }

@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
                             <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
-                            <p:selectOneMenu value="#{inventoryHome.product.productType}" effect="fade"
+                            <p:selectOneMenu value="#{inventoryHome.product.productType}"
                                              required="#{true}" immediate="true">
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
@@ -64,7 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
                             <h4>#{i18n['app.fede.inventory.categories']}&nbsp;</h4>
-                            <p:selectOneMenu value="#{inventoryHome.groupSelected}" effect="fade"
+                            <p:selectOneMenu value="#{inventoryHome.groupSelected}"
                                              required="#{true}" immediate="true"
                                              converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
                                 <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>

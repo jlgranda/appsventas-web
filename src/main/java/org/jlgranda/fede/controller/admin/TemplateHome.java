@@ -36,6 +36,7 @@ import net.tecnopro.document.model.Template;
 import net.tecnopro.helper.mail.VelocityHelper;
 import net.tecnopro.mailing.Message;
 import net.tecnopro.mailing.Notification;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -229,7 +230,7 @@ public class TemplateHome extends FedeController implements Serializable {
             logger.warn(I18nUtil.getMessages("app.mail.template.404", templateId));
         } else {
 
-            String _from = settingHome.getValue("mail.smtps.from", "DolarDirecto <dolardirecto@jlgranda.com>");
+            String _from = settingHome.getValue("mail.smtps.from", "APPSVENTAS <appsventas@jlgranda.com>");
             String title;
             String body;
             String txt;
