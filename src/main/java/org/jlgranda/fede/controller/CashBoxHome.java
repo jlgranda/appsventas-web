@@ -1177,7 +1177,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         Record record = buildRecord();
         record.addRecordDetail(updateRecordDetail(selectedAccount, amountDeposit, RecordDetail.RecordTDetailType.HABER));//Crear/Modificar un RecordDetail al Record del Journal del Día
         record.addRecordDetail(updateRecordDetail(depositAccount, amountDeposit, RecordDetail.RecordTDetailType.DEBE));
-        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") + selectedAccount.getName() + " " + I18nUtil.getMessages("common.to.a") + " " + depositAccount.getName()).toUpperCase());
+        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") +" "+ selectedAccount.getName() + " " + I18nUtil.getMessages("common.to.a") + " " + depositAccount.getName()).toUpperCase());
         journal.addRecord(record);
 
         GeneralJournal save = journalService.save(journal.getId(), journal); //Validar la inserción del Record

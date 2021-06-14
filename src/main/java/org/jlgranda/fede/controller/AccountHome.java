@@ -194,6 +194,7 @@ public class AccountHome extends FedeController implements Serializable {
     public Account getAccount() {
         if (this.accountId != null && !this.account.isPersistent()) {
             this.account = accountService.find(accountId);
+            this.parentAccount = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getParentAccountId(), this.organizationData.getOrganization());
         }
         return account;
     }
@@ -211,7 +212,6 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public Account getParentAccount() {
-        this.parentAccount = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getParentAccountId(), this.organizationData.getOrganization());
         return this.parentAccount;
     }
 
@@ -304,15 +304,13 @@ public class AccountHome extends FedeController implements Serializable {
         TreeNode generalTree = new DefaultTreeNode(new Account("Código", "Cuenta"), null); //Árbol general
         TreeNode parent = null;
         TreeNode child = null;
-        int iterador = 0;
-        while (iterador < accountsOrder.size()) {
-            if (accountsOrder.get(iterador).getParentAccountId() == null) {
-                parent = new DefaultTreeNode(accountsOrder.get(iterador), generalTree);
-                iterador++;
-            } else {
-                while (accountsOrder.get(iterador).getParentAccountId() != null) {
-                    child = new DefaultTreeNode(accountsOrder.get(iterador), parent);
-                    iterador++;
+        for (Account iterator : accountsOrder) {
+            if (iterator.getParentAccountId() == null) {
+                parent = new DefaultTreeNode(iterator, generalTree);
+                for (Account i : accountsOrder) {
+                    if (i.getParentAccountId() != null && i.getParentAccountId().equals(iterator.getId())) {
+                        child = new DefaultTreeNode(i, parent);
+                    }
                 }
             }
         }
@@ -343,6 +341,7 @@ public class AccountHome extends FedeController implements Serializable {
             account.setOrganization(this.organizationData.getOrganization());
         }
         accountService.save(account.getId(), account);
+        setTreeDataModel(createTreeAccounts());//Refrescar el árbol de cuentas
     }
 
     //LIBRO MAYOR DE PLAN DE CUENTAS
@@ -434,13 +433,11 @@ public class AccountHome extends FedeController implements Serializable {
 
     //REGISTRO DE ASIENTOS CONTABLES
     public void registerRecordInJournal() {
-//        Crear o encontrar el journal y el record, para insertar los recordDetails
-        GeneralJournal journal = buildFindJournal();
+        GeneralJournal journal = buildFindJournal();//Crear o encontrar el journal y el record, para insertar los recordDetails
         Record record = buildRecord();
-//        Crear/Modificar y anadir un recordDetail al record
-        record.addRecordDetail(updateRecordDetail(this.accountSelected.getName()));
+        record.addRecordDetail(updateRecordDetail(this.accountSelected.getName()));//Crear/Modificar y anadir un recordDetail al record
         record.addRecordDetail(updateRecordDetail(this.depositAccount.getName()));
-        record.setDescription("Transferencia del valor de " + this.accountSelected.getName() + " hacia " + this.depositAccount.getName());
+        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") +" "+ this.accountSelected.getName() + " hacia " + this.depositAccount.getName()).toUpperCase());
         journal.addRecord(record); //Agregar el record al journal
 
         journalService.save(journal.getId(), journal); //Guardar el journal
