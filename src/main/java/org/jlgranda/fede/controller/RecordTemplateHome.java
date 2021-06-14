@@ -17,28 +17,20 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.SettingNames;
-import com.jlgranda.fede.ejb.RecordDetailTemplateService;
 import com.jlgranda.fede.ejb.RecordTemplateService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import net.tecnopro.document.model.Tarea;
-import org.jlgranda.fede.model.accounting.Account;
-import org.jlgranda.fede.model.accounting.RecordDetailTemplate;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.ui.model.LazyRecordTemplateDataModel;
-import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.util.I18nUtil;
-import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +55,7 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     
     @EJB
     private RecordTemplateService recordTemplateService;
-    
-    @EJB
-    private RecordDetailTemplateService recordDetailTemplateService;
+   
     
     @Inject
     private OrganizationData organizationData;
@@ -74,11 +64,6 @@ public class RecordTemplateHome extends FedeController implements Serializable {
      * El objeto Record para edición
      */
     private RecordTemplate recordTemplate;
-
-    /**
-     * RecordDetail para edición
-     */
-    private RecordDetailTemplate recordDetailTemplate;
     
     private RecordTemplate recordTemplateSelected;
     
@@ -92,16 +77,7 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
         this.recordTemplate = recordTemplateService.createInstance();
-        this.recordDetailTemplate = recordDetailTemplateService.createInstance();
         
-    }
-
-    public RecordDetailTemplate getRecordDetailTemplate() {
-        return recordDetailTemplate;
-    }
-
-    public void setRecordDetailTemplate(RecordDetailTemplate recordDetailTemplate) {
-        this.recordDetailTemplate = recordDetailTemplate;
     }
 
     public LazyRecordTemplateDataModel getLazyDataModel() {
