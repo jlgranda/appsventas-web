@@ -34,6 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/fede/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
+            <li>/</li>
             <li><p:link outcome="home">#{i18n['common.profile']}</p:link></li>
         </ui:define>
         <ui:define name="content">
@@ -51,11 +55,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}"> 
                                 <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
                             </p:panel>
-                            <p:fileUpload fileUploadListener="#{subjectAdminHome.handlePhotoUpload}" mode="advanced" dragDropSupport="true" auto="true"
+                            <p:fileUpload mode="advanced" dragDropSupport="true" auto="true"
                                           process="@form" update="photo"   
                                           sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
                                           fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
-                                          allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/>
+                                          allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/><!--fileUploadListener="#{subjectAdminHome.handlePhotoUpload}" -->
                         </div>
                     </div>
                     <div class="ui-g ui-fluid">

@@ -133,7 +133,7 @@ public class AccountHome extends FedeController implements Serializable {
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
-        
+
         setTreeDataModel(createTreeAccounts());
     }
 
@@ -159,7 +159,6 @@ public class AccountHome extends FedeController implements Serializable {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //GETTER AND SETTER
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
     public LazyAccountDataModel getLazyDataModel() {
         return lazyDataModel;
     }
@@ -196,10 +195,6 @@ public class AccountHome extends FedeController implements Serializable {
         if (this.accountId != null && !this.account.isPersistent()) {
             this.account = accountService.find(accountId);
         }
-        this.parentAccount = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getCuentaPadreId(), this.organizationData.getOrganization());
-        if (this.parentAccount != null) {
-            this.account.setCuentaPadreId(this.parentAccount.getId());
-        }
         return account;
     }
 
@@ -216,6 +211,7 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public Account getParentAccount() {
+        this.parentAccount = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getParentAccountId(), this.organizationData.getOrganization());
         return this.parentAccount;
     }
 
@@ -266,10 +262,13 @@ public class AccountHome extends FedeController implements Serializable {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // MÉTODOS/FUNCIONES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
     //OBJETO: ACCOUNT.GETACCOUNTS
     public List<Account> getAccounts() {
         return accountService.findByOrganization(this.organizationData.getOrganization());
+    }
+
+    public void findParentAccount() {
+
     }
 
     //MODELO: LAZY DE DATOS
@@ -307,11 +306,11 @@ public class AccountHome extends FedeController implements Serializable {
         TreeNode child = null;
         int iterador = 0;
         while (iterador < accountsOrder.size()) {
-            if (accountsOrder.get(iterador).getCuentaPadreId() == null) {
+            if (accountsOrder.get(iterador).getParentAccountId() == null) {
                 parent = new DefaultTreeNode(accountsOrder.get(iterador), generalTree);
                 iterador++;
             } else {
-                while (accountsOrder.get(iterador).getCuentaPadreId() != null) {
+                while (accountsOrder.get(iterador).getParentAccountId() != null) {
                     child = new DefaultTreeNode(accountsOrder.get(iterador), parent);
                     iterador++;
                 }
@@ -333,6 +332,9 @@ public class AccountHome extends FedeController implements Serializable {
 
     //ACCIÓN PRINCIPAL: GUARDAR CUENTA
     public void save() {
+        if (this.parentAccount != null) {
+            account.setParentAccountId(this.parentAccount.getId());
+        }
         if (account.isPersistent()) {
             account.setLastUpdate(Dates.now());
         } else {

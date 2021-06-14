@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li>#{i18n['app.fede.accounting.journals']}</li>
+        <li><p:link outcome="/pages/fede/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/accounting/journal.jsf">#{generalJournalHome.journalId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.journal']}</p:link></li>
     </ui:define>
@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  rows="25" scrollRows="25"
                                  value="#{generalJournalHome.journal.records}" var="record"
                                  selection="#{generalJournalHome.selectedBussinesEntities}"
-                                 sortOrder="DESCENDING" sortBy="#{record.createdOn}">
+                                 sortBy="#{record.createdOn}">
                         <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.created']}" sortBy="#{record.createdOn}" style="width: 15%">
                             <h:outputText value="#{record.createdOn}">
                                 <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>

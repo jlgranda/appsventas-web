@@ -24,7 +24,7 @@ and open the template in the editor.
         <ui:define name="viewname">
             <li>#{i18n['common.management']}</li>
             <li>/</li>
-            <li>#{i18n['app.management.organizations']}</li>
+            <li><p:link outcome="/pages/management/organization/inbox.jsf">#{i18n['app.management.organizations']}</p:link></li>
             <li>/</li>
             <li><p:link outcome="/pages/management/organization/organization.jsf">#{organizationHome.organizationId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.management.organization']) : i18n['common.edit'].concat(': ')} #{organizationHome.organization.initials}</p:link></li>
         </ui:define>

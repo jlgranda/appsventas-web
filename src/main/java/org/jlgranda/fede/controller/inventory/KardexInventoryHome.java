@@ -339,8 +339,8 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public void refreshFundKardex() {
-        Kardex kardexUpdate = kardexService.find(this.kardexId);
-        if (kardexUpdate != null) {
+        if (this.kardexId != null) {
+            Kardex kardexUpdate = kardexService.find(this.kardexId);
             if (!kardexUpdate.getKardexDetails().isEmpty()) {
                 // Ordenar la lista por el atributo getCreatedOne(), para actualizar el saldo de la Kardex
                 Collections.sort(kardexUpdate.getKardexDetails(), (KardexDetail kardexDetail1, KardexDetail other) -> kardexDetail1.getCreatedOn().compareTo(other.getCreatedOn()));

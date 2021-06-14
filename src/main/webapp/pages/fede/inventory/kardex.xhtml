@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li>#{i18n['common.products']}</li>
+        <li><p:link outcome="/pages/fede/inventory/kardex_items.jsf">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/inventory/kardex.jsf">#{kardexInventoryHome.kardexId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
     </ui:define>
@@ -57,37 +57,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             .rowDefault {
                 background-color: #EFEFEF !important;
             }
+            .container-center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .bold-capital{
+                font-weight: bolder;
+                text-transform: uppercase;
+            }
+            .capital{
+                text-transform: uppercase;
+            }
+            .container-right{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .container-lefth{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            .line-separator{
+                color: #FBFCFC !important;
+                border-width: 0.5px;
+            }
         </style>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.sales.Kardex"/>
         <div class="ui-g">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <div class="ui-g-12">
+<!--                <div class="ui-g-12">
                     <div class="ui-inputgroup">
-                        <div class="ui-g-4">
+                        <div class="ui-g-8">
                             <h1 class="BigTopic">#{i18n['common.detail']} #{i18n['common.of']} #{i18n['common.tarjet']} #{i18n['app.fede.inventory.kardex']} </h1>
                         </div>
-                        <!--                        <div class="ui-g-8" style="text-align: right">
-                                                    <label class="Gray">#{i18n['app.fede.inventory.kardex.detail.range']}: </label>
-                                                    <p:calendar value="#{kardexInventoryHome.start}" class="input-sm" placeholder="#{i18n['common.from']}">
-                                                        <p:ajax event="dateSelect" listener="#{kardexInventoryHome.clear()}" oncomplete="form.submit();"/>
-                                                    </p:calendar>
-                                                    <p:calendar value="#{kardexInventoryHome.end}" class="input-sm" placeholder="#{i18n['common.to']}">
-                                                        <p:ajax event="dateSelect" listener="#{kardexInventoryHome.clear()}" oncomplete="form.submit();"/>
-                                                    </p:calendar>
-                                                    <p:commandButton icon="fa fa-search" styleClass="ui-button-warning"/>
-                                                </div>-->
                     </div>
-                </div>
-                <div class="card ui-g-12 ui-fluid">
-                    <div class="ui-g-6">
+                </div>-->
+                <h1 class="BigTopic">#{i18n['common.detail']} #{i18n['common.of']} #{i18n['common.tarjet']} #{i18n['app.fede.inventory.kardex']} </h1>
+                <div class="ui-g ui-lg-12">
+                    <div class="ui-g-6 ui-fluid">
                         <div class="ui-inputgroup">
                             <span class="ui-inputgroup-addon">#{i18n['app.fede.inventory.kardex.sku']}</span>
                             <p:inputText value="#{kardexInventoryHome.kardex.code}" required="#{true}" disabled="#{kardexInventoryHome.kardexId!=null}"/>
                         </div>
                         <div class="ui-inputgroup">
-                            <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 30%">#{i18n['common.product']}</span>
+                            <span class="ui-inputgroup-addon capital" style="width: 30%">#{i18n['common.product']}</span>
                             <p:autoComplete value="#{kardexInventoryHome.kardex.product}" effect="blind" disabled="#{kardexInventoryHome.kardexId!=null}"
                                             minQueryLength="2" completeMethod="#{kardexInventoryHome.completeProductKardex}"
                                             var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
@@ -186,9 +204,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                 </p:overlayPanel>
                 <div class="ui-g-7">
-                    <div class="ui-g-4" style="text-align: center; text-transform: uppercase;"><h3>#{i18n['common.entries']}</h3></div>
-                    <div class="ui-g-4" style="text-align: center; text-transform: uppercase;"><h3>#{i18n['common.exitds']}</h3></div>
-                    <div class="ui-g-4" style="text-align: center; text-transform: uppercase;"><h3>#{i18n['common.fund']}</h3></div>
+                    <div class="ui-g-4 container-center capital"><h3>#{i18n['common.entries']}</h3></div>
+                    <div class="ui-g-4 container-center capital"><h3>#{i18n['common.exitds']}</h3></div>
+                    <div class="ui-g-4 container-center capital"><h3>#{i18n['common.fund']}</h3></div>
                 </div>
                 <div class="ui-g-12">
                     <p:dataTable id="dataTable-kardex-details" draggableColumns="true" lazy="false" liveResize="false"
@@ -213,18 +231,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:column headerText="#{i18n['common.vaucher']}">
                             <h:outputText value="#{kardexDetail.code}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.price.unit']}" style="text-align: right">
+                        <p:column headerText="#{i18n['common.price.unit']}">
                             <h:outputText value="#{kardexDetail.unit_value}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
+                        <p:column headerText="#{i18n['common.quantity']}">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_COMPRA' ? '-' : ''} </label>
                             <h:outputText value="#{kardexDetail.quantity}" 
                                           rendered="#{kardexDetail.operation_type=='EXISTENCIA_INICIAL' or kardexDetail.operation_type=='PRODUCCION' 
                                                       or  kardexDetail.operation_type=='COMPRA' or kardexDetail.operation_type=='DEVOLUCION_COMPRA'}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.value']}" style="text-align: right">
+                        <p:column headerText="#{i18n['common.value']}">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_COMPRA' ? '-' : ''} </label>
                             <h:outputText value="#{kardexDetail.total_value}"
                                           rendered="#{kardexDetail.operation_type=='EXISTENCIA_INICIAL' or kardexDetail.operation_type=='PRODUCCION' 
@@ -232,22 +250,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.quantity.min']}" style="text-align: right">
+                        <p:column headerText="#{i18n['common.quantity.min']}">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_VENTA' ? '-' : ''} </label>
                             <h:outputText value="#{kardexDetail.quantity}" rendered="#{kardexDetail.operation_type=='VENTA' or kardexDetail.operation_type=='DEVOLUCION_VENTA'
                                                    or kardexInventoryHome.kardexDetail.operation_type=='SALIDA_INVENTARIO'}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.value']}" style="text-align: right">
+                        <p:column headerText="#{i18n['common.value']}">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_VENTA' ? '-' : ''} </label>
                             <h:outputText value="#{kardexDetail.total_value}" rendered="#{kardexDetail.operation_type=='VENTA' or kardexDetail.operation_type=='DEVOLUCION_VENTA'
                                                    or kardexInventoryHome.kardexDetail.operation_type=='SALIDA_INVENTARIO'}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.quantity.min']}" style="text-align: right">
+                        <p:column headerText="#{i18n['common.quantity.min']}">
                             <h:outputText value="#{kardexDetail.cummulative_quantity}" style="#{kardexDetail.cummulative_quantity lt 0 ? 'color: #e53935;': ''}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.value']}" style="text-align: right">
+                        <p:column headerText="#{i18n['common.value']}">
                             <h:outputText value="#{kardexDetail.cummulative_total_value lt 0 ? '-': ''}" style="#{kardexDetail.cummulative_total_value lt 0 ? 'color: #e53935;': ''}"/>
                             <h:outputText value="#{kardexDetail.cummulative_total_value}" style="#{kardexDetail.cummulative_total_value lt 0 ? 'color: #e53935;': ''}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
