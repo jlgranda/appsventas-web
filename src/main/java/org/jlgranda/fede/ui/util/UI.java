@@ -87,8 +87,8 @@ public class UI {
     public EmissionType[] getEmissionTypes() {
         return EmissionType.values();
     }
-    
-    public FacturaElectronica.DocumentType[] getDocumentFacturaTypes(){
+
+    public FacturaElectronica.DocumentType[] getDocumentFacturaTypes() {
         return FacturaElectronica.DocumentType.values();
     }
 
@@ -115,7 +115,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public SelectItem[] getProductTypesAsSelectItem(List<Product> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
@@ -130,7 +130,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public SelectItem[] getProductKardexAsSelectItem(List<Product> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
@@ -145,7 +145,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public SelectItem[] getInvoiceAsSelectItem(List<Invoice> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
@@ -160,7 +160,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public List<SelectItem> getGroupTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -185,7 +185,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public SelectItem[] getAccountAsSelectItem(List<Account> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
@@ -200,7 +200,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public List<SelectItem> getAccountTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -213,7 +213,16 @@ public class UI {
 
         return items;
     }
-    
+
+    public List<SelectItem> getRecordTemplatesTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+
+        return items;
+    }
+
     public List<SelectItem> getOperationTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -236,7 +245,7 @@ public class UI {
 
         return items;
     }
-    
+
     public List<SelectItem> getMeasuresTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -257,7 +266,7 @@ public class UI {
 
         return items;
     }
-    
+
     public List<SelectItem> getDenominationBillsAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -277,9 +286,10 @@ public class UI {
         items.add(item);
         item = new SelectItem("$ 1 (billete)", "$ 1");
         items.add(item);
-        
+
         return items;
     }
+
     public List<SelectItem> getDenominationMoneysAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -297,7 +307,7 @@ public class UI {
         items.add(item);
         item = new SelectItem("1 ¢", "1 ¢");
         items.add(item);
-        
+
         return items;
     }
 
@@ -320,7 +330,7 @@ public class UI {
         }
         return items;
     }
-    
+
     public List<SelectItem> getDocumentFacturaTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -407,9 +417,9 @@ public class UI {
 
         return items;
     }
-    
-    public List<SelectItem> getOrganizationsAsSelectItem(List<Organization> organizations){
-        
+
+    public List<SelectItem> getOrganizationsAsSelectItem(List<Organization> organizations) {
+
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
@@ -550,11 +560,11 @@ public class UI {
     public String truncateString(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.gift.summary.length", "28")));
     }
-    
+
     public String truncateFilename(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.documents.filename.length", "14")));
     }
-    
+
     public static void main(String[] args) {
         System.out.println(new org.apache.commons.codec.digest.Crypt().crypt("f3d3"));
 

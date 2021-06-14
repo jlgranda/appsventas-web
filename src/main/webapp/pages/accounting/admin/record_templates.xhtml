@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.recordtemplates']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.recordtemplates']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -32,14 +32,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['app.fede.accounting.recordtemplates']}</p:link></li>
+            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['common.recordtemplates']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
                         <h2 class="BigTopic" style="font-weight: bolder">
-                            <p:button value="#{i18n['common.new']} #{i18n['app.fede.accounting.recordtemplate']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
+                            <p:button value="#{i18n['common.newa']} #{i18n['common.business.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
                         </h2>
                     </div>
                     <div class="card">
@@ -60,20 +60,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                 <h:outputText value="#{recordTemplate.name}" />
                             </p:column>
-                            
                             <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{recordTemplate.createdOn}">
                                 <h:outputText value="#{recordTemplate.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
-                            </p:column>
-                            <p:column>
-                                <p:commandButton id="button-generalLedger" update="form"
-                                                 title="#{i18n['app.fede.accounting.generalLedger']}" icon="fa fa-book"
-                                                 actionListener="#{recordTemplateHome.mostrarFormularioEdicion(recordTemplate)}">
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{recordTemplateHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandButton>
                             </p:column>
                         </p:dataTable>
                     </div>
