@@ -33,8 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['app.fede.accounting.recordtemplates']}</p:link></li>
-            <li>#{recordTemplateHome.recordTemplateId == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.recordtemplate']).concat(' ') : ''} #{recordTemplateHome.recordTemplate.name}</li>
+            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['common.recordtemplates']}</p:link></li>
+            <li>/</li>
+            <li>#{recordTemplateHome.recordTemplateId == null ? i18n['common.newa'].concat(' ').concat(i18n['common.business.rule']).concat(' ') : ''} #{recordTemplateHome.recordTemplate.name}</li>
         </ui:define>
         <ui:define name="content">
             <o:importConstants type="net.tecnopro.document.model.EstadoTipo" />
@@ -42,9 +43,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12 ui-lg-12 ui-md-12">
                     <!-- INTANCIA PROCESO -->
                     <h1 class="BigTopic">#{recordTemplateHome.recordTemplate.name}</h1>
-                    <div class="card ui-widget-content">
-                        
-                    </div><!-- contenedor principal -->
+                    <div class="ui-g ui-lg-12">
+                        <div class="Container100 Responsive50">
+                            <div class="ContainerIndent">
+                                <label>#{i18n['common.firstname']}&nbsp;</label>
+                                <div class="EmptyBox10"/>
+                                <p:inputText id="nme" value="#{recordTemplateHome.recordTemplate.name}" required="#{true}"/>
+                            </div>
+                            <div class="ContainerIndent">
+                                <!--<label>#{i18n['common.type']}&nbsp;</label>-->
+                                <!--<div class="EmptyBox10"/>-->
+<!--                                <p:selectOneMenu value="#{recordTemplateHome.recordTemplate.codetype}"
+                                                 required="#{false}" immediate="true"> 
+                                    <f:selectItems value="#{ui.getRecordTemplatesTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                    <p:ajax update="@this" />
+                                </p:selectOneMenu>-->
+                            </div>
+                            <div class="ContainerIndent">
+                                <label>#{i18n['common.business.rule']}&nbsp;</label>
+                                <div class="EmptyBox10"/>
+                                <p:inputTextarea id="rule" value="#{recordTemplateHome.recordTemplate.rule}" rows="14" cols="20" required="#{true}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="EmptyBox10"></div>
+                    <p:toolbar rendered="#{true}">
+                        <f:facet name="left">
+                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
+                                             actionListener="#{recordTemplateHome.save()}" action="#{recordTemplateHome.getOutcome()}"
+                                             disabled="#{false}"
+                                             style="width: auto !important;"
+                                             type="submit"/>
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                        </f:facet>
+
+                        <f:facet name="right">
+
+                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                                             actionListener="#{recordTemplateHome.closeDialog(null)}" 
+                                             action="items"
+                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             />
+                        </f:facet>
+
+                    </p:toolbar>
                 </div>
             </div>
         </ui:define>

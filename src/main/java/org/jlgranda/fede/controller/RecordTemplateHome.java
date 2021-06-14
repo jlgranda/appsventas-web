@@ -31,6 +31,7 @@ import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.ui.model.LazyRecordTemplateDataModel;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,42 +43,41 @@ import org.slf4j.LoggerFactory;
 @Named
 @ViewScoped
 public class RecordTemplateHome extends FedeController implements Serializable {
-    
+
     private static final long serialVersionUID = -1007161141552849702L;
 
     Logger logger = LoggerFactory.getLogger(RecordTemplateHome.class);
-    
+
     @Inject
     private SettingHome settingHome;
-    
+
     @Inject
     private Subject subject;
-    
+
     @EJB
     private RecordTemplateService recordTemplateService;
-   
-    
+
     @Inject
     private OrganizationData organizationData;
-    
+
     /**
      * El objeto Record para edición
      */
     private RecordTemplate recordTemplate;
-    
+
     private RecordTemplate recordTemplateSelected;
-    
+
     /**
      * Controla el comportamiento del controlador y pantalla
      */
     private LazyRecordTemplateDataModel lazyDataModel;
-    
+
     private Long recordTemplateId;
-    
+
     @PostConstruct
     private void init() {
         this.recordTemplate = recordTemplateService.createInstance();
-        
+
     }
 
     public LazyRecordTemplateDataModel getLazyDataModel() {
@@ -95,7 +95,7 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     public void setRecordTemplateId(Long recordTemplateId) {
         this.recordTemplateId = recordTemplateId;
     }
-    
+
     @Override
     public void handleReturn(SelectEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -142,7 +142,7 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     }
 
     public boolean mostrarFormularioEdicion(RecordTemplate recordTemplate) {
-        
+
         return mostrarFormularioRecordTemplateEdicionValues(null);
     }
 
@@ -150,7 +150,7 @@ public class RecordTemplateHome extends FedeController implements Serializable {
         removeSessionParameter("recordtemplate");
         super.closeDialog(data);
     }
-    
+
     public void onRowSelect(SelectEvent event) throws IOException {
         //Redireccionar a RIDE de objeto seleccionado
         if (event != null && event.getObject() != null) {
@@ -159,5 +159,16 @@ public class RecordTemplateHome extends FedeController implements Serializable {
             redirectTo("/pages/accounting/admin/record_template.jsf?recordTemplateId=" + _recordTemplate.getId());
         }
     }
-    
+
+    public void save() {
+        if (recordTemplate.isPersistent()) {
+            recordTemplate.setLastUpdate(Dates.now());
+        } else {
+            recordTemplate.setAuthor(this.subject);
+            recordTemplate.setOwner(this.subject);
+            recordTemplate.setOrganization(this.organizationData.getOrganization());
+
+        }
+        recordTemplateService.save(recordTemplate.getId(), recordTemplate);
+    }
 }
