@@ -603,6 +603,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         //Corregir objetos cuenta en los detalles
         record.getRecordDetails().forEach(rd -> {
+            rd.setLastUpdate(Dates.now());
+            rd.setLastUpdate(Dates.now());
             rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
         });
         
