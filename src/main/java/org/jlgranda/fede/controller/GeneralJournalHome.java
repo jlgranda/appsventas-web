@@ -362,26 +362,17 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
 
     public void validateNewJournal() throws IOException {
-        GeneralJournal generalJournal = journalService.createInstance();
-        generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        if (generalJournal == null) {
+        List<GeneralJournal> generalJournal = journalService.findByNamedQueryWithLimit("GeneralJournal.findByCreatedOnAndOrg",1, Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        if (generalJournal.isEmpty()) {
             redirectTo("/pages/fede/accounting/journal.jsf");
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date") + " " + Dates.toDateString(Dates.now()));
         }
-//        List<GeneralJournal> generalJournal = new ArrayList<>();
-//        generalJournal = journalService.findByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-//        if (generalJournal.isEmpty()) {
-//            redirectTo("/pages/fede/accounting/journal.jsf");
-//        }else{
-//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date") + " " + Dates.toDateString(Dates.now()));
-//        }
     }
 
     public void validateNewReloadJournal() throws IOException {
         if (this.journalId == null) {
-            GeneralJournal generalJournal = journalService.createInstance();
-            generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+            GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
             if (generalJournal == null) {
                 this.journal = journalService.save(buildJournal());
             } else {
