@@ -552,68 +552,68 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String collect() {
         //Ejecutar regla de registro contable
-        RecordTemplate recordTemplate = new RecordTemplate();
-        recordTemplate.setRule("global org.jlgranda.fede.model.accounting.Record record;\n" +
-"import org.jlgranda.fede.model.document.EmissionType;\n" +
-"import org.jlgranda.fede.model.sales.Invoice;\n" +
-"import org.jlgranda.fede.model.accounting.RecordDetail;\n" +
-"\n" +
-"\n" +
-"rule \"Registro de venta\"\n" +
-"when\n" +
-"	invoice:Invoice(  emissionType.toString() == \"SALE\" && total > 0 )\n" +
-"then\n" +
-"	RecordDetail recordDetail = new RecordDetail();\n" +
-"        recordDetail.setRecordDetailTypeFromName(\"DEBE\");\n" +
-"        recordDetail.setAccountName(\"CAJA CHICA\");\n" +
-"        recordDetail.setAmount(invoice.getTotal());\n" +
-"        record.addRecordDetail(recordDetail);\n" +
-"        \n" +
-"        recordDetail = new RecordDetail();\n" +
-"        recordDetail.setRecordDetailTypeFromName(\"HABER\");\n" +
-"        recordDetail.setAccountName(\"MERCADERIAS\"); //Caja chica\n" +
-"        recordDetail.setAmount(invoice.getTotal());\n" +
-"        record.addRecordDetail(recordDetail);\n" +
-"        \n" +
-"        record.setName(\"Registro de venta\" + invoice.getEmissionType());\n" +
-"end");
-        
-        Record record = recordService.createInstance();
-        
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.emissionType: " + invoice.getEmissionType());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.total: " + invoice.getTotal());
-        Record recordOut = new RuleRunner().run(recordTemplate, this.invoice, record); //El registro contable
-        
-        //TODO Procesar recordOut que contiene el resultado de la ejecución de la regla
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record: " + recordOut.getName());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetails: " + recordOut.getRecordDetails());
-        record.getRecordDetails().stream().map(rd -> {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail name: " + rd.getAccountName());
-            return rd;
-        }).map(rd -> {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail type: " + rd.getRecordDetailType());
-            return rd;
-        }).forEachOrdered(rd -> {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail amount: " + rd.getAmount());
-        });
-        
-        record.setOwner(this.subject);
-        record.setAuthor(this.subject);
-        record.setJournal(generalJournalService.find(Dates.now(), this.organizationData.getOrganization()));
-        
-        //Corregir objetos cuenta en los detalles
-        record.getRecordDetails().forEach(rd -> {
-            rd.setLastUpdate(Dates.now());
-            rd.setLastUpdate(Dates.now());
-            rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
-        });
-        
-        recordService.save(recordOut); 
+//        RecordTemplate recordTemplate = new RecordTemplate();
+//        recordTemplate.setRule("global org.jlgranda.fede.model.accounting.Record record;\n" +
+//"import org.jlgranda.fede.model.document.EmissionType;\n" +
+//"import org.jlgranda.fede.model.sales.Invoice;\n" +
+//"import org.jlgranda.fede.model.accounting.RecordDetail;\n" +
+//"\n" +
+//"\n" +
+//"rule \"Registro de venta\"\n" +
+//"when\n" +
+//"	invoice:Invoice(  emissionType.toString() == \"SALE\" && total > 0 )\n" +
+//"then\n" +
+//"	RecordDetail recordDetail = new RecordDetail();\n" +
+//"        recordDetail.setRecordDetailTypeFromName(\"DEBE\");\n" +
+//"        recordDetail.setAccountName(\"CAJA CHICA\");\n" +
+//"        recordDetail.setAmount(invoice.getTotal());\n" +
+//"        record.addRecordDetail(recordDetail);\n" +
+//"        \n" +
+//"        recordDetail = new RecordDetail();\n" +
+//"        recordDetail.setRecordDetailTypeFromName(\"HABER\");\n" +
+//"        recordDetail.setAccountName(\"MERCADERIAS\"); //Caja chica\n" +
+//"        recordDetail.setAmount(invoice.getTotal());\n" +
+//"        record.addRecordDetail(recordDetail);\n" +
+//"        \n" +
+//"        record.setName(\"Registro de venta\" + invoice.getEmissionType());\n" +
+//"end");
+//        
+//        Record record = recordService.createInstance();
+//        
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.emissionType: " + invoice.getEmissionType());
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record.total: " + invoice.getTotal());
+//        Record recordOut = new RuleRunner().run(recordTemplate, this.invoice, record); //El registro contable
+//        
+//        //TODO Procesar recordOut que contiene el resultado de la ejecución de la regla
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< record: " + recordOut.getName());
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetails: " + recordOut.getRecordDetails());
+//        record.getRecordDetails().stream().map(rd -> {
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail name: " + rd.getAccountName());
+//            return rd;
+//        }).map(rd -> {
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail type: " + rd.getRecordDetailType());
+//            return rd;
+//        }).forEachOrdered(rd -> {
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< recordDetail amount: " + rd.getAmount());
+//        });
+//        
+//        record.setOwner(this.subject);
+//        record.setAuthor(this.subject);
+//        record.setJournal(generalJournalService.find(Dates.now(), this.organizationData.getOrganization()));
+//        
+//        //Corregir objetos cuenta en los detalles
+//        record.getRecordDetails().forEach(rd -> {
+//            rd.setLastUpdate(Dates.now());
+//            rd.setLastUpdate(Dates.now());
+//            rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
+//        });
+//        
+//        recordService.save(recordOut); 
         //Registrar en KARDEX
-        //registerDetailInKardex();
+        registerDetailInKardex();
         
         //Guardar cambios en la entidad invoice
-        //collect(StatusType.CLOSE.toString());
+        collect(StatusType.CLOSE.toString());
         
         
         return getOutcome();
