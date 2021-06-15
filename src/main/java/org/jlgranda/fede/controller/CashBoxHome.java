@@ -625,7 +625,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActivePanelDeposit() {
-        if (this.cashBoxGeneral.getId() != null && this.cashBoxInitialFinish.getId() != null && existBreakdownSecondary() == false) {
+        if (this.cashBoxGeneral.getId() != null && this.cashBoxInitialFinish != null && existBreakdownSecondary() == false) {
             if (CashBoxGeneral.Status.OPEN.equals(this.cashBoxGeneral.getStatusCashBoxGeneral())
                     && CashBoxPartial.Status.CLOSED.equals(this.cashBoxInitialFinish.getStatusCashBoxPartial())
                     && CashBoxPartial.Priority.MAIN.equals(this.cashBoxInitialFinish.getPriority_order())
@@ -708,6 +708,9 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public int getActiveIndex() {
+        if(this.cashBoxPartial.getId()!=null && CashBoxPartial.Status.OPEN.equals(this.cashBoxPartial.getStatusCashBoxPartial())){
+            activeIndex =-1;
+        }
         return activeIndex;
     }
 
@@ -720,13 +723,14 @@ public class CashBoxHome extends FedeController implements Serializable {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //AJUSTE DE CIERRE DE CAJA
     public void findCashBoxs() { //Buscar CashBoxGeneral y CashBox del Cajero en caso de existencia
-        this.cashBoxGeneral = cashBoxGeneralService.findUniqueByNamedQuery("CashBoxGeneral.findByCreatedOnAndOrg", getStart(), getEnd(), this.organizationData.getOrganization());
-        if (this.cashBoxGeneral == null) {
+        List<CashBoxGeneral> cashBoxGeneralExist = cashBoxGeneralService.findByNamedQueryWithLimit("CashBoxGeneral.findByCreatedOnAndOrg",1, getStart(), getEnd(), this.organizationData.getOrganization());
+        if(cashBoxGeneralExist.isEmpty()){
             this.cashBoxGeneral = cashBoxGeneralService.createInstance();
-        } else {
-            List<CashBoxPartial> partialExit = cashBoxPartialService.findByNamedQueryWithLimit("CashBoxPartial.findByCashBoxGeneralAndOwner", 1, this.cashBoxGeneral, this.subject);
-            if (!partialExit.isEmpty()) {
-                this.cashBoxPartial = partialExit.get(0);
+        }else {
+            this.cashBoxGeneral = cashBoxGeneralExist.get(0);
+            List<CashBoxPartial> partialExist = cashBoxPartialService.findByNamedQueryWithLimit("CashBoxPartial.findByCashBoxGeneralAndOwner", 1, this.cashBoxGeneral, this.subject);
+            if (!partialExist.isEmpty()) {
+                this.cashBoxPartial = partialExist.get(0);
             }
             this.saldoCashFund = this.cashBoxGeneral.getTotalBreakdownFinal(); //Saldo registrado según el último cierre de caja
         }
@@ -972,10 +976,11 @@ public class CashBoxHome extends FedeController implements Serializable {
         }
         cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
         this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Desglose de Efectivo guardado correctamente!");
-        this.cashBoxGeneral = cashBoxGeneralService.find(this.cashBoxGeneral.getId());//Recargar los objetos
-        if (this.cashBoxPartial.getId() != null) {
-            this.cashBoxPartial = cashBoxPartialService.find(this.cashBoxPartial.getId());
-        }
+//        this.cashBoxGeneral = cashBoxGeneralService.find(this.cashBoxGeneral.getId());//Recargar los objetos
+//        if (this.cashBoxPartial.getId() != null) {
+//            this.cashBoxPartial = cashBoxPartialService.find(this.cashBoxPartial.getId());
+//        }
+        findCashBoxs();
     }
 
     public void closeCashBoxChecker() {
@@ -986,13 +991,12 @@ public class CashBoxHome extends FedeController implements Serializable {
         setActivePanelDeposit(false); //Ocultar el Panel de depósito para volver a validar
         this.saldoCashFund = this.cashBoxPartial.getTotalCashBreakdown(); //Saldo en efectivo más o menos el exceso y faltante de dinero
         updateFinishCashBoxPartial(); //Actualizar la propiedad de StatusPriority finalizado
-        getCashBoxInitialFinish();
         findCashBoxs(); //Recargar el CashBoxGeneral y CashBoxPartial
-        this.cashBoxPartial = cashBoxPartialService.createInstance(); //Crear la nueva Instancia de CashBoxPartial Secondary
-        isActiveButtonBreakdown();
         isActivePanelDeposit();
+        isActiveButtonBreakdown();
         isActivePanelVerification();
         isActiveButtonCloseCash();
+//        this.cashBoxPartial = cashBoxPartialService.createInstance(); //Crear la nueva Instancia de CashBoxPartial Secondary
     }
 
     public void closeCashBoxGeneral() {
@@ -1013,10 +1017,11 @@ public class CashBoxHome extends FedeController implements Serializable {
             }
         }
         cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral); //Guardar el CashBoxGeneral, con el cambio en el cashBoxPartial
-        this.cashBoxGeneral = cashBoxGeneralService.find(this.cashBoxGeneral.getId());//Recargar los objetos
-        if (this.cashBoxPartial.getId() != null) {
-            this.cashBoxPartial = cashBoxPartialService.find(this.cashBoxPartial.getId());
-        }
+//        this.cashBoxGeneral = cashBoxGeneralService.find(this.cashBoxGeneral.getId());//Recargar los objetos
+//        if (this.cashBoxPartial.getId() != null) {
+//            this.cashBoxPartial = cashBoxPartialService.find(this.cashBoxPartial.getId());
+//        }
+        findCashBoxs();
     }
 
     //REGISTRO DE ASIENTOS CONTABLES
@@ -1047,7 +1052,10 @@ public class CashBoxHome extends FedeController implements Serializable {
                 registerRecordInJournal(this.selectedAccount, this.depositAccount, this.amountDeposit); //Registrar asiento contable del depósito del valor de caja
 //                calculeSummaryToday();//Calcular el resumen de dinero con las transacciones
                 calculeSummaryCash(getStart(), getEnd());//Calcular el resumen de dinero con las transacciones
-                this.cashBoxPartial = cashBoxPartialService.createInstance(); //Crear la nueva Instancia de CashBoxPartial Secondary
+//                this.cashBoxPartial = cashBoxPartialService.createInstance(); //Crear la nueva Instancia de CashBoxPartial Secondary
+                if (this.cashBoxPartial.getId() != null) {
+                    this.cashBoxPartial = cashBoxPartialService.createInstance();
+                }
                 setActiveIndex(-1);
                 generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
                 setActiveSelectDeposit(false);//Ocultar el Panel de depósito
@@ -1177,7 +1185,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         Record record = buildRecord();
         record.addRecordDetail(updateRecordDetail(selectedAccount, amountDeposit, RecordDetail.RecordTDetailType.HABER));//Crear/Modificar un RecordDetail al Record del Journal del Día
         record.addRecordDetail(updateRecordDetail(depositAccount, amountDeposit, RecordDetail.RecordTDetailType.DEBE));
-        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") +" "+ selectedAccount.getName() + " " + I18nUtil.getMessages("common.to.a") + " " + depositAccount.getName()).toUpperCase());
+        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") + " " + selectedAccount.getName() + " " + I18nUtil.getMessages("common.to.a") + " " + depositAccount.getName()).toUpperCase());
         journal.addRecord(record);
 
         GeneralJournal save = journalService.save(journal.getId(), journal); //Validar la inserción del Record
@@ -1204,7 +1212,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     private GeneralJournal buildFindJournal() {
-        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         if (generalJournal == null) {
             generalJournal = journalService.createInstance();
             generalJournal.setOrganization(this.organizationData.getOrganization());
@@ -1212,7 +1220,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             generalJournal.setCode(UUID.randomUUID().toString());
             generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
             journalService.save(generalJournal); //Guardar el journal creado
-            generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+            generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         }
         return generalJournal;
     }
