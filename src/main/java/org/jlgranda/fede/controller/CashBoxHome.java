@@ -136,6 +136,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     private BigDecimal salesCash;
     private BigDecimal salesDedit;
     private BigDecimal salesCredit;
+    private BigDecimal salesCreditCollect;
     private BigDecimal purchasesCash;
     private BigDecimal purchasesCredit;
     private BigDecimal purchasesCreditPaid;
@@ -209,6 +210,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         setSalesCash(BigDecimal.ZERO);
         setSalesDedit(BigDecimal.ZERO);
         setSalesCredit(BigDecimal.ZERO);
+        setSalesCreditCollect(BigDecimal.ZERO);
         setPurchasesCash(BigDecimal.ZERO);
         setPurchasesCredit(BigDecimal.ZERO);
         setPurchasesCreditPaid(BigDecimal.ZERO);
@@ -364,6 +366,14 @@ public class CashBoxHome extends FedeController implements Serializable {
         this.salesCredit = salesCredit;
     }
 
+    public BigDecimal getSalesCreditCollect() {
+        return salesCreditCollect;
+    }
+
+    public void setSalesCreditCollect(BigDecimal salesCreditCollect) {
+        this.salesCreditCollect = salesCreditCollect;
+    }
+    
     public BigDecimal getPurchasesCash() {
         return purchasesCash;
     }
@@ -750,27 +760,39 @@ public class CashBoxHome extends FedeController implements Serializable {
         if (this.saldoInitial == null) {
             this.saldoInitial = BigDecimal.ZERO;
         }
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
+//        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
         objects.stream().forEach((Object object) -> {
             this.salesCash = (BigDecimal) object;
         });
         if (this.salesCash == null) {
             this.salesCash = BigDecimal.ZERO;
         }
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA DEBITO");
+//        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA DEBITO");
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA DEBITO");
         objects.stream().forEach((Object object) -> {
             this.salesDedit = (BigDecimal) object;
         });
         if (this.salesDedit == null) {
             this.salesDedit = BigDecimal.ZERO;
         }
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA CREDITO");
+//        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA CREDITO");
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA CREDITO");
         objects.stream().forEach((Object object) -> {
             this.salesCredit = (BigDecimal) object;
         });
         if (this.salesCredit == null) {
             this.salesCredit = BigDecimal.ZERO;
         }
+        
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesSourceMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.OVERDUE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
+        objects.stream().forEach((Object object) -> {
+            this.salesCreditCollect = (BigDecimal) object;
+        });
+        if (this.salesCreditCollect == null) {
+            this.salesCreditCollect = BigDecimal.ZERO;
+        }
+        
         objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CASH);
         objects.stream().forEach((Object object) -> {
             this.purchasesCash = (BigDecimal) object;
@@ -807,12 +829,12 @@ public class CashBoxHome extends FedeController implements Serializable {
             this.transactionCredit = BigDecimal.ZERO;
         }
 
-        this.salesTotal = this.salesCash.add(this.salesDedit).add(this.salesCredit); //Suma de ventas en caja
+        this.salesTotal = this.salesCash.add(this.salesDedit).add(this.salesCredit).add(this.salesCreditCollect); //Suma de ventas en caja
         this.purchasesTotal = this.purchasesCash.add(this.purchasesCredit);//Suma de compras en caja
         this.transactionTotal = this.transactionDebit.subtract(this.transactionCredit);//Suma de transacciones en caja
         this.cashTotal = this.salesTotal.subtract(this.purchasesTotal).add(this.transactionTotal); //Valor de Caja según los Libros: Total Ventas - Total Compras y la + o - de Transacciones
         // this.saldoCash = this.cashTotal.subtract(this.salesDedit.add(this.salesCredit)); //Dinero en efectivo de Caja
-        this.saldoCash = this.salesCash.subtract(this.purchasesCash.add(this.purchasesCreditPaid)).add(this.transactionTotal); //Dinero en efectivo de Caja
+        this.saldoCash = this.salesCash.add(this.salesCreditCollect).subtract(this.purchasesCash.add(this.purchasesCreditPaid)).add(this.transactionTotal); //Dinero en efectivo de Caja
         this.saldoCash = this.saldoCash.add(this.saldoInitial); //Aumentar el Dinero que quedó del cierre de caja anterior
     }
 

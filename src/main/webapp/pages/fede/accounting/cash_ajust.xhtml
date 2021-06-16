@@ -103,6 +103,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="sales-debit" value="#{cashBoxHome.salesDedit}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
+                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.credit.collected']}: </div>
+                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
+                            <h:outputText id="sales-credit-collect" value="#{cashBoxHome.salesCreditCollect}"><f:convertNumber type="currency"/></h:outputText>
+                        </div>
                         <div class="ui-g-12"><p:separator class="line-separator"/></div>
                     </h:panelGroup>
                     <h:panelGroup id="panel-purchases" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
