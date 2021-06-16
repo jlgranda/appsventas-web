@@ -154,7 +154,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private ProductCache productCache;
-    
+
     private LazyInvoiceDataModel lazyDataModel;
 
     private DocumentType documentType;
@@ -200,13 +200,13 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private KardexDetailService kardexDetailService;
-    
+
     @EJB
     private RecordService recordService;
-    
+
     @EJB
     private GeneralJournalService generalJournalService;
-    
+
     @EJB
     private AccountService accountService;
     
@@ -546,8 +546,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     /**
-     * Guarda la entidad marcandola como CLOSE y generando un secuencial
-     * valido TODO debe generar también una factura electrónica
+     * Guarda la entidad marcandola como CLOSE y generando un secuencial valido
+     * TODO debe generar también una factura electrónica
      *
      * @return outcome de exito o fracaso de la acción
      */
@@ -574,11 +574,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         //Registrar en KARDEX
         registerDetailInKardex();
-        
+
         //Guardar cambios en la entidad invoice
         collect(StatusType.CLOSE.toString());
-        
-        
+
         return getOutcome();
     }
 
@@ -619,8 +618,12 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
+        if (DocumentType.INVOICE.equals(documentType)) {
+            getPayment().setDatePaymentCancel(Dates.now());
+        }
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+            getInvoice().setDocumentTypeSource(getInvoice().getDocumentType());
             getInvoice().setDocumentType(documentType); //Se convierte en factura
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             //Agregar el pago
@@ -633,29 +636,6 @@ public class InvoiceHome extends FedeController implements Serializable {
             setOutcome("");
         }
         return "failed";
-////        if (!documentType.equals(DocumentType.OVERDUE)) {
-////            List<Payment> paymentRegister = paymentService.findByNamedQueryWithLimit("Payment.findByInvoice", 1, getInvoice());
-////            if (!paymentRegister.isEmpty()) {
-////                setPayment(paymentRegister.get(0));
-////                getPayment().setCreatedOn(Dates.now());
-////                getPayment().setLastUpdate(Dates.now());
-////            } 
-//            calculeChange(); //Calcular el cambio sobre el objeto payment en edición
-//            if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
-//                getInvoice().setDocumentType(documentType); //Se convierte en factura
-//                //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
-//                //Agregar el pago
-//                getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
-//                getInvoice().addPayment(getPayment());
-//                getInvoice().setStatus(status);
-//                save(true);
-//            } else {
-//                addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
-//                setOutcome("");
-//            }
-////        }
-//        return "failed";
-////        return getOutcome();
     }
 
     public String print() {
