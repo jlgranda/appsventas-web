@@ -25,7 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['fede']}" />
+        <!--<ui:param name="title" value="#{i18n['fede']}" />-->
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.documents']}</ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{tareaHome.tags}" />

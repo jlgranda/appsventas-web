@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting.accounts.plan']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/popup_general_ledger.jsf">#{i18n['common.account']} #{accountHome.accountSelected.name}</p:link></li>
+            <li><p:link outcome="/pages/fede/accounting/popup_general_ledger.jsf">#{accountHome.accountSelected.name}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -74,7 +74,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      scrollable="true"
                                                      value="#{accountHome.objectsRecordDetail}" var="recordDetail"
                                                      selection="#{accountHome.selectedBussinesEntities}"
-                                                     sortOrder="DESCENDING" sortBy="#{recordDetail[0]}">
+                                                     sortBy="#{recordDetail[0]}">
                                                 <p:column headerText="#{i18n['common.date.created']}" style="width: 25%">
                                                 <h:outputText value="#{recordDetail[0]}">
                                                     <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
@@ -106,7 +106,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </p:columnGroup>
                                         </p:dataTable>
                                         <span class="ui-g-10">
-                                            <p:selectOneMenu id="select-account" value="#{accountHome.depositAccount}" effect="fade" style="width: 100%"
+                                            <p:selectOneMenu id="select-account" value="#{accountHome.depositAccount}" style="width: 100%"
                                                              required="#{false}" immediate="true" rendered="#{accountHome.amountAccount gt 0}"
                                                              converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
                                                 <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>

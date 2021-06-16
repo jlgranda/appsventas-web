@@ -569,7 +569,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setShowPointLabels(false);
         model.setExtender("skinBar2");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.groups"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.inventory.categories"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
