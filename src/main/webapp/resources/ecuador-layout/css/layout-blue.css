@@ -67,6 +67,7 @@ a {
       -o-transform: rotate(180deg);
       -ms-transform: rotate(180deg);
       transform: rotate(180deg); }
+  
   .layout-wrapper .layout-topbar #right-panel-button {
     position: fixed;
     bottom: 10px;
