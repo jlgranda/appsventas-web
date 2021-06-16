@@ -42,6 +42,37 @@
                 };
             }
         }
+        #topbar-back-button {
+            float: left;
+            color: $topbarSidebarButtonColor;
+            height: 60px;
+            width: 60px;
+            display: none;
+            text-align: center;
+            line-height: 60px;
+            @include transition(transform $transitionDuration);
+    
+            &:hover {
+                background-color: $topbarIconHoverBgColor;
+            }
+    
+            i {
+                line-height: inherit;
+                font-size: 24px;
+                @include transition(all .3s);
+
+                &.mobile {
+                    display: none;
+                }
+            }
+                            
+            &.menu-button-rotate {
+                i {
+                    @include rotate(180deg);
+
+                };
+            }
+        }
 
         #right-panel-button {
             position: fixed;
