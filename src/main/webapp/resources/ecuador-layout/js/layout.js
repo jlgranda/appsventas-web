@@ -13,6 +13,7 @@ PrimeFaces.widget.Ecuador = PrimeFaces.widget.BaseWidget.extend({
         this.menulinks = this.menu.find('a');
         this.expandedMenuitems = this.expandedMenuitems||[];
         this.topbarMenuButton = $('#topbar-menu-button');
+        this.topbarBackButton = $('#topbar-back-button');
         this.nanoContainer = this.sidebar.find('.nano');
         this.topbarUserMenuButton = $('#topbar-profile-menu-button');
         this.topbarUserMenu = $('#topbar-usermenu');
@@ -41,6 +42,21 @@ PrimeFaces.widget.Ecuador = PrimeFaces.widget.BaseWidget.extend({
         });
 
         $this.topbarMenuButton.off('click').on('click', function(e) {
+            $this.menuClick = true;
+
+            if($this.isMobile()) {
+                $this.wrapper.toggleClass('layout-menu-mobile-active');
+            }
+            else {
+                if($this.isStaticMenu())
+                    $this.wrapper.toggleClass('layout-menu-static-inactive');
+                else
+                    $this.wrapper.toggleClass('layout-menu-overlay-active');
+            }
+
+            e.preventDefault();
+        });
+        $this.topbarBackButton.off('click').on('click', function(e) {
             $this.menuClick = true;
 
             if($this.isMobile()) {

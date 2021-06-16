@@ -20,7 +20,9 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.RecordTemplateService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -77,10 +79,11 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     @PostConstruct
     private void init() {
         this.recordTemplate = recordTemplateService.createInstance();
-
+        this.setOutcome("record-templates");
     }
 
     public LazyRecordTemplateDataModel getLazyDataModel() {
+        filter();
         return lazyDataModel;
     }
 
@@ -103,7 +106,7 @@ public class RecordTemplateHome extends FedeController implements Serializable {
 
     @Override
     public Group getDefaultGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.defaultGroup;
     }
 
     @Override
@@ -113,10 +116,13 @@ public class RecordTemplateHome extends FedeController implements Serializable {
 
     @Override
     public List<Group> getGroups() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ArrayList<>();
     }
 
     public RecordTemplate getRecordTemplate() {
+        if (this.recordTemplateId != null && !this.recordTemplate.isPersistent()) {
+            this.recordTemplate = recordTemplateService.find(recordTemplateId);
+        }
         return recordTemplate;
     }
 
@@ -154,7 +160,6 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     public void onRowSelect(SelectEvent event) throws IOException {
         //Redireccionar a RIDE de objeto seleccionado
         if (event != null && event.getObject() != null) {
-            //redirectTo("/pages/management/tarea/tarea.jsf?tareaId=" + ((BussinesEntity) event.getObject()).getId());
             RecordTemplate _recordTemplate = (RecordTemplate) event.getObject();
             redirectTo("/pages/accounting/admin/record_template.jsf?recordTemplateId=" + _recordTemplate.getId());
         }
@@ -171,4 +176,28 @@ public class RecordTemplateHome extends FedeController implements Serializable {
         }
         recordTemplateService.save(recordTemplate.getId(), recordTemplate);
     }
+    
+    /**
+     * Filtro que llena el Lazy Datamodel
+     */
+    private void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyRecordTemplateDataModel(recordTemplateService);
+        }
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+        lazyDataModel.setStart(this.getStart());
+        lazyDataModel.setEnd(this.getEnd());
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
+
+    }
+    
 }
