@@ -91,91 +91,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ui-g ui-fluid">
                     <!-- sección de formulario -->
                     <div class="ui-g ui-lg-12 ui-md-12">
-                        <div class="ui-g ui-lg-8 ui-md-12">
-                            <h2>#{i18n['app.fede.sales.invoice.header']}</h2>
-                            <div class="ui-g ui-lg-12 ui-md-12">
-                                <div class="ui-g ui-lg-4 ui-md-12">
-                                    <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['common.nr']}" 
-                                                    execute="@this save-button" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
-                                                    required="true" requiredMessage="#{i18n['common.nr.required']}" 
-                                                    placeholder="#{i18n['common.nr']}"
-                                                    container="none"/>
-                                </div>
-                                <div class="ui-g ui-lg-8 ui-md-12">
-                                    <div class="ui-g ui-lg-12 ui-md-12">
-                                        <div class="ui-g ui-lg-10 ui-md-8">
-                                            <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="blind" 
-                                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
-                                                            completeMethod="#{invoiceHome.find}"
-                                                            var="entidad" itemValue="#{entidad}" 
-                                                            itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
-                                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                            converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                            forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}"
-                                                            placeholder="#{i18n['common.customer']}">
-                                                <p:column>
-                                                    <h:outputText value="#{ui.renderer('', entidad)}"/>
-                                                </p:column>
-                                                <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
-                                            </p:autoComplete>
-                                        </div>
-                                        <div class="ui-g ui-lg-2 ui-md-2">
-                                            <div class="ui-g ui-lg-12 ui-md-12">
-                                                <div class="ui-g ui-lg-6 ui-md-6">
-                                                    <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultCustomer}" title="#{i18n['common.consumer.end']}"> 
-                                                        <p:ajax update="customer" listener="#{invoiceHome.updateDefaultCustomer}" />
-                                                    </p:selectBooleanCheckbox>
-                                                </div>
-                                                <div class="ui-g ui-lg-6 ui-md-6">
-                                                    <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
-                                                                    actionListener="#{invoiceHome.mostrarFormularioProfile()}" ajax="true"
-                                                                    immediate="true"
-                                                                    styleClass="btn-sm" style="width:30px">
-                                                       <p:ajax event="dialogReturn" update="@form"
-                                                               listener="#{invoiceHome.handleReturn}">
-                                                       </p:ajax>
-                                                   </p:commandButton>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="ui-g ui-lg-12 ui-md-12">
+                            <div class="ui-g ui-lg-4 ui-md-12">
+                                <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
+                                                execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
+                                                validator="comandaValidator" placeholder="false"
+                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
+                                                decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
+                                <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
+                                                execute="@this save-button" render="comanda_number_edit" value="#{invoiceHome.invoice.code}" 
+                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
+                                                placeholder="false"
+                                                decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
                             </div>
-                        </div>
-                        <div class="ui-g ui-lg-4 ui-md-12">
-                            <div class="ui-g ui-lg-12 ui-md-12">
-                                <div class="ui-g ui-lg-4 ui-md-12">
-                                    <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
-                                                    execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
-                                                    validator="comandaValidator" placeholder="false"
-                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
-                                                    decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
-                                    <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
-                                                    execute="@this save-button" render="comanda_number_edit" value="#{invoiceHome.invoice.code}" 
-                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
-                                                    placeholder="false"
-                                                    decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
-                                </div>
-                                <div class="ui-g ui-lg-4 ui-md-12">
-                                    <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.board.number']}" 
-                                                    execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
-                                                    required="true" requiredMessage="#{i18n['app.fede.sales.invoice.board.number.required']}"
-                                                    placeholder="false"
-                                                    decimalPlaces="0" container="none" rendered="true"/>
-                                </div>
-                                <div class="ui-g ui-lg-4 ui-md-12">
-                                    <label>#{i18n['app.fede.sales.invoice.pax']}</label>
-                                    <p:spinner id="pax" value="#{invoiceHome.invoice.pax}" min="1" immediate="true"
-                                               required="true" requiredMessage="#{i18n['app.fede.sales.invoice.pax.required']}" styleClass="" >
-                                    </p:spinner>
-                                </div>
+                            <div class="ui-g ui-lg-4 ui-md-12">
+                                <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.board.number']}" 
+                                                execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
+                                                required="true" requiredMessage="#{i18n['app.fede.sales.invoice.board.number.required']}"
+                                                placeholder="false"
+                                                decimalPlaces="0" container="none" rendered="true"/>
+                            </div>
+                            <div class="ui-g ui-lg-4 ui-md-12">
+                                <label>#{i18n['app.fede.sales.invoice.pax']}</label>
+                                <p:spinner id="pax" value="#{invoiceHome.invoice.pax}" min="1" immediate="true"
+                                           required="true" requiredMessage="#{i18n['app.fede.sales.invoice.pax.required']}" styleClass="" >
+                                </p:spinner>
                             </div>
                         </div>
                     </div>
                     <!-- FIN sección de formulario -->
                     <!-- sección de formulario -->
+                    <h2>#{i18n['common.add']} #{i18n['common.detail']}</h2>
                     <div class="ui-g ui-lg-12 ui-md-12">
-                        <h2>#{i18n['common.add']} #{i18n['common.detail']}</h2>
                         <div class="ui-g ui-lg-9 ui-md-12">
                             <ui:repeat value="#{inventoryHome.findTop()}" var="product">  
                                 <p:commandButton ajax="true" update="@form @form:DetailPanel @form:DetailPanel:payment-panel" immediate="true"
@@ -256,13 +203,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                     </div>
                     <!-- sección de formulario -->
-                    <p:panel id="DetailPanel" styleClass="ui-g ui-lg-12 ui-md-12">
-                        <h2>#{i18n['common.detail']} #{i18n['common.current']} [<h:outputText id="invoice-total" value="#{-invoiceHome.calculeCandidateDetailTotal()}">
-                                <f:convertNumber type="currency"/>
-                            </h:outputText>]</h2>
-                        <div class="ui-g-12">
+                    <h2>#{i18n['common.detail']} #{i18n['common.current']} [<h:outputText id="invoice-total" value="#{-invoiceHome.calculeCandidateDetailTotal()}">
+                        <f:convertNumber type="currency"/>
+                    </h:outputText>]</h2>
+                    <p:outputPanel id="DetailPanel" deferred="false" styleClass="ui-g ui-lg-12 ui-md-12">
+                        <div class="ui-g ui-lg-12 ui-md-12">
                             <ui:repeat value="#{invoiceHome.candidateDetails}" var="detail">
-                                <div class="ui-g-2">
+                                <div class="ui-g ui-lg-2 ui-md-6">
                                     <div class="card TexAlCenter">
                                         <i class="#{empty detail.product.icon ? '' : (detail.product.icon.contains('flaticon') ? 'ui-icon ui-icon-appsventas '.concat(detail.product.icon) : detail.product.icon.concat('Fs32 BoldGray DispBlock'))}"></i>
                                         <div class="EmptyBox5"></div>
@@ -279,13 +226,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </ui:repeat>
                         </div>
-                        <div class="ui-g-12">                                    
+                        <div class="ui-g ui-lg-12 ui-md-12">                                    
                             <h2>#{i18n['common.total.collect']} [<h:outputText id="payment-total" value="#{-(invoiceHome.calculeCandidateDetailTotal() - invoiceHome.payment.discount + invoiceHome.calculeIva(invoiceHome.calculeCandidateDetailTotal() - invoiceHome.payment.discount))}">
                                     <f:convertNumber type="currency"/>
                                 </h:outputText>] </h2> 
-                            <p:panel id="payment-panel" class="ui-g" rendered="#{not empty invoiceHome.candidateDetails}">
-                                <div class="ui-g-12">
-                                    <div class="ui-g-3">
+                            <p:panel id="payment-panel" class="ui-g ui-lg-12 ui-md-12" rendered="#{not empty invoiceHome.candidateDetails}">
+                                <div class="ui-g ui-lg-12 ui-md-12">
+                                    <div class="ui-g ui-lg-3 ui-md-12">
                                         <div class="Container100 Responsive50">
                                             <h:outputText value="#{i18n['app.fede.sales.payment.method']}"/>
                                             <p:selectOneMenu value="#{invoiceHome.payment.method}"
@@ -295,7 +242,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </p:selectOneMenu>
                                         </div>
                                     </div>
-                                    <div class="ui-g-3">
+                                    <div class="ui-g ui-lg-3 ui-md-12">
                                         <div class="ContainerIndent">
                                             <h:outputText value="#{i18n['app.fede.sales.payment.cash']}" />
                                             <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="false"
@@ -307,7 +254,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </p:inputNumber>
                                         </div>
                                     </div>
-                                    <div class="ui-g-3">
+                                    <div class="ui-g ui-lg-3 ui-md-12">
                                         <div class="ContainerIndent">
                                             <h:outputText value="#{i18n['common.discount']}" />
                                             <p:inputNumber id="number_dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="false"
@@ -319,7 +266,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </p:inputNumber>
                                         </div>
                                     </div>                                            
-                                    <div class="ui-g-3">
+                                    <div class="ui-g ui-lg-3 ui-md-12">
                                         <div class="ContainerIndent">
                                             <h:outputText value="#{i18n['app.fede.sales.payment.change']}" />
                                             <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="false"
@@ -334,14 +281,65 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </p:panel>
                         </div>
-                        <div class="ui-g-12">
+                        <div class="ui-g ui-lg-12 ui-md-12">
                             <h2>#{i18n['common.observation']}</h2>
                             <jlgranda:input id="description" name="description" type="textarea" placeholder="#{i18n['common.observation']}" 
                                             execute="none" render="description" value="#{invoiceHome.invoice.description}" 
                                             required="false" requiredMessage="#{i18n['common.observation']}"
                                             container="none"/>
                         </div>
-                        <div class="ui-g-12">
+                        <div class="ui-g ui-lg-12 ui-md-12">
+                            <h2>#{i18n['app.fede.sales.invoice.header']}</h2>
+                            <div class="ui-g ui-lg-12 ui-md-12">
+                                <div class="ui-g ui-lg-4 ui-md-12">
+                                    <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['common.nr']}" 
+                                                    execute="@this save-button" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
+                                                    required="true" requiredMessage="#{i18n['common.nr.required']}" 
+                                                    placeholder="#{i18n['common.nr']}"
+                                                    container="none"/>
+                                </div>
+                                <div class="ui-g ui-lg-8 ui-md-12">
+                                    <div class="ui-g ui-lg-12 ui-md-12">
+                                        <div class="ui-g ui-lg-10 ui-md-8">
+                                            <p:autoComplete id="customer" value="#{invoiceHome.customer}" effect="blind" 
+                                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                            completeMethod="#{invoiceHome.find}"
+                                                            var="entidad" itemValue="#{entidad}" 
+                                                            itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
+                                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                            converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                            forceSelection="true" required="true" disabled="#{invoiceHome.useDefaultCustomer}"
+                                                            placeholder="#{i18n['common.customer']}">
+                                                <p:column>
+                                                    <h:outputText value="#{ui.renderer('', entidad)}"/>
+                                                </p:column>
+                                                <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
+                                            </p:autoComplete>
+                                        </div>
+                                        <div class="ui-g ui-lg-2 ui-md-2">
+                                            <div class="ui-g ui-lg-12 ui-md-12">
+                                                <div class="ui-g ui-lg-6 ui-md-6">
+                                                    <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultCustomer}" title="#{i18n['common.consumer.end']}"> 
+                                                        <p:ajax update="customer" listener="#{invoiceHome.updateDefaultCustomer}" />
+                                                    </p:selectBooleanCheckbox>
+                                                </div>
+                                                <div class="ui-g ui-lg-6 ui-md-6">
+                                                    <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
+                                                                    actionListener="#{invoiceHome.mostrarFormularioProfile()}" ajax="true"
+                                                                    immediate="true"
+                                                                    styleClass="btn-sm" style="width:30px">
+                                                       <p:ajax event="dialogReturn" update="@form"
+                                                               listener="#{invoiceHome.handleReturn}">
+                                                       </p:ajax>
+                                                   </p:commandButton>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-g ui-lg-12 ui-md-12">
                             <h2>#{i18n['common.alias']}</h2>
                             <h:outputText value="#{i18n['common.alias.print']}" />
                             <p:selectBooleanCheckbox value="#{invoiceHome.invoice.printAlias}">
@@ -351,7 +349,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             required="false" requiredMessage="#{i18n['common.alias']}"
                                             container="none"/>
                         </div>
-                        <div class="ui-g-12">
+                        <div class="ui-g ui-lg-12 ui-md-12">
                             <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
                                 <f:facet name="left">
                                     <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"  styleClass="success-btn"
@@ -422,7 +420,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                             </p:toolbar>
                         </div>
-                    </p:panel>
+                    </p:outputPanel>
                     <!-- FIN sección de formulario -->
                 </div>
             </div>
