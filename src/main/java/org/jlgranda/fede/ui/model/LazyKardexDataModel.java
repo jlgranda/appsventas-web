@@ -176,6 +176,7 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
             }
         }
 
+        Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
         if (getStart() != null) {
             range.put("start", getStart());
@@ -186,7 +187,6 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
             }
         }
 
-        Map<String, Object> _filters = new HashMap<>();
         if(!range.isEmpty()){
             _filters.put(Kardex_.createdOn.getName(), range); //Filtro de fechas
         }
@@ -206,6 +206,8 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         }
 
         _filters.putAll(filters);
+        
+        System.out.println("filtros: "+_filters);
 
         if(sortField == null){
             sortField = Kardex_.createdOn.getName();

@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <h1 class="BigTopic">#{i18n['common.product']} </h1>
                 <div class="ui-g ui-lg-12">
-
+                    #{inventoryHome.product.id}
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.firstname']}" 
                                     value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
 

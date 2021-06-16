@@ -1234,65 +1234,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 //        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
 //    }
     private void registerDetailInKardex() {
-//        for (Detail candidateDetail1 : getCandidateDetails()) {
-//            Kardex kardex = null;
-//            KardexDetail kardexDetail = null;
-//            kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
-//            if (kardex == null) {
-//                kardex = kardexService.createInstance();
-//                kardex.setOwner(this.subject);
-//                kardex.setAuthor(this.subject);
-//                kardex.setOrganization(this.organizationData.getOrganization());
-//                kardex.setProduct(candidateDetail1.getProduct());
-//                kardex.setCode("TK-P- "+candidateDetail1.getProduct().getId());
-//                kardex.setUnit_minimum(1L);
-//                kardex.setUnit_maximum(1L);
-//            } else {
-//                kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardex.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
-//                kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndInvoiceAndOperation", kardex, candidateDetail1.getInvoice(), KardexDetail.OperationType.VENTA);
-//            }
-//            if (kardexDetail == null) {
-//                kardexDetail = kardexDetailService.createInstance();
-//                kardexDetail.setOwner(this.subject);
-//                kardexDetail.setAuthor(this.subject);
-//                kardexDetail.setInvoice(candidateDetail1.getInvoice());
-//                kardexDetail.setOperation_type(KardexDetail.OperationType.VENTA);
-//            } else {
-//                //Aumentar los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a disminuir por la venta
-//                if (kardexDetail.getQuantity() != null && kardexDetail.getTotal_value()!= null) {
-//                    kardexDetail.setCummulative_quantity(kardex.getQuantity() + kardexDetail.getQuantity());
-//                    kardexDetail.setCummulative_total_value(kardex.getFund().add(kardexDetail.getTotal_value()));
-//                }
-//                kardexDetail.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardexDetail.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
-//            }
-//            kardexDetail.setCode(candidateDetail1.getInvoice().getSequencial());
-//            kardexDetail.setUnit_value(candidateDetail1.getPrice());
-//            kardexDetail.setQuantity((long) candidateDetail1.getAmount());
-//            kardexDetail.setTotal_value(kardexDetail.getUnit_value().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
-//
-//            if (kardex.getId() == null) {
-//                kardexDetail.setCummulative_quantity(kardexDetail.getQuantity()*-1);
-//                kardexDetail.setCummulative_total_value(kardexDetail.getTotal_value().multiply(BigDecimal.valueOf(-1)));
-//            } else {
-//                if (kardex.getQuantity() != null && kardex.getFund() != null) {
-//                    kardexDetail.setCummulative_quantity(kardex.getQuantity() - kardexDetail.getQuantity());
-//                    kardexDetail.setCummulative_total_value(kardex.getFund().subtract(kardexDetail.getTotal_value()));
-//                }
-//            }
-//
-//            kardex.addKardexDetail(kardexDetail);
-//            kardex.setQuantity(kardexDetail.getCummulative_quantity());
-//            kardex.setFund(kardexDetail.getCummulative_total_value());
-//            kardexService.save(kardex.getId(), kardex);
-//        }
         for (Detail candidateDetail1 : getCandidateDetails()) {
-            if (candidateDetail1.getProduct() == null) {
-                System.out.println(candidateDetail1.getAmount());
-                System.out.println(candidateDetail1.getPrice());
-                System.out.println(candidateDetail1.getUnit());
-            }
             Kardex kardex = null;
             KardexDetail kardexDetail = null;
             kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
@@ -1302,12 +1244,10 @@ public class InvoiceHome extends FedeController implements Serializable {
                 kardex.setAuthor(this.subject);
                 kardex.setOrganization(this.organizationData.getOrganization());
                 kardex.setProduct(candidateDetail1.getProduct());
-//                kardex.setCode("TK-P- " + candidateDetail1.getProduct().getId());
                 kardex.setUnit_minimum(1L);
                 kardex.setUnit_maximum(1L);
             } else {
                 kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
-                kardex.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
                 kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndInvoiceAndOperation", kardex, candidateDetail1.getInvoice(), KardexDetail.OperationType.VENTA);
             }
             if (kardexDetail == null) {
@@ -1341,6 +1281,9 @@ public class InvoiceHome extends FedeController implements Serializable {
                 }
             }
             kardex.addKardexDetail(kardexDetail);
+            if (kardex.getCode() == null) {
+                kardex.setCode("TK-P- " + candidateDetail1.getProduct().getId());
+            }
             kardex.setQuantity(kardexDetail.getCummulative_quantity());
             kardex.setFund(kardexDetail.getCummulative_total_value());
             kardexService.save(kardex.getId(), kardex);

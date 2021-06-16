@@ -79,7 +79,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     /**
      */
     private ProductType productType;
-    
+
     private Group groupSelected;
 
     private String typeName;
@@ -87,7 +87,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
 
     private String filterValue;
-    
+
     private Organization organization;
 
     public LazyProductDataModel(ProductService bussinesEntityService) {
@@ -209,7 +209,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     public boolean isNextExists() {
         return bussinesEntityService.count() > this.getPageSize() + firstResult;
     }
-    
+
     public Group getGroupSelected() {
         return groupSelected;
     }
@@ -234,9 +234,9 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         int _end = first + pageSize;
         String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (!sortBy.isEmpty()){
-            for (SortMeta sm : sortBy.values()){
-                if ( sm.getOrder() == SortOrder.ASCENDING) {
+        if (!sortBy.isEmpty()) {
+            for (SortMeta sm : sortBy.values()) {
+                if (sm.getOrder() == SortOrder.ASCENDING) {
                     order = QuerySortOrder.ASC;
                 }
                 sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
@@ -261,7 +261,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         if (!range.isEmpty()) {
             _filters.put(Product_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        if(getGroupSelected() != null){
+        if (getGroupSelected() != null) {
             _filters.put("category", getGroupSelected()); //Filtro de categoria
         }
         if (getTags() != null && !getTags().isEmpty()) {
@@ -273,9 +273,9 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-        
-        _filters.putAll(filters);
 
+        _filters.putAll(filters);
+        System.out.println("filtros producto: " + _filters);
         if (sortField == null) {
             sortField = Product_.createdOn.getName();
         }
