@@ -576,7 +576,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     /**
      * Guarda la entidad marcandola como CLOSE y generando un secuencial valido
-     * 
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
@@ -1318,7 +1317,4 @@ public class InvoiceHome extends FedeController implements Serializable {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
-    
-    
-    
 }
