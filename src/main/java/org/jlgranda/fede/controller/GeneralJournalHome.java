@@ -382,7 +382,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
     
     public boolean isRecordOfReferen() {
-        return this.record.getFacturaElectronica() == null;
+        return this.record.getFacturaElectronicaId() == null;
     }
 
     @Override

@@ -22,6 +22,7 @@ import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.RecordTemplateService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
@@ -61,6 +62,7 @@ import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
+import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.DocumentType;
@@ -84,6 +86,7 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Strings;
+import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.SortOrder;
 import org.primefaces.model.chart.Axis;
@@ -94,7 +97,8 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
 /**
- *
+ * Controlador de aplicación de ventas
+ * 
  * @author jlgranda
  */
 @ViewScoped
@@ -210,7 +214,13 @@ public class InvoiceHome extends FedeController implements Serializable {
     @EJB
     private AccountService accountService;
     
-    private RecordTemplate recordTemplate; //La plantilla de registro a aplicar al realizar una acción
+    @EJB
+    private RecordTemplateService recordTemplateService;
+    
+    /**
+     * Carga la plantilla de registro contable para aplicar a las ventas
+     */
+    private RecordTemplate recordTemplate; 
 
     @PostConstruct
     private void init() {
@@ -235,6 +245,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         setOrderByCode(false);
 
         setBusquedaAvanzada(true);
+        
+        setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"), this.organizationData.getOrganization()));
     }
 
     public Long getInvoiceId() {
@@ -253,6 +265,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.documentType = documentType;
     }
 
+    public RecordTemplate getRecordTemplate() {
+        return recordTemplate;
+    }
+
+    public void setRecordTemplate(RecordTemplate recordTemplate) {
+        this.recordTemplate = recordTemplate;
+    }
+    
     public Invoice getInvoice() {
 
         if (invoiceId != null && !this.invoice.isPersistent()) {
@@ -353,6 +373,15 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void updateDefaultCustomer() {
         this.customer = null;
+    }
+    
+    public void updatePrintAlias() {
+        String alias = settingHome.getValue("app.fede.sales.invoice.defaultprintalias", "Alimentación");
+        if (Strings.isNullOrEmpty(invoice.getPrintAliasSummary())){
+            invoice.setPrintAliasSummary(alias);
+        } else if (alias.equalsIgnoreCase(invoice.getPrintAliasSummary())){
+            invoice.setPrintAliasSummary("");
+        }
     }
 
     public void updateDefaultEmail() {
@@ -547,37 +576,52 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     /**
      * Guarda la entidad marcandola como CLOSE y generando un secuencial valido
-     * TODO debe generar también una factura electrónica
-     *
+     * 
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        //Ejecutar regla de registro contable
-        
-        if (this.recordTemplate != null){
+        boolean registradoEnContabilidad = false;
+        if (this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())){
+            
+            RuleRunner ruleRunner = new RuleRunner();
             Record record = recordService.createInstance();
 
-            record = new RuleRunner().run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
-
-            record.setOwner(this.subject);
-            record.setAuthor(this.subject);
-            record.setJournal(generalJournalService.find(Dates.now(), this.organizationData.getOrganization()));
-
-            //Corregir objetos cuenta en los detalles
-            record.getRecordDetails().forEach(rd -> {
-                rd.setLastUpdate(Dates.now());
-                rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
-            });
+            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
             
-            recordService.save(record); 
+            if (kbers != null) { //Contiene errores de compilación
+                logger.error( I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                logger.error(kbers.toString());
+                this.addErrorMessage( I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()) );
+            } else {
+                
+                //La regla compiló bien
+                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization());
+                
+                //El General Journal del día
+                if (generalJournal != null){
+                    
+                    record.setOwner(this.subject);
+                    record.setAuthor(this.subject);
+                    record.setGeneralJournalId(generalJournal.getId());
+
+                    //Corregir objetos cuenta en los detalles
+                    record.getRecordDetails().forEach(rd -> {
+                        rd.setLastUpdate(Dates.now());
+                        rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
+                    });
+
+                    recordService.save(record); 
+                    registradoEnContabilidad = true;
+                }
+            }
         }
         
-        //Registrar en KARDEX
-        registerDetailInKardex();
-
-        //Guardar cambios en la entidad invoice
-        collect(StatusType.CLOSE.toString());
-
+        if (registradoEnContabilidad){
+            //Registrar en KARDEX
+            registerDetailInKardex();
+            //Guardar cambios en la entidad invoice
+            collect(StatusType.CLOSE.toString());
+        }
         return getOutcome();
     }
 
@@ -589,6 +633,8 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String overdue() {
         if (!isUseDefaultCustomer()) {
+            getInvoice().setDocumentTypeSource(DocumentType.OVERDUE);
+            getPayment().setDatePaymentCancel(null);
             collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
             setOutcome("overdues");
         } else {
@@ -618,18 +664,21 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
+        if (getInvoice().getDocumentTypeSource() == null) {
+            getInvoice().setDocumentTypeSource(DocumentType.INVOICE);
+        }
         if (DocumentType.INVOICE.equals(documentType)) {
             getPayment().setDatePaymentCancel(Dates.now());
         }
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
-            getInvoice().setDocumentTypeSource(getInvoice().getDocumentType());
             getInvoice().setDocumentType(documentType); //Se convierte en factura
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             //Agregar el pago
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().addPayment(getPayment());
             getInvoice().setStatus(status);
+            registerDetailInKardex();//Registrar en KARDEX
             save(true);
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
@@ -674,6 +723,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         //load invoice
         this.getInvoice();
         this.getInvoice().setDescription(settingHome.getValue("app.fede.status.pay_direct", StatusType.PAID_DIRECT.toString()));
+//        if(getInvoice().getDocumentTypeSource()==null){
+//            getInvoice().setDocumentTypeSource(DocumentType.INVOICE);
+//        }
         return this.collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
     }
 
@@ -1197,65 +1249,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 //        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
 //    }
     private void registerDetailInKardex() {
-//        for (Detail candidateDetail1 : getCandidateDetails()) {
-//            Kardex kardex = null;
-//            KardexDetail kardexDetail = null;
-//            kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
-//            if (kardex == null) {
-//                kardex = kardexService.createInstance();
-//                kardex.setOwner(this.subject);
-//                kardex.setAuthor(this.subject);
-//                kardex.setOrganization(this.organizationData.getOrganization());
-//                kardex.setProduct(candidateDetail1.getProduct());
-//                kardex.setCode("TK-P- "+candidateDetail1.getProduct().getId());
-//                kardex.setUnit_minimum(1L);
-//                kardex.setUnit_maximum(1L);
-//            } else {
-//                kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardex.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
-//                kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndInvoiceAndOperation", kardex, candidateDetail1.getInvoice(), KardexDetail.OperationType.VENTA);
-//            }
-//            if (kardexDetail == null) {
-//                kardexDetail = kardexDetailService.createInstance();
-//                kardexDetail.setOwner(this.subject);
-//                kardexDetail.setAuthor(this.subject);
-//                kardexDetail.setInvoice(candidateDetail1.getInvoice());
-//                kardexDetail.setOperation_type(KardexDetail.OperationType.VENTA);
-//            } else {
-//                //Aumentar los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a disminuir por la venta
-//                if (kardexDetail.getQuantity() != null && kardexDetail.getTotal_value()!= null) {
-//                    kardexDetail.setCummulative_quantity(kardex.getQuantity() + kardexDetail.getQuantity());
-//                    kardexDetail.setCummulative_total_value(kardex.getFund().add(kardexDetail.getTotal_value()));
-//                }
-//                kardexDetail.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardexDetail.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
-//            }
-//            kardexDetail.setCode(candidateDetail1.getInvoice().getSequencial());
-//            kardexDetail.setUnit_value(candidateDetail1.getPrice());
-//            kardexDetail.setQuantity((long) candidateDetail1.getAmount());
-//            kardexDetail.setTotal_value(kardexDetail.getUnit_value().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
-//
-//            if (kardex.getId() == null) {
-//                kardexDetail.setCummulative_quantity(kardexDetail.getQuantity()*-1);
-//                kardexDetail.setCummulative_total_value(kardexDetail.getTotal_value().multiply(BigDecimal.valueOf(-1)));
-//            } else {
-//                if (kardex.getQuantity() != null && kardex.getFund() != null) {
-//                    kardexDetail.setCummulative_quantity(kardex.getQuantity() - kardexDetail.getQuantity());
-//                    kardexDetail.setCummulative_total_value(kardex.getFund().subtract(kardexDetail.getTotal_value()));
-//                }
-//            }
-//
-//            kardex.addKardexDetail(kardexDetail);
-//            kardex.setQuantity(kardexDetail.getCummulative_quantity());
-//            kardex.setFund(kardexDetail.getCummulative_total_value());
-//            kardexService.save(kardex.getId(), kardex);
-//        }
         for (Detail candidateDetail1 : getCandidateDetails()) {
-            if (candidateDetail1.getProduct() == null) {
-                System.out.println(candidateDetail1.getAmount());
-                System.out.println(candidateDetail1.getPrice());
-                System.out.println(candidateDetail1.getUnit());
-            }
             Kardex kardex = null;
             KardexDetail kardexDetail = null;
             kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
@@ -1265,12 +1259,11 @@ public class InvoiceHome extends FedeController implements Serializable {
                 kardex.setAuthor(this.subject);
                 kardex.setOrganization(this.organizationData.getOrganization());
                 kardex.setProduct(candidateDetail1.getProduct());
-//                kardex.setCode("TK-P- " + candidateDetail1.getProduct().getId());
+                kardex.setName(candidateDetail1.getProduct().getName());
                 kardex.setUnit_minimum(1L);
                 kardex.setUnit_maximum(1L);
             } else {
                 kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
-                kardex.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
                 kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndInvoiceAndOperation", kardex, candidateDetail1.getInvoice(), KardexDetail.OperationType.VENTA);
             }
             if (kardexDetail == null) {
@@ -1304,6 +1297,9 @@ public class InvoiceHome extends FedeController implements Serializable {
                 }
             }
             kardex.addKardexDetail(kardexDetail);
+            if (kardex.getCode() == null) {
+                kardex.setCode("TK-P- " + candidateDetail1.getProduct().getId());
+            }
             kardex.setQuantity(kardexDetail.getCummulative_quantity());
             kardex.setFund(kardexDetail.getCummulative_total_value());
             kardexService.save(kardex.getId(), kardex);
@@ -1322,4 +1318,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
+    
+    
+    
 }

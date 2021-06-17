@@ -125,7 +125,7 @@ limitations under the License.
                         <c:when test="#{type == 'java.lang.MultiLineString' or type == 'textarea'}">
                             <p:inputTextarea value="#{value}" id="#{name}" title="#{cache}" maxlength="#{maxlength}" disabled="#{disabled}"
                                              required="#{required}" label="#{label}" autoResize="false" class="#{class}" rows="#{rows}"
-                                             onchange="value=value.toUpperCase()" style="#{style}">
+                                             style="#{style}">
                                 <!--<p:ajax update="#{render}" partialSubmit="true"/>-->
                                 <c:if test="#{not empty event and not empty process}">
                                     <p:ajax event="#{event}" process="#{process}"/>

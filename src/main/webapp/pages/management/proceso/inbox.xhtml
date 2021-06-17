@@ -24,7 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="title" value="#{i18n['app.name']} - #{i18n['common.processes']}" />
+        <!--<ui:param name="title" value="#{i18n['app.name']} - #{i18n['common.processes']}" />-->
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.documents']}</ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{instanciaProcesoHome.tags}" />

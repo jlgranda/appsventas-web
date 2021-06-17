@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      rows="25" scrollRows="25"
                                      value="#{facturaElectronicaHome.lazyDataModel}" var="facturaElectronica"
                                      selection="#{facturaElectronicaHome.selectedBussinesEntities}"
-                                     sortBy="#{facturaElectronica.fechaEmision}">
+                                     sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
                             <p:column headerText="#{i18n['common.code']}">
@@ -91,7 +91,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{facturaElectronica.emissionType}">
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc" styleClass="text-right">
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

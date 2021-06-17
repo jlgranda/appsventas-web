@@ -80,10 +80,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </style>
     </ui:define>
 
-    <ui:define name="title">#{i18n['app.fede.allmysales']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+
 
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.allmysales']}</li>
+        <li>#{i18n['app.fede.sales.my.orders']}</li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/sales/invoice.jsf">#{invoiceHome.invoiceId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)]}</p:link></li>
     </ui:define>
@@ -96,7 +97,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="ui-g">
                         <div class="ui-g-7"></div>
                         <div class="ui-g-5" style="text-align: center; font-size: larger">
-                            <label>#{i18n['DateTimeCreatedOn']} </label>
+                            <label>#{i18n['common.date.created']} </label>
                             <h:outputText value="#{invoiceHome.invoice.emissionOn}">
                                 <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
@@ -106,10 +107,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h2>#{i18n['app.fede.sales.invoice.header']}</h2>
                                 <div class="ui-g-12">
                                     <div class="ui-g-4">
-                                        <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['ride.no']}" 
+                                        <jlgranda:input id="ride_no" name="ride_no" type="text" label="#{i18n['common.nr']}" 
                                                         execute="@this save-button" render="ride_no" value="#{invoiceHome.invoice.sequencial}" 
-                                                        required="true" requiredMessage="#{i18n['ride.no.required']}" 
-                                                        placeholder="#{i18n['ride.no']}"
+                                                        required="true" requiredMessage="#{i18n['common.nr.required']}" 
+                                                        placeholder="#{i18n['common.nr']}"
                                                         container="none" disabled="true"/>
                                     </div>
                                     <div class="ui-g-4">
@@ -147,21 +148,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ui-g-4">
                                 <div class="ui-g-12">
                                     <div class="ui-g-4">
-                                        <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                        <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
                                                         execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
                                                         validator="comandaValidator" placeholder="false"
-                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
+                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
                                                         decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}"/>
-                                        <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comandaNumber']}" 
+                                        <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
                                                         execute="@this save-button" render="comanda_number_edit" value="#{invoiceHome.invoice.code}" 
-                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comandaNumber.required']}"
+                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
                                                         placeholder="false"
                                                         decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
                                     </div>
                                     <div class="ui-g-4">
-                                        <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.boardNumber']}" 
+                                        <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.board.number']}" 
                                                         execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
-                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.boardNumber.required']}"
+                                                        required="true" requiredMessage="#{i18n['app.fede.sales.invoice.board.number.required']}"
                                                         placeholder="false"
                                                         decimalPlaces="0" container="none" rendered="true" disabled="true"/>
                                     </div>
@@ -261,7 +262,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                         <!-- sección de formulario -->
                         <p:panel id="DetailPanel" styleClass="ui-g-12">
-                            <h2>#{i18n['app.fede.sales.details']} [<h:outputText id="invoice-total" value="#{-invoiceHome.calculeCandidateDetailTotal()}">
+                            <h2>#{i18n['common.detail']} #{i18n['common.current']}  [<h:outputText id="invoice-total" value="#{-invoiceHome.calculeCandidateDetailTotal()}">
                                     <f:convertNumber type="currency"/>
                                 </h:outputText>]</h2>
                             <div class="ui-g-12">
@@ -284,7 +285,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </ui:repeat>
                             </div>
                             <div class="ui-g-12">                                    
-                                <h2>#{i18n['app.fede.sales.payments']} [<h:outputText id="payment-total" value="#{-(invoiceHome.calculeCandidateDetailTotal() + invoiceHome.calculeIva(invoiceHome.calculeCandidateDetailTotal()) - invoiceHome.payment.discount)}">
+                                <h2>#{i18n['common.total.collect']} [<h:outputText id="payment-total" value="#{-(invoiceHome.calculeCandidateDetailTotal() + invoiceHome.calculeIva(invoiceHome.calculeCandidateDetailTotal()) - invoiceHome.payment.discount)}">
                                         <f:convertNumber type="currency"/>
                                     </h:outputText>] </h2> 
                                 <p:panel id="payment-panel" class="ui-g" rendered="#{not empty invoiceHome.candidateDetails}">
@@ -292,7 +293,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="ui-g-3">
                                             <div class="Container100 Responsive50">
                                                 <h:outputText value="#{i18n['app.fede.sales.payment.method']}"/>
-                                                <p:selectOneMenu value="#{invoiceHome.payment.method}" effect="fade"
+                                                <p:selectOneMenu value="#{invoiceHome.payment.method}"
                                                                  required="#{true}" immediate="true" disabled="true"> 
                                                     <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                                                     <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
@@ -313,7 +314,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </div>
                                         <div class="ui-g-3">
                                             <div class="ContainerIndent">
-                                                <h:outputText value="#{i18n['app.fede.sales.payment.discount']}" />
+                                                <h:outputText value="#{i18n['common.discount']}" />
                                                 <p:inputNumber id="number_dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="true"
                                                                styleClass=""
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -370,7 +371,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                          icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
                                                          />
                                         <p:menuButton value="#{i18n['common.options']}"  styleClass="secondary-button" disabled="true">
-                                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
                                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                                         immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                                         </p:menuButton>
@@ -379,7 +380,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:toolbar>
                                 <p:toolbar rendered="#{invoiceHome.invoice.persistent}">
                                     <f:facet name="left">
-                                        <p:commandButton id="collect-button" value="#{i18n['app.fede.collect']}" ajax="true" disabled="true"
+                                        <p:commandButton id="collect-button" value="#{i18n['common.collect']}" ajax="true" disabled="true"
                                                          styleClass="danger-btn"
                                                          actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
                                                          rendered="#{invoiceHome.invoice.isPersistent()}"  
