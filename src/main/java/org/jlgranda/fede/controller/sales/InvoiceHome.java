@@ -98,6 +98,7 @@ import org.primefaces.model.chart.LineChartSeries;
 
 /**
  * Controlador de aplicación de ventas
+ * 
  * @author jlgranda
  */
 @ViewScoped
@@ -212,7 +213,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private AccountService accountService;
-<<<<<<< HEAD
     
     @EJB
     private RecordTemplateService recordTemplateService;
@@ -221,10 +221,6 @@ public class InvoiceHome extends FedeController implements Serializable {
      * Carga la plantilla de registro contable para aplicar a las ventas
      */
     private RecordTemplate recordTemplate; 
-=======
-
-    private RecordTemplate recordTemplate; //La plantilla de registro a aplicar al realizar una acción
->>>>>>> b49fc3b7c944a023b3915d67ec060daab1a6408c
 
     @PostConstruct
     private void init() {
