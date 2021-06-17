@@ -76,7 +76,7 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         }
         return resultList;
     }
-    
+
     public int getFirstResult() {
         return firstResult;
     }
@@ -95,7 +95,6 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         return this.getPageSize() >= firstResult ? 0 : firstResult - this.getPageSize();
     }
 
-    
     public boolean isPreviousExists() {
         return firstResult > 0;
     }
@@ -167,9 +166,9 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         int _end = first + pageSize;
         String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (!sortBy.isEmpty()){
-            for (SortMeta sm : sortBy.values()){
-                if ( sm.getOrder() == SortOrder.ASCENDING) {
+        if (!sortBy.isEmpty()) {
+            for (SortMeta sm : sortBy.values()) {
+                if (sm.getOrder() == SortOrder.ASCENDING) {
                     order = QuerySortOrder.ASC;
                 }
                 sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
@@ -187,10 +186,10 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
             }
         }
 
-        if(!range.isEmpty()){
+        if (!range.isEmpty()) {
             _filters.put(Kardex_.createdOn.getName(), range); //Filtro de fechas
         }
-        if(getOwner()!=null){
+        if (getOwner() != null) {
             _filters.put(Kardex_.owner.getName(), getOwner()); //Filtro de Subject
         }
         if (getOrganization() != null) {
@@ -200,19 +199,17 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        
+
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
 
         _filters.putAll(filters);
-        
-        System.out.println("filtros: "+_filters);
 
-        if(sortField == null){
+        if (sortField == null) {
             sortField = Kardex_.createdOn.getName();
         }
-        
+
         QueryData<Kardex> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();

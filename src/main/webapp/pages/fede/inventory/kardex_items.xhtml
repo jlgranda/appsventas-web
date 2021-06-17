@@ -53,14 +53,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      rows="25" scrollRows="25"
                                      value="#{kardexInventoryHome.lazyDataModel}" var="kardex"
                                      selection="#{kardexInventoryHome.selectedBussinesEntities}"
-                                     sortBy="#{kardex.createdOn}">
+                                     sortBy="#{kardex.lastUpdate}">
                             <p:ajax event="rowSelect" listener="#{kardexInventoryHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{kardex.code}">
                                 <h:outputText value="#{kardex.code}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.product']}">
-                                <h:outputText value="#{kardex.product.name}"/>
+                                <h:outputText value="#{kardex.name}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.quantity']} #{i18n['common.current']}" sortBy="#{kardex.quantity}">
                                 <h:outputText value="#{kardex.quantity}"

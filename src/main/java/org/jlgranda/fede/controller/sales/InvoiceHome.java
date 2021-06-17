@@ -571,9 +571,6 @@ public class InvoiceHome extends FedeController implements Serializable {
             
             recordService.save(record); 
         }
-        
-        //Registrar en KARDEX
-        registerDetailInKardex();
 
         //Guardar cambios en la entidad invoice
         collect(StatusType.CLOSE.toString());
@@ -630,6 +627,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().addPayment(getPayment());
             getInvoice().setStatus(status);
+            registerDetailInKardex();//Registrar en KARDEX
             save(true);
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
@@ -1207,6 +1205,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 kardex.setAuthor(this.subject);
                 kardex.setOrganization(this.organizationData.getOrganization());
                 kardex.setProduct(candidateDetail1.getProduct());
+                kardex.setName(candidateDetail1.getProduct().getName());
                 kardex.setUnit_minimum(1L);
                 kardex.setUnit_maximum(1L);
             } else {

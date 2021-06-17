@@ -217,7 +217,6 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public void generateProductsWithoutKardex() {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> generateProductsWithoutKardex " + Dates.now());
         boolean exist = false;
         this.productsWithoutKardex = this.productService.findWhithoutKardex(this.organizationData.getOrganization());
 //        List<Kardex> kardexs = this.getKardexs();
@@ -240,7 +239,6 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             this.productsWithoutKardex.add(this.kardex.getProduct());
         }
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //generateProductsWithoutKardex " + Dates.now());
     }
 
     public boolean hasProductsWithoutKardex() {
@@ -393,7 +391,6 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                     }
                 }
             }
-            System.out.println("residue A: " + residue);
             List<KardexDetail> listNewKardexDetails = new ArrayList<>();
             for (KardexDetail kd : this.kardex.getKardexDetails()) {
                 if (kd.getId() == (null) && kd.getCode().equals(this.kardexDetail.getCode())) {
@@ -447,7 +444,6 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                         }
                     }
                 } else {
-                    System.out.println("residue: B" + residue);
                     if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
                         for (KardexDetail kd1 : listNewKardexDetails) {
                             if (kd1.getOperation_type().equals(KardexDetail.OperationType.COMPRA)) {
@@ -465,9 +461,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                             }
                         }
                     }
-                    System.out.println("residue: C" + residue);
                 }
-                System.out.println("residue: D" + residue);
             }
             if (existTransaction == true) {
                 if (this.kardexDetail.getOperation_type().equals(KardexDetail.OperationType.DEVOLUCION_VENTA) && (residue < 0)) {

@@ -275,7 +275,7 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
         }
 
         _filters.putAll(filters);
-        System.out.println("filtros producto: " + _filters);
+
         if (sortField == null) {
             sortField = Product_.createdOn.getName();
         }
