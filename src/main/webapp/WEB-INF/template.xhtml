@@ -37,10 +37,13 @@
                 
                 <div class="layout-content" style="min-height:300px">
                     <h:form id="form"  enctype="multipart/form-data">
+                        <p:growl id="growl-sticky" showDetail="true" sticky="false"  keepAlive="false">
+                             <p:autoUpdate />
+                        </p:growl>
+                        <ui:insert name="content"></ui:insert>
                         <p:messages id="messages" showDetail="true" closable="true" globalOnly="false">
                             <p:autoUpdate />
                         </p:messages>
-                        <ui:insert name="content"></ui:insert>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                             <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
                             <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />

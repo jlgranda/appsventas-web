@@ -1281,7 +1281,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         //Crear o encontrar el journal y el record, para insertar los recordDetails
         this.record = findRecordOfFactura();
         if (this.record != null) {
-            this.journal = journalService.find(this.record.getJournal().getId());
+            this.journal = journalService.find(this.record.getGeneralJournalId());
         } else {
             this.record = buildRecord();
             this.journal = buildFindJournal();
@@ -1308,7 +1308,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     private Record buildRecord() {
         Record recordGeneral = recordService.createInstance();
         recordGeneral.setOwner(subject);
-        recordGeneral.setFacturaElectronica(facturaElectronica);
+        recordGeneral.setFacturaElectronicaId(facturaElectronica.getId());
         return recordGeneral;
     }
 

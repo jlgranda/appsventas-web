@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
@@ -45,29 +44,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12 ui-lg-12 ui-md-12">
                     <!-- INTANCIA PROCESO -->
                     <h1 class="BigTopic">#{recordTemplateHome.recordTemplate.name}</h1>
-                    <div class="ui-g ui-lg-12">
-                        <div class="Container100 Responsive50">
-                            <div class="ContainerIndent">
-                                <label>#{i18n['common.firstname']}&nbsp;</label>
-                                <div class="EmptyBox10"/>
-                                <p:inputText id="nme" value="#{recordTemplateHome.recordTemplate.name}" required="#{true}"/>
-                            </div>
-                            <div class="ContainerIndent">
-                                <!--<label>#{i18n['common.type']}&nbsp;</label>-->
-                                <!--<div class="EmptyBox10"/>-->
-<!--                                <p:selectOneMenu value="#{recordTemplateHome.recordTemplate.codetype}"
-                                                 required="#{false}" immediate="true"> 
-                                    <f:selectItems value="#{ui.getRecordTemplatesTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                    <p:ajax update="@this" />
-                                </p:selectOneMenu>-->
-                            </div>
-                            <div class="ContainerIndent">
-                                <label>#{i18n['common.business.rule']}&nbsp;</label>
-                                <div class="EmptyBox10"/>
-                                <p:inputTextarea id="rule" value="#{recordTemplateHome.recordTemplate.rule}" rows="14" cols="20" required="#{true}"/>
-                            </div>
-                        </div>
-                    </div>
+                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}" 
+                                    value="#{recordTemplateHome.recordTemplate.code}"
+                                    required="#{!recordTemplateHome.recordTemplate.persistent}" render="code"
+                                    class="ui-panelgrid-blank form-group"
+                                    container="none"/>
+                    <jlgranda:input id="name" name="name" type="text" label="#{i18n['common.firstname']}" 
+                                    value="#{recordTemplateHome.recordTemplate.name}" required="#{!recordTemplateHome.recordTemplate.persistent}" 
+                                    inlinehelp="#{messages['common.firstnames.inlinehelp']}" render="name"
+                                    class="ui-panelgrid-blank form-group"
+                                    container="none"/>
+                    <jlgranda:input id="rule" name="rule" type="textarea" label="#{i18n['common.business.rule']}" 
+                                    value="#{recordTemplateHome.recordTemplate.rule}" required="false" 
+                                    inlinehelp="#{messages['common.business.rule']}" render="rule"
+                                    class="ui-panelgrid-blank form-group"
+                                    rows="#{settingHome.getValue('app.ui.textarea.rows', '32')}" maxlength="#{settingHome.getValue('app.ui.textarea.maxlength', '10240')}"
+                                    container="none"/>
                     <div class="EmptyBox10"></div>
                     <p:toolbar rendered="#{true}">
                         <f:facet name="left">
@@ -82,7 +74,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </f:facet>
 
                         <f:facet name="right">
-
                             <p:commandButton ajax="true" disabled="false" immediate="true"
                                              actionListener="#{recordTemplateHome.closeDialog(null)}" 
                                              action="items"

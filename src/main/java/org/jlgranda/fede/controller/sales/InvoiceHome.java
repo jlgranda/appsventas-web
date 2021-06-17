@@ -22,6 +22,7 @@ import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.RecordTemplateService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
@@ -61,6 +62,7 @@ import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
+import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.DocumentType;
@@ -84,6 +86,7 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Strings;
+import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.SortOrder;
 import org.primefaces.model.chart.Axis;
@@ -94,7 +97,7 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
 /**
- *
+ * Controlador de aplicación de ventas
  * @author jlgranda
  */
 @ViewScoped
@@ -210,7 +213,13 @@ public class InvoiceHome extends FedeController implements Serializable {
     @EJB
     private AccountService accountService;
     
-    private RecordTemplate recordTemplate; //La plantilla de registro a aplicar al realizar una acción
+    @EJB
+    private RecordTemplateService recordTemplateService;
+    
+    /**
+     * Carga la plantilla de registro contable para aplicar a las ventas
+     */
+    private RecordTemplate recordTemplate; 
 
     @PostConstruct
     private void init() {
@@ -235,6 +244,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         setOrderByCode(false);
 
         setBusquedaAvanzada(true);
+        
+        setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"), this.organizationData.getOrganization()));
     }
 
     public Long getInvoiceId() {
@@ -253,6 +264,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.documentType = documentType;
     }
 
+    public RecordTemplate getRecordTemplate() {
+        return recordTemplate;
+    }
+
+    public void setRecordTemplate(RecordTemplate recordTemplate) {
+        this.recordTemplate = recordTemplate;
+    }
+    
     public Invoice getInvoice() {
 
         if (invoiceId != null && !this.invoice.isPersistent()) {
@@ -353,6 +372,15 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void updateDefaultCustomer() {
         this.customer = null;
+    }
+    
+    public void updatePrintAlias() {
+        String alias = settingHome.getValue("app.fede.sales.invoice.defaultprintalias", "Alimentación");
+        if (Strings.isNullOrEmpty(invoice.getPrintAliasSummary())){
+            invoice.setPrintAliasSummary(alias);
+        } else if (alias.equalsIgnoreCase(invoice.getPrintAliasSummary())){
+            invoice.setPrintAliasSummary("");
+        }
     }
 
     public void updateDefaultEmail() {
@@ -547,36 +575,52 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     /**
      * Guarda la entidad marcandola como CLOSE y generando un secuencial valido
-     * TODO debe generar también una factura electrónica
-     *
+     * 
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        //Ejecutar regla de registro contable
-        
-        if (this.recordTemplate != null){
+        boolean registradoEnContabilidad = false;
+        if (this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())){
+            
+            RuleRunner ruleRunner = new RuleRunner();
             Record record = recordService.createInstance();
 
-            record = new RuleRunner().run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
-
-            record.setOwner(this.subject);
-            record.setAuthor(this.subject);
-            record.setJournal(generalJournalService.find(Dates.now(), this.organizationData.getOrganization()));
-
-            //Corregir objetos cuenta en los detalles
-            record.getRecordDetails().forEach(rd -> {
-                rd.setLastUpdate(Dates.now());
-                rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
-            });
+            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
             
-            recordService.save(record); 
+            if (kbers != null) { //Contiene errores de compilación
+                logger.error( I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                logger.error(kbers.toString());
+                this.addErrorMessage( I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()) );
+            } else {
+                
+                //La regla compiló bien
+                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization());
+                
+                //El General Journal del día
+                if (generalJournal != null){
+                    
+                    record.setOwner(this.subject);
+                    record.setAuthor(this.subject);
+                    record.setGeneralJournalId(generalJournal.getId());
+
+                    //Corregir objetos cuenta en los detalles
+                    record.getRecordDetails().forEach(rd -> {
+                        rd.setLastUpdate(Dates.now());
+                        rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
+                    });
+
+                    recordService.save(record); 
+                    registradoEnContabilidad = true;
+                }
+            }
         }
         
-        //Registrar en KARDEX
-        registerDetailInKardex();
-
-        //Guardar cambios en la entidad invoice
-        collect(StatusType.CLOSE.toString());
+        if (registradoEnContabilidad){
+            //Registrar en KARDEX
+            registerDetailInKardex();
+            //Guardar cambios en la entidad invoice
+            collect(StatusType.CLOSE.toString());
+        }
 
         return getOutcome();
     }
@@ -1322,4 +1366,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
+    
+    
+    
 }
