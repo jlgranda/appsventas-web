@@ -76,10 +76,10 @@ public class SummaryHome extends FedeController implements Serializable {
 
     @Inject
     private Subject subject;
-    
+
     @Inject
     private OrganizationData organizationData;
-    
+
     private Subject customer;
 
     @Inject
@@ -104,6 +104,7 @@ public class SummaryHome extends FedeController implements Serializable {
     private BigDecimal discountTotal;
     private BigDecimal salesTotal;
     private BigDecimal purchaseTotal;
+    private BigDecimal purchaseCreditPaid;
     private BigDecimal costTotal;
     private BigDecimal profilTotal;
     private Long paxTotal;
@@ -131,6 +132,7 @@ public class SummaryHome extends FedeController implements Serializable {
         setDiscountTotal(BigDecimal.ZERO);
         setSalesTotal(BigDecimal.ZERO);
         setPurchaseTotal(BigDecimal.ZERO);
+        setPurchaseCreditPaid(BigDecimal.ZERO);
         setCostTotal(BigDecimal.ZERO);
         setProfilTotal(BigDecimal.ZERO);
         setPaxTotal(0L);
@@ -172,6 +174,14 @@ public class SummaryHome extends FedeController implements Serializable {
         this.purchaseTotal = purchaseTotal;
     }
 
+    public BigDecimal getPurchaseCreditPaid() {
+        return purchaseCreditPaid;
+    }
+
+    public void setPurchaseCreditPaid(BigDecimal purchaseCreditPaid) {
+        this.purchaseCreditPaid = purchaseCreditPaid;
+    }
+    
     public BigDecimal getCostTotal() {
         return costTotal;
     }
@@ -249,15 +259,16 @@ public class SummaryHome extends FedeController implements Serializable {
     public void calculeSummary() {
         Date _start = Dates.minimumDate(getStart());
         Date _end = Dates.maximumDate(getEnd());
-        calculeSummary( _start, _end);
-        setListDiscount(getListDiscount( _start, _end));
+        calculeSummary(_start, _end);
+        setListDiscount(getListDiscount(_start, _end));
     }
-    
+
     public void calculeSummary(Date _start, Date _end) {
-        
+
         this.costTotal = BigDecimal.ZERO;
 //        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
+//        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
+        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesPaymentDateDiscountBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
         objects.stream().forEach((Object[] object) -> {
             this.grossSalesTotal = (BigDecimal) object[0];
             this.discountTotal = (BigDecimal) object[1];
@@ -267,6 +278,10 @@ public class SummaryHome extends FedeController implements Serializable {
         objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CASH);
         objects.stream().forEach((Object object) -> {
             this.purchaseTotal = (BigDecimal) object;
+        });
+        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypePayBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CREDIT);
+        objects.stream().forEach((Object object) -> {
+            this.purchaseCreditPaid = (BigDecimal) object;
         });
 //        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesPaxBetween", Integer.MAX_VALUE, this.subject, DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
         objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesPaxBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end);
@@ -294,6 +309,10 @@ public class SummaryHome extends FedeController implements Serializable {
             this.paxTotal = 0L;
         }
 
+        if (this.purchaseCreditPaid == null) {
+            this.purchaseCreditPaid = BigDecimal.ZERO;
+        }
+        this.purchaseTotal= this.purchaseTotal.add(this.purchaseCreditPaid);
         this.profilTotal = this.salesTotal.subtract(this.purchaseTotal.add(this.costTotal));
     }
 
@@ -521,7 +540,7 @@ public class SummaryHome extends FedeController implements Serializable {
         ChartSeries product = createProductsSeries(I18nUtil.getMessages("common.total"), "Product.findTopProductIdsBetweenPriceOrg");
 
         model.addSeries(product);
-        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
                 + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
@@ -543,13 +562,13 @@ public class SummaryHome extends FedeController implements Serializable {
         yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
         return model;
     }
-    
+
     private ChartSeries createCategoriesSeries(String label, String queryNamed) {
         ChartSeries chartSerie = new ChartSeries();
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(),getStart(), getEnd());
+        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(), getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
             chartSerie.set(object[0], (Number) object[1]);
         });
@@ -561,7 +580,7 @@ public class SummaryHome extends FedeController implements Serializable {
         ChartSeries product = createCategoriesSeries(I18nUtil.getMessages("common.total"), "Product.findTopProductIdsBetweenCategoryOrg");
 
         model.addSeries(product);
-        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
                 + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
@@ -592,7 +611,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.addSeries(createProductsSeries(I18nUtil.getMessages("common.quantity"), "Product.findTopProductIdsBetweenOrg"));
         model.addSeries(createProductsSeries(I18nUtil.getMessages("common.total"), "Product.findTopProductIdsBetweenPriceOrg"));
 
-        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
                 + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);
@@ -623,7 +642,7 @@ public class SummaryHome extends FedeController implements Serializable {
         chartSerie.setLabel(label);
 
         int top = Integer.valueOf(settingHome.getValue("app.fede.inventory.top", "10"));
-        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(),getStart(), getEnd());
+        List<Object[]> objects = facturaElectronicaService.findObjectsByNamedQueryWithLimit(queryNamed, top, this.organizationData.getOrganization(), getStart(), getEnd());
         objects.stream().forEach((Object[] object) -> {
             if (object[0] == null) {
                 object[0] = object[2].toString() + " " + object[3].toString();
@@ -639,7 +658,7 @@ public class SummaryHome extends FedeController implements Serializable {
 //        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
         model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.total"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetweenOrg"));
 
-        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")) 
+        model.setTitle(I18nUtil.getMessages("common.date.start") + Dates.toString(getStart(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy"))
                 + " " + I18nUtil.getMessages("common.date.end") + Dates.toString(getEnd(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
         model.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "e"));
         model.setStacked(false);

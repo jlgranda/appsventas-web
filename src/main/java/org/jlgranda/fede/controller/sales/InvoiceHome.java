@@ -209,7 +209,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private AccountService accountService;
-    
+
     private RecordTemplate recordTemplate; //La plantilla de registro a aplicar al realizar una acción
 
     @PostConstruct
@@ -553,8 +553,8 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String collect() {
         //Ejecutar regla de registro contable
-        
-        if (this.recordTemplate != null){
+
+        if (this.recordTemplate != null) {
             Record record = recordService.createInstance();
 
             record = new RuleRunner().run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
@@ -568,8 +568,8 @@ public class InvoiceHome extends FedeController implements Serializable {
                 rd.setLastUpdate(Dates.now());
                 rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
             });
-            
-            recordService.save(record); 
+
+            recordService.save(record);
         }
 
         //Guardar cambios en la entidad invoice
@@ -586,6 +586,8 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String overdue() {
         if (!isUseDefaultCustomer()) {
+            getInvoice().setDocumentTypeSource(DocumentType.OVERDUE);
+            getPayment().setDatePaymentCancel(null);
             collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
             setOutcome("overdues");
         } else {
@@ -615,12 +617,14 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
+        if (getInvoice().getDocumentTypeSource() == null) {
+            getInvoice().setDocumentTypeSource(DocumentType.INVOICE);
+        }
         if (DocumentType.INVOICE.equals(documentType)) {
             getPayment().setDatePaymentCancel(Dates.now());
         }
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
-            getInvoice().setDocumentTypeSource(getInvoice().getDocumentType());
             getInvoice().setDocumentType(documentType); //Se convierte en factura
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             //Agregar el pago
@@ -672,6 +676,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         //load invoice
         this.getInvoice();
         this.getInvoice().setDescription(settingHome.getValue("app.fede.status.pay_direct", StatusType.PAID_DIRECT.toString()));
+//        if(getInvoice().getDocumentTypeSource()==null){
+//            getInvoice().setDocumentTypeSource(DocumentType.INVOICE);
+//        }
         return this.collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
     }
 

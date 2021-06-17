@@ -1417,6 +1417,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void addFacturaElectronicaDetail() {
+        if (this.facturaElectronicaDetail.getTax_value() == null) {
+            this.facturaElectronicaDetail.setTax_value(BigDecimal.ZERO);
+        }
         this.facturaElectronicaDetail.setTotal_value(this.facturaElectronicaDetail.getUnit_value().multiply(BigDecimal.valueOf(this.facturaElectronicaDetail.getQuantity().doubleValue())));
         if (this.facturaElectronicaDetail.getTax_value() != null) {
             this.facturaElectronicaDetail.setTotal_value(this.facturaElectronicaDetail.getTotal_value().add(this.facturaElectronicaDetail.getTax_value().multiply(BigDecimal.valueOf(this.facturaElectronicaDetail.getQuantity().doubleValue()))));
