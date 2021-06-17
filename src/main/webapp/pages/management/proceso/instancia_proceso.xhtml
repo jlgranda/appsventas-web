@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="viewname">
             <li><p:link outcome="/pages/management/proceso/inbox.jsf">#{i18n['common.processes']}</p:link></li>
+            <li>/</li>
             <li>#{instanciaProcesoHome.instanciaProcesoId == null ? i18n['common.new'].concat(' ').concat(i18n['common.process']).concat(' ') : ''} #{instanciaProcesoHome.instanciaProceso.name} #{instanciaProcesoHome.instanciaProceso.owner.fullName}</li>
         </ui:define>
         <ui:define name="content">

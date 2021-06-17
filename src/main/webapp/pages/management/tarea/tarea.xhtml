@@ -33,15 +33,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <f:viewParam name="tareaId" value="#{tareaHome.tareaId}" />
             </f:metadata>
         </ui:define>
+        <ui:define name="viewname">
+            <li><p:link outcome="/pages/management/tarea/inbox.jsf">#{i18n['common.tasks']}</p:link></li>
+            <li>/</li>
+            <li> #{tareaHome.tareaId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.documents.task']) : i18n['common.edit']} #{tareaHome.tarea.name}</li>
+        </ui:define>
         <ui:define name="subheader">
-            #{tareaHome.tareaId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
+            #{tareaHome.tareaId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
         </ui:define>
         <ui:define name="content">
             <h:form id="form" enctype="multipart/form-data" >
 
                 <div class="Container100">
                     <div class="ContainerIndent">
-                        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+                        <p:messages id="messages" showDetail="true" closable="true" />
                         <div class="Card ShadowEffect ui-fluid">
                             <!-- Solicitante -->
                             <div class="Container100  Responsive50">

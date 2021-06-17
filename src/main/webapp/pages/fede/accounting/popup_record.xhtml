@@ -38,133 +38,134 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
         </ui:define>
         <ui:define name="content">
-            <div class="ui-g">
-                <div class="ui-g-12">
-                    <h:form id="form-nuevo-registro-detalle">
-                        <p:messages id="messages" showDetail="true" closable="true" >
-                            <p:autoUpdate />
-                        </p:messages>
-                        <div class="ui-g-12">
-                            <div class="ui-g-6">
-                                <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
-                                <div class="EmptyBox20"></div>
-                                <p:selectOneMenu id="account" value="#{generalJournalHome.recordDetail.account}" effect="fade" style="width: 100%"
-                                                 required="#{true}" immediate="true"
-                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
-                                    <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                                    <p:ajax update="@this"></p:ajax>
-                                </p:selectOneMenu>  
-                            </div>
-                            <div class="ui-g-2">
-                                <h:outputText value="#{i18n['common.type']} *"/>
-                                <div class="EmptyBox20"></div>
-                                <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordDetailType}" effect="fade" style="width: 100%"
-                                                 required="#{true}" immediate="true"> 
-                                    <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                    <p:ajax update="@this"></p:ajax>
-                                </p:selectOneMenu>
-                            </div>
-                            <div class="ui-g-3">
-                                <h:outputText value="#{i18n['common.value']} #{i18n['common.money.letter']} *" />
-                                <div class="EmptyBox20"></div>
-                                <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
-                                               required="true" immediate="true" disabled="false"
-                                               styleClass=""
-                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                    <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
-                                </p:inputNumber>
-                            </div>
-                            <div class="ui-g-1">
-                                <p:commandButton id="add-record"  ajax="false"
-                                                 actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
-                                                 update="form-registro" icon="fa fa-plus-square" 
-                                                 disabled="#{!generalJournalHome.recordOfReferen}" 
-                                                 style="width: 25px;"/>
-                            </div>
-                        </div>
-                    </h:form>
-                    <h:form id="form-registro">
-                        <div class="Container100 Responsive100" >
-                            <div class="ContainerIndent">
-                                <div class="Card SoftGrayBack">
-                                    <div class="dataTable_wrapper">
-                                        <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
-                                                     liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                                     rows="10" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
-                                                     scrollable="true"
-                                                     value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
-                                                     selection="#{generalJournalHome.selectedBussinesEntities}"
-                                                     editable="#{generalJournalHome.recordOfReferen}">
-                                            <p:column headerText="#{i18n['common.accounts']}" style="width: auto">
-                                                <p:cellEditor>
-                                                    <f:facet name="output">
-                                                        <h:outputText value="#{recordDetail.account.name}"/>
-                                                    </f:facet>
-                                                    <f:facet name="input">
-                                                        <h:selectOneMenu value="#{recordDetail.account}"
-                                                                         required="#{true}" immediate="true"
-                                                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
-                                                            <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                                                            <p:ajax update="@this"></p:ajax>
-                                                        </h:selectOneMenu> 
-                                                    </f:facet>
-                                                </p:cellEditor>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.debe']}" style="width: 15%">
-                                                <p:cellEditor>
-                                                    <f:facet name="output">
-                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right"/>
-                                                    </f:facet>
-                                                    <f:facet name="input">
-                                                        <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}"/>
-                                                    </f:facet>
-                                                </p:cellEditor>
-                                            </p:column>
-                                            <p:column headerText="#{i18n['common.haber']}" style="width: 15%">
-                                                <p:cellEditor>
-                                                    <f:facet name="output">
-                                                        <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
-                                                    </f:facet>
-                                                    <f:facet name="input">
-                                                        <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}"/>
-                                                    </f:facet>
-                                                </p:cellEditor>
-                                            </p:column>
-                                            <p:column style="width: 5%">
-                                                <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
-                                            </p:column>
-                                        </p:dataTable>
-                                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.accounting.record.description']}" class="Container100 BigTopic"
-                                                        value="#{generalJournalHome.record.description}" required="true" 
-                                                        inlinehelp="#{messages['app.fede.accounting.record.description.inlinehelp']}"
-                                                        execute="@this save" render="dscrpn"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="EmptyBox10"></div>
-                        <p:toolbar rendered="#{generalJournalHome.recordOfReferen}">
-                            <f:facet name="left">
-                                <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                                 ajax="false" 
-                                                 actionListener="#{generalJournalHome.saveRecord()}" 
-                                                 style="width: auto !important;"
-                                                 type="submit"/>
-                            </f:facet>
-                            <f:facet name="right">
-                                <p:commandButton ajax="true" disabled="false" immediate="true"
-                                                 actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal.id)}"
-                                                 action="#{generalJournalHome.redirect}"
-                                                 icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
-                                                 />
-                            </f:facet>
-                        </p:toolbar>
-                    </h:form>
+            <!--<div class="ui-g ui-g-12">-->
+            <!--<div class="ui-g-12">-->
+            <h:form id="form-nuevo-registro-detalle">
+                <p:messages id="messages" showDetail="true" closable="true" >
+                    <p:autoUpdate />
+                </p:messages>
+                <!--<div class="ui-g-12">-->
+                <div class="ui-g-5 ui-lg-5 ui-md-5" style="border: red 1px solid">
+                    <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
+                    <div class="EmptyBox10"></div>
+                    <p:selectOneMenu id="account" value="#{generalJournalHome.recordDetail.account}" style="width: 100%"
+                                     required="#{true}" immediate="true"
+                                     converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                        <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                        <p:ajax update="@this"></p:ajax>
+                    </p:selectOneMenu>  
                 </div>
-            </div>
+                <div class="ui-g-3 ui-lg-3 ui-md-3" style="border: red 1px solid">
+                    <h:outputText value="#{i18n['common.value']} #{i18n['common.money.letter']} *" />
+                    <div class="EmptyBox10"></div>
+                    <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
+                                   required="true" immediate="true" disabled="false"
+                                   styleClass=""
+                                   decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                   thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                   decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                        <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
+                    </p:inputNumber>
+                </div>
+                <div class="ui-g-3 ui-lg-3 ui-md-3" style="border: red 1px solid">
+                    <h:outputText value="#{i18n['common.type']} *"/>
+                    <div class="EmptyBox10"></div>
+                    <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordDetailType}" style="width: 100%"
+                                     required="#{true}" immediate="true"> 
+                        <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                        <p:ajax update="@this"></p:ajax>
+                    </p:selectOneMenu>
+                </div>
+                <div class="ui-g-1 ui-lg-1 ui-md-1" style="border: red 1px solid">
+                    <div class="EmptyBox10"></div>
+                    <p:commandButton id="add-record"  ajax="false"
+                                     actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
+                                     update="form-registro" icon="fa fa-plus-square" 
+                                     disabled="#{!generalJournalHome.recordOfReferen}" />
+                </div>
+                <!--</div>-->
+            </h:form>
+            <!--</div>-->
+            <h:form id="form-registro">
+                <div class="Container100 Responsive100" >
+                    <div class="ContainerIndent">
+                        <div class="Card SoftGrayBack">
+                            <div class="dataTable_wrapper">
+                                <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
+                                             liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                             paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
+                                             rows="10" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
+                                             scrollable="true"
+                                             value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
+                                             selection="#{generalJournalHome.selectedBussinesEntities}"
+                                             editable="#{generalJournalHome.recordOfReferen}">
+                                    <p:column headerText="#{i18n['common.accounts']}" style="width: auto">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{recordDetail.account.name}"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <h:selectOneMenu value="#{recordDetail.account}"
+                                                                 required="#{true}" immediate="true"
+                                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                                    <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                                    <p:ajax update="@this"></p:ajax>
+                                                </h:selectOneMenu> 
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="#{i18n['common.debe']}" style="width: 15%">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="#{i18n['common.haber']}" style="width: 15%">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="width: 5%">
+                                        <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
+                                    </p:column>
+                                </p:dataTable>
+                                <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.accounting.record.description']}" class="Container100 BigTopic"
+                                                value="#{generalJournalHome.record.description}" required="true" 
+                                                inlinehelp="#{messages['app.fede.accounting.record.description.inlinehelp']}"
+                                                execute="@this save" render="dscrpn"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="EmptyBox10"></div>
+                <p:toolbar rendered="#{generalJournalHome.recordOfReferen}">
+                    <f:facet name="left">
+                        <p:commandButton id="save" value="#{i18n['common.save']}" 
+                                         ajax="false" 
+                                         actionListener="#{generalJournalHome.saveRecord()}" 
+                                         style="width: auto !important;"
+                                         type="submit"/>
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                                         actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal.id)}"
+                                         action="#{generalJournalHome.redirect}"
+                                         icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
+                                         />
+                    </f:facet>
+                </p:toolbar>
+            </h:form>
+            <!--</div>-->
+            <!--            </div>-->
         </ui:define>
 
         <ui:define name="script">

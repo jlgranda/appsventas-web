@@ -157,7 +157,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Fs20 DispBlock">
                                                     #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
                                                     </span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.customer']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.date.created']}: #{entity.createdOn} | #{i18n['common.update.last']}: #{entity.lastUpdate} | #{i18n['app.fede.sales.invoice.comanda.number']}: <strong>#{entity.code}</strong></span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.customer']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.date.created']}: #{entity.createdOn} | #{i18n['common.update.last']}: #{entity.lastUpdate} 
+                                                        | #{i18n['app.fede.sales.invoice.comanda.number']}: <strong>#{entity.code}</strong> | #{i18n['common.total.pay']}: <strong><h:outputText value="#{entity.total - entity.getPaymentsDiscount()}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText></strong></span>
                                                     <hr></hr>
                                                 </div>
                                                 <div class="Container30">
