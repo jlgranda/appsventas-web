@@ -241,6 +241,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         setBusquedaAvanzada(true);
         
+        //Instanciar regla de negocio para registrar ventas.
         setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"), this.organizationData.getOrganization()));
     }
 
