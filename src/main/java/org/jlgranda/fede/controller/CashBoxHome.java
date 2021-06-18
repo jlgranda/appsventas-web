@@ -1204,15 +1204,20 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     public void registerRecordInJournal(Account selectedAccount, Account depositAccount, BigDecimal amountDeposit) { //Registar asiento contable
         GeneralJournal journal = buildFindJournal(); //Crear/Buscar el journal y el record, donde insertar los recordDetails
-        Record record = buildRecord();
+        Record record = buildRecord(); //Instania nuevo objeto
         record.addRecordDetail(updateRecordDetail(selectedAccount, amountDeposit, RecordDetail.RecordTDetailType.HABER));//Crear/Modificar un RecordDetail al Record del Journal del Día
         record.addRecordDetail(updateRecordDetail(depositAccount, amountDeposit, RecordDetail.RecordTDetailType.DEBE));
         record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") + " " + selectedAccount.getName() + " " + I18nUtil.getMessages("common.to.a") + " " + depositAccount.getName()).toUpperCase());
-        journal.addRecord(record);
+        record.setBussinesEntityType(this.cashBoxPartial.getClass().getSimpleName());
+        record.setBussinesEntityId(this.cashBoxPartial.getId());
+        record.setGeneralJournalId(journal.getId());
+        
+        //journal.addRecord(record);
 
-        GeneralJournal save = journalService.save(journal.getId(), journal); //Validar la inserción del Record
+        //GeneralJournal save = journalService.save(journal.getId(), journal); //Validar la inserción del Record
+        Record save = recordService.save(record);
         if (save != null) {
-            this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.sucessfully") + " a las: " + Dates.toTimeString(Dates.now()));
+            this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.sucessfully", Dates.toTimeString(Dates.now())));
         } else {
             this.addInfoMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.fail"));
         }
@@ -1224,6 +1229,8 @@ public class CashBoxHome extends FedeController implements Serializable {
             recordDetailGeneral.setOwner(this.subject);
             recordDetailGeneral.setAmount(amountDeposit.abs());
             recordDetailGeneral.setAccount(account);
+            recordDetailGeneral.setRecordDetailType(type);
+            
             if (type.equals(RecordDetail.RecordTDetailType.DEBE)) {
                 recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
             } else if (type.equals(RecordDetail.RecordTDetailType.HABER)) {
@@ -1234,17 +1241,18 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     private GeneralJournal buildFindJournal() {
-        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        if (generalJournal == null) {
-            generalJournal = journalService.createInstance();
-            generalJournal.setOrganization(this.organizationData.getOrganization());
-            generalJournal.setOwner(this.subject);
-            generalJournal.setCode(UUID.randomUUID().toString());
-            generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
-            journalService.save(generalJournal); //Guardar el journal creado
-            generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        }
-        return generalJournal;
+        return journalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject);
+//        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+//        if (generalJournal == null) {
+//            generalJournal = journalService.createInstance();
+//            generalJournal.setOrganization(this.organizationData.getOrganization());
+//            generalJournal.setOwner(this.subject);
+//            generalJournal.setCode(UUID.randomUUID().toString());
+//            generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
+//            journalService.save(generalJournal); //Guardar el journal creado
+//            generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+//        }
+//        return generalJournal;
     }
 
     private Record buildRecord() {

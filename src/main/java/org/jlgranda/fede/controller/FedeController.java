@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.jlgranda.fede.controller.admin.TemplateHome;
+import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -88,6 +89,11 @@ public abstract class FedeController {
      */
     protected String selectedAction;
     
+    /**
+     * Carga la plantilla de registro contable para aplicar a las ventas
+     */
+    private RecordTemplate recordTemplate; 
+    
     //protected Categ
 
     public List<BussinesEntity> getSelectedBussinesEntities() {
@@ -120,6 +126,14 @@ public abstract class FedeController {
 
     public void setSelectedAction(String selectedAction) {
         this.selectedAction = selectedAction;
+    }
+
+    public RecordTemplate getRecordTemplate() {
+        return recordTemplate;
+    }
+
+    public void setRecordTemplate(RecordTemplate recordTemplate) {
+        this.recordTemplate = recordTemplate;
     }
 
     public String redirect(){

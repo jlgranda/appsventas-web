@@ -217,11 +217,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     @EJB
     private RecordTemplateService recordTemplateService;
     
-    /**
-     * Carga la plantilla de registro contable para aplicar a las ventas
-     */
-    private RecordTemplate recordTemplate; 
-
     @PostConstruct
     private void init() {
 
@@ -265,14 +260,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.documentType = documentType;
     }
 
-    public RecordTemplate getRecordTemplate() {
-        return recordTemplate;
-    }
-
-    public void setRecordTemplate(RecordTemplate recordTemplate) {
-        this.recordTemplate = recordTemplate;
-    }
-    
     public Invoice getInvoice() {
 
         if (invoiceId != null && !this.invoice.isPersistent()) {
@@ -579,57 +566,9 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect() {
-        boolean registradoEnContabilidad = false;
-        if (this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())){
-            
-            RuleRunner ruleRunner = new RuleRunner();
-            Record record = recordService.createInstance();
-
-            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
-            
-            if (kbers != null) { //Contiene errores de compilación
-                logger.error( I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
-                logger.error(kbers.toString());
-                this.addErrorMessage( I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()) );
-            } else {
-                
-                //La regla compiló bien
-                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject);
-                
-                //El General Journal del día
-                if (generalJournal != null){
-                    
-                    record.setCode(UUID.randomUUID().toString());
-                    
-                    //TODO ver una forma de plantilla
-                    record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.invoice.getId()));
-                    record.setDescription(String.format("Detalle: %s \n Total: %s", this.invoice.getSummary(), Strings.format(this.invoice.getTotal().doubleValue(), "$ #0.##")));
-                    record.setOwner(this.subject);
-                    record.setAuthor(this.subject);
-                    record.setGeneralJournalId(generalJournal.getId());
-                    record.setBussinesEntityType(this.invoice.getClass().getSimpleName());
-                    record.setBussinesEntityId(this.invoice.getId());
-                    
-                    //Corregir objetos cuenta en los detalles
-                    record.getRecordDetails().forEach(rd -> {
-                        rd.setLastUpdate(Dates.now());
-                        //Todo implementar un cache de cuentas
-                        rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
-                    });
-
-                    recordService.save(record); 
-                    registradoEnContabilidad = true;
-                }
-            }
-        }
-        
-        if (registradoEnContabilidad){
-            //Registrar en KARDEX
-            registerDetailInKardex();
-            //Guardar cambios en la entidad invoice
-            collect(StatusType.CLOSE.toString());
-        }
-        return getOutcome();
+        //Guardar cambios en la entidad invoice
+        collect(StatusType.CLOSE.toString());
+        return getOutcome(); //Redireccción de vistas
     }
 
     /**
@@ -685,8 +624,58 @@ public class InvoiceHome extends FedeController implements Serializable {
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().addPayment(getPayment());
             getInvoice().setStatus(status);
-            registerDetailInKardex();//Registrar en KARDEX
-            save(true);
+
+            boolean registradoEnContabilidad = false;
+            if (this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
+
+                RuleRunner ruleRunner = new RuleRunner();
+                Record record = recordService.createInstance();
+
+                KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
+
+                if (kbers != null) { //Contiene errores de compilación
+                    logger.error(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                    logger.error(kbers.toString());
+                    this.addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                } else {
+
+                    //La regla compiló bien
+                    GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject);
+
+                    //El General Journal del día
+                    if (generalJournal != null) {
+
+                        record.setCode(UUID.randomUUID().toString());
+
+                        //TODO ver una forma de plantilla
+                        record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.invoice.getId()));
+                        record.setDescription(String.format("Detalle: %s \n Total: %s", this.invoice.getSummary(), Strings.format(this.invoice.getTotal().doubleValue(), "$ #0.##")));
+                        record.setOwner(this.subject);
+                        record.setAuthor(this.subject);
+                        record.setGeneralJournalId(generalJournal.getId());
+                        record.setBussinesEntityType(this.invoice.getClass().getSimpleName());
+                        record.setBussinesEntityId(this.invoice.getId());
+
+                        //Corregir objetos cuenta en los detalles
+                        record.getRecordDetails().forEach(rd -> {
+                            rd.setLastUpdate(Dates.now());
+                            //Todo implementar un cache de cuentas
+                            rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
+                        });
+
+                        recordService.save(record);
+                        registradoEnContabilidad = true;
+                    }
+                }
+            }
+
+            if (registradoEnContabilidad) {
+                //Registrar en KARDEX
+                registerDetailInKardex();
+                //Guardar cambios en la entidad invoice
+                save(true);
+            }
+
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
             setOutcome("");
