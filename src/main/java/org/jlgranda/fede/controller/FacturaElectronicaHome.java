@@ -1301,14 +1301,15 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     private Record findRecordOfFactura() {
-        Record recordGeneral = recordService.findUniqueByNamedQuery("Record.findByFact", this.facturaElectronica);
+        Record recordGeneral = recordService.findUniqueByNamedQuery("Record.findByBussinesEntityTypeAndId", this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId());
         return recordGeneral;
     }
 
     private Record buildRecord() {
         Record recordGeneral = recordService.createInstance();
         recordGeneral.setOwner(subject);
-        recordGeneral.setFacturaElectronicaId(facturaElectronica.getId());
+        recordGeneral.setBussinesEntityType(facturaElectronica.getClass().getSimpleName());
+        recordGeneral.setBussinesEntityId(facturaElectronica.getId());
         return recordGeneral;
     }
 

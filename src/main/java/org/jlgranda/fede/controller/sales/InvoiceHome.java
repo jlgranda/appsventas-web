@@ -594,18 +594,26 @@ public class InvoiceHome extends FedeController implements Serializable {
             } else {
                 
                 //La regla compiló bien
-                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization());
+                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject);
                 
                 //El General Journal del día
                 if (generalJournal != null){
                     
+                    record.setCode(UUID.randomUUID().toString());
+                    
+                    //TODO ver una forma de plantilla
+                    record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.invoice.getId()));
+                    record.setDescription(String.format("Detalle: %s \n Total: %s", this.invoice.getSummary(), Strings.format(this.invoice.getTotal().doubleValue(), "$ #0.##")));
                     record.setOwner(this.subject);
                     record.setAuthor(this.subject);
                     record.setGeneralJournalId(generalJournal.getId());
-
+                    record.setBussinesEntityType(this.invoice.getClass().getSimpleName());
+                    record.setBussinesEntityId(this.invoice.getId());
+                    
                     //Corregir objetos cuenta en los detalles
                     record.getRecordDetails().forEach(rd -> {
                         rd.setLastUpdate(Dates.now());
+                        //Todo implementar un cache de cuentas
                         rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
                     });
 

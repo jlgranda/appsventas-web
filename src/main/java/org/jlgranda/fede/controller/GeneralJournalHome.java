@@ -164,8 +164,11 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
 
     public GeneralJournal getJournal() {
-        if (this.journalId != null && !this.journal.isPersistent()) {
+        if (this.journalId != null && this.journal != null && !this.journal.isPersistent()) {
             this.journal = journalService.find(journalId);
+            
+            //Cargar registros 
+            this.journal.setRecords(recordService.findByNamedQuery("Record.findByJournalId", this.journalId));
         }
         return this.journal;
     }
@@ -382,7 +385,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
     
     public boolean isRecordOfReferen() {
-        return this.record.getFacturaElectronicaId() == null;
+        return this.record.getBussinesEntityId() == null;
     }
 
     @Override
