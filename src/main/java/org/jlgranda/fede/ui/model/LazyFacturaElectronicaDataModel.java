@@ -180,7 +180,6 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     }
 
     public void setFirstResult(Integer firstResult) {
-        logger.info("set first result + firstResult");
         this.firstResult = firstResult;
         this.resultList = null;
     }

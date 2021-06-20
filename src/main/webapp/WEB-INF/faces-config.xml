@@ -96,22 +96,22 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>close-cash</from-outcome>
-            <to-view-id>/pages/fede/accounting/close_cash.jsf</to-view-id>
+            <to-view-id>/pages/accounting/close_cash.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>ajust-cash</from-outcome>
-            <to-view-id>/pages/fede/accounting/cash_ajust.jsf</to-view-id>
+            <to-view-id>/pages/accounting/cash_ajust.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>accounts</from-outcome>
-            <to-view-id>/pages/fede/accounting/account_items.jsf</to-view-id>
+            <to-view-id>/pages/accounting/account_items.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>general-journals</from-outcome>
-            <to-view-id>/pages/fede/accounting/journal_items.jsf</to-view-id>
+            <to-view-id>/pages/accounting/journal_items.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

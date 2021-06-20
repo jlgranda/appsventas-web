@@ -350,79 +350,78 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             required="false" requiredMessage="#{i18n['common.alias']}"
                                             container="none"/>
                         </div>
+                        <!-- toolbar-->
+                        <div class="ui-g ui-lg-12 ui-md-12">
+                            <p:toolbar rendered="#{not invoiceHome.invoice.persistent}"  styleClass="ui-g ui-lg-12 ui-md-12">
+                                <p:toolbarGroup style="flex-wrap: nowrap !important;">                        
+                                    <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"  styleClass="success-btn"
+                                                     actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" disabled="#{empty invoiceHome.candidateDetails}" 
+                                                     type="submit"/>
+                                </p:toolbarGroup>
+                                <p:toolbarGroup align="rigth">
+                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                                     actionListener="#{invoiceHome.closeDialog(null)}" 
+                                                     action="preinvoices"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
+                                                     />
+                                    <p:menuButton value="#{i18n['common.options']}"  styleClass="secondary-button">
+                                        <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
+                                                    actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
+                                                    immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
+                                    </p:menuButton>                      
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                            <p:toolbar rendered="#{invoiceHome.invoice.persistent}"  styleClass="ui-g ui-lg-12 ui-md-12">
+                                <p:toolbarGroup style="flex-wrap: nowrap !important;">   
+                                    <p:commandButton id="collect-button" value="#{i18n['common.collect']}" ajax="true" 
+                                                     styleClass="danger-btn"
+                                                     actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
+                                                     rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                                     style="width: auto !important;"
+                                                     type="submit"/>
+                                    <p:commandButton id="overdue-button" value="#{i18n['common.overdue']}" ajax="true" 
+                                                     styleClass="help-btn"
+                                                     actionListener="#{invoiceHome.overdue()}" action="#{invoiceHome.redirect}"
+                                                     rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                                     style="width: auto !important;"
+                                                     type="submit"/>
+                                    <p:commandButton id="print-button" value="#{i18n['common.print']}" ajax="true" 
+                                                     styleClass="warning-btn"
+                                                     actionListener="#{invoiceHome.print()}" 
+                                                     rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                                     style="width: auto !important;"
+                                                     type="submit"/>
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+                                    <p:commandButton icon="fa fa-save Fs14 Black" ajax="true" styleClass="info-btn"
+                                                     actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}" disabled="false" 
+                                                     type="submit"/>
+                                </p:toolbarGroup>
+                                <p:toolbarGroup align="rigth">
+
+                                    <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{not invoiceHome.invoice.persistent}"
+                                                     actionListener="#{invoiceHome.closeDialog(null)}" 
+                                                     action="#{invoiceHome.redirect}"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
+                                                     />
+                                    <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{invoiceHome.invoice.persistent}"
+                                                     actionListener="#{invoiceHome.closeDialog(null)}" 
+                                                     action="#{invoiceHome.redirect}"
+                                                     icon="fa fa-times Fs14 Black" styleClass="secondary-button" type="submit"
+                                                     />
+                                    <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button">
+                                        <p:menuitem value="#{i18n['common.cancel']}" 
+                                                    actionListener="#{invoiceHome.cancel()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
+                                                    immediate="true" rendered="#{invoiceHome.invoice.isPersistent()}"/>
+                                    </p:menuButton>
+                                </p:toolbarGroup>
+
+                            </p:toolbar>
+                        </div>
+                        <!-- //toolbar-->
                     </p:outputPanel>
                     <!-- FIN sección de formulario -->
-                </div>
-                <div class="ui-g ui-lg-12 ui-md-12">
-                    <p:toolbar rendered="#{not invoiceHome.invoice.persistent}"  styleClass="ui-g ui-lg-12 ui-md-12">
-                        <f:facet name="left">
-                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"  styleClass="success-btn"
-                                             actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" disabled="#{empty invoiceHome.candidateDetails}" 
-                                             type="submit"/>
-                        </f:facet>
-
-                        <f:facet name="right">
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
-                                             actionListener="#{invoiceHome.closeDialog(null)}" 
-                                             action="preinvoices"
-                                             icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
-                                             />
-                            <p:menuButton value="#{i18n['common.options']}"  styleClass="secondary-button">
-                                <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
-                                            actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
-                                            immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
-                            </p:menuButton>
-                        </f:facet>
-
-                    </p:toolbar>
-                    <p:toolbar rendered="#{invoiceHome.invoice.persistent}"  styleClass="ui-g ui-lg-12 ui-md-12">
-                        <f:facet name="left">
-                            <p:commandButton id="collect-button" value="#{i18n['common.collect']}" ajax="true" 
-                                             styleClass="danger-btn"
-                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
-                                             rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
-                                             style="width: auto !important;"
-                                             type="submit"/>
-                            <p:commandButton id="overdue-button" value="#{i18n['common.overdue']}" ajax="true" 
-                                             styleClass="help-btn"
-                                             actionListener="#{invoiceHome.overdue()}" action="#{invoiceHome.redirect}"
-                                             rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
-                                             style="width: auto !important;"
-                                             type="submit"/>
-                            <p:commandButton id="print-button" value="#{i18n['common.print']}" ajax="true" 
-                                             styleClass="warning-btn"
-                                             actionListener="#{invoiceHome.print()}" 
-                                             rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
-                                             style="width: auto !important;"
-                                             type="submit"/>
-                            <span class="ui-separator">
-                                <span class="fa fa-ellipsis-v SoftGray" />
-                            </span>
-                            <p:commandButton icon="fa fa-save Fs14 Black" ajax="true" styleClass="info-btn"
-                                             actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}" disabled="false" 
-                                             type="submit"/>
-                        </f:facet>
-
-                        <f:facet name="right">
-
-                            <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{not invoiceHome.invoice.persistent}"
-                                             actionListener="#{invoiceHome.closeDialog(null)}" 
-                                             action="#{invoiceHome.redirect}"
-                                             icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
-                                             />
-                            <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{invoiceHome.invoice.persistent}"
-                                             actionListener="#{invoiceHome.closeDialog(null)}" 
-                                             action="#{invoiceHome.redirect}"
-                                             icon="fa fa-times Fs14 Black" styleClass="secondary-button" type="submit"
-                                             />
-                            <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button">
-                                <p:menuitem value="#{i18n['common.cancel']}" 
-                                            actionListener="#{invoiceHome.cancel()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
-                                            immediate="true" rendered="#{invoiceHome.invoice.isPersistent()}"/>
-                            </p:menuButton>
-                        </f:facet>
-
-                    </p:toolbar>
                 </div>
             </div>
         </div>

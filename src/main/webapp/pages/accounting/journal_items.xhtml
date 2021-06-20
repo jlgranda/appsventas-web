@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
+            <li><p:link outcome="/pages/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom: 10px;" styleClass="raised-btn"
                                          actionListener="#{generalJournalHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <!--<p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/accounting/journal.jsf"/>-->
+                        <!--<p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/accounting/journal.jsf"/>-->
                         <p:commandButton value="#{i18n['common.new']}" style="margin-bottom: 10px;" styleClass="danger-btn"
                                          actionListener="#{generalJournalHome.validateNewJournal()}" ajax="false">
                         </p:commandButton>

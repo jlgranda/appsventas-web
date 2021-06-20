@@ -196,7 +196,7 @@ public class UI {
             i++;
         }
         for (Account x : entities) {
-            items[i++] = new SelectItem(x, x.getName());
+            items[i++] = new SelectItem(x, x.getCode() + " - " + x.getName());
         }
         return items;
     }

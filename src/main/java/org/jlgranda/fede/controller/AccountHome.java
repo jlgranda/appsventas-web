@@ -22,6 +22,7 @@ import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.accounting.AccountCache;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -41,15 +42,13 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
-import org.jlgranda.fede.model.document.DocumentType;
-import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.ui.model.LazyAccountDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
-import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.Strings;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -68,6 +67,9 @@ public class AccountHome extends FedeController implements Serializable {
     private static final long serialVersionUID = -1007161141552849702L;
 
     Logger logger = LoggerFactory.getLogger(AccountHome.class);
+    
+    @EJB
+    AccountCache accountCache;
 
     @Inject
     private Subject subject;
@@ -80,9 +82,6 @@ public class AccountHome extends FedeController implements Serializable {
 
     @EJB
     private GroupService groupService;
-
-    @EJB
-    private InvoiceService invoiceService;
 
     @EJB
     private AccountService accountService;
@@ -105,6 +104,7 @@ public class AccountHome extends FedeController implements Serializable {
 
     //Objetos Account para edición
     private Long accountId;
+    private Long parentAccountId;
     private Account account;
     private Account accountSelected;
     private Account parentAccount;
@@ -120,6 +120,10 @@ public class AccountHome extends FedeController implements Serializable {
 
     @PostConstruct
     private void init() {
+        
+        setAccount(accountService.createInstance());
+        setParentAccount(accountService.createInstance());
+        
         int range = 0;
         try {
             range = Integer.valueOf(settingHome.getValue(SettingNames.ACCOUNT_TOP_RANGE, "7"));
@@ -191,10 +195,21 @@ public class AccountHome extends FedeController implements Serializable {
         this.accountId = accountId;
     }
 
+    public Long getParentAccountId() {
+        return parentAccountId;
+    }
+
+    public void setParentAccountId(Long parentAccountId) {
+        this.parentAccountId = parentAccountId;
+        if (this.parentAccountId != null && !this.parentAccount.isPersistent()) {
+            this.parentAccount = accountService.find(parentAccountId);
+        }
+    }
+
     public Account getAccount() {
         if (this.accountId != null && !this.account.isPersistent()) {
-            this.account = accountService.find(accountId);
-            this.parentAccount = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getParentAccountId(), this.organizationData.getOrganization());
+            this.account = this.accountCache.lookup(this.accountId);
+            this.parentAccount = this.accountCache.lookup(this.account.getParentAccountId());
         }
         return account;
     }
@@ -212,6 +227,9 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public Account getParentAccount() {
+         if (this.accountId != null && !this.account.isPersistent()) {
+            this.parentAccount = accountCache.lookup(this.parentAccountId);
+        }
         return this.parentAccount;
     }
 
@@ -264,11 +282,8 @@ public class AccountHome extends FedeController implements Serializable {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //OBJETO: ACCOUNT.GETACCOUNTS
     public List<Account> getAccounts() {
-        return accountService.findByOrganization(this.organizationData.getOrganization());
-    }
-
-    public void findParentAccount() {
-
+        //return accountService.findByOrganization(this.organizationData.getOrganization());
+        return accountCache.filterByOrganization(this.organizationData.getOrganization());
     }
 
     //MODELO: LAZY DE DATOS
@@ -321,7 +336,7 @@ public class AccountHome extends FedeController implements Serializable {
         try {
             if (event != null && event.getTreeNode().getData() != null) {
                 Account p = (Account) event.getTreeNode().getData();
-                redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
+                redirectTo("/pages/accounting/account.jsf?accountId=" + p.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
@@ -341,6 +356,8 @@ public class AccountHome extends FedeController implements Serializable {
             account.setOrganization(this.organizationData.getOrganization());
         }
         accountService.save(account.getId(), account);
+        this.accountCache.load(); //recargar todas las cuentas
+        
         setTreeDataModel(createTreeAccounts());//Refrescar el árbol de cuentas
     }
 
@@ -485,4 +502,11 @@ public class AccountHome extends FedeController implements Serializable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public void generateNextCode(){
+        if ( !this.account.isPersistent() && this.parentAccountId != null ){
+            //Establecer el padre y el codigo
+            this.account.setCode(this.accountCache.genereNextCode(parentAccountId));
+            this.account.setParentAccountId(this.parentAccountId);
+        } 
+    }
 }

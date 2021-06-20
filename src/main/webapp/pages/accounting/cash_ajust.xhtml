@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/accounting/cash_ajust.jsf">#{cashBoxHome.cashBoxGeneral.id == null ? i18n['common.new']  : i18n['common.edit']}  #{i18n['app.fede.accounting.close.cash']}
+        <li><p:link outcome="/pages/accounting/cash_ajust.jsf">#{cashBoxHome.cashBoxGeneral.id == null ? i18n['common.new']  : i18n['common.edit']}  #{i18n['app.fede.accounting.close.cash']}
                 <h:outputText value="#{cashBoxHome.cashBoxGeneral.createdOn}">
                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                 </h:outputText>

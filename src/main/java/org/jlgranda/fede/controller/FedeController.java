@@ -92,7 +92,7 @@ public abstract class FedeController {
     /**
      * Carga la plantilla de registro contable para aplicar a las ventas
      */
-    private RecordTemplate recordTemplate; 
+    protected RecordTemplate recordTemplate; 
     
     //protected Categ
 

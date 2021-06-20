@@ -36,9 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
+        <li><p:link outcome="/pages/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/accounting/journal.jsf">#{generalJournalHome.journalId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.journal']}</p:link></li>
+        <li><p:link outcome="/pages/accounting/journal.jsf">#{generalJournalHome.journalId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.journal']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.GeneralJournal"/>

@@ -1561,4 +1561,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
     }
 
+    public void clear(){
+        this.lazyDataModel = null; //Realizar una nueva busqueda
+    }
 }

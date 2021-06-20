@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <!--<f:viewParam name="" value="" />-->
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/sales/invoices_finder.jsf">#{i18n['common.historic']}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jpapi.model.StatusType" />
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <div class="card">
+                    <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                    <p:inputText value="#{invoiceHome.keyword}" class="input-sm">
+                        <p:ajax listener="#{invoiceHome.clear()}" />
+                    </p:inputText>  
+                    <h:panelGroup id="controles-busqueda-avanzada" >
+                        <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> 
+                            </p:calendar>                            
+                        </h:panelGroup>
+                    </h:panelGroup>
+<!--                    <p:selectBooleanCheckbox value="#{invoiceHome.busquedaAvanzada}">
+                        <p:ajax event="change" update="controles-busqueda-avanzada" />
+                    </p:selectBooleanCheckbox>-->
+                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
+                                     actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
+                    </p:commandButton>
+                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=invoices_finder"/>
+                </div>
+                <div class="card">
+                    <!-- Resultados de busqueda -->
+                    <p:dataTable id="dataTableInvoices"  widgetVar="dataTableInvoices" draggableColumns="true" lazy="true" liveResize="true"
+                                 paginator="true" paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{invoice.id}"
+                                 rows="25" scrollRows="25"
+                                 value="#{invoiceHome.lazyDataModel}" var="invoice"
+                                 selection="#{invoiceHome.selectedBussinesEntities}"
+                                 sortBy="#{invoice.emissionOn}" sortMode="single">
+                        <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
+                        <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                        <p:column headerText="#{i18n['common.code']}" style="width:96px;text-align:left">
+                            <h:outputText value="#{invoice.code}" />
+                        </p:column>
+                        <p:column  id="boardNumber"  headerText="#{i18n['app.fede.sales.invoice.board.number']}" 
+                                   sortBy="#{invoice.boardNumber}" sortOrder="desc"
+                                   style="width:96px;text-align:left">
+                            <h:outputText value="#{invoice.boardNumber}">
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.comany.name']}" sortBy="#{invoice.author}">
+                            <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
+                        </p:column>
+                        <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains">
+                            <h:outputText value="#{invoice.summary}" />
+                        </p:column>
+                        <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{invoice.total}"  style="width:128px;text-align:right;">
+                            <h:outputText value="#{invoice.total}">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column  id="emissionOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" sortOrder="desc" style="width:160px;text-align:right;">
+                            <h:outputText value="#{invoice.emissionOn}">
+                                <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                    <!-- //Resultados de busqueda-->
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

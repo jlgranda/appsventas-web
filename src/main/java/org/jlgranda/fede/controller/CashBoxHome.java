@@ -373,7 +373,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void setSalesCreditCollect(BigDecimal salesCreditCollect) {
         this.salesCreditCollect = salesCreditCollect;
     }
-    
+
     public BigDecimal getPurchasesCash() {
         return purchasesCash;
     }
@@ -718,8 +718,8 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public int getActiveIndex() {
-        if(this.cashBoxPartial.getId()!=null && CashBoxPartial.Status.OPEN.equals(this.cashBoxPartial.getStatusCashBoxPartial())){
-            activeIndex =-1;
+        if (this.cashBoxPartial.getId() != null && CashBoxPartial.Status.OPEN.equals(this.cashBoxPartial.getStatusCashBoxPartial())) {
+            activeIndex = -1;
         }
         return activeIndex;
     }
@@ -733,10 +733,10 @@ public class CashBoxHome extends FedeController implements Serializable {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //AJUSTE DE CIERRE DE CAJA
     public void findCashBoxs() { //Buscar CashBoxGeneral y CashBox del Cajero en caso de existencia
-        List<CashBoxGeneral> cashBoxGeneralExist = cashBoxGeneralService.findByNamedQueryWithLimit("CashBoxGeneral.findByCreatedOnAndOrg",1, getStart(), getEnd(), this.organizationData.getOrganization());
-        if(cashBoxGeneralExist.isEmpty()){
+        List<CashBoxGeneral> cashBoxGeneralExist = cashBoxGeneralService.findByNamedQueryWithLimit("CashBoxGeneral.findByCreatedOnAndOrg", 1, getStart(), getEnd(), this.organizationData.getOrganization());
+        if (cashBoxGeneralExist.isEmpty()) {
             this.cashBoxGeneral = cashBoxGeneralService.createInstance();
-        }else {
+        } else {
             this.cashBoxGeneral = cashBoxGeneralExist.get(0);
             List<CashBoxPartial> partialExist = cashBoxPartialService.findByNamedQueryWithLimit("CashBoxPartial.findByCashBoxGeneralAndOwner", 1, this.cashBoxGeneral, this.subject);
             if (!partialExist.isEmpty()) {
@@ -784,7 +784,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         if (this.salesCredit == null) {
             this.salesCredit = BigDecimal.ZERO;
         }
-        
+
         objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesSourceMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.OVERDUE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
         objects.stream().forEach((Object object) -> {
             this.salesCreditCollect = (BigDecimal) object;
@@ -792,7 +792,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         if (this.salesCreditCollect == null) {
             this.salesCreditCollect = BigDecimal.ZERO;
         }
-        
+
         objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CASH);
         objects.stream().forEach((Object object) -> {
             this.purchasesCash = (BigDecimal) object;
@@ -1211,9 +1211,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         record.setBussinesEntityType(this.cashBoxPartial.getClass().getSimpleName());
         record.setBussinesEntityId(this.cashBoxPartial.getId());
         record.setGeneralJournalId(journal.getId());
-        
-        //journal.addRecord(record);
 
+        //journal.addRecord(record);
         //GeneralJournal save = journalService.save(journal.getId(), journal); //Validar la inserción del Record
         Record save = recordService.save(record);
         if (save != null) {
@@ -1230,7 +1229,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             recordDetailGeneral.setAmount(amountDeposit.abs());
             recordDetailGeneral.setAccount(account);
             recordDetailGeneral.setRecordDetailType(type);
-            
+
             if (type.equals(RecordDetail.RecordTDetailType.DEBE)) {
                 recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
             } else if (type.equals(RecordDetail.RecordTDetailType.HABER)) {
@@ -1241,18 +1240,9 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     private GeneralJournal buildFindJournal() {
-        return journalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject);
-//        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-//        if (generalJournal == null) {
-//            generalJournal = journalService.createInstance();
-//            generalJournal.setOrganization(this.organizationData.getOrganization());
-//            generalJournal.setOwner(this.subject);
-//            generalJournal.setCode(UUID.randomUUID().toString());
-//            generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
-//            journalService.save(generalJournal); //Guardar el journal creado
-//            generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-//        }
-//        return generalJournal;
+        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario: ");
+        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+        return journalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
     }
 
     private Record buildRecord() {

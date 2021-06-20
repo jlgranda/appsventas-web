@@ -245,7 +245,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 GeneralJournal p = (GeneralJournal) event.getObject();
-                redirectTo("/pages/fede/accounting/journal.jsf?journalId=" + p.getId());
+                redirectTo("/pages/accounting/journal.jsf?journalId=" + p.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
@@ -367,7 +367,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public void validateNewJournal() throws IOException {
         List<GeneralJournal> generalJournal = journalService.findByNamedQueryWithLimit("GeneralJournal.findByCreatedOnAndOrg",1, Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         if (generalJournal.isEmpty()) {
-            redirectTo("/pages/fede/accounting/journal.jsf");
+            redirectTo("/pages/accounting/journal.jsf");
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date") + " " + Dates.toDateString(Dates.now()));
         }

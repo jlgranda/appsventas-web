@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting.journal']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
+            <li><p:link outcome="/pages/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <h:form id="form-nuevo-registro-detalle">
