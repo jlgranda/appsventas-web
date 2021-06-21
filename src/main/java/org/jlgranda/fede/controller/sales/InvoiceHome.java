@@ -24,6 +24,7 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.RecordTemplateService;
 import com.jlgranda.fede.ejb.SubjectService;
+import com.jlgranda.fede.ejb.accounting.AccountCache;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.KardexDetailService;
@@ -89,8 +90,6 @@ import org.jpapi.util.Strings;
 import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.FilterMeta;
-import org.primefaces.model.MatchMode;
-import org.primefaces.model.SortOrder;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
@@ -110,6 +109,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     private static final long serialVersionUID = 115507468383355922L;
 
     Logger logger = LoggerFactory.getLogger(InvoiceHome.class);
+    
+    @EJB
+    AccountCache accountCache;
 
     @Inject
     private Subject subject;
@@ -222,6 +224,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     private List<FilterMeta> filterBy;
     
+    
     @PostConstruct
     private void init() {
 
@@ -248,6 +251,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         
         //Instanciar regla de negocio para registrar ventas.
         setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"), this.organizationData.getOrganization()));
+        
+        //Establecer variable de sistema que habilita o no el registro contable
+        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "false")));
+        
         filterBy = new ArrayList<>();
 
 //        filterBy.add(FilterMeta.builder()
@@ -647,8 +654,9 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().addPayment(getPayment());
             getInvoice().setStatus(status);
 
+            
             boolean registradoEnContabilidad = false;
-            if (this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
+            if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
 
                 RuleRunner ruleRunner = new RuleRunner();
                 Record record = recordService.createInstance();
@@ -673,7 +681,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
                         //TODO ver una forma de plantilla
                         record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.invoice.getId()));
-                        record.setDescription(String.format("Detalle: %s \n Total: %s", this.invoice.getSummary(), Strings.format(this.invoice.getTotal().doubleValue(), "$ #0.##")));
+                        record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal: %s", this.invoice.getOwner().getFullName(), this.invoice.getSummary(), Strings.format(this.invoice.getTotal().doubleValue(), "$ #0.##")));
                         record.setOwner(this.subject);
                         record.setAuthor(this.subject);
                         record.setGeneralJournalId(generalJournal.getId());
@@ -683,28 +691,32 @@ public class InvoiceHome extends FedeController implements Serializable {
                         //Corregir objetos cuenta en los detalles
                         record.getRecordDetails().forEach(rd -> {
                             rd.setLastUpdate(Dates.now());
-                            //Todo implementar un cache de cuentas
-                            rd.setAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", rd.getAccountName(), this.organizationData.getOrganization()));
+                            rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
                         });
 
                         recordService.save(record);
+                        
                         registradoEnContabilidad = true;
                     }
                 }
             }
 
-            if (registradoEnContabilidad) {
+            if (isAccountingEnabled() && registradoEnContabilidad) {
+                //Registrar en KARDEX
+                registerDetailInKardex();
+                //Guardar cambios en la entidad invoice
+                save(true);
+            } else if (!isAccountingEnabled() && !registradoEnContabilidad) {
                 //Registrar en KARDEX
                 registerDetailInKardex();
                 //Guardar cambios en la entidad invoice
                 save(true);
             }
-
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
             setOutcome("");
         }
-        return "failed";
+        return getOutcome();
     }
 
     public String print() {
@@ -715,16 +727,16 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice(); //recargar la instancia actual
             //Imprimir reporte
             Map<String, String> settings = new HashMap<>();
-            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "42"));
+            settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "40"));
             //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
-            settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "8"));
+            settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "9"));
             settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));
 
             AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice(), settings);
             //InvoiceDesign invoiceDesign = new InvoiceDesign(this.getInvoice(), settings);
             //Invocar Servlet en nueva ventana del navegador
 //            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
-            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=pdf");
+            //redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=pdf");
 
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);

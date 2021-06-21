@@ -390,7 +390,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      actionListener="#{invoiceHome.print()}" 
                                                      rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                                      style="width: auto !important;"
-                                                     type="submit"/>
+                                                     process="@this" oncomplete="PF('reportViewer').show();"/>
                                     <span class="ui-separator">
                                         <span class="fa fa-ellipsis-v SoftGray" />
                                     </span>
@@ -426,5 +426,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </div>
         </div>
     </ui:define>
-
+    <ui:define name="report">
+        <h:panelGroup id="reportPanelTitulo">
+            <style>
+                #toolbarViewer {
+                    height: 0px;
+                    display: none ! important;
+                }
+            </style>
+            <p:dialog id="reportViewer" closable="true" modal="true" header="#{i18n['common.view']} #{i18n['common.report']}" widgetVar="reportViewer" dynamic="true" width="800px" height="600px">
+                <style>
+                    #outerContainer #mainContainer div.toolbar {
+                        display: none !important; /* hide PDF viewer toolbar */
+                    }		
+                </style>				   	               
+                <iframe id="ifrmReportViewer" src="#{request.contextPath}/fedeServlet/?entity=invoice&amp;id=#{invoiceHome.invoice.sequencial}&amp;type=pdf" height="100%" width="100%"></iframe> 
+            </p:dialog>
+        </h:panelGroup>
+    </ui:define>
 </ui:composition>

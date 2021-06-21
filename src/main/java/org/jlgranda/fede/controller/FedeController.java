@@ -94,6 +94,8 @@ public abstract class FedeController {
      */
     protected RecordTemplate recordTemplate; 
     
+    protected boolean accountingEnabled = false;
+    
     //protected Categ
 
     public List<BussinesEntity> getSelectedBussinesEntities() {
@@ -130,6 +132,14 @@ public abstract class FedeController {
 
     public RecordTemplate getRecordTemplate() {
         return recordTemplate;
+    }
+
+    public boolean isAccountingEnabled() {
+        return accountingEnabled;
+    }
+
+    public void setAccountingEnabled(boolean accountingEnabled) {
+        this.accountingEnabled = accountingEnabled;
     }
 
     public void setRecordTemplate(RecordTemplate recordTemplate) {
