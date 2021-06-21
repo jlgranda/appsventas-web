@@ -720,7 +720,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public String print() {
-        try {
+        //try {
             collect(StatusType.PRINTED.toString());
             //Forzar actualizar invoice para generación correcta del reporte
             setInvoice(invoiceService.createInstance());
@@ -738,9 +738,9 @@ public class InvoiceHome extends FedeController implements Serializable {
 //            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
             //redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=pdf");
 
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        //} catch (IOException ex) {
+        //    java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+        //}
         return this.getOutcome();
     }
 
