@@ -44,7 +44,6 @@ import net.sf.dynamicreports.report.definition.datatype.DRIDataType;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.jlgranda.fede.model.sales.Invoice;
-import org.jlgranda.fede.model.sales.Detail;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
@@ -62,7 +61,7 @@ public class AdhocCustomizerReport {
         AdhocReport report = new AdhocReport();
         configuration.setReport(report);
 
-        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth() - 20;
+        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth() - 24;
         
         //columns
         AdhocColumn column = new AdhocColumn();
@@ -74,7 +73,7 @@ public class AdhocCustomizerReport {
         column = new AdhocColumn();
         column.setName("descripcion");
         column.setTitle("Descripción");
-        column.setWidth(calculePorcentaje(pageWidth, 56));
+        column.setWidth(calculePorcentaje(pageWidth, 54));
         report.addColumn(column);
         
         column = new AdhocColumn();
@@ -86,7 +85,7 @@ public class AdhocCustomizerReport {
         column = new AdhocColumn();
         column.setName("subtotal");
         column.setTitle("Subtotal");
-        column.setWidth(calculePorcentaje(pageWidth, 16));
+        column.setWidth(calculePorcentaje(pageWidth, 18));
         report.addColumn(column);
         
 	//groups
@@ -261,7 +260,7 @@ public class AdhocCustomizerReport {
                 return "P.U.";
             }
             if (name.equals("subtotal")) {
-                return "Subtotal";
+                return "Subt.";
             }
             return name;
         }
