@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:commandButton>
                     </div>
                     <div class="card">
-                        <p:dataTable id="dataTable-purchases" draggableColumns="true" lazy="true" liveResize="true"
+                        <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{facturaElectronica.id}"
                                      rows="25" scrollRows="25"
@@ -78,9 +78,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.description']}">
+<!--                            <p:column headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
+                            </p:column>-->
+                            <p:column headerText="#{i18n['common.description']}" filterBy="#{facturaElectronica.summary}" filterMatchMode="contains">
+                                <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>
+                            #{facturaElectronica.summary}
                             <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}" styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>

@@ -22,6 +22,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import org.jlgranda.fede.util.FacturaUtil;
 import org.jlgranda.fede.model.document.FacturaElectronica;
+import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
 import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jpapi.model.TaxRateIVAType;
 import org.jpapi.model.TaxType;
@@ -87,7 +88,14 @@ public class FedeAPI implements Serializable {
 //            }
 //            index++;
 //        }
-        
+//        for (FacturaElectronicaDetail fd : facturaElectronica.getFacturaElectronicaDetails()) {
+//            buffer.append('(');
+//            buffer.append(fd.getQuantity());
+//            buffer.append(')');
+//            buffer.append(' ');
+//            buffer.append(fd.getProduct().getName());
+//            buffer.append(' ');
+//        }
         return buffer.toString();
     }
     
