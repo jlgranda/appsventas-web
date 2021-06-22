@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['common.management']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
+            <li><p:link outcome="/pages/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <!-- /.row -->
@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="false">
                         </p:commandButton>
 
-                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/admin/subject/profile.jsf"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/admin/subject/profile.jsf"/>
                     </div>
                     <div class="Card">
                         <p:dataTable id="dataTable-persons" draggableColumns="true" lazy="true" liveResize="true"
@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      rows="25" scrollRows="25"
                                      value="#{subjectAdminHome.lazyDataModel}" var="_subject"
                                      selection="#{subjectAdminHome.selectedBussinesEntities}"
-                                     sortOrder="DESCENDING" sortBy="#{_subject.createdOn}">
+                                     sortBy="#{_subject.createdOn}">
                             <p:ajax event="rowSelect" listener="#{subjectAdminHome.onRowSelect}"/>
                             <p:ajax event="rowSelectCheckbox" 
                                     process="dataTable-persons" update="dataTable-persons"/>
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.firstnames']}" sortBy="#{_subject.firstname}">
                                 <h:outputText value="#{_subject.firstname}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_subject.createdOn}"
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_subject.createdOn}" sortOrder="DESC"
                                        styleClass="text-right">
                                 <h:outputText value="#{_subject.createdOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />

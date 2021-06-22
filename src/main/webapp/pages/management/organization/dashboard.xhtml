@@ -84,19 +84,19 @@
                                                     <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
                                                     <p:ajax event="rowSelect" listener="#{organizationHome.onRowSelect}"/>
                                                     <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
-                                                    <p:column headerText="#{i18n['RUC']}" sortBy="#{entity.ruc}">
+                                                    <p:column headerText="#{i18n['common.ruc']}" sortBy="#{entity.ruc}">
                                                         <h:outputText value="#{entity.ruc}" />
                                                     </p:column>
                                                     <p:column headerText="#{i18n['common.type']}" sortBy="#{entity.type}">
                                                         <h:outputText value="#{entity.organizationType}" />
                                                     </p:column>
-                                                    <p:column headerText="#{i18n['ride.infoFactura.razonSocialComprador']}" sortBy="#{entity.name}">
+                                                    <p:column headerText="#{i18n['common.company.name']}" sortBy="#{entity.name}">
                                                         <h:outputText value="#{entity.name}" />
                                                     </p:column>
-                                                    <p:column headerText="#{i18n['initials']}" sortBy="#{entity.initials}">
+                                                    <p:column headerText="#{i18n['common.company.initials']}" sortBy="#{entity.initials}">
                                                         <h:outputText value="#{entity.initials}" />
                                                     </p:column>
-                                                    <p:column  id="fechaEmision"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{entity.createdOn}"
+                                                    <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}"
                                                                styleClass="text-right">
                                                         <h:outputText value="#{entity.createdOn}">
                                                             <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
@@ -125,7 +125,7 @@
             <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile">
-                        <h2 class="CardTopic TexAlCenter">#{i18n['app.fede.applications']}</h2>
+                        <h2 class="CardTopic TexAlCenter">#{i18n['common.applications']}</h2>
                         <div class="EmptyBox20"></div>
 
                         <div class="Container50 Responsive50">
@@ -135,7 +135,7 @@
                                     <div class="EmptyBox5"></div>
                                     <span class="FontRobotoLight Fs18">#{i18n['app.management.organization']}</span>
                                     <div class="EmptyBox10"></div>
-                                    <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/organization/organization.jsf"/>
+                                    <p:button value="#{i18n['common.new']}" styleClass="RedButton" outcome="/pages/management/organization/organization.jsf"/>
                                 </div>
                             </div> 
                         </div>                       

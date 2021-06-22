@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.code']}">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.comany.name']}" sortBy="#{facturaElectronica.author}">
+                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
                             <p:column headerText="#{i18n['common.description']}">

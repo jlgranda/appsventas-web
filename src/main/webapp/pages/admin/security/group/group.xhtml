@@ -10,17 +10,20 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="groupKey" value="#{securityGroupHome.groupKey}" />             
             </f:metadata>
         </ui:define>
-
+        <ui:define name="subheader">
+            #{i18n['common.security']}
+        </ui:define>
         <ui:define name="content">
             <h:form id="form" enctype="multipart/form-data" >
                 <div class="Container100">
                     <div class="ContainerIndent">
-                        <p:messages id="messages" showDetail="true" showDetail="true" closable="true" >
+                        <p:messages id="messages" showDetail="true" closable="true" >
                             <p:autoUpdate></p:autoUpdate>
                         </p:messages>
                         <div class="Card ShadowEffect ui-fluid">
@@ -32,11 +35,11 @@
                                     <p:commandButton id="save" actionListener="#{securityGroupHome.saveGroup}" value="#{i18n['common.save']}" 
                                                      ajax="false" action="#{securityGroupHome.getOutcome()}" type="submit" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"/>   
                                 </f:facet>
-                                
+
                                 <f:facet name="right">
 
                                     <p:commandButton ajax="false" action="#{securityGroupHome.getOutcome()}" disabled="false" immediate="true"
-                                                     title="#{i18n['Cancel']}" icon="fa fa-arrow-left Fs14 Black" styleClass="GrayButton" type="submit"/>
+                                                     title="#{i18n['common.cancel']}" icon="fa fa-arrow-left Fs14 Black" styleClass="GrayButton" type="submit"/>
 
 <!--                                    <p:menuButton value="#{i18n['common.options']}">
                                         <p:menuitem value="Save" icon="fa fa-save" />

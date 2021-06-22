@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                 <h:outputText value="#{recordTemplate.name}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{recordTemplate.createdOn}">
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}">
                                 <h:outputText value="#{recordTemplate.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

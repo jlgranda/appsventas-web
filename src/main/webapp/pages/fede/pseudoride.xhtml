@@ -85,18 +85,18 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container100 Responsive100"><h3>#{facturaElectronica.author.initials}</h3></div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoTributaria.dirMatriz']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.dirEstablecimiento']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.head']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.branch']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
                                             <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.contribuyenteEspecial']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
                                             <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.obligadoContabilidad']}" escape="false" styleClass="text-uppercase"/>&nbsp;</div>
                                         </div>
                                     </div>
                                     <div class="Container50 Responsive100">
-                                        <div class="Container100 Responsive100">#{i18n['ride.ruc']}&nbsp;#{facturaElectronica.author.code}
+                                        <div class="Container100 Responsive100">#{i18n['common.ruc']}&nbsp;#{facturaElectronica.author.code}
                                         </div>
-                                        <div class="Container100 Responsive100"><strong>#{i18n['ride.invoice']}</strong>
+                                        <div class="Container100 Responsive100"><strong>#{i18n['common.invoice']}</strong>
                                         </div>
-                                        <div class="Container100 Responsive100">#{i18n['ride.no']}&nbsp;#{facturaElectronica.code}
+                                        <div class="Container100 Responsive100">#{i18n['common.nr']}&nbsp;#{facturaElectronica.code}
                                         </div>
                                         <div class="Container100 Responsive100">#{i18n['ride.authorization']}
                                         </div>
@@ -112,10 +112,10 @@
                                 </div>
                                 <div class="EmptyBox10"></div>
                                 <div class="Container100 Responsive100">
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.razonSocialComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.firstname}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.identificacionComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.code}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.fechaEmision']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.fechaEmision}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.guiaRemision']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.company.name']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.firstname}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.dni.ruc']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.code}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.date.emission']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.fechaEmision}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.guide.remission']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
                                 </div>
                                 <div class="EmptyBox10"></div>
                                 <div class="Container100 Responsive100">

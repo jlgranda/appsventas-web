@@ -86,7 +86,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.sales.my.orders']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/sales/invoice.jsf">#{invoiceHome.invoiceId == null ? i18n['New_a'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)]}</p:link></li>
+        <li><p:link outcome="/pages/fede/sales/invoice.jsf">#{invoiceHome.invoiceId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)]}</p:link></li>
     </ui:define>
 
     <ui:define name="content">

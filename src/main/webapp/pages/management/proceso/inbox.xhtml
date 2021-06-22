@@ -72,7 +72,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{instanciaProceso.owner.fullName}" />
                             </p:column>
 
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{instanciaProceso.createdOn}"
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{instanciaProceso.createdOn}"
                                        styleClass="text-right ui-lg-1">
                                 <h:outputText value="#{instanciaProceso.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />

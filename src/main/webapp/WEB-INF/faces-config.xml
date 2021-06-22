@@ -177,7 +177,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>subjects</from-outcome>
-            <to-view-id>/pages/fede/admin/subject/inbox.jsf</to-view-id>
+            <to-view-id>/pages/admin/subject/inbox.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

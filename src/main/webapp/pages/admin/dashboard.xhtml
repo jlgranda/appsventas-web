@@ -53,7 +53,7 @@
     </ui:define>
 
     <ui:define name="subheader">
-        #{i18n['Dashboard']} #{i18n['common.admin']}
+        #{i18n['app.fede.smart.dashboard']} #{i18n['common.management']}
     </ui:define>
 
     <ui:define name="content">
@@ -65,16 +65,16 @@
             <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile">
-                        <h2 class="CardTopic TexAlCenter">#{i18n['app.fede.applications']}</h2>
+                        <h2 class="CardTopic TexAlCenter">#{i18n['common.applications']}</h2>
                         <div class="EmptyBox20"></div>
                         <div class="Container50 Responsive50">
                             <div class="ContainerIndent">
                                 <div class="Card SoftGrayBack TexAlCenter">
                                     <i class="icon-person Fs50 BoldGray DispBlock"></i>
                                     <div class="EmptyBox5"></div>
-                                    <span class="FontRobotoLight Fs18">#{i18n['app.admin.subjects']}</span>
+                                    <span class="FontRobotoLight Fs18">#{i18n['common.users']}</span>
                                     <div class="EmptyBox10"></div>
-                                    <p:button value="#{i18n['Show']}" styleClass="RedButton" outcome="/pages/admin/subject/inbox.jsf"/>
+                                    <p:button value="#{i18n['common.show']}" styleClass="RedButton" outcome="/pages/admin/subject/inbox.jsf"/>
                                 </div>
                             </div> 
                         </div> 
@@ -83,9 +83,9 @@
                                 <div class="Card SoftGrayBack TexAlCenter">
                                     <i class="icon-group Fs50 BoldGray DispBlock"></i>
                                     <div class="EmptyBox5"></div>
-                                    <span class="FontRobotoLight Fs18">#{i18n['security.group']}</span>
+                                    <span class="FontRobotoLight Fs18">#{i18n['panel.Group']}</span>
                                     <div class="EmptyBox10"></div>
-                                    <p:button value="#{i18n['Show']}" styleClass="RedButton" outcome="/pages/admin/security/group/inbox.jsf"/>
+                                    <p:button value="#{i18n['common.show']}" styleClass="RedButton" outcome="/pages/admin/security/group/inbox.jsf"/>
                                 </div>
                             </div> 
                         </div>
@@ -94,9 +94,9 @@
                                 <div class="Card SoftGrayBack TexAlCenter">
                                     <i class="fa fa-paint-brush Fs50 BoldGray DispBlock"></i>
                                     <div class="EmptyBox5"></div>
-                                    <span class="FontRobotoLight Fs18">#{i18n['app.admin.email.template']}</span>
+                                    <span class="FontRobotoLight Fs18">#{i18n['app.mail.templates']}</span>
                                     <div class="EmptyBox10"></div>
-                                    <p:button value="#{i18n['Show']}" styleClass="RedButton" outcome="/pages/admin/template/inbox.jsf"/>
+                                    <p:button value="#{i18n['common.show']}" styleClass="RedButton" outcome="/pages/admin/template/inbox.jsf"/>
                                 </div>
                             </div> 
                         </div>

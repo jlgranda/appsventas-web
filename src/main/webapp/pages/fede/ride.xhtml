@@ -98,11 +98,11 @@
                                         </div>
                                     </div>
                                     <div class="Container50 Responsive100">
-                                        <div class="Container100 Responsive100">#{i18n['ride.ruc']}&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoTributaria.ruc}
+                                        <div class="Container100 Responsive100">#{i18n['common.ruc']}&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoTributaria.ruc}
                                         </div>
-                                        <div class="Container100 Responsive100"><strong>#{i18n['ride.invoice']}</strong>
+                                        <div class="Container100 Responsive100"><strong>#{i18n['common.invoice']}</strong>
                                         </div>
-                                        <div class="Container100 Responsive100">#{i18n['ride.no']}&nbsp;#{facturaElectronica.code}
+                                        <div class="Container100 Responsive100">#{i18n['common.nr']}&nbsp;#{facturaElectronica.code}
                                         </div>
                                         <div class="Container100 Responsive100">#{i18n['ride.authorization']}
                                         </div>
@@ -118,10 +118,10 @@
                                 </div>
                                 <div class="EmptyBox10"></div>
                                 <div class="Container100 Responsive100">
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.razonSocialComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.razonSocialComprador}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.identificacionComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.identificacionComprador}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.fechaEmision']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.fechaEmision}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.guiaRemision']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.guiaRemision}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.company.name']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.razonSocialComprador}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.dni.ruc']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.identificacionComprador}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.date.emission']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.fechaEmision}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.guide.remission']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.guiaRemision}</div>
                                 </div>
                                 <div class="EmptyBox10"></div>
                                 <div class="Container100 Responsive100">
@@ -137,7 +137,7 @@
                                         <p:column headerText="#{i18n['ride.Factura.Detalles.cantidad']}">
                                             <h:outputText value="#{detalle.cantidad} #{detalle.unidadMedida}"/>
                                         </p:column>
-                                        <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}">
+                                        <p:column headerText="#{i18n['common.description']}">
                                             <h:outputText value="#{detalle.descripcion}" />
                                         </p:column>
                                         <p:column headerText="#{i18n['ride.Factura.Detalles.precioUnitario']}" styleClass="TexAlRight">
@@ -240,11 +240,11 @@
                                         </div>
                                     </div>
                                     <div class="Container50 Responsive100">
-                                        <div class="Container100 Responsive100">#{i18n['ride.ruc']}&nbsp;#{facturaElectronica.author.code}
+                                        <div class="Container100 Responsive100">#{i18n['common.ruc']}&nbsp;#{facturaElectronica.author.code}
                                         </div>
-                                        <div class="Container100 Responsive100"><strong>#{i18n['ride.invoice']}</strong>
+                                        <div class="Container100 Responsive100"><strong>#{i18n['common.invoice']}</strong>
                                         </div>
-                                        <div class="Container100 Responsive100">#{i18n['ride.no']}&nbsp;#{facturaElectronica.code}
+                                        <div class="Container100 Responsive100">#{i18n['common.nr']}&nbsp;#{facturaElectronica.code}
                                         </div>
                                         <div class="Container100 Responsive100">#{i18n['ride.authorization']}
                                         </div>
@@ -260,10 +260,10 @@
                                 </div>
                                 <div class="EmptyBox10"></div>
                                 <div class="Container100 Responsive100">
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.razonSocialComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.firstname}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.identificacionComprador']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.code}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.fechaEmision']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.fechaEmision}</div>
-                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.guiaRemision']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.company.name']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.firstname}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.dni.ruc']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.code}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.date.emission']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.fechaEmision}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.guide.remission']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
                                 </div>
                                 <div class="EmptyBox10"></div>
                                 <div class="Container100 Responsive100">

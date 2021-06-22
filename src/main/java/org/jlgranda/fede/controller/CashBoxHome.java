@@ -24,6 +24,8 @@ import com.jlgranda.fede.ejb.CashBoxPartialService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.RecordTemplateService;
+import com.jlgranda.fede.ejb.accounting.AccountCache;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -47,6 +49,7 @@ import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.accounting.RecordDetail.RecordTDetailType;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
@@ -54,6 +57,8 @@ import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Strings;
+import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -84,6 +89,9 @@ public class CashBoxHome extends FedeController implements Serializable {
     private InvoiceService invoiceService;
 
     @EJB
+    AccountCache accountCache;
+    
+    @EJB
     private AccountService accountService;
 
     @EJB
@@ -103,6 +111,12 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     @EJB
     private CashBoxDetailService cashBoxDetailService;
+    
+    @EJB
+    private GeneralJournalService generalJournalService;
+    
+    @EJB
+    private RecordTemplateService recordTemplateService;
 
     // Instancia de entidad <tt>CashBoxGeneral</tt> para edición manual
     private CashBoxGeneral cashBoxGeneral;
@@ -225,6 +239,12 @@ public class CashBoxHome extends FedeController implements Serializable {
         calculeSummaryToday();
         calculeSummaryCash(getStart(), getEnd());
         findCashBoxs();
+        
+        //Instanciar regla de negocio para registrar ventas.
+        setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registrocajadia", "REGISTRO_CAJA_DIA_CAJA"), this.organizationData.getOrganization()));
+        
+        //Establecer variable de sistema que habilita o no el registro contable
+        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1053,11 +1073,11 @@ public class CashBoxHome extends FedeController implements Serializable {
         setActiveButtonSelectDeposit(true); //Deshaibiltar el Button y Select del Panel de Depósito
     }
 
-    public void validateAmountDeposit() { //Validar monto de depósito (Mensajes de validación)
-        if (this.amountDeposit != null) {
-            setActiveButtonSelectDeposit(!(this.amountDeposit.compareTo(BigDecimal.ZERO) == 1 && (this.amountDeposit.compareTo(this.saldoCashFund) == 0 || this.amountDeposit.compareTo(this.saldoCashFund) == -1))); //Activar/Desactivar Select y Botón de Depósito
-            if (this.amountDeposit.compareTo(BigDecimal.ZERO) == 1) {
-                if (this.amountDeposit.compareTo(this.saldoCashFund) == 1) {
+   public void validateAmountDeposit() { //Validar monto de depósito (Mensajes de validación)
+        if (this.cashBoxPartial.getAmountDeposit() != null) {
+            setActiveButtonSelectDeposit(!(this.cashBoxPartial.getAmountDeposit().compareTo(BigDecimal.ZERO) == 1 && (this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == 0 || this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == -1))); //Activar/Desactivar Select y Botón de Depósito
+            if (this.cashBoxPartial.getAmountDeposit().compareTo(BigDecimal.ZERO) == 1) {
+                if (this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == 1) {
                     this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.greater") + "Efectivo Registrado" + ": $" + this.saldoCashFund);
                 }
             } else {
@@ -1065,38 +1085,70 @@ public class CashBoxHome extends FedeController implements Serializable {
             }
         }
     }
+    //    public void validateAmountDeposit() { //Validar monto de depósito (Mensajes de validación)
+    //        if (this.amountDeposit != null) {
+    //            setActiveButtonSelectDeposit(!(this.amountDeposit.compareTo(BigDecimal.ZERO) == 1 && (this.amountDeposit.compareTo(this.saldoCashFund) == 0 || this.amountDeposit.compareTo(this.saldoCashFund) == -1))); //Activar/Desactivar Select y Botón de Depósito
+    //            if (this.amountDeposit.compareTo(BigDecimal.ZERO) == 1) {
+    //                if (this.amountDeposit.compareTo(this.saldoCashFund) == 1) {
+    //                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.greater") + "Efectivo Registrado" + ": $" + this.saldoCashFund);
+    //                }
+    //            } else {
+    //                this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.less.zero"));
+    //            }
+    //        }
+    //    }
 
     public void validateDeposit() {
-        if (this.depositAccount != null) {
-            if (this.depositAccount.getId().equals(this.selectedAccount.getId())) {
+        if (this.cashBoxPartial.getAccountDeposit() != null) {
+            if (this.cashBoxPartial.getAccountDeposit().getId().equals(this.selectedAccount.getId())) {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
             } else {
-                registerRecordInJournal(this.selectedAccount, this.depositAccount, this.amountDeposit); //Registrar asiento contable del depósito del valor de caja
-//                calculeSummaryToday();//Calcular el resumen de dinero con las transacciones
-                calculeSummaryCash(getStart(), getEnd());//Calcular el resumen de dinero con las transacciones
-//                this.cashBoxPartial = cashBoxPartialService.createInstance(); //Crear la nueva Instancia de CashBoxPartial Secondary
+                registerRecordInJournal(); //Registrar asiento contable del depósito del valor de caja mediante Reglas de negocio
                 if (this.cashBoxPartial.getId() != null) {
                     this.cashBoxPartial = cashBoxPartialService.createInstance();
                 }
-                setActiveIndex(-1);
-                generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
-                setActiveSelectDeposit(false);//Ocultar el Panel de depósito
-                setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
-                setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
-                cleanPanelDeposit();
             }
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
 //            this.activePanelBreakdownFund = false;
         }
     }
+//    public void validateDeposit() {
+//        if (this.depositAccount != null) {
+//            if (this.depositAccount.getId().equals(this.selectedAccount.getId())) {
+//                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
+//            } else {
+//                registerRecordInJournal(this.selectedAccount, this.depositAccount, this.amountDeposit); //Registrar asiento contable del depósito del valor de caja
+//                calculeSummaryCash(getStart(), getEnd());//Calcular el resumen de dinero con las transacciones
+//                if (this.cashBoxPartial.getId() != null) {
+//                    this.cashBoxPartial = cashBoxPartialService.createInstance();
+//                }
+//                setActiveIndex(-1);
+//                generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
+//                setActiveSelectDeposit(false);//Ocultar el Panel de depósito
+//                setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
+//                setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
+//                cleanPanelDeposit();
+//            }
+//        } else {
+//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
+////            this.activePanelBreakdownFund = false;
+//        }
+//    }
 
     private void generateCashBoxPartialFund() {
         this.saldoCashFund = this.saldoCash.add(this.cashBoxGeneral.getExcessCashFinal().subtract(this.cashBoxGeneral.getMissCashFinal())); //Saldo en efectivo más o menos el exceso y faltante de dinero
         this.cashBoxPartial.setPriority_order(CashBoxPartial.Priority.SECONDARY);
         generateCashBoxPartialDetails();
-        this.cashBoxPartial.setDescription("$ " + this.saldoCashFund + " restantes, tras el depósito de $" + this.amountDeposit + " en " + this.depositAccount.getName());
+        this.cashBoxPartial.setDescription("$ " + this.saldoCashFund + " restantes, tras el depósito de $" + this.cashBoxPartial.getAmountDeposit() + " en " + this.cashBoxPartial.getAccountDeposit().getName());
     }
+    
+//    private void generateCashBoxPartialFund() {
+//        this.saldoCashFund = this.saldoCash.add(this.cashBoxGeneral.getExcessCashFinal().subtract(this.cashBoxGeneral.getMissCashFinal())); //Saldo en efectivo más o menos el exceso y faltante de dinero
+//        this.cashBoxPartial.setPriority_order(CashBoxPartial.Priority.SECONDARY);
+//        generateCashBoxPartialDetails();
+//        this.cashBoxPartial.setDescription("$ " + this.saldoCashFund + " restantes, tras el depósito de $" + this.amountDeposit + " en " + this.depositAccount.getName());
+//    }
 
     public void verificatedCorrectFund() {
         if (getCashBoxInitialFinish() != null) {
@@ -1200,6 +1252,70 @@ public class CashBoxHome extends FedeController implements Serializable {
             total = total.add((BigDecimal) getListDiscount().get(i)[4]);
         }
         return total;
+    }
+
+    public void registerRecordInJournal() { //Registar asiento contable mediante reglas de negocio
+        boolean registradoEnContabilidad = false;
+        if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
+
+            RuleRunner ruleRunner = new RuleRunner();
+            Record record = recordService.createInstance();
+
+            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record); //Armar el registro contable según la regla en recordTemplate
+
+            if (kbers != null) { //Contiene errores de compilación
+                logger.error(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                logger.error(kbers.toString());
+                this.addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+            } else {
+
+                //La regla compiló bien
+                String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+                String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+
+                //El General Journal del día
+                if (generalJournal != null) {
+
+                    record.setCode(UUID.randomUUID().toString());
+
+                    //TODO ver una forma de plantilla
+                    record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.cashBoxPartial.getId()));
+                    record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal: %s", this.cashBoxPartial.getOwner().getFullName(), this.cashBoxPartial.getDescription(), Strings.format(this.cashBoxPartial.getAmountDeposit().doubleValue(), "$ #0.##")));
+                    record.setOwner(this.subject);
+                    record.setAuthor(this.subject);
+                    record.setGeneralJournalId(generalJournal.getId());
+                    record.setBussinesEntityType(this.cashBoxPartial.getClass().getSimpleName());
+                    record.setBussinesEntityId(this.cashBoxPartial.getId());
+
+                    //Corregir objetos cuenta en los detalles
+                    record.getRecordDetails().forEach(rd -> {
+                        rd.setLastUpdate(Dates.now());
+                        rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
+                    });
+
+                    recordService.save(record);
+
+                    registradoEnContabilidad = true;
+                }
+            }
+        }
+
+        if (isAccountingEnabled() && registradoEnContabilidad) {
+            this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.sucessfully", Dates.toTimeString(Dates.now())));
+
+            calculeSummaryCash(getStart(), getEnd());////Consultar de nuevo el resumen de cuentas con las transacciones
+            //Abrir los paneles para el desglose del saldo sobrante tras el depósito
+            setActiveIndex(-1);
+            generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
+            setActiveSelectDeposit(false);//Ocultar el Panel de depósito
+            setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
+            setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
+            cleanPanelDeposit();
+        } else {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.fail")); //Falló el depósito 
+        }
+
     }
 
     public void registerRecordInJournal(Account selectedAccount, Account depositAccount, BigDecimal amountDeposit) { //Registar asiento contable

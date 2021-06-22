@@ -546,7 +546,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public List<Invoice> getMyOverduelastPreInvoices() {
         if (myOverduelastPreInvoices.isEmpty()) {
-            myOverduelastPreInvoices = invoiceService.findUniqueByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission",  this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.OVERDUE);
+            myOverduelastPreInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission",  this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.OVERDUE);
         }
         return myOverduelastPreInvoices;
     }

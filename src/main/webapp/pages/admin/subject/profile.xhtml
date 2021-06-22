@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:define name="title">#{i18n['common.profile']} - #{subjectAdminHome.subject.fullName}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -36,9 +36,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['common.management']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
+            <li><p:link outcome="/pages/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
             <li>/</li>
-            <li><p:link outcome="home">#{i18n['common.profile']}</p:link></li>
+            <li><p:link outcome="/pages/admin/subject/profile.jsf">#{i18n['common.profile']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g ui-fluid">
@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}"  
                                             height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
                                             width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
-                                            value="/FedeServlet?entity=#{i18n['servlet.subject']}" cache="false"/>
+                                            value="/FedeServlet?entity=#{i18n['app.subject.servlet']}" cache="false"/>
                             <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}"> 
                                 <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
                             </p:panel>
@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
                                             value="#{subjectAdminHome.subjectEdit.code}" validator="#{subjectAdminHome.subjectEdit.nonnative ? 'safeTextUTF8Validator' : 'ciValidator'}"
                                             required="#{!subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
-                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstname']}" 
+                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.name']}" 
                                             value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['common.firstname.inlinehelp']}" execute="@this save" render="fstn"/>
                             <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastname']}" 
                                             value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
@@ -97,7 +97,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                                 execute="@this save" render="clave">
                                 </jlgranda:input>
-                                <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['common.confirm.password']}" 
+                                <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['app.signin.password.confirm']}" 
                                                 value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="true"
                                                 execute="@this save" render="confirmar-clave"/>
                             </p:panel>
