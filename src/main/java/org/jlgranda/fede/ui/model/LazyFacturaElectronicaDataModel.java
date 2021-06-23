@@ -67,9 +67,9 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     private BussinesEntityType type;
 
     private Subject owner;
-    
+
     private Subject author;
-    
+
     private String code;
 
     private Organization organization;
@@ -106,7 +106,8 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
 
     public List<FacturaElectronica> getResultList() {
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
-            resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
+//            resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
+            resultList = this.load(0, MAX_RESULTS, new HashMap<>(), null);
         }
         return resultList;
     }
@@ -123,6 +124,22 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         return firstResult;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+    
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
     public Subject getOwner() {
         return owner;
     }
@@ -137,22 +154,6 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
 
     public void setAuthor(Subject author) {
         this.author = author;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
     }
 
     public String getTags() {
@@ -235,27 +236,27 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         int _end = first + pageSize;
         String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (!sortBy.isEmpty()){
-            for (SortMeta sm : sortBy.values()){
-                if ( sm.getOrder() == SortOrder.ASCENDING) {
+        if (!sortBy.isEmpty()) {
+            for (SortMeta sm : sortBy.values()) {
+                if (sm.getOrder() == SortOrder.ASCENDING) {
                     order = QuerySortOrder.ASC;
                 }
                 sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
             }
         }
         Map<String, Object> _filters = buildFilters(true); //Filtros desde atributos de clase
-        
+
         _filters.putAll(filters);
-        
-        if (sortField == null){
+
+        if (sortField == null) {
             sortField = FacturaElectronica_.fechaEmision.getName();
         }
 
         QueryData<FacturaElectronica> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
-        
+
         //Aplicar filtros a resultados
-        if (!filters.isEmpty()){
+        if (!filters.isEmpty()) {
             System.out.println(">>>>>>>>>>>>>>>>>>>>< aplicar filtros de UX " + filters);
             List<FacturaElectronica> facturas = qData.getResult().stream()
                     .skip(first)
@@ -266,7 +267,7 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
             this.setRowCount(facturas.size());
             return facturas;
         }
-        
+
         return qData.getResult();
     }
 
@@ -278,9 +279,9 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
             Object filterValue = filter.getFilterValue();
 //            try {
 //                Object columnValue = String.valueOf(o.getClass().getField(filter.getField()).get(o));
-                FacturaElectronica factura = (FacturaElectronica) o;
-                Object columnValue = factura.getSummary();
-                matching = constraint.isMatching(context, columnValue, filterValue, LocaleUtils.getCurrentLocale());
+            FacturaElectronica factura = (FacturaElectronica) o;
+            Object columnValue = factura.getSummary();
+            matching = constraint.isMatching(context, columnValue, filterValue, LocaleUtils.getCurrentLocale());
 //            } catch (ReflectiveOperationException e) {
 //                matching = false;
 //            }
@@ -315,37 +316,37 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         range.put("start", getStart());
         range.put("end", getEnd());
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-        
-        if(!Strings.isNullOrEmpty(getCode())){
-            _filters.put(FacturaElectronica_.code.getName(), getCode()); //FIltro por número de factura
+
+        if (!Strings.isNullOrEmpty(getCode())) {
+            _filters.put(FacturaElectronica_.code.getName(), getCode()); //Filtro por número de factura
         }
-        
-        if(loadByAuthor){
-            if(getAuthor()!=null){
-                _filters.put(FacturaElectronica_.author.getName(), getAuthor());
+
+        if (loadByAuthor){
+            if (getAuthor() != null){
+                _filters.put(FacturaElectronica_.author.getName(), getAuthor()); //Filtro por defecto
             }
-        }else{
+        } else {
             if (getOwner() != null){
                 _filters.put(FacturaElectronica_.owner.getName(), getOwner()); //Filtro por defecto
-            }
+            } 
         }
-        
+
         if (getOrganization() != null) {
             _filters.put(FacturaElectronica_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
-        
+
         if (!range.isEmpty()) {
             _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
         }
-        
-        if (!Strings.isNullOrEmpty(getTags())){
+
+        if (!Strings.isNullOrEmpty(getTags())) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        
-        if (!Strings.isNullOrEmpty(getFilterValue())){
+
+        if (!Strings.isNullOrEmpty(getFilterValue())) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-        
+
         return _filters;
     }
 }

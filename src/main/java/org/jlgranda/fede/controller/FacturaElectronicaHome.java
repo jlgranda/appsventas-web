@@ -302,7 +302,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public LazyFacturaElectronicaDataModel getLazyDataModel() {
-        System.out.println("filter 2");
         filter();
         return lazyDataModel;
     }
