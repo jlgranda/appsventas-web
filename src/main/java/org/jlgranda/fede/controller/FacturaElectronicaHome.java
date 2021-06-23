@@ -80,6 +80,7 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
+import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
 import org.jlgranda.fede.model.sales.Kardex;
@@ -135,7 +136,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     @EJB
     private SubjectService subjectService;
-    
+
     @EJB
     AccountCache accountCache;
 
@@ -156,7 +157,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     @EJB
     private FacturaElectronicaDetailService facturaElectronicaDetailService;
-    
+
     @EJB
     private RecordTemplateService recordTemplateService;
 
@@ -262,15 +263,15 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     @PostConstruct
     private void init() {
         int amount = 0;
+        amount = 30;
         try {
-            //amount = Integer.valueOf(settingService.findByName(SettingNames.DASHBOARD_RANGE).getValue());
-            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
+//            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
         } catch (java.lang.NumberFormatException nfe) {
-            amount = 30;
+//            amount = 30;
         }
-
         setEnd(Dates.now());
-        setStart(Dates.addDays(getEnd(), -1 * amount));
+//        setStart(Dates.addDays(getEnd(), -1 * amount));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * amount)));
 
         setFacturaElectronica(facturaElectronicaService.createInstance());
         setUseDefaultSupplier(false); //TODO desde configuraciones
@@ -284,10 +285,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         getProductsByType();
         setActivePanelProduct(false);
-        
+
         //Instanciar regla de negocio para registrar ventas.
         setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_COMPRAS"), this.organizationData.getOrganization()));
-        
+
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "false")));
     }
@@ -301,9 +302,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public LazyFacturaElectronicaDataModel getLazyDataModel() {
-
+        System.out.println("filter 2");
         filter();
-
         return lazyDataModel;
     }
 
@@ -938,7 +938,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 //                }
 //            }
 //        }
-
         facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
 
 //        registerDetailInKardex();
@@ -1011,25 +1010,43 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * Filtro para llenar el Lazy Datamodel
      */
     public void filter() {
+        //Todos los documentos, independientemente del cajero
+        filter(null, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), getKeyword(), getTags());
+    }
 
+    public void filter(Subject _subject, Date _start, Date _end, String _keyword, String _tags) {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyFacturaElectronicaDataModel(facturaElectronicaService);
         }
 
+        if (_start != null) {
+            lazyDataModel.setStart(getStart());
+        }
+        if (_end != null) {
+            lazyDataModel.setEnd(getEnd());
+        }
+        
+        if (_subject != null){
+            lazyDataModel.setAuthor(_subject);
+        }
+        
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
-        //lazyDataModel.setOwner(subject);
-        lazyDataModel.setStart(getStart());
-        lazyDataModel.setEnd(getEnd());
 
-        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+        if (!Strings.isNullOrEmpty(_keyword) && _keyword.startsWith("table:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setCode(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else if (!Strings.isNullOrEmpty(_keyword) && _keyword.startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
                 lazyDataModel.setTags(parts[1]);
             }
             lazyDataModel.setFilterValue(null);//No buscar por keyword
         } else {
-            lazyDataModel.setTags(getTags());
-            lazyDataModel.setFilterValue(getKeyword());
+            lazyDataModel.setTags(_tags);
+            lazyDataModel.setFilterValue(_keyword); //Buscar por code, name, description
         }
     }
 
