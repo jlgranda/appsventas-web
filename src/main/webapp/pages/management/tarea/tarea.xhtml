@@ -116,7 +116,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                         <p:commandLink update="@form:documentList" ajax="@this" 
                                                        actionListener="#{tareaHome.removerDocumento(documento, tareaHome.tarea)}"
-                                                       title="#{i18n['Close']}" styleClass="" style="margin-right:10px;display:inline-block"
+                                                       title="#{i18n['common.close']}" styleClass="" style="margin-right:10px;display:inline-block"
                                                        onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
                                                                    return false;">
                                             <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
@@ -188,7 +188,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                       process="@form" update="@form:documentPanel" 
                                       oncomplete="overlay.hide();"
                                       immediate="true" multiple="true"
-                                      label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
+                                      label="#{i18n['common.choose']}" uploadLabel="#{i18n['common.upload']}" 
                                       cancelLabel="#{i18n['Cancel']}"
                                       sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
                                       fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
@@ -231,7 +231,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 execute="@this save" required="false"  />
 
                                 <div class="Wid33 Fleft Responsive">
-                                    <p:commandButton value="#{i18n['Aceptar']}"
+                                    <p:commandButton value="#{i18n['common.accept']}"
                                                      icon="fa  fa-check Fs16 White"
                                                      styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
                                                      actionListener="#{tareaHome.aceptarDocumento()}"
@@ -239,13 +239,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      oncomplete="PF('dlgDocumento').hide()"/>   
                                 </div>
                                 <div class="Wid33 Fleft Responsive">
-                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['Download']}" ajax="false" immediate="true"
+                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="false" immediate="true"
                                                      icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')} Fs16 White" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
                                         <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
                                     </p:commandButton>
                                 </div>
                                 <div class="Wid33 Fleft Responsive">
-                                    <p:commandButton value="#{i18n['Close']}"
+                                    <p:commandButton value="#{i18n['common.close']}"
                                                      icon="fa fa-close Fs16 White"
                                                      styleClass="Fs12 RedButton Fright FloatNoneOnMobile"
                                                      onclick="PF('dlgDocumento').hide()" disabled="false" />

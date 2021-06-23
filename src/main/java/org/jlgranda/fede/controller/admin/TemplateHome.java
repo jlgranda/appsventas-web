@@ -175,7 +175,7 @@ public class TemplateHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/fede/admin/template/template.jsf?templateId=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/admin/template/template.jsf?templateId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);

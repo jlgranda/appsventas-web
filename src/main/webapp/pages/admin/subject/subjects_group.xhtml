@@ -23,11 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
         <ui:define name="params">
 
-        </ui:define> 
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/admin/subject/subjects_group.jsf">#{i18n['property.groups.asigned.users']}</p:link></li>
+        </ui:define>
         <ui:define name="subheader">
-            #{i18n['subject.asignargrupos']}
+            #{i18n['property.groups.asigned.users']}
         </ui:define>
         <ui:define name="content">
             <h:form>

@@ -89,7 +89,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h:outputText value="#{invoice.boardNumber}">
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.comany.name']}" sortBy="#{invoice.author}">
+                        <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}">
                             <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
                         </p:column>
                         <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains">

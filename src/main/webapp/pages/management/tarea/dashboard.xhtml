@@ -73,7 +73,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     </ui:define>
 
     <ui:define name="subheader">
-        #{i18n['Dashboard']}
+        #{i18n['app.fede.smart.dashboard']}
     </ui:define>
 
     <ui:define name="content">
@@ -107,7 +107,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </span>
                                                 </div>
                                                 <div class="Container40">
-                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
+                                                    <p:button value="#{i18n['common.new']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
                                                     <p:button value="#{i18n['app.documents.task.complete']}" styleClass="CyanButton Fright" 
                                                               outcome="/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=#{tareaHome.ultimaTareaRecibida.instanciaProceso.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaRecibida.persistent}"/>
@@ -150,7 +150,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaEnviada.createdOn}</span>
                                                 </div>
                                                 <div class="Container40">
-                                                    <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
+                                                    <p:button value="#{i18n['common.new']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
                                                     <p:button value="#{i18n['common.edit']}" styleClass="GrayButton Fright" 
                                                               outcome="/pages/management/tarea/tarea.jsf?tareaId=#{tareaHome.ultimaTareaEnviada.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaEnviada.persistent}"/>
@@ -195,7 +195,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="Container100">
                 <div class="ContainerIndent">
                     <div class="Card ShadowEffect HeiAutoOnMobile">
-                        <h2 class="CardTopic TexAlCenter">#{i18n['app.fede.applications']}</h2>
+                        <h2 class="CardTopic TexAlCenter">#{i18n['common.applications']}</h2>
                         <div class="EmptyBox20"></div>
 
                         <div class="Container50 Responsive50">
@@ -205,7 +205,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <div class="EmptyBox5"></div>
                                     <span class="FontRobotoLight Fs18">#{i18n['app.documents.task']}</span>
                                     <div class="EmptyBox10"></div>
-                                    <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/tarea/tarea.jsf"/>
+                                    <p:button value="#{i18n['common.newa']}" styleClass="RedButton" outcome="/pages/management/tarea/tarea.jsf"/>
                                 </div>
                             </div> 
                         </div>                       

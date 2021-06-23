@@ -54,13 +54,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
                             
-                            <p:column headerText="#{i18n['common.code']}" sortBy="#{recordTemplate.code}">
+                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
                                 <h:outputText value="#{recordTemplate.code}" />
                             </p:column>
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                 <h:outputText value="#{recordTemplate.name}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{recordTemplate.createdOn}">
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}">
                                 <h:outputText value="#{recordTemplate.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

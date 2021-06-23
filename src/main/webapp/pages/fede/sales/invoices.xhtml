@@ -40,7 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             url="/pages/fede/inbox.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
-                <p:menuitem value="#{i18n['Dashboard']}" icon="fa fa-dashboard" 
+                <p:menuitem value="#{i18n['app.fede.smart.dashboard']}" icon="fa fa-dashboard" 
                             url="/pages/fede/dashboard.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
@@ -140,7 +140,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </ui:define>
         <ui:define name="sidebar">
             <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
+                <p:button value="#{i18n['common.newa']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
             </div>
             <div class="EmptyBox10"></div>
             <div class="Container100 Responsive100">
@@ -181,7 +181,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:column headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{entity.code}">
                                     <h:outputText value="#{entity.boardNumber}" />
                                 </p:column>
-                                <p:column headerText="#{i18n['ride.no']}" sortBy="#{entity.code}">
+                                <p:column headerText="#{i18n['common.nr']}" sortBy="#{entity.code}">
                                     <h:outputText value="#{entity.summary}" />
                                 </p:column>
                                 <p:column headerText="#{i18n['common.type']}" sortBy="#{entity.documentType}">
@@ -193,7 +193,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:column  id="createdOn"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{entity.createdOn}"
+                                <p:column  id="createdOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}"
                                            styleClass="text-right">
                                     <h:outputText value="#{entity.createdOn}">
                                         <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />

@@ -29,7 +29,7 @@ and open the template in the editor.
             <li><p:link outcome="/pages/management/organization/organization.jsf">#{organizationHome.organizationId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.management.organization']) : i18n['common.edit'].concat(': ')} #{organizationHome.organization.initials}</p:link></li>
         </ui:define>
         <ui:define name="subheader">
-            #{organizationHome.organizationId == null ? i18n['New_a'].concat(' ').concat(i18n['organization']).concat(': ') : i18n['common.edit'].concat(': ')} #{organizationHome.organization.name}
+            #{organizationHome.organizationId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.management.organization']).concat(': ') : i18n['common.edit'].concat(': ')} #{organizationHome.organization.name}
             <p>#{tareaHome.tarea.description}</p>
         </ui:define>
         <ui:define name="content">
