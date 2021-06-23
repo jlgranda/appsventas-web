@@ -351,18 +351,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         }
     }
 
-    private Tarea prepareTarea(Tarea _tarea, String description, EstadoTipo estado, Organization organization, Subject owner) {
-        
-        //2. Siguiente tarea
-        _tarea.setDescription(description);
-        //Es temporral hasta que se pueda seleccionar una organización
-        _tarea.setDepartamento("temporal"); //TODO asignar el departamente si es el caso
-        _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
-        _tarea.setOwner(owner); //Quien la recibe
-        _tarea.setOrganization(organization); //La organización
-        return _tarea;
-    }
-
     private Tarea buildTarea(Tarea tarea, Organization organization, Subject author, Subject owner, InstanciaProceso instanciaProceso) {
         //2. Siguiente tarea
         Tarea _tarea = tareaService.createInstance();

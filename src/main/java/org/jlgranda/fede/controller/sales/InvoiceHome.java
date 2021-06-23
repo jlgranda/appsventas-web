@@ -1390,7 +1390,17 @@ public class InvoiceHome extends FedeController implements Serializable {
         return _invoice.getSummary().toLowerCase().contains(filterText);
     }
     
-    
-    
-    
+    public void sendNotification() {
+        if (this.invoice.isPersistent()) {
+            //Notificar alta en appsventas
+            String url = settingHome.getValue("app.cafesdeloja.url", "http://cafesdeloja.com");
+            String url_title = this.organizationData.getOrganization().getName();
+            Map<String, Object> values = new HashMap<>();
+            values.put("fullname", this.invoice.getOwner().getFullName());
+            values.put("url", url);
+            values.put("url_title", url_title);
+            
+            this.sendNotification(templateHome, settingHome, subject, values, "app.mail.template.invoice.thanks", true);
+        }
+    }
 }
