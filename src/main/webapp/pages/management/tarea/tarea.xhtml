@@ -127,8 +127,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                             <div class="EmptyBox10"></div>
 
-                            <p:toolbar>
-                                <f:facet name="left">
+                            <p:toolbar styleClass="ui-g ui-lg-12 ui-md-12">
+                                <p:toolbarGroup style="flex-wrap: nowrap !important;"> 
 
                                     <p:commandButton value="#{i18n['common.submit']}" ajax="false" 
                                                      actionListener="#{tareaHome.save()}" disabled="false" 
@@ -143,9 +143,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <span class="fa fa-ellipsis-v SoftGray" />
                                     </span>
 
-                                </f:facet>
-
-                                <f:facet name="right">
+                                </p:toolbarGroup>
+                                <p:toolbarGroup align="rigth">
 
                                     <p:commandButton ajax="false" action="#{tareaHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
@@ -156,7 +155,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:menuitem value="Delete" icon="fa fa-trash" />
                                         <p:menuitem value="Homepage" icon="fa fa-home" />
                                     </p:menuButton>-->
-                                </f:facet>
+                                </p:toolbarGroup>
 
                             </p:toolbar>
 

@@ -278,7 +278,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
                 getTarea().setName(this.instanciaProceso.getName());
                 getTarea().setDescription(this.instanciaProceso.getDescription());
                 
-                Tarea next = buildTarea( this.tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.getInstanciaProceso());
+                Tarea next = buildTarea( this.tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.instanciaProceso);
                 
                 getTarea().getDocumentos().stream().forEach((doc) -> {
                     next.addDocumento(doc);
@@ -349,18 +349,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         } catch (Exception e) {
             addErrorMessage(e, I18nUtil.getMessages("error.persistence"));
         }
-    }
-
-    private Tarea prepareTarea(Tarea _tarea, String description, EstadoTipo estado, Organization organization, Subject owner) {
-        
-        //2. Siguiente tarea
-        _tarea.setDescription(description);
-        //Es temporral hasta que se pueda seleccionar una organización
-        _tarea.setDepartamento("temporal"); //TODO asignar el departamente si es el caso
-        _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
-        _tarea.setOwner(owner); //Quien la recibe
-        _tarea.setOrganization(organization); //La organización
-        return _tarea;
     }
 
     private Tarea buildTarea(Tarea tarea, Organization organization, Subject author, Subject owner, InstanciaProceso instanciaProceso) {

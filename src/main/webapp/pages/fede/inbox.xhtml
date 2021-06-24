@@ -99,7 +99,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 <!--                            <p:column headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
                             </p:column>-->
-                            <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{facturaElectronica.summary}" filterMatchMode="contains">
+                            <p:column id="summary" headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>
                             <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}" styleClass="text-right">

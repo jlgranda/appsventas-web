@@ -1084,16 +1084,37 @@ public class CashBoxHome extends FedeController implements Serializable {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
             } else {
                 registerRecordInJournal(); //Registrar asiento contable del depósito del valor de caja mediante Reglas de negocio
-                calculeSummaryCash(getStart(), getEnd());//Calcular el resumen de dinero con las transacciones
-                if (this.cashBoxPartial.getId() != null) {
-                    this.cashBoxPartial = cashBoxPartialService.createInstance();
-                }
+                //calculeSummaryCash(getStart(), getEnd());//Calcular el resumen de dinero con las transacciones
+                //if (this.cashBoxPartial.getId() != null) {
+                //    this.cashBoxPartial = cashBoxPartialService.createInstance();
+                //}
 //                setActiveIndex(-1);
 //                generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
 //                setActiveSelectDeposit(false);//Ocultar el Panel de depósito
 //                setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
 //                setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
 //                cleanPanelDeposit();
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< Cuenta: " + this.selectedAccount.getName() );
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< 30 días hacia atraz");
+                System.out.println("Balance " + accountService.mayorizar(this.selectedAccount, this.organizationData.getOrganization(), Dates.minimumDate(Dates.addDays(Dates.now(), -30)), Dates.maximumDate(Dates.now())));
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                
+                this.selectedAccount = accountService.find(215607L);
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< Cuenta: " + this.selectedAccount.getName() );
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< 30 días hacia atraz");
+                System.out.println("Balance " + accountService.mayorizar(this.selectedAccount, this.organizationData.getOrganization(), Dates.minimumDate(Dates.addDays(Dates.now(), -30)), Dates.maximumDate(Dates.now())));
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                
+                this.selectedAccount = accountService.find(215606L);
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< Cuenta: " + this.selectedAccount.getName() );
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< 30 días hacia atraz");
+                System.out.println("Balance " + accountService.mayorizar(this.selectedAccount, this.organizationData.getOrganization(), Dates.minimumDate(Dates.addDays(Dates.now(), -30)), Dates.maximumDate(Dates.now())));
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< Cuenta: " + "MERCADERIAS" );
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< 30 días hacia atraz");
+                System.out.println("Balance " + accountService.mayorizar("MERCADERIAS", this.organizationData.getOrganization(), Dates.minimumDate(Dates.addDays(Dates.now(), -30)), Dates.maximumDate(Dates.now())));
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
             }
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
@@ -1199,14 +1220,20 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public BigDecimal getListDiscountTotal() {
-        BigDecimal total = new BigDecimal(0);
-        for (int i = 0; i < getListDiscount().size(); i++) {
-            total = total.add((BigDecimal) getListDiscount().get(i)[4]);
-        }
-        return total;
+        
+        return BigDecimal.ONE; //accountService.getBalance("DESCUENTOS");
+        
+//        BigDecimal total = new BigDecimal(0);
+//        for (int i = 0; i < getListDiscount().size(); i++) {
+//            total = total.add((BigDecimal) getListDiscount().get(i)[4]);
+//        }
+//        return total;
     }
 
-    public void registerRecordInJournal() { //Registar asiento contable mediante reglas de negocio
+    /**
+     * Registar asiento contable mediante reglas de negocio
+     */
+    public void registerRecordInJournal() { 
         boolean registradoEnContabilidad = false;
         if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
 
@@ -1233,7 +1260,7 @@ public class CashBoxHome extends FedeController implements Serializable {
 
                     //TODO ver una forma de plantilla
                     record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.cashBoxPartial.getId()));
-                    record.setDescription(String.format("Transferencia de Caja Dia Parcial de: %s \nCuenta de Depósito: %s \nMonto de Depósito: %s", this.cashBoxPartial.getOwner().getFullName(), this.cashBoxPartial.getAccountDeposit().getName(), Strings.format(this.cashBoxPartial.getAmountDeposit().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Transferencia de Caja Día Parcial de: %s \nCuenta de Depósito: %s \nMonto de Depósito: %s", this.cashBoxPartial.getOwner().getFullName(), this.cashBoxPartial.getAccountDeposit().getName(), Strings.format(this.cashBoxPartial.getAmountDeposit().doubleValue(), "$ #0.##")));
                     record.setOwner(this.subject);
                     record.setAuthor(this.subject);
                     record.setGeneralJournalId(generalJournal.getId());

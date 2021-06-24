@@ -712,6 +712,9 @@ public class InvoiceHome extends FedeController implements Serializable {
                 //Guardar cambios en la entidad invoice
                 save(true);
             }
+            
+            //Enviar saludo a cliente
+            sendNotification();
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
             setOutcome("");
@@ -1391,7 +1394,19 @@ public class InvoiceHome extends FedeController implements Serializable {
         return _invoice.getSummary().toLowerCase().contains(filterText);
     }
     
-    
-    
-    
+    public void sendNotification() {
+        if (this.invoice.isPersistent() && !this.isUseDefaultCustomer()) {
+            //Notificar alta en appsventas
+            String url = this.organizationData.getOrganization().getUrl();
+            String url_title = this.organizationData.getOrganization().getName();
+            Map<String, Object> values = new HashMap<>();
+            values.put("firstname", this.invoice.getOwner().getFirstname());
+            values.put("fullname", this.invoice.getOwner().getFullName());
+            values.put("organization", this.organizationData.getOrganization().getName());
+            values.put("url", url);
+            values.put("url_title", url_title);
+            
+            this.sendNotification(templateHome, settingHome, subject, values, "app.mail.template.invoice.thanks", true);
+        }
+    }
 }

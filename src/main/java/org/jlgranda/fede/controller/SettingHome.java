@@ -153,7 +153,7 @@ public class SettingHome extends FedeController implements Serializable {
             this.cache.put(getSetting().getName(), getSetting().getValue());
             
             //vaciar objeto en edición
-            setSetting(null);
+            setSetting(settingService.createInstance());
             
             addDefaultSuccessMessage();
 
