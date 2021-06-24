@@ -257,7 +257,6 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
 
         //Aplicar filtros a resultados
         if (!filters.isEmpty()) {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>< aplicar filtros de UX " + filters);
             List<FacturaElectronica> facturas = qData.getResult().stream()
                     .skip(first)
                     .filter(o -> filter(FacesContext.getCurrentInstance(), filters.values(), o))
