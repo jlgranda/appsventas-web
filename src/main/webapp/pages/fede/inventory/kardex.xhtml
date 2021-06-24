@@ -250,15 +250,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.quantity.min']}">
+                        <p:column headerText="#{i18n['common.quantity']}">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_VENTA' ? '-' : ''} </label>
-                            <h:outputText value="#{kardexDetail.quantity}" rendered="#{kardexDetail.operation_type=='VENTA' or kardexDetail.operation_type=='DEVOLUCION_VENTA'
-                                                   or kardexInventoryHome.kardexDetail.operation_type=='SALIDA_INVENTARIO'}"/>
+                            <h:outputText value="#{kardexDetail.quantity}" 
+                                          rendered="#{kardexDetail.operation_type=='SALIDA_INVENTARIO' or  kardexDetail.operation_type=='VENTA' 
+                                                      or kardexDetail.operation_type=='DEVOLUCION_VENTA'}"/>
                         </p:column>
                         <p:column headerText="#{i18n['common.value']}">
                             <label> #{kardexDetail.operation_type=='DEVOLUCION_VENTA' ? '-' : ''} </label>
-                            <h:outputText value="#{kardexDetail.total_value}" rendered="#{kardexDetail.operation_type=='VENTA' or kardexDetail.operation_type=='DEVOLUCION_VENTA'
-                                                   or kardexInventoryHome.kardexDetail.operation_type=='SALIDA_INVENTARIO'}">
+                            <h:outputText value="#{kardexDetail.total_value}"
+                                          rendered="#{kardexDetail.operation_type=='SALIDA_INVENTARIO' or kardexDetail.operation_type=='VENTA' 
+                                                      or kardexDetail.operation_type=='DEVOLUCION_VENTA'}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
