@@ -162,6 +162,9 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private ProductCache productCache;
+    
+    @Inject
+    private InventoryHome inventoryHome;
 
     private LazyInvoiceDataModel lazyDataModel;
 
@@ -1273,9 +1276,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return total;
     }
-
-    @Inject
-    private InventoryHome inventoryHome;
 
     public BarChartModel buildProductTopBarChartModel() {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
