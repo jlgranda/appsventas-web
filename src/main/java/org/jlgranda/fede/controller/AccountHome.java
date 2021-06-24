@@ -27,6 +27,7 @@ import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -67,7 +68,7 @@ public class AccountHome extends FedeController implements Serializable {
     private static final long serialVersionUID = -1007161141552849702L;
 
     Logger logger = LoggerFactory.getLogger(AccountHome.class);
-    
+
     @EJB
     AccountCache accountCache;
 
@@ -120,10 +121,10 @@ public class AccountHome extends FedeController implements Serializable {
 
     @PostConstruct
     private void init() {
-        
+
         setAccount(accountService.createInstance());
         setParentAccount(accountService.createInstance());
-        
+
         int range = 0;
         try {
             range = Integer.valueOf(settingHome.getValue(SettingNames.ACCOUNT_TOP_RANGE, "7"));
@@ -227,7 +228,7 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public Account getParentAccount() {
-         if (this.accountId != null && !this.account.isPersistent()) {
+        if (this.accountId != null && !this.account.isPersistent()) {
             this.parentAccount = accountCache.lookup(this.parentAccountId);
         }
         return this.parentAccount;
@@ -318,18 +319,24 @@ public class AccountHome extends FedeController implements Serializable {
         Collections.sort(accountsOrder, (Account account1, Account other) -> account1.getCode().compareToIgnoreCase(other.getCode()));
         TreeNode generalTree = new DefaultTreeNode(new Account("Código", "Cuenta"), null); //Árbol general
         TreeNode parent = null;
-        TreeNode child = null;
-        for (Account iterator : accountsOrder) {
-            if (iterator.getParentAccountId() == null) {
-                parent = new DefaultTreeNode(iterator, generalTree);
-                for (Account i : accountsOrder) {
-                    if (i.getParentAccountId() != null && i.getParentAccountId().equals(iterator.getId())) {
-                        child = new DefaultTreeNode(i, parent);
-                    }
-                }
+        for (Account x : accountsOrder) {
+            if (x.getParentAccountId() == null) {
+                parent = new DefaultTreeNode(x, generalTree);
+                addChild(parent, x);
             }
+
         }
         return generalTree;
+    }
+
+    public TreeNode addChild(TreeNode parent, Account accountChild) {
+        TreeNode child = null;
+        List<Account> childs = accountService.findByNamedQuery("Account.findByParentId", accountChild.getId(), this.organizationData.getOrganization());
+        for (Account x : childs) {
+            child = new DefaultTreeNode(x, parent);
+            addChild(child, x);
+        }
+        return parent;
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
@@ -357,7 +364,7 @@ public class AccountHome extends FedeController implements Serializable {
         }
         accountService.save(account.getId(), account);
         this.accountCache.load(); //recargar todas las cuentas
-        
+
         setTreeDataModel(createTreeAccounts());//Refrescar el árbol de cuentas
     }
 
@@ -454,7 +461,7 @@ public class AccountHome extends FedeController implements Serializable {
         Record record = buildRecord();
         record.addRecordDetail(updateRecordDetail(this.accountSelected.getName()));//Crear/Modificar y anadir un recordDetail al record
         record.addRecordDetail(updateRecordDetail(this.depositAccount.getName()));
-        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") +" "+ this.accountSelected.getName() + " hacia " + this.depositAccount.getName()).toUpperCase());
+        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") + " " + this.accountSelected.getName() + " hacia " + this.depositAccount.getName()).toUpperCase());
         journal.addRecord(record); //Agregar el record al journal
 
         journalService.save(journal.getId(), journal); //Guardar el journal
@@ -502,11 +509,11 @@ public class AccountHome extends FedeController implements Serializable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void generateNextCode(){
-        if ( !this.account.isPersistent() && this.parentAccountId != null ){
+    public void generateNextCode() {
+        if (!this.account.isPersistent() && this.parentAccountId != null) {
             //Establecer el padre y el codigo
             this.account.setCode(this.accountCache.genereNextCode(parentAccountId));
             this.account.setParentAccountId(this.parentAccountId);
-        } 
+        }
     }
 }
