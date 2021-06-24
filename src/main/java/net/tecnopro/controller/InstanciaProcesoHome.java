@@ -278,7 +278,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
                 getTarea().setName(this.instanciaProceso.getName());
                 getTarea().setDescription(this.instanciaProceso.getDescription());
                 
-                Tarea next = buildTarea( this.tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.getInstanciaProceso());
+                Tarea next = buildTarea( this.tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.instanciaProceso);
                 
                 getTarea().getDocumentos().stream().forEach((doc) -> {
                     next.addDocumento(doc);

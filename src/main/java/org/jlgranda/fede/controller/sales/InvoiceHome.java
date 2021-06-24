@@ -1400,7 +1400,9 @@ public class InvoiceHome extends FedeController implements Serializable {
             String url = this.organizationData.getOrganization().getUrl();
             String url_title = this.organizationData.getOrganization().getName();
             Map<String, Object> values = new HashMap<>();
+            values.put("firstname", this.invoice.getOwner().getFirstname());
             values.put("fullname", this.invoice.getOwner().getFullName());
+            values.put("organization", this.organizationData.getOrganization().getName());
             values.put("url", url);
             values.put("url_title", url_title);
             
