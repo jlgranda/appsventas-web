@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <f:viewAction action="#{cashBoxHome.messageValidate()}" />
         </f:metadata>
     </ui:define>
-
     <ui:define name="style">
         <style type="text/css">
             .container-center{
@@ -158,41 +157,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </h:panelGroup>
                     <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
-                        <p:commandButton id="btn-breakdown" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" icon="fa fa-play-circle"
+                        <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}"
                                          action="#{cashBoxHome.openPanelBreakdown()}" 
                                          update="btn-breakdown panel-deposit panel-breakdown-cash cash-saldo saldo-cash btn-close-cash-general panel-cashBox-initial"
                                          disabled="#{cashBoxHome.activeButtonBreakdown}"
                                          rendered="#{request.isUserInRole('CHECKER')}"
                                          styleClass="info-btn" class="capital">
-                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
                         </p:commandButton>
-                        <p:confirmDialog global="true" showEffect="blind" hideEffect="blind" responsive="true" width="350">
-                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
-                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
-                        </p:confirmDialog>
                     </div>
                 </div>
                 <h:panelGroup id="panel-cashBox-initial">
                     <h:panelGroup class="ui-g-8 ui-lg-8 ui-md-8" rendered="#{not empty cashBoxHome.cashBoxInitialFinish}">
                         <p:accordionPanel activeIndex="#{cashBoxHome.activeIndex}" class="ui-g-12">
-                            <p:tab title="Registro Finalizado: #{cashBoxHome.cashBoxInitialFinish.lastUpdate} - #{cashBoxHome.cashBoxInitialFinish.owner.fullName}">
-                                <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 ">
-                                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 capital Fs20">
-                                        <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
-                                            <h:outputText class="bold-capital" value="#{cashBoxHome.cashBoxInitialFinish.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
-                                        </label>
-                                    </div>
-                                    <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right" rendered="#{cashBoxHome.activePanelVerification and request.isUserInRole('CHECKER')}">
-                                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">Confirmar saldo </div>
-                                        <p:commandButton icon="fa fa-check" label="CORRECTO"
-                                                         actionListener="#{cashBoxHome.verificatedCorrectFund()}"
-                                                         update="@form:btn-breakdown @form:panel-cashBox-initial @form:panel-breakdown-cash @form:panel-deposit"
-                                                         styleClass="success-btn"/>
-                                        <p:commandButton icon="pi pi-times" label="INCORRECTO"
-                                                         actionListener="#{cashBoxHome.verificatedIncorrectFund()}"
-                                                         update="@form:btn-breakdown @form:panel-cashBox-initial @form:panel-breakdown-cash @form:panel-deposit"
-                                                         styleClass="danger-btn"/>
-                                    </h:panelGroup>
+                            <p:tab title="#{i18n['common.registry']} #{i18n['common.finished']}:  #{cashBoxHome.cashBoxInitialFinish.lastUpdate} - #{cashBoxHome.cashBoxInitialFinish.owner.fullName}">
+                                <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 Fs15 capital container-center">
+                                    <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
+                                        <h:outputText class="bold-capital" value="#{cashBoxHome.cashBoxInitialFinish.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
+                                    </label>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
                                     <p:dataTable id="cashBox-bills" draggableColumns="true" lazy="false"
@@ -272,6 +253,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </h:panelGroup>
                             </p:tab>
                         </p:accordionPanel>
+                        <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12" rendered="#{cashBoxHome.activePanelVerification and request.isUserInRole('CHECKER')}">
+                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                                <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="Se requiere que verifique el saldo del último registro" style="width: 100%"/>
+                            </div>
+                            <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6"/>
+                            <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 container-right">
+                                <p:commandButton icon="fa fa-check" value="#{i18n['common.correct']}" action="#{cashBoxHome.verificatedCorrectFund()}" 
+                                                 update="form:btn-breakdown form:panel-cashBox-initial form:panel-breakdown-cash form:panel-deposit" 
+                                                 styleClass="success-btn" style="width: auto !important">
+                                </p:commandButton>
+                                <p:commandButton icon="fa fa-times" value="#{i18n['common.incorrect']}" action="#{cashBoxHome.verificatedIncorrectFund()}"
+                                                 update="form:btn-breakdown form:panel-cashBox-initial form:panel-breakdown-cash form:panel-deposit"
+                                                 styleClass="danger-btn" style="width: auto !important">
+                                </p:commandButton>
+                            </div>
+                        </h:panelGroup>
+                        <div class="ui-g-12"><p:separator class="line-separator"/></div>
                     </h:panelGroup>
                 </h:panelGroup>
                 <div class="cash-detail ui-g-8 ui-lg-8 ui-md-8">
@@ -393,18 +391,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:facet name="left">
                                     <p:commandButton id="btn-save" value="#{i18n['common.save']}" 
                                                      actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
-                                                     styleClass="success-btn" style="width: auto !important;" 
-                                                     update="panel-breakdown-cash"/>
-                                    <p:commandButton id="btn-close-cash-partial" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}" icon="fa fa-check"
+                                                     update="panel-breakdown-cash"
+                                                     styleClass="success-btn" style="width: auto !important;"/>
+                                    <p:commandButton id="btn-close-cash-partial" icon="fa fa-check" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
-                                                     update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash panel-deposit panel-cashBox-initial btn-breakdown"
-                                                     styleClass="info-btn" style="width: auto !important;" >
-                                        <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
+                                                     update=":form:toolbar-close :form:panel-cashBoxs-partial :form:panel-breakdown-cash :form:panel-deposit :form:panel-cashBox-initial :form:btn-breakdown"
+                                                     styleClass="info-btn" style="width: auto !important">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                                     </p:commandButton>
-                                    <!--                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                                                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
-                                                                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
-                                                                        </p:confirmDialog>-->
+                                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
+                                        <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
+                                    </p:confirmDialog>
                                 </f:facet>
                                 <f:facet name="right">
                                     <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
@@ -587,16 +585,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <p:toolbar id="toolbar-close-partial-fund" class="ui-g-12" rendered="#{empty cashBoxHome.cashBoxPartial.id || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN'}">
                                 <f:facet name="left">
-                                    <p:commandButton id="btn-close-cash-partial-fund" value="Registrar Desglose Final de Caja Parcial" icon="fa fa-check"
+                                    <p:commandButton id="btn-close-cash-partial-fund" icon="fa fa-check" value="Registrar Desglose Final de Caja Parcial" 
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
                                                      update="toolbar-close panel-cashBoxs-partial panel-breakdown-cash-fund panel-deposit panel-cashBox-initial btn-breakdown"
                                                      styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"-->
-                                        <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                                     </p:commandButton>
-                                    <!--                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                                                            <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" />
-                                                                            <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times"/>
-                                                                        </p:confirmDialog>-->
+                                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
+                                        <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
+                                    </p:confirmDialog>
                                 </f:facet>
                                 <f:facet name="right">
                                     <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
@@ -727,15 +725,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:toolbar rendered="#{not empty cashBoxHome.cashBoxsClosed and request.isUserInRole('CHECKER')}">
                         <f:facet name="left">
                             <p:commandButton id="btn-close-cash-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
-                                             action="#{cashBoxHome.closeCashBoxGeneral()}" disabled="#{cashBoxHome.activeButtonCloseCash}"
+                                             action="#{cashBoxHome.closeCashBoxGeneral()}"
+                                             disabled="#{cashBoxHome.activeButtonCloseCash}"
                                              update="toolbar-close panel-deposit btn-breakdown panel-cashBoxs-partial panel-breakdown-cash panel-message-finish"
                                              style="width: auto !important;">
-                                <!--<p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>-->
+                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                             </p:commandButton>
-                            <!--                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                                            <p:commandButton value="#{i18n['common.yes']}" type="button" />
-                                                            <p:commandButton value="#{i18n['common.no']}" type="button" />
-                                                        </p:confirmDialog>-->
+                            <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
+                                <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
+                            </p:confirmDialog>
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 

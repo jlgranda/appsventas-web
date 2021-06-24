@@ -38,14 +38,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['common.from']}&nbsp;</label>
-                        <p:calendar value="#{facturaElectronicaHome.start}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
-                        </p:calendar>
-                        <label class="Gray">#{i18n['common.to']}&nbsp;</label>
-                        <p:calendar value="#{facturaElectronicaHome.end}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
-                        </p:calendar>
+                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                        <p:inputText value="#{facturaElectronicaHome.keyword}" class="input-sm">
+                            <p:ajax listener="#{facturaElectronicaHome.clear()}" />
+                        </p:inputText>  
+                        <h:panelGroup id="controles-busqueda-avanzada" >
+                            <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                <label class="Gray">#{i18n['common.from']}&nbsp;</label>
+                                <p:calendar value="#{facturaElectronicaHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
+                                </p:calendar>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                <label class="Gray">#{i18n['common.to']}&nbsp;</label>
+                                <p:calendar value="#{facturaElectronicaHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" /> 
+                                </p:calendar>                        
+                            </h:panelGroup>
+                        </h:panelGroup>
+                        <!--                    <p:selectBooleanCheckbox value="#{invoiceHome.busquedaAvanzada}">
+                        <p:ajax event="change" update="controles-busqueda-avanzada" />
+                    </p:selectBooleanCheckbox>-->
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
+                                         actionListener="#{facturaElectronicaHome.clear()}" ajax="false" immediate="true">
+                        </p:commandButton>
                         <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
                         <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
                                          styleClass="secondary-button" style="margin-bottom:10px;"
@@ -62,6 +78,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:ajax>
                         </p:commandButton>
                     </div>
+
                     <div class="card">
                         <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
@@ -72,7 +89,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
-                            <p:column headerText="#{i18n['common.code']}">
+                            <p:column id="code" headerText="#{i18n['common.code']}"
+                                      style="width:96px;text-align:left">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
                             <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">
@@ -81,10 +99,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 <!--                            <p:column headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
                             </p:column>-->
-                            <p:column headerText="#{i18n['common.description']}" filterBy="#{facturaElectronica.summary}" filterMatchMode="contains">
+                            <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{facturaElectronica.summary}" filterMatchMode="contains">
                                 <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>
-                            #{facturaElectronica.summary}
                             <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}" styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>

@@ -244,7 +244,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registrocajadia", "REGISTRO_CAJA_DIA"), this.organizationData.getOrganization()));
 
         //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "false")));
+        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -703,7 +703,6 @@ public class CashBoxHome extends FedeController implements Serializable {
                     }
                 }
             }
-
         }
         return activePanelVerification;
     }
@@ -1089,12 +1088,12 @@ public class CashBoxHome extends FedeController implements Serializable {
                 if (this.cashBoxPartial.getId() != null) {
                     this.cashBoxPartial = cashBoxPartialService.createInstance();
                 }
-                setActiveIndex(-1);
-                generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
-                setActiveSelectDeposit(false);//Ocultar el Panel de depósito
-                setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
-                setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
-                cleanPanelDeposit();
+//                setActiveIndex(-1);
+//                generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
+//                setActiveSelectDeposit(false);//Ocultar el Panel de depósito
+//                setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
+//                setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
+//                cleanPanelDeposit();
             }
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
@@ -1149,7 +1148,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public void messageValidate() {
-        if (isActivePanelVerification() == true) {
+        if (this.activePanelVerification == true) {
             this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Por favor primero verifique el Saldo del último Registro de Efectivo Finalizado, antes de empezar el nuevo desglose de caja");
         }
     }
@@ -1256,6 +1255,12 @@ public class CashBoxHome extends FedeController implements Serializable {
 
         if (isAccountingEnabled() && registradoEnContabilidad) {
             this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.sucessfully", Dates.toTimeString(Dates.now())));
+            setActiveIndex(-1);
+            generateCashBoxPartialFund(); //Actualizar propiedades para un CashBoxPartial Secondary
+            setActiveSelectDeposit(false);//Ocultar el Panel de depósito
+            setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
+            setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
+            cleanPanelDeposit();
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.fail")); //Falló el depósito 
         }

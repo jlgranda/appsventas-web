@@ -932,6 +932,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public void filter(){
+        System.out.println("filter");
         //Todos los documentos, independientemente del cajero
         filter(null, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
     }
@@ -942,10 +943,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
 
         if (_start != null) {
-            lazyDataModel.setStart(_start);
+            lazyDataModel.setStart(getStart());
         }
         if (_end != null) {
-            lazyDataModel.setEnd(_end);
+            lazyDataModel.setEnd(getEnd());
         }
         
         if (_subject != null){
