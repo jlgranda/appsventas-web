@@ -712,6 +712,9 @@ public class InvoiceHome extends FedeController implements Serializable {
                 //Guardar cambios en la entidad invoice
                 save(true);
             }
+            
+            //Enviar saludo a cliente
+            sendNotification();
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
             setOutcome("");
@@ -1391,9 +1394,9 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
     
     public void sendNotification() {
-        if (this.invoice.isPersistent()) {
+        if (this.invoice.isPersistent() && !this.isUseDefaultCustomer()) {
             //Notificar alta en appsventas
-            String url = settingHome.getValue("app.cafesdeloja.url", "http://cafesdeloja.com");
+            String url = this.organizationData.getOrganization().getUrl();
             String url_title = this.organizationData.getOrganization().getName();
             Map<String, Object> values = new HashMap<>();
             values.put("fullname", this.invoice.getOwner().getFullName());
