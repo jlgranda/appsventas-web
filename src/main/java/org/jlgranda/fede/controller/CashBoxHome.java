@@ -244,10 +244,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registrocajadia", "REGISTRO_CAJA_DIA"), this.organizationData.getOrganization()));
 
         //Establecer variable de sistema que habilita o no el registro contable
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< VALOR: "  + this.isAccountingEnabled());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< settingHome.getValue(\"app.accounting.enabled\", \"true\"): "  + settingHome.getValue("app.accounting.enabled", "true"));
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< VALOR: "  + this.isAccountingEnabled());
+        //setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
+        setAccountingEnabled(Boolean.valueOf("true"));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1214,9 +1212,6 @@ public class CashBoxHome extends FedeController implements Serializable {
      */
     public void registerRecordInJournal() { 
         boolean registradoEnContabilidad = false;
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>><<<<< isAccountingEnabled: " + isAccountingEnabled());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>><<<<< this.getRecordTemplate(): " + this.getRecordTemplate());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>><<<<< this.this.getRecordTemplate().getRule()(): " + this.getRecordTemplate().getRule());
         if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
 
             RuleRunner ruleRunner = new RuleRunner();
