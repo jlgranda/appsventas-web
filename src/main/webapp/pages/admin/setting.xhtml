@@ -76,100 +76,123 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="subheader">
         #{i18n['panel.admin.settings']}
     </ui:define>
-    
+
     <ui:define name="content">
-        <h:form>
-            <div class="ui-g">
-                <div class="Container30 Responsive100">
-                    <div class="Container100">
-                        <div class="ContainerIndent">
-                            <div class="Card ShadowEffect HeiAutoOnMobile">
-                                <p:commandButton update="@form:pnlEditar" actionListener="#{settingHome.crear()}" 
-                                                 value="#{i18n['common.add']}" styleClass="RedButton"/>
-                                <p:dataTable id="settingList" var="setting" 
-                                             paginator="true" rows="14"
-                                             value="#{settingHome.overwritableSettings}">
-                                    <p:column filterBy="#{setting.label}" sortBy="#{setting.label}" filterMatchMode="contains">
-                                        <h:link title="#{setting.label}" outcome="/pages/admin/setting.jsf?settingName=#{setting.name}"
-                                                styleClass="" style="margin-right:10px;display:inline-block"
-                                                >
-                                            <h:outputText value="#{setting.label}" style="display:inline-block"/>
-                                        </h:link>
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
-                        </div>
-                    </div>
+        <div class="ui-g">
+            <div class="ui-g-12 ui-lg-12 ui-md-12">
+                <div class="ui-g-4 ui-lg-4 ui-md-4">
+                    <p:dataTable id="settingList" var="setting" 
+                                 paginator="true" rows="14"
+                                 value="#{settingHome.overwritableSettings}">
+                        <p:column filterBy="#{setting.label}" sortBy="#{setting.label}" filterMatchMode="contains">
+                            <h:link title="#{setting.label}" outcome="/pages/admin/setting.jsf?settingName=#{setting.name}"
+                                    styleClass="" style="margin-right:10px;display:inline-block"
+                                    >
+                                <h:outputText value="#{setting.label}" style="display:inline-block"/>
+                            </h:link>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="EmptyBox10"/>
+<!--                    <p:commandButton value="#{i18n['common.add']}"  style="margin-bottom:10px; width: 100%" 
+                                     actionListener="#{settingHome.crear()}" update=":form:pnlEditar" immediate="true"
+                                     styleClass="danger-btn">
+                    </p:commandButton>-->
+                    <p:button value="#{i18n['common.add']}" styleClass="danger-btn" outcome="/pages/admin/setting.jsf"/>
+
                 </div>
-                <div class="Container70 Responsive100">
-                    <div class="Container100">
-                        <div class="ContainerIndent">
-                            <div class="Card ShadowEffect ui-fluid">
-                                <p:panel id="pnlEmpty" rendered="#{settingHome.setting == null}">
-                                    <p>Seleccione una configuración</p>
-                                </p:panel>
-                                <p:panel id="pnlEditar" rendered="#{settingHome.setting != null}">
-                                    <jlgranda:input id="lbl" name="label" type="text" 
-                                                    label="#{i18n['common.label']}" 
-                                                    value="#{settingHome.setting.label}"
-                                                    execute="@this save" render="lbl" 
-                                                    required="true" container="none"/>
-                                    <jlgranda:input id="nme" name="name" type="text" 
-                                                    label="#{i18n['common.name']}" 
-                                                    value="#{settingHome.setting.name}"
-                                                    execute="@this save" render="nme" 
-                                                    required="true" container="none"/>
-                                    <jlgranda:input id="value" name="value" type="text" 
-                                                    label="#{i18n['common.value']}" 
-                                                    value="#{settingHome.setting.value}"
-                                                    execute="@this save" render="value" 
-                                                    required="true" container="none"/>
-                                    <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
-                                                    value="#{settingHome.setting.description}" execute="@this save" render="descrpn" 
-                                                    inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
-                                                    container="none"/>
-                                </p:panel>
+                <div class="ui-g-8 ui-lg-8 ui-md-8">
+                    <div class="ui-g-12 ui-lg-12 ui-md-12 ui-fluid">
+                        <p:panel id="pnlEmpty" rendered="#{settingHome.setting == null}">
+                            <p>Seleccione una configuración</p>
+                        </p:panel>
+                        <p:panel id="pnlEditar" rendered="#{settingHome.setting != null}">
+                            <jlgranda:input id="lbl" name="label" type="text" 
+                                            label="#{i18n['common.label']}" 
+                                            value="#{settingHome.setting.label}"
+                                            execute="@this save" render="lbl" 
+                                            required="true" container="none"/>
+                            <jlgranda:input id="nme" name="name" type="text" 
+                                            label="#{i18n['common.name']}" 
+                                            value="#{settingHome.setting.name}"
+                                            execute="@this save" render="nme" 
+                                            required="true" container="none"/>
+                            <jlgranda:input id="value" name="value" type="text" 
+                                            label="#{i18n['common.value']}" 
+                                            value="#{settingHome.setting.value}"
+                                            execute="@this save" render="value" 
+                                            required="true" container="none"/>
+                            <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
+                                            value="#{settingHome.setting.description}" execute="@this save" render="descrpn" 
+                                            inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            container="none"/>
+                            <div class="EmptyBox10"></div>
+                            <p:toolbar rendered="#{settingHome.setting != null}">
+                                <f:facet name="left">
+                                    <p:commandButton value="#{i18n['common.save']}"  style="margin-bottom:10px; width: auto !important;" styleClass="info-btn" 
+                                                     actionListener="#{settingHome.save()}" disabled="false" 
+                                                     action="#{settingHome.getOutcome()}" type="submit">
+                                    </p:commandButton>
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
 
-                                <div class="EmptyBox10"></div>
+                                </f:facet>
 
-                                <p:toolbar rendered="#{settingHome.setting != null}">
-                                    <f:facet name="left">
+                                <f:facet name="right">
 
-                                        <p:commandButton value="#{i18n['common.save']}" ajax="true" 
-                                                         actionListener="#{settingHome.save()}" disabled="false" 
-                                                         style="width: auto !important;"
-                                                         action="#{settingHome.getOutcome()}" type="submit"/>
-                                        <span class="ui-separator">
-                                            <span class="fa fa-ellipsis-v SoftGray" />
-                                        </span>
+                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                                     actionListener="#{settingHome.cancelar()}" 
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                                     update="@form:pnlEditar"/>
+                                    <p:commandButton title="#{i18n['common.restore']}" actionListener="#{settingHome.restaurar()}"
+                                                     styleClass="GrayButton" type="submit"
+                                                     update="@form:pnlEditar" rendered="#{settingHome.setting.persistent}"
+                                                     icon="fa fa-undo Fs14 Black"/>
+                                    <!--                                <p:menuButton value="{i18n['common.options']}">
+                                                                        <p:menuitem value="{i18n['common.restore']}" action="{settingHome.restaurar()}"
+                                                                                    ajax="true"  update="@form:pnlEditar" rendered="{settingHome.setting.persistent}"
+                                                                                    icon="fa fa-undo" />
+                                                                    </p:menuButton>-->
+                                </f:facet>
 
-                                    </f:facet>
-
-                                    <f:facet name="right">
-
-                                        <p:commandButton ajax="true" disabled="false" immediate="true"
-                                                         actionListener="#{settingHome.cancelar()}" 
-                                                         icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
-                                                         update="@form:pnlEditar"/>
-                                        <p:commandButton title="#{i18n['common.restore']}" actionListener="#{settingHome.restaurar()}"
-                                                         styleClass="GrayButton" type="submit"
-                                                         update="@form:pnlEditar" rendered="#{settingHome.setting.persistent}"
-                                                         icon="fa fa-undo Fs14 Black"/>
-                                        <!--<p:menuButton value="{i18n['common.options']}">
-                                            <p:menuitem value="{i18n['common.restore']}" action="{settingHome.restaurar()}"
-                                                        ajax="true"  update="@form:pnlEditar" rendered="{settingHome.setting.persistent}"
-                                                        icon="fa fa-undo" />
-                                        </p:menuButton>-->
-                                    </f:facet>
-
-                                </p:toolbar>
-                            </div>
-                        </div>
-
+                            </p:toolbar>
+                        </p:panel>
                     </div>
                 </div>
             </div>
-        </h:form>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">

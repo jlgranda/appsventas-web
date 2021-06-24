@@ -50,6 +50,7 @@
                         <p:submenu id="om_admin" label="#{i18n['common.management']}" icon="fa fa-fw fa-suitcase" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER') or request.isUserInRole('MANAGER')}">
                             <p:menuitem id="om_organizations" value="#{i18n['app.management.organizations']}" icon="fa fa-fw fa-building" outcome="/pages/management/organization/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
                             <p:menuitem id="om_subjects" value="#{i18n['app.management.persons']}" icon="fa fa-fw fa-user" outcome="/pages/admin/subject/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
+                            <p:menuitem id="om_settings" value="#{i18n['common.setting']}" icon="fa fa-fw fa-cog" outcome="/pages/admin/setting.jsf" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
                         </p:submenu>
                             <!--<p:menuitem id="om_close_cash" value="#{i18n['common.salesvspurchases']}" icon="fa fa-fw fa-usd" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER')}"/>-->
                         <p:submenu id="om_admin_inventory" label="#{i18n['app.fede.inventory']}" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">

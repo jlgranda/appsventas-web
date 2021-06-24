@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
@@ -42,7 +43,7 @@ import org.primefaces.event.SelectEvent;
  *
  * @author jlgranda
  */
-@SessionScoped
+@ViewScoped
 @Named
 public class SettingHome extends FedeController implements Serializable {
 
@@ -68,6 +69,7 @@ public class SettingHome extends FedeController implements Serializable {
     @PostConstruct
     public void init() {
         setOutcome("");
+        crear();
     }
 
     public void crear() {
