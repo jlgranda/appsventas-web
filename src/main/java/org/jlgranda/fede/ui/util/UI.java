@@ -26,8 +26,6 @@ import java.util.TimeZone;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -519,15 +517,6 @@ public class UI {
 
     public String truncateFilename(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.documents.filename.length", "14")));
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new org.apache.commons.codec.digest.Crypt().crypt("f3d3"));
-
-        UI.calculePorcentaje(297, 10);
-        UI.calculePorcentaje(297, 60);
-        UI.calculePorcentaje(297, 15);
-        UI.calculePorcentaje(297, 15);
     }
 
 }
