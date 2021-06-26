@@ -23,6 +23,7 @@ import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -298,7 +299,7 @@ public class InventoryHome extends FedeController implements Serializable {
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
             if (_product != null) {
-                _product.getStatistics().setCount((Double) object[1]);
+                _product.getStatistics().setCount((BigDecimal) object[1]);
                 result.add(_product);
             }
         });

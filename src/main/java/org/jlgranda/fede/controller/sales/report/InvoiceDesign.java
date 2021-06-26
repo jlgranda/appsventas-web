@@ -160,7 +160,7 @@ public class InvoiceDesign {
     private JRDataSource createDataSource(Invoice invoice) {
         DRDataSource dataSource = new DRDataSource("cantidad", "descripcion", "preciounitario", "subtotal");
         for (Detail detail : invoice.getDetails()) {
-            dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount())));
+            dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), detail.getPrice().multiply(detail.getAmount()));
         }
         //Agregar el descuento como item
         if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){

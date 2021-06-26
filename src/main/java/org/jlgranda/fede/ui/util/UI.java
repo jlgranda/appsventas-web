@@ -422,6 +422,7 @@ public class UI {
      * @param gap
      * @return
      */
+    @Deprecated
     public String calculeEmoticon(BigDecimal total, int gap) {
         String emoticon = "<i class=\"fa  fa-flag-o\"></i>";
         int half_gap = gap / 2;
@@ -472,14 +473,9 @@ public class UI {
 
         double factor = (porcentaje / (double) 100);
         int valor = (int) (pageWidth * factor);
-        //System.out.println(">>> pageWidth: " + pageWidth + ", pocentaje:" + porcentaje + ", factor" + factor+ ", valor " + valor);
         return valor;
     }
 
-//    public String renderer(String templete, BussinesEntity entity){
-//        //TODO Aplicar template via velocity
-//        return entity.getName() + ", " + entity.getCode() + ", " + entity.getDescription();
-//    }
     public String renderer(String template, Subject entity) {
         if (entity == null) {
             return "";

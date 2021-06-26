@@ -497,7 +497,7 @@ public class SummaryHome extends FedeController implements Serializable {
         objects.stream().forEach((Object[] object) -> {
             Product _product = productCache.lookup((Long) object[0]);
             if (_product != null) {
-                _product.getStatistics().setCount((Double) object[1]);
+                _product.getStatistics().setCount((BigDecimal) object[1]);
                 chartSerie.set(_product.getName(), _product.getStatistics().getCount());
             }
         });

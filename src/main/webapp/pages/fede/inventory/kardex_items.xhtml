@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['common.keyword']}</label>
+                        <label class="Gray">#{i18n['common.find']}:#{' '}</label>
                         <p:inputText value="#{kardexInventoryHome.keyword}">
                         </p:inputText>
                         <p:commandButton value="#{i18n['common.find']}" styleClass="btn raised-btn" actionListener="#{kardexInventoryHome.clear()}" ajax="false">
@@ -64,8 +64,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:column>
                             <p:column headerText="#{i18n['common.quantity']} #{i18n['common.current']}" sortBy="#{kardex.quantity}">
                                 <h:outputText value="#{kardex.quantity}"
-                                              title="#{kardex.quantity gt kardex.unit_maximum ? i18n['app.fede.inventory.kardex.maximum'] : kardex.quantity lt kardex.unit_minimum ? i18n['app.fede.inventory.kardex.minimum'] : ''}"
-                                              style="#{kardex.quantity gt kardex.unit_maximum ? 'color: #9C0D0D': kardex.quantity lt kardex.unit_minimum ? 'color: #F94C00' : 'color: #0A8517'}"/>
+                                              title="#{kardex.quantity gt kardex.unitMaximum ? i18n['app.fede.inventory.kardex.maximum'] : kardex.quantity lt kardex.unitMinimum ? i18n['app.fede.inventory.kardex.minimum'] : ''}"
+                                              style="#{kardex.quantity gt kardex.unitMaximum ? 'color: #9C0D0D': kardex.quantity lt kardex.unitMinimum ? 'color: #F94C00' : 'color: #0A8517'}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.fund']}  #{i18n['common.money.letter']}">
                                 <h:outputText value="#{kardex.fund lt 0 ? '-': ''}" style="#{kardex.fund lt 0 ? 'color: #e53935;': ''}"/>
