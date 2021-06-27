@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <label>#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.document']}:</label>
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-12">
-                                    <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.document_type}"
+                                    <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.documentType}"
                                                      required="#{false}" immediate="true"> 
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.getDocumentFacturaTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
@@ -206,25 +206,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      sortBy="#{facturaElectronicaDetail.createdOn}"
                                      styleClass="ui-dataTable">
                             <p:column headerText="#{i18n['common.quantity']}">
-                                <h:outputText value="#{facturaElectronicaDetail.quantity}"/>
+                                <h:outputText value="#{facturaElectronicaDetail.amount}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.description']}" >
-                                <h:outputText value="#{facturaElectronicaDetail.tax_value gt 0 ? '*':''}"  class="Fs20 Bold"
-                                              style="#{facturaElectronicaDetail.tax_value gt 0 ? 'color: #e53935;': ''}"/>
+                                <h:outputText value="#{facturaElectronicaDetail.taxValue gt 0 ? '*':''}"  class="Fs20 Bold"
+                                              style="#{facturaElectronicaDetail.taxValue gt 0 ? 'color: #e53935;': ''}"/>
                                 <h:outputText value="#{facturaElectronicaDetail.description}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.price.unit']}">
-                                <h:outputText value="#{facturaElectronicaDetail.unit_value}">
+                                <h:outputText value="#{facturaElectronicaDetail.unitValue}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="#{i18n['common.tax']}">
-                                <h:outputText value="#{facturaElectronicaDetail.tax_value}">
+                                <h:outputText value="#{facturaElectronicaDetail.taxValue}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="#{i18n['common.value']}">
-                                <h:outputText value="#{facturaElectronicaDetail.total_value}">
+                                <h:outputText value="#{facturaElectronicaDetail.totalValue}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
@@ -325,14 +325,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <h:panelGroup rendered="#{not empty facturaElectronicaHome.facturaElectronicaDetail.product.id}">
                                     <div class="ui-g-4">
                                         <h4>#{i18n['common.quantity']}:</h4>
-                                        <p:spinner id="quantity" value="#{facturaElectronicaHome.facturaElectronicaDetail.quantity}" min="1" immediate="true" 
+                                        <p:spinner id="quantity" value="#{facturaElectronicaHome.facturaElectronicaDetail.amount}" min="1" immediate="true" 
                                                    styleClass="" required="#{false}">
                                             <p:ajax listener="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="true"></p:ajax>
                                         </p:spinner>
                                     </div>
                                     <div class="ui-g-5">
                                         <h4>#{i18n['common.price']}: </h4>
-                                        <p:inputNumber id="unit_value" value="#{facturaElectronicaHome.facturaElectronicaDetail.unit_value}" required="#{false}"
+                                        <p:inputNumber id="unit_value" value="#{facturaElectronicaHome.facturaElectronicaDetail.unitValue}" required="#{false}"
                                                        styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{false}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}"
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
@@ -522,11 +522,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          action="home"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                          />
-                        <!--p:menuButton value="#{i18n['common.options']}">
-                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
-                                        actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
-                                        immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
-                        </p:menuButton-->
                     </f:facet>
                 </p:toolbar>
             </div>
