@@ -49,6 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      selection="#{accountHome.singleSelectedNode}" sortBy="#{account.code}"
                                      selectionMode="single"><!--filteredNode="#{accountHome.singleSelectedNode}" -->
                             <p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>
+                            
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{account.code}" filterable="false">
                                 <h:outputText value="#{account.code}" />
                             </p:column>
