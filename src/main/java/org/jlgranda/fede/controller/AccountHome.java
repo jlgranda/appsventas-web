@@ -23,11 +23,9 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
-import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -49,7 +47,6 @@ import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
-import org.jpapi.util.Strings;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -317,7 +314,7 @@ public class AccountHome extends FedeController implements Serializable {
         List<Account> accountsOrder = getAccounts();
         // Ordenar la lista por el atributo getCode(), para crear el árbol de cuentas correcto
         Collections.sort(accountsOrder, (Account account1, Account other) -> account1.getCode().compareToIgnoreCase(other.getCode()));
-        TreeNode generalTree = new DefaultTreeNode(new Account("Código", "Cuenta"), null); //Árbol general
+        TreeNode generalTree = new DefaultTreeNode(new Account(I18nUtil.getMessages("common.code"), I18nUtil.getMessages("common.account")), null); //Árbol general
         TreeNode parent = null;
         for (Account x : accountsOrder) {
             if (x.getParentAccountId() == null) {
@@ -461,7 +458,7 @@ public class AccountHome extends FedeController implements Serializable {
         Record record = buildRecord();
         record.addRecordDetail(updateRecordDetail(this.accountSelected.getName()));//Crear/Modificar y anadir un recordDetail al record
         record.addRecordDetail(updateRecordDetail(this.depositAccount.getName()));
-        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") + " " + this.accountSelected.getName() + " hacia " + this.depositAccount.getName()).toUpperCase());
+        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from.to", "" + this.accountSelected.getName(), this.depositAccount.getName()).toUpperCase()));
         journal.addRecord(record); //Agregar el record al journal
 
         journalService.save(journal.getId(), journal); //Guardar el journal
@@ -469,15 +466,15 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     private GeneralJournal buildFindJournal() {
-        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         if (generalJournal == null) {
             generalJournal = journalService.createInstance();
             generalJournal.setOrganization(this.organizationData.getOrganization());
             generalJournal.setOwner(subject);
             generalJournal.setCode(UUID.randomUUID().toString());
-            generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
+            generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal.properties", "" + this.organizationData.getOrganization().getInitials(), Dates.toDateString(Dates.now())));
             journalService.save(generalJournal); //Guardar el journal creado
-            generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+            generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         }
         return generalJournal;
     }

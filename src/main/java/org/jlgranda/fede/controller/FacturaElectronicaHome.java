@@ -636,7 +636,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                     java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se agregarón " + result.size() + " facturas a fede desde el correo!");
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se agregaron " + result.size() + " facturas a fede desde el correo!");
 
         } catch (MessagingException | IOException ex) {
             addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("import.email.error"));
@@ -714,7 +714,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             for (FacturaReader fr : FacturaElectronicaURLReader.getFacturasElectronicas(getUrls())) {
                 result.add(procesarFactura(fr, SourceType.URL));
             }
-            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se agregarón " + result.size() + " facturas a fede desde los URLs dados!");
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se agregaron " + result.size() + " facturas a fede desde los URLs dados!");
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(FacturaElectronicaHome.class.getName()).log(Level.SEVERE, null, ex);
             addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("xml.read.error.detail"));
@@ -1313,9 +1313,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.facturaElectronica, record); //Armar el registro contable según la regla en recordTemplate
 
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
                 logger.error(kbers.toString());
-                this.addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
             } else {
 
                 //La regla compiló bien
@@ -1536,6 +1536,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void openPanelProduct() {
         this.productNew = this.facturaElectronicaDetail.getProduct();
+        this.productNew.setPriceCost(BigDecimal.ZERO);
+        this.productNew.setPrice(BigDecimal.ZERO);
         this.activePanelProduct = true;
     }
 

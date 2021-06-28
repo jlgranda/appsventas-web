@@ -314,7 +314,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="width:3.5rem">
-                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                            <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.quantity']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.edition']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                         </p:column>
                                     </p:dataTable>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.bills']} :</div>
@@ -355,7 +355,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>
                                         </p:column> 
                                         <p:column style="width:3.5rem">
-                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                            <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.quantity']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.edition']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                         </p:column>
                                     </p:dataTable>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.moneys']} :</div>
@@ -415,11 +415,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h:panelGroup id="panel-deposit" rendered="#{request.isUserInRole('CHECKER')}">
                         <h:panelGroup  class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12" rendered="#{cashBoxHome.activePanelDeposit and cashBoxHome.accountingEnabled==true}" style="background-color: #E9E9E9">
                             <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8" >
-                                <label class="capital Fs15">Efectivo Registrado en Caja: 
+                                <label class="capital Fs15">#{i18n['app.fede.accounting.ajust.money.register']}:
                                     <h:outputText class="bold-capital" id="saldo-cash-fund" value="#{cashBoxHome.saldoCashFund}"><f:convertNumber type="currency"/></h:outputText>
                                 </label>
                                 <div class="EmptyBox5"/>
-                                <label>Dinero en Efectivo + Dinero Sobrante - Dinero Faltante</label>
+                                <label>#{i18n['app.fede.accounting.ajust.money=']} + #{i18n['common.money']} #{i18n['common.excess']} - #{i18n['common.money']} #{i18n['common.missing']}</label>
                             </div>
                             <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1 container-right">
                                 <p:selectBooleanCheckbox id="select-active-deposit" value="#{cashBoxHome.activeSelectDeposit}"
@@ -470,11 +470,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="EmptyBox5"/>
                     <h:panelGroup id="panel-breakdown-fund">
                         <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activePanelBreakdownFund}">
-                            <!--<div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">-->
                             <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accouting.validate.deposit.residue.message']}" style="width: 100%"/>
-                            <!--</div>-->
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
-                                <label class="capital Fs18">DESGLOSE DE EFECTIVO REGISTRADO: 
+                                <label class="capital Fs18">#{i18n['app.fede.accounting.ajust.breakdown']} #{i18n['common.registered']}
                                     <h:outputText class="bold-capital Fs20" value="#{cashBoxHome.saldoCashFund}"><f:convertNumber type="currency"/></h:outputText>
                                 </label>
                             </div>
@@ -513,7 +511,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>
                                         </p:column>
                                         <p:column style="width:3.5rem">
-                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                            <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.quantity']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.edition']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                         </p:column>
                                     </p:dataTable>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.bills']} :</div>
@@ -554,7 +552,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>
                                         </p:column> 
                                         <p:column style="width:3.5rem">
-                                            <p:rowEditor editTitle="Editar Cantidad" cancelTitle="Cancelar Edición" saveTitle="Guardar Cambios"/>
+                                            <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.quantity']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.edition']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                         </p:column>
                                     </p:dataTable>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.moneys']} :</div>

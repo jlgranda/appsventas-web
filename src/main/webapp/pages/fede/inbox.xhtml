@@ -78,7 +78,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:ajax>
                         </p:commandButton>
                     </div>
-
                     <div class="card">
                         <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
@@ -96,9 +95,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-<!--                            <p:column headerText="#{i18n['common.description']}">
-                                <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
-                            </p:column>-->
                             <p:column id="summary" headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>

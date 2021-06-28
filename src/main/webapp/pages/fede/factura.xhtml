@@ -109,7 +109,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:ajax event="dialogReturn" update="@form"
                                                 listener="#{facturaElectronicaHome.handleReturn}">
                                         </p:ajax>
-                                    </p:commandButton>
+                                    </p:commandButton>excess
                                 </div>
                             </div>
                             <div class="ui-g ui-lg-12 ui-md-12">
@@ -383,7 +383,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-4">
-                                <label class="BigTopic">P.V.P. A:&nbsp;</label>
+                                <label class="BigTopic">#{i18n['app.fede.inventory.price.a']}:&nbsp;</label>
                                 <p:inputNumber id="price" value="#{facturaElectronicaHome.productNew.price}" required="#{false}" 
                                                inputStyle="text-align: right" symbol="$"
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 

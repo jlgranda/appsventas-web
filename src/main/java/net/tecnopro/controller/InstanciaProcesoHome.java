@@ -260,7 +260,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
      */
     public void save() {
         if (getDestinatario() == null || getSolicitante() == null){
-            addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("error.task.persons"));
+            addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("error.task.persons"));
             return;
         }
         try {

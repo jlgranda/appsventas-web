@@ -666,9 +666,9 @@ public class InvoiceHome extends FedeController implements Serializable {
                 KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.invoice, record); //Armar el registro contable según la regla en recordTemplate
 
                 if (kbers != null) { //Contiene errores de compilación
-                    logger.error(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                    logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
                     logger.error(kbers.toString());
-                    this.addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
                 } else {
 
                     //La regla compiló bien
@@ -1016,7 +1016,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public boolean touch(Product product) {
         if (product == null) {
-            addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("common.requiredMessage"));
+            addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.requiredMessage"));
             logger.error(I18nUtil.getMessages("common.selected.product.none"));
             return false;
         }
