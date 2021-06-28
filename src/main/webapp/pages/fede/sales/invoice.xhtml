@@ -352,7 +352,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                         <!-- toolbar-->
                         <div class="ui-g ui-lg-12 ui-md-12">
-                            <p:toolbar rendered="#{not invoiceHome.invoice.persistent}"  styleClass="ui-g ui-lg-12 ui-md-12">
+                            <p:toolbar rendered="#{not invoiceHome.invoice.persistent}"  class="ui-g ui-lg-12 ui-md-12">
                                 <p:toolbarGroup style="flex-wrap: nowrap !important;">                        
                                     <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"  styleClass="success-btn"
                                                      actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" disabled="#{empty invoiceHome.candidateDetails}" 
@@ -371,7 +371,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </p:menuButton>                      
                                 </p:toolbarGroup>
                             </p:toolbar>
-                            <p:toolbar rendered="#{invoiceHome.invoice.persistent}"  styleClass="ui-g ui-lg-12 ui-md-12">
+                            <p:toolbar rendered="#{invoiceHome.invoice.persistent}"  class="ui-g ui-lg-12 ui-md-12">
                                 <p:toolbarGroup style="flex-wrap: nowrap !important;">   
                                     <p:commandButton id="collect-button" value="#{i18n['common.collect']}" ajax="true" 
                                                      styleClass="danger-btn"
@@ -382,6 +382,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:commandButton id="overdue-button" value="#{i18n['common.overdue']}" ajax="true" 
                                                      styleClass="help-btn"
                                                      actionListener="#{invoiceHome.overdue()}" action="#{invoiceHome.redirect}"
+                                                     rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
+                                                     style="width: auto !important;"
+                                                     type="submit"/>
+                                    <p:commandButton id="courtesy-button" value="#{i18n['common.courtesy']}" ajax="true" 
+                                                     styleClass="success-btn"
+                                                     actionListener="#{invoiceHome.courtesy()}" action="#{invoiceHome.redirect}"
                                                      rendered="#{invoiceHome.invoice.isPersistent()}" disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                                      style="width: auto !important;"
                                                      type="submit"/>
@@ -399,7 +405,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      type="submit"/>
                                 </p:toolbarGroup>
                                 <p:toolbarGroup align="rigth">
-
                                     <p:commandButton ajax="true" disabled="false" immediate="true" rendered="#{not invoiceHome.invoice.persistent}"
                                                      actionListener="#{invoiceHome.closeDialog(null)}" 
                                                      action="#{invoiceHome.redirect}"
@@ -416,7 +421,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     immediate="true" rendered="#{invoiceHome.invoice.isPersistent()}"/>
                                     </p:menuButton>
                                 </p:toolbarGroup>
-
                             </p:toolbar>
                         </div>
                         <!-- //toolbar-->

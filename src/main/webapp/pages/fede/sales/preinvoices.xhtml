@@ -278,6 +278,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                             </div>
                         </p:tab>
+                        <p:tab title="#{i18n['common.courtesies']}">
+                            <f:facet name="title">
+                                <h:outputText value="#{i18n['common.courtesies']}" escape="false" rendered="true"/> 
+                            </f:facet>
+                            <div class="ui-g">
+                                <div class="Container100">
+                                    <div class="Container100 Responsive100">
+                                        <div class="ContainerIndent">
+                                            <ui:repeat value="#{invoiceHome.myLastCourtesies}" var="entity">
+                                                <div class="Container70 Fs50 FontRobotoLight Orange">
+                                                    <span class="Fs20 DispBlock">
+                                                    #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText White" style="background-color: #333333"> #{entity.boardNumber}</span> </i>
+                                                    </span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['common.customer']}: <strong>#{entity.owner.fullName}</strong> | #{i18n['common.date.created']}: #{entity.createdOn} | #{i18n['common.update.last']}: #{entity.lastUpdate} 
+                                                        | #{i18n['app.fede.sales.invoice.comanda.number']}: <strong>#{entity.code}</strong> | #{i18n['common.total']}: <strong><h:outputText value="#{entity.total - entity.getPaymentsDiscount()}">
+                                                            <f:convertNumber type="currency"/>
+                                                        </h:outputText></strong></span>
+                                                    <hr></hr>
+                                                </div>
+                                                <div class="Container30">
+                                                    <p:commandButton title="#{i18n['common.rollback']}" 
+                                                                     icon="fa fa-undo"
+                                                                     styleClass="GrayButton Fright"
+                                                                     action="#{invoiceHome.reopen(entity.id)}"
+                                                                     ajax="false"
+                                                                     immediate="true">
+                                                    </p:commandButton>
+                                                </div>
+                                                <div class="EmptyBox10"></div>
+                                                <div class="Separator"></div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
                         <!--Busqueda-->
                         <p:tab title="#{i18n['common.search']}" rendered="#{invoiceHome.busquedaEjecutada}">
                             <f:facet name="title">
