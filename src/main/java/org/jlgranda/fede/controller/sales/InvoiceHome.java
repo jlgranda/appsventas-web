@@ -650,7 +650,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String courtesy() {
         if (!isUseDefaultCustomer()) {
             getInvoice().setDocumentTypeSource(DocumentType.COURTESY);
-            getInvoice().setDocumentType(DocumentType.COURTESY);
+            getPayment().setDatePaymentCancel(null);
             collect(DocumentType.COURTESY, StatusType.CLOSE.toString());
             setOutcome("preinvoices");
         } else {
@@ -689,9 +689,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
-            if (!DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
+            //  if (!DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
                 getInvoice().setDocumentType(documentType); //Se convierte en factura
-            }
+            //  }
             //Agregar el pago
             getInvoice().addPayment(getPayment());
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse

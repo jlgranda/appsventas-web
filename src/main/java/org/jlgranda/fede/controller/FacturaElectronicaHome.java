@@ -1508,7 +1508,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.facturaElectronica.setTotalSinImpuestos(BigDecimal.ZERO);
         if (!this.facturaElectronica.getFacturaElectronicaDetails().isEmpty()) {
             facturaElectronica.getFacturaElectronicaDetails().forEach(facturaElectronicaDetail1 -> {
-                this.facturaElectronica.setTotalSinImpuestos(this.facturaElectronica.getTotalSinImpuestos().add(facturaElectronicaDetail1.getTotalValue()));
+                this.facturaElectronica.setTotalSinImpuestos(this.facturaElectronica.getTotalSinImpuestos().add(facturaElectronicaDetail1.getAmount().multiply(facturaElectronicaDetail1.getUnitValue())));
             });
         } else {
             this.facturaElectronica.setTotalSinImpuestos(this.facturaElectronicaDetail.getTotalValue());
@@ -1547,7 +1547,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void saveProductNew() {
-        this.productNew.setName(this.productNew.getName().toUpperCase());
+        this.productNew.setName(this.productNew.getName());
         this.productNew.setProductType(ProductType.PRODUCT);
         this.productNew.setDescription(this.productNew.getName().toUpperCase());
         this.productNew.setCategory(this.groupSelected);
