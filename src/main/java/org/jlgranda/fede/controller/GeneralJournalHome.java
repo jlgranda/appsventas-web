@@ -166,7 +166,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public GeneralJournal getJournal() {
         if (this.journalId != null && this.journal != null && !this.journal.isPersistent()) {
             this.journal = journalService.find(journalId);
-            
+
             //Cargar registros 
             this.journal.setRecords(recordService.findByNamedQuery("Record.findByJournalId", this.journalId));
         }
@@ -314,7 +314,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
      */
     public void addRecordDetail() {
         this.recordDetail.setOwner(subject);
-            this.record.addRecordDetail(this.recordDetail);
+        this.record.addRecordDetail(this.recordDetail);
         //Preparar para una nueva entrada
         this.recordDetail = recordDetailService.createInstance();
     }
@@ -331,7 +331,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
      */
     public void saveRecord() {
         this.record.setOwner(subject);
-        journal.addRecord(this.record); //Agregar el record al journal
+        //journal.addRecord(this.record); //Agregar el record al journal
+        this.record.setGeneralJournalId(journalId);
         BigDecimal sumDebe = new BigDecimal(0);
         BigDecimal sumHaber = new BigDecimal(0);
         for (int i = 0; i < this.record.getRecordDetails().size(); i++) {
@@ -342,7 +343,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             }
         }
         if (sumDebe.compareTo(sumHaber) == 0) {
-            journalService.save(journal.getId(), journal);
+            //journalService.save(journal.getId(), journal);
+            recordService.save(record);
             closeFormularioRecord(journal.getId());
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance"));
@@ -365,7 +367,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
 
     public void validateNewJournal() throws IOException {
-        List<GeneralJournal> generalJournal = journalService.findByNamedQueryWithLimit("GeneralJournal.findByCreatedOnAndOrg",1, Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        List<GeneralJournal> generalJournal = journalService.findByNamedQueryWithLimit("GeneralJournal.findByCreatedOnAndOrg", 1, Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         if (generalJournal.isEmpty()) {
             redirectTo("/pages/accounting/journal.jsf");
         } else {
@@ -383,10 +385,10 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             }
         }
     }
-    
+
     /**
      * El registro actual no esta referenciado a una entidad
-     * @return 
+     * @return
      */
     public boolean isRecordOfReferen() {
         return this.record.getBussinesEntityId() == null;
