@@ -40,7 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:autoUpdate></p:autoUpdate>
                         </p:messages>
 
-                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.firstname']}" 
+                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}" 
                                         value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
                         
                         <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
@@ -49,7 +49,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
                                         value="#{inventoryHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
                         
-                        <jlgranda:input id="price" name="price" type="number" label="#{i18n['app.fede.inventory.product.price']}" 
+                        <jlgranda:input id="price" name="price" type="number" label="#{i18n['common.price']}" 
                                         value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
                         
                         <div class="Wid50 Fleft Responsive50">

@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 multiple="true" update="messages uploadedFiles " sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(xml|zip)$/" />
             
             <p:dataTable rendered="false" id="uploadedFiles" var="file" value="#{facturaElectronicaHome.uploadedFiles}">
-                <p:column headerText="#{i18n['common.firstname']} #{i18n['common.of']} #{i18n['common.file']}">
+                <p:column headerText="#{i18n['common.name']} #{i18n['common.of']} #{i18n['common.file']}">
                     <h:outputText value="#{file.fileName}" />
                 </p:column>
             </p:dataTable>

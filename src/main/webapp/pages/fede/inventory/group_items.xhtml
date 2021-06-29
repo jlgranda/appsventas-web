@@ -64,7 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      sortBy="#{group.createdOn}">
                             <p:ajax event="rowSelect" listener="#{groupInventoryHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
-                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{group.name}" styleClass="text-right">
+                            <p:column headerText="#{i18n['common.name']}" sortBy="#{group.name}" styleClass="text-right">
                                 <h:outputText value="#{group.name}"/>                            
                             </p:column>
                             <p:column headerText="#{i18n['common.description']}" sortBy="#{group.descripcion}" styleClass="text-right">

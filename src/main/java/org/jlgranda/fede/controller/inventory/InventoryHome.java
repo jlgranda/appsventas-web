@@ -128,7 +128,7 @@ public class InventoryHome extends FedeController implements Serializable {
 
         setProduct(productService.createInstance());
         getProduct().setProductType(ProductType.PRODUCT);
-        
+        setProductType(ProductType.PRODUCT);
         setMode("app.fede.chart.gap.total");
 
         setOutcome("inventory-inbox");

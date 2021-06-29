@@ -347,7 +347,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="ui-g-1 ">
                                         <div class="EmptyBox20"/>
                                         <p:selectBooleanCheckbox id="select-active-iva" value="#{facturaElectronicaHome.activeTaxType}" title="I.V.A 12%" style="padding-left: 15px">
-                                            <p:ajax event="change" listener="#{facturaElectronicaHome.calculateIVAProduct()}" update="" />
                                         </p:selectBooleanCheckbox>
                                     </div>
                                 </h:panelGroup>
@@ -357,7 +356,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h:panelGroup id="panel-new-product" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12" >
                         <h:panelGroup rendered="#{facturaElectronicaHome.activePanelProduct}">
                             <div class="ui-g-8">
-                                <label class="BigTopic">#{i18n['common.firstname']} #{i18n['common.of']} #{i18n['common.product']}&nbsp;</label>
+                                <label class="BigTopic">#{i18n['common.name']} #{i18n['common.of']} #{i18n['common.product']}&nbsp;</label>
                                 <p:inputText id="nme" value="#{facturaElectronicaHome.productNew.name}" required="#{false}">
                                     <p:ajax listener="#{facturaElectronicaHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
                                 </p:inputText>

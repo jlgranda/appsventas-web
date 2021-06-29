@@ -928,6 +928,13 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
 
         //registerDetailInKardex();
+        
+//        System.out.println("|----------Detalle de la factura Save [" + this.facturaElectronica.getFacturaElectronicaDetails().size() + "]---------|");
+//        for (int i = 0; i < this.facturaElectronica.getFacturaElectronicaDetails().size(); i++) {
+//            System.out.println("[" + i + "]" + " Producto: " + this.facturaElectronica.getFacturaElectronicaDetails().get(i).getProduct().getName() + " | Price: " + this.facturaElectronica.getFacturaElectronicaDetails().get(i).getPrice()
+//                    + " | Cantidad: " + this.facturaElectronica.getFacturaElectronicaDetails().get(i).getAmount());
+//        }
+//        System.out.println("|---------------------------------------|");
         registerDetalleFacturaElectronicaInKardex(facturaElectronica.getFacturaElectronicaDetails()); //Procesa y guarda la factura electrónica en el medio persistente
 
         //Registrar asiento contable de la compra
@@ -1014,11 +1021,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         if (_end != null) {
             lazyDataModel.setEnd(getEnd());
         }
-        
-        if (_subject != null){
+
+        if (_subject != null) {
             lazyDataModel.setAuthor(_subject);
         }
-        
+
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
 
         if (!Strings.isNullOrEmpty(_keyword) && _keyword.startsWith("table:")) {
@@ -1275,34 +1282,23 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void calcularIVA() {
-//        if (this.facturaElectronica.getTotalSinImpuestos() != null && this.facturaElectronica.getTotalDescuento() != null) {
-//            this.facturaElectronica.setTotalIVA12((facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento())).multiply(BigDecimal.valueOf(0.12)));
-//        } else if (this.facturaElectronica.getTotalSinImpuestos() != null) {
-//            this.facturaElectronica.setTotalIVA12(facturaElectronica.getTotalSinImpuestos().multiply(BigDecimal.valueOf(0.12)));
-//        }
         this.facturaElectronica.setTotalIVA0(BigDecimal.ZERO);
         this.facturaElectronica.setTotalIVA12(BigDecimal.ZERO);
         for (FacturaElectronicaDetail f : this.facturaElectronica.getFacturaElectronicaDetails()) {
             if (f.getTaxValue() != null) {
-//                this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalIVA12().add(f.getTax_value().multiply(BigDecimal.valueOf(f.getQuantity()))));
                 this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalIVA12().add(f.getTotalValue()));
             } else {
-//                this.facturaElectronica.setTotalIVA0(this.facturaElectronica.getTotalIVA0().add(f.getUnit_value().multiply(BigDecimal.valueOf(f.getQuantity()))));
                 this.facturaElectronica.setTotalIVA0(this.facturaElectronica.getTotalIVA0().add(f.getTotalValue()));
             }
         }
     }
 
     public void calcularTotalFactura() {
-//        if (this.facturaElectronica.getTotalSinImpuestos() != null) {
-//            this.facturaElectronica.setImporteTotal(facturaElectronica.getTotalSinImpuestos().subtract(this.facturaElectronica.getTotalDescuento()).add(this.facturaElectronica.getTotalIVA12()));
-//        }
-//        this.facturaElectronica.setImporteTotal(this.facturaElectronica.getTotalIVA0().add(this.facturaElectronica.getTotalIVA12()).subtract(this.facturaElectronica.getTotalDescuento()));
         this.facturaElectronica.setImporteTotal((this.facturaElectronica.getTotalIVA0().add(this.facturaElectronica.getTotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
     }
 
     public void registerRecordInJournal() {
-        
+
         boolean registradoEnContabilidad = false;
         setAccountingEnabled(true);
         if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
@@ -1470,14 +1466,13 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     }
 
-    public void calculateIVAProduct() {
-        if (this.activeTaxType == true) {
-            this.facturaElectronicaDetail.setTaxValue(this.facturaElectronicaDetail.getUnitValue().multiply(BigDecimal.valueOf(0.12)));
-        } else {
-            this.facturaElectronicaDetail.setTaxValue(BigDecimal.ZERO);
-        }
-    }
-
+//    public void calculateIVAProduct() {
+//        if (this.activeTaxType == true) {
+//            this.facturaElectronicaDetail.setTaxValue(this.facturaElectronicaDetail.getUnitValue().multiply(BigDecimal.valueOf(0.12)));
+//        } else {
+//            this.facturaElectronicaDetail.setTaxValue(BigDecimal.ZERO);
+//        }
+//    }
     public boolean validatedFacturaElectronicaDetail() {
         if (this.facturaElectronicaDetail.getProduct() != null) {
             if (this.facturaElectronicaDetail.getProduct().getId() != null) {
@@ -1491,7 +1486,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     }
 
     public void addFacturaElectronicaDetail() {
-        if (this.facturaElectronicaDetail.getTaxValue() == null) {
+        if (this.activeTaxType == true) {
+            this.facturaElectronicaDetail.setTaxValue(this.facturaElectronicaDetail.getUnitValue().multiply(BigDecimal.valueOf(0.12)));
+        } else {
             this.facturaElectronicaDetail.setTaxValue(BigDecimal.ZERO);
         }
         this.facturaElectronicaDetail.setTotalValue(this.facturaElectronicaDetail.getUnitValue().multiply(this.facturaElectronicaDetail.getAmount()));
@@ -1501,7 +1498,13 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.facturaElectronica.addFacturaElectronicaDetail(this.facturaElectronicaDetail);
         calcularTotalSinImpuestos();
         this.facturaElectronicaDetail = facturaElectronicaDetailService.createInstance(); //Recargar para la nueva instancia
-        this.activeTaxType = false;
+        setActiveTaxType(false);
+//        System.out.println("|----------Detalle de la factura [" + this.facturaElectronica.getFacturaElectronicaDetails().size() + "]---------|");
+//        for (int i = 0; i < this.facturaElectronica.getFacturaElectronicaDetails().size(); i++) {
+//            System.out.println("[" + i + "]" + " Producto: " + this.facturaElectronica.getFacturaElectronicaDetails().get(i).getProduct().getName() + " | Price: " + this.facturaElectronica.getFacturaElectronicaDetails().get(i).getPrice()
+//                    + " | Cantidad: " + this.facturaElectronica.getFacturaElectronicaDetails().get(i).getAmount());
+//        }
+//        System.out.println("|---------------------------------------|");
     }
 
     public void calcularTotalSinImpuestos() {
@@ -1570,7 +1573,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
     }
 
- 
 //    private void registerDetailInKardex() {
 //        Kardex kardex = null;
 //        KardexDetail kardexDetail = null;
@@ -1636,16 +1638,20 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 //            kardexService.save(kardex.getId(), kardex);
 //        }
 //    }
-    
     /**
      * Registra el detalle de la factura electrnica en el sistema de Kardex
-     * @param facturaElectronicaDetail 
+     *
+     * @param facturaElectronicaDetail
      */
     private void registerDetalleFacturaElectronicaInKardex(List<FacturaElectronicaDetail> datails) {
+//        System.out.println("|-----------Detalle factura: registerDetalleFacturaElectronicaInKardex [" + datails.size() + "]--------------|");
+//        for (int i = 0; i < datails.size(); i++) {
+//            System.out.println("[" + i + "] Producto: " + datails.get(i).getProduct().getName() + " Cantidad: " + datails.get(i).getAmount());
+//        }
         kardexService.save(
-                makeDetailableList(datails), 
-                settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-"), 
-                subject, this.organizationData.getOrganization(), 
+                makeDetailableList(datails),
+                settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-"),
+                subject, this.organizationData.getOrganization(),
                 KardexDetail.OperationType.COMPRA);
     }
 
@@ -1655,10 +1661,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     private List<Detailable> makeDetailableList(List<FacturaElectronicaDetail> details) {
         List<Detailable> datailables = new ArrayList<>();
+//        System.out.println("|----------Detalle de la factura MakeDetailableList [" + details.size() + "]---------|");
         details.forEach(d -> {
             datailables.add((Detailable) d);
+//            System.out.println("[" + d + "]" + " Producto: " + d.getProduct().getName() + " | Price: " + d.getPrice()
+//                    + " | Cantidad: " + d.getAmount());
         });
-        
+//        System.out.println("|----------------------............................................................................-----------------|");
+
         return datailables;
     }
 }

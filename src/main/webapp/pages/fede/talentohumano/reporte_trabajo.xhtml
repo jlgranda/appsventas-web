@@ -120,13 +120,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <h:outputText value="#{journal.id}" />
                             </p:column>
 
-                            <p:column headerText="#{i18n['common.dayOfMonth']}">
+                            <p:column headerText="#{i18n['common.day.month']}">
                                 <h:outputText value="#{journal.dayOfMonth}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.dayOfWeek']}">
+                            <p:column headerText="#{i18n['common.day.week']}">
                                 <h:outputText value="#{journal.dayOfWeek}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
+                            <p:column headerText="#{i18n['common.name']}" sortBy="#{journal.name}">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
                             <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
