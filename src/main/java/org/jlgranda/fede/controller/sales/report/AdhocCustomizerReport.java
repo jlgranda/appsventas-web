@@ -67,24 +67,24 @@ public class AdhocCustomizerReport {
         AdhocColumn column = new AdhocColumn();
         column.setName("cantidad");
         column.setTitle("Cant.");
-        column.setWidth(calculePorcentaje(pageWidth, 14));
+        column.setWidth(calculePorcentaje(pageWidth, 16));
         report.addColumn(column);
         
         column = new AdhocColumn();
         column.setName("descripcion");
         column.setTitle("Descripción");
-        column.setWidth(calculePorcentaje(pageWidth, 54));
+        column.setWidth(calculePorcentaje(pageWidth, 50));
         report.addColumn(column);
         
         column = new AdhocColumn();
         column.setName("preciounitario");
         column.setTitle("P.U.");
-        column.setWidth(calculePorcentaje(pageWidth, 14));
+        column.setWidth(calculePorcentaje(pageWidth, 16));
         report.addColumn(column);
         
         column = new AdhocColumn();
         column.setName("subtotal");
-        column.setTitle("Subtotal");
+        column.setTitle("Subt.");
         column.setWidth(calculePorcentaje(pageWidth, 18));
         report.addColumn(column);
         
@@ -227,7 +227,7 @@ public class AdhocCustomizerReport {
         protected DRIDataType<?, ?> getFieldType(String name) {
 
             if (name.equals("cantidad")) {
-                return type.floatType();
+                return type.bigDecimalType();
             }
             if (name.equals("descripcion")) {
                 return type.stringType();
