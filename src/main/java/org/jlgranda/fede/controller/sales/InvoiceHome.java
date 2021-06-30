@@ -680,7 +680,8 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
-        if (getInvoice().getDocumentTypeSource() == null) {
+//        System.out.println();
+        if (DocumentType.PRE_INVOICE.equals(getInvoice().getDocumentTypeSource())) {
             getInvoice().setDocumentTypeSource(DocumentType.INVOICE);
         }
         if (DocumentType.INVOICE.equals(documentType) && !DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
@@ -842,7 +843,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         } else {
             if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
                 getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
-                getInvoice().setDocumentTypeSource(DocumentType.PRE_INVOICE); //Mantener como preinvoice
+                getInvoice().setDocumentTypeSource(DocumentType.INVOICE); //Mantener como preinvoice
                 getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
                 getInvoice().addPayment(getPayment());
                 setOutcome("preinvoices");
