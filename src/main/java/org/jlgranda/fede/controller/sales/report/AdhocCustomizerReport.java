@@ -173,10 +173,10 @@ public class AdhocCustomizerReport {
             //Agregar el descuento como item
             if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){
                 BigDecimal discount = invoice.getPaymentsDiscount().multiply(BigDecimal.valueOf(-1));
-                dataSource.add(1.0f, "Descuento", discount, discount);
+                dataSource.add(BigDecimal.ONE, "Descuento", discount, discount);
             }
         } else {
-            dataSource.add(1.0f, invoice.getPrintAliasSummary(), invoice.getTotalSinImpuesto(), invoice.getTotalSinImpuesto());
+            dataSource.add(BigDecimal.ONE, invoice.getPrintAliasSummary(), invoice.getTotalSinImpuesto(), invoice.getTotalSinImpuesto());
         }
         return dataSource;
     }

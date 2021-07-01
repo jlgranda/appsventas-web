@@ -331,7 +331,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
      */
     public void saveRecord() {
         this.record.setOwner(subject);
-        journal.addRecord(this.record); //Agregar el record al journal
+        this.record.setGeneralJournalId(this.journalId);
+        
         BigDecimal sumDebe = new BigDecimal(0);
         BigDecimal sumHaber = new BigDecimal(0);
         for (int i = 0; i < this.record.getRecordDetails().size(); i++) {
@@ -342,7 +343,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             }
         }
         if (sumDebe.compareTo(sumHaber) == 0) {
-            journalService.save(journal.getId(), journal);
+            recordService.save(record);
             closeFormularioRecord(journal.getId());
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance"));
