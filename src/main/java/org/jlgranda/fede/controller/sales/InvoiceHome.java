@@ -255,8 +255,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"), this.organizationData.getOrganization()));
 
         //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "false")));
+        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
 
+        setAccountingEnabled(true);
         filterBy = new ArrayList<>();
 
 //        filterBy.add(FilterMeta.builder()

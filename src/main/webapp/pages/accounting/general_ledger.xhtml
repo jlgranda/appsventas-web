@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2021 kellypaulinc
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="accountId" value="#{accountHome.accountId}"/>
+            <f:viewParam name="parentAccountId" value="#{accountHome.parentAccountId}"/>
+            <f:viewAction action="#{accountHome.generateNextCode()}"></f:viewAction>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.accounting']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/accounting/account_items.jsf">#{i18n['app.fede.accounting.ledger']}</p:link></li>
+        <li>/</li>
+        <li><p:link outcome="/pages/accounting/account.jsf">#{i18n['common.report']} #{i18n['common.of']} #{accountHome.account.name}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12 ui-md-12">
+                <h1 class="BigTopic">#{accountHome.account.name}</h1> <!--Sección 1: Título-->
+                <p:splitter style="height: 500px" styleClass="p-mb-5">
+                    <p:splitterPanel styleClass="p-d-flex p-ai-center p-jc-center">
+                            <p:tree id="tree-generalLedger" value="#{accountHome.accountChilds()}" var="account"
+                                    selectionMode="single" style="border: transparent"
+                                    selection="#{accountHome.singleSelectedNode}">
+                                <p:treeNode expandedIcon="fa fa-circle" collapsedIcon="fa fa-circle-o">
+                                    <h:outputText value="#{account.name}"/>
+                                </p:treeNode>
+                                <p:ajax event="select" listener="#{accountHome.onAccountSelect}" update="tree-generalLedger form:dataTable-record-details"/>
+                            </p:tree>
+                    </p:splitterPanel>
+                    <p:splitterPanel styleClass="p-d-flex p-ai-center p-jc-center">
+                        <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
+                                     liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
+                                     rows="10" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
+                                     scrollable="true"
+                                     value="#{accountHome.recordDetailsAccount}" var="recordDetail"
+                                     selection="#{generalJournalHome.selectedBussinesEntities}"
+                                     editable="#{false}">
+                            <p:column headerText="#{i18n['common.date.created']}" style="width: 25%">
+                                <h:outputText value="#{recordDetail.createdOn}">
+                                    <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.concept']}" style="width: auto">
+                                <h:outputText value="#{recordDetail.record.description}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.debe']}" style="width: 15%">
+                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right">
+                                    <!--<f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>-->
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.haber']}" style="width: 15%">
+                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
+                                <!--<f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>-->
+                            </p:column>
+                            <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{recordDetail.record.id}" style="width: auto; text-align: center">
+                                <p:commandButton id="button-detail" icon="fa fa-expand"
+                                                 actionListener="#{generalJournalHome.editarFormularioRecord(recordDetail.record.id)}" ajax="true"
+                                                 immediate="true" update=""
+                                                 styleClass="danger-btn" style="width: auto">
+                                    <p:ajax event="dialogReturn" update="@form"
+                                            listener="#{generalJournalHome.handleReturn}">
+                                    </p:ajax>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </p:splitterPanel>
+                </p:splitter>
+
+
+
+
+
+
+
+
+                <div class="EmptyBox10"></div><!--Separador de sección-->
+                <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
+                    <p:toolbarGroup style="flex-wrap: nowrap !important;">                        
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
+                                         actionListener="#{accountHome.save()}" action="#{accountHome.getOutcome()}"
+                                         disabled="#{false}"
+                                         style="width: auto !important;"
+                                         type="submit"/>
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="rigth">
+                        <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
+                                         actionListener="#{accountHome.closeDialog(null)}" action="#{accountHome.getOutcome()}"
+                                         disabled="false" immediate="true"
+                                         styleClass="GrayButton"
+                                         type="submit"/>                          
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

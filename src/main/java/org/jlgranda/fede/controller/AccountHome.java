@@ -116,6 +116,9 @@ public class AccountHome extends FedeController implements Serializable {
     private List<Object[]> objectsRecordDetail;
     private BigDecimal amountAccount;
 
+    //Reporte de accounts con recordDetails
+    private List<RecordDetail> recordDetailsAccount;
+
     @PostConstruct
     private void init() {
 
@@ -275,6 +278,14 @@ public class AccountHome extends FedeController implements Serializable {
         this.amountAccount = amountAccount;
     }
 
+    public List<RecordDetail> getRecordDetailsAccount() {
+        return recordDetailsAccount;
+    }
+
+    public void setRecordDetailsAccount(List<RecordDetail> recordDetailsAccount) {
+        this.recordDetailsAccount = recordDetailsAccount;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // MÉTODOS/FUNCIONES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,11 +347,25 @@ public class AccountHome extends FedeController implements Serializable {
         return parent;
     }
 
+    public TreeNode accountChilds() {
+        TreeNode parent = new DefaultTreeNode(this.account, null);
+        addChild(parent, account);
+        return parent;
+    }
+
+    public void onAccountSelect(NodeSelectEvent event) {
+        if (event != null && event.getTreeNode().getData() != null) {
+            Account p = (Account) event.getTreeNode().getData();
+            setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", p, getStart(), getEnd(), this.organizationData.getOrganization()));
+            System.out.println("getRecordDetails: "+getRecordDetailsAccount());
+        }
+    }
+
     public void onNodeSelect(NodeSelectEvent event) {
         try {
             if (event != null && event.getTreeNode().getData() != null) {
                 Account p = (Account) event.getTreeNode().getData();
-                redirectTo("/pages/accounting/account.jsf?accountId=" + p.getId());
+                redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());

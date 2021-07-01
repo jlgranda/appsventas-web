@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      value="#{accountHome.objectsRecordDetail}" var="recordDetail"
                                                      selection="#{accountHome.selectedBussinesEntities}"
                                                      sortBy="#{recordDetail[0]}">
-                                                <p:column headerText="#{i18n['common.date.created']}" style="width: 25%">
+                                            <p:column headerText="#{i18n['common.date.created']}" style="width: 25%">
                                                 <h:outputText value="#{recordDetail[0]}">
                                                     <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                                 </h:outputText>
