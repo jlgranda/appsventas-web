@@ -53,6 +53,7 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
@@ -271,6 +272,10 @@ public class InvoiceHome extends FedeController implements Serializable {
 //                .filterValue(Arrays.asList(LocalDate.now().minusDays(28), LocalDate.now().plusDays(28)))
 //                .matchMode(MatchMode.RANGE)
 //                .build());
+
+        setDocumentType(DocumentType.INVOICE); //Filtro por defecto
+        
+        initializeActions();
     }
 
     public Long getInvoiceId() {
@@ -689,6 +694,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getPayment().setDatePaymentCancel(Dates.now());
         }
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< collect!!");
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             //  if (!DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
@@ -699,9 +705,10 @@ public class InvoiceHome extends FedeController implements Serializable {
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().setStatus(status);
 
-            boolean registradoEnContabilidad = false;
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< isAccountingEnabled: " + isAccountingEnabled());
             if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
 
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< Creando registro contable...");
                 RuleRunner ruleRunner = new RuleRunner();
                 Record record = recordService.createInstance();
 
@@ -740,7 +747,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
                         recordService.save(record);
 
-                        registradoEnContabilidad = true;
                     }
                 }
             }
@@ -972,7 +978,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void filter() {
         //Todos los documentos, independientemente del cajero
-        filter(null, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), DocumentType.INVOICE, getKeyword(), getTags());
+        filter(null, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.documentType, getKeyword(), getTags());
     }
 
     public void filter(Subject _subject, Date _start, Date _end, DocumentType _documentType, String _keyword, String _tags) {
@@ -1419,13 +1425,17 @@ public class InvoiceHome extends FedeController implements Serializable {
     protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            range = Integer.valueOf(settingHome.getValue("fede.preinvoices.range", "0"));
+            if (getInterval() != null && getInterval() > 0){
+                range = getInterval().intValue();
+            } else {
+                range = Integer.valueOf(settingHome.getValue("fede.preinvoices.range", "0"));
+            }
+            setEnd(Dates.maximumDate(Dates.now()));
+            setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         } catch (java.lang.NumberFormatException nfe) {
             nfe.printStackTrace();
             range = 1;
         }
-        setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
     }
 
     public boolean globalFilterFunction(Object value, Object filter, Locale locale) {
@@ -1467,4 +1477,63 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         return datailables;
     }
+    
+    //Acciones sobre seleccionados
+    
+    public void execute(){
+        Invoice p = null;
+        if (this.isActionExecutable()){
+            if ("desactivar".equalsIgnoreCase(this.selectedAction)){
+                for (BussinesEntity be : this.getSelectedBussinesEntities()){
+                    p = (Invoice) be;
+                    p.setDeleted(true);
+                    this.invoiceService.save(p.getId(), p); //Actualizar el tipo de producto
+                }
+                setOutcome("");
+            } /*else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
+                for (BussinesEntity be : this.getSelectedBussinesEntities()){
+                    p = (Product) be;
+                    p.setCategory(this.getGroupSelected());
+                    this.productService.save(p.getId(), p); //Actualizar el tipo de producto
+                }
+                setOutcome("");
+            } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType()!= null){
+                for (BussinesEntity be : this.getSelectedBussinesEntities()){
+                    p = (Product) be;
+                    p.setProductType(this.getProductType());
+                    this.productService.save(p.getId(), p); //Actualizar el tipo de producto
+                    this.productCache.load(); //Actualizar el cache
+                }
+                setOutcome("");
+            }*/
+        }
+    }
+    
+    public boolean isActionExecutable(){
+        if ("desactivar".equalsIgnoreCase(this.selectedAction)){
+            return true;
+        }/* else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
+            return true;
+        } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType()!= null){
+            return true;
+        }*/
+        return false;
+    }
+
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+        
+        item = new SelectItem("desactivar", "Desactivar");
+        actions.add(item);
+        
+//        item = new SelectItem("moveto", "Mover a categoría");
+//        actions.add(item);
+//        
+//        item = new SelectItem("changeto", "Cambiar tipo a");
+//        actions.add(item);
+    }
+    
 }

@@ -41,6 +41,8 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
+import org.jlgranda.fede.model.sales.Product;
+import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.ui.model.LazyAccountDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;
@@ -537,5 +539,17 @@ public class AccountHome extends FedeController implements Serializable {
             this.account.setCode(this.accountCache.genereNextCode(parentAccountId));
             this.account.setParentAccountId(this.parentAccountId);
         }
+    }
+    
+    /**
+     * Busca objetos <tt>Account</tt> para la clave de búsqueda en las columnas
+     * name y code
+     *
+     * @param keyword
+     * @return una lista de objetos <tt>Product</tt> que coinciden con la
+     * palabra clave dada.
+     */
+    public List<Account> find(String keyword) {
+        return accountCache.filterByNameOrCode(keyword, this.organizationData.getOrganization()); //sólo cuentas de la organización
     }
 }

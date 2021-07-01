@@ -84,7 +84,7 @@ public class SettingHome extends FedeController implements Serializable {
     public String getValue(String name, String defaultValue) {
         //Buscar en cache
         if (cache.containsKey(name)) {
-            //logger.info("La propiedad {} se recupera desde cache.", name);
+            logger.info("La propiedad {} se recupera desde cache.", name);
             return cache.get(name);
         }
 

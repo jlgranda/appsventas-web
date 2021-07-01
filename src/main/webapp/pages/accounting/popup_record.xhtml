@@ -43,18 +43,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:autoUpdate />
                 </p:messages>
                 <div class="ui-g ui-fluid">
-                    <div class="ui-g ui-lg-5 ui-md-12">
+                    <div class="ui-g ui-lg-6 ui-md-5">
                         <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
                         <div class="EmptyBox10"></div>
-                        <p:selectOneMenu id="account" value="#{generalJournalHome.recordDetail.account}"
-                                         required="#{true}" immediate="true" 
-                                         requiredMessage="#{i18n['app.fede.accounting.account.name.inlinehelp']} es requerido"
-                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
-                            <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                            <p:ajax update="@this"></p:ajax>
-                        </p:selectOneMenu>  
+                        <p:autoComplete value="#{generalJournalHome.recordDetail.account}" effect="blind" 
+                                        minQueryLength="2" completeMethod="#{accountHome.find}"
+                                        var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
+                                        converter="org.jlgranda.fede.ui.converter.AccountConverter" forceSelection="true"
+                                        placeholder="#{i18n['common.account.find']}">
+                            <p:column>
+                                <h:outputText value="#{entidad.code} #{entidad.name}"/>
+                            </p:column>
+                            <p:ajax event="itemSelect" update="@this" partialSubmit="true"></p:ajax>
+                        </p:autoComplete>
                     </div>
-                    <div class="ui-g ui-lg-3 ui-md-12">
+                    <div class="ui-g ui-lg-3 ui-md-2">
                         <h:outputText value="#{i18n['common.value']} #{i18n['common.money.letter']} *" />
                         <div class="EmptyBox10"></div>
                         <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
@@ -68,18 +71,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
                         </p:inputNumber>
                     </div>
-                    <div class="ui-g ui-lg-3 ui-md-12">
+                    <div class="ui-g ui-lg-3 ui-md-4">
                         <h:outputText value="#{i18n['common.type']} *"/>
                         <div class="EmptyBox10"></div>
-                        <p:selectOneMenu value="#{generalJournalHome.recordDetail.recordDetailType}"
-                                         required="#{true}" 
-                                         requiredMessage="#{i18n['common.type']} es requerido."
-                                         immediate="true"> 
-                            <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                            <p:ajax update="@this"></p:ajax>
-                        </p:selectOneMenu>
+                        <p:selectOneRadio id="type" value="#{generalJournalHome.recordDetail.recordDetailType}" unselectable="false"
+                                          required="#{true}" 
+                                          requiredMessage="#{i18n['common.type']} es requerido.">
+                             <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                        </p:selectOneRadio>
                     </div>
-                    <div class="ui-g ui-lg-1 ui-md-12">
+                    <div class="ui-g ui-lg-1 ui-md-1">
                         <div class="EmptyBox10"></div>
                         <p:commandButton id="add-record"  ajax="false"
                                          actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"

@@ -202,13 +202,10 @@ public class UI {
     public List<SelectItem> getAccountTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
-        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-        items.add(item);
         item = new SelectItem("DEBE", "DEBE");
         items.add(item);
         item = new SelectItem("HABER", "HABER");
         items.add(item);
-
         return items;
     }
 

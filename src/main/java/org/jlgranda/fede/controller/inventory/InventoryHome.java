@@ -19,6 +19,7 @@ package org.jlgranda.fede.controller.inventory;
 
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.sales.KardexService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.sales.Kardex;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.ui.model.LazyProductDataModel;
@@ -111,6 +113,8 @@ public class InventoryHome extends FedeController implements Serializable {
     @Inject
     private OrganizationData organizationData;
    
+    @EJB
+    private KardexService kardexService;
 
     @PostConstruct
     private void init() {
@@ -238,6 +242,12 @@ public class InventoryHome extends FedeController implements Serializable {
         }
         productService.save(product.getId(), product); //Volver a guardar el producto para almacenar el ggroup
         
+        //if el producto tiene un kardex asociado y se cambia el nombre actualizar el nombre del kardex
+        Kardex kardex = kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization());
+        if (kardex != null && product.getName().equalsIgnoreCase(kardex.getName())){
+            kardex.setName(product.getName());
+            kardexService.save(kardex); //Actualizar el nombre
+        } 
         //Cargar producto en el cache
         productCache.load();
     }
@@ -611,6 +621,7 @@ public class InventoryHome extends FedeController implements Serializable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    //Acciones sobre seleccionados
     
     public void execute(){
         Product p = null;
@@ -634,6 +645,7 @@ public class InventoryHome extends FedeController implements Serializable {
                     p = (Product) be;
                     p.setProductType(this.getProductType());
                     this.productService.save(p.getId(), p); //Actualizar el tipo de producto
+                    this.productCache.load(); //Actualizar el cache
                 }
                 setOutcome("");
             }
