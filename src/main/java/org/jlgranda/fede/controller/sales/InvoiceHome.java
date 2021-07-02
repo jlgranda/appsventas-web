@@ -825,9 +825,6 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @throws java.io.IOException
      */
     public void reopen(Long invoiceId) throws IOException {
-        //this.setInvoiceId(invoiceId);
-        //load invoice
-        //this.getInvoice();
         redirectTo("/pages/fede/sales/invoice.jsf?invoiceId=" + invoiceId);
     }
 
