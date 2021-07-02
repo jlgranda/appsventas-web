@@ -686,7 +686,6 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
-//        System.out.println();
         if (DocumentType.PRE_INVOICE.equals(getInvoice().getDocumentTypeSource())) {
             getInvoice().setDocumentTypeSource(DocumentType.INVOICE);
         }
@@ -694,21 +693,16 @@ public class InvoiceHome extends FedeController implements Serializable {
             getPayment().setDatePaymentCancel(Dates.now());
         }
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< collect!!");
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
-            //  if (!DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
                 getInvoice().setDocumentType(documentType); //Se convierte en factura
-            //  }
             //Agregar el pago
             getInvoice().addPayment(getPayment());
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().setStatus(status);
 
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< isAccountingEnabled: " + isAccountingEnabled());
             if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
 
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< Creando registro contable...");
                 RuleRunner ruleRunner = new RuleRunner();
                 Record record = recordService.createInstance();
 
@@ -850,7 +844,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         } else {
             if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
                 getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
-                getInvoice().setDocumentTypeSource(DocumentType.INVOICE); //Mantener como preinvoice
+                getInvoice().setDocumentTypeSource(DocumentType.PRE_INVOICE); //Mantener como preinvoice
                 getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
                 getInvoice().addPayment(getPayment());
                 setOutcome("preinvoices");
