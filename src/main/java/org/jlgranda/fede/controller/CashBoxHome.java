@@ -795,14 +795,14 @@ public class CashBoxHome extends FedeController implements Serializable {
         if (this.purchasesCreditPaid == null) {
             this.purchasesCreditPaid = BigDecimal.ZERO;
         }
-        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndType", Integer.MAX_VALUE, this.selectedAccount, RecordTDetailType.DEBE, _start, _end, this.organizationData.getOrganization());
+        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, this.selectedAccount, RecordTDetailType.DEBE, _start, _end, this.organizationData.getOrganization());
         objects.stream().forEach((Object object) -> {
             this.transactionDebit = (BigDecimal) object;
         });
         if (this.transactionDebit == null) {
             this.transactionDebit = BigDecimal.ZERO;
         }
-        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndType", Integer.MAX_VALUE, this.selectedAccount, RecordTDetailType.HABER, _start, _end, this.organizationData.getOrganization());
+        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, this.selectedAccount, RecordTDetailType.HABER, _start, _end, this.organizationData.getOrganization());
         objects.stream().forEach((Object object) -> {
             this.transactionCredit = (BigDecimal) object;
         });

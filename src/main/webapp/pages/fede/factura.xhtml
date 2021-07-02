@@ -153,8 +153,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-12">
                                     <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}"
-                                                     required="#{false}" immediate="true" style="width: 100%"
-                                                     disabled="#{not empty facturaElectronicaHome.facturaElectronica.id}"> 
+                                                     required="#{false}" immediate="true" style="width: 100%"> 
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@form" />
@@ -238,10 +237,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             container="none"/>
                         </div>
                         <div class="ui-g ui-lg-4 ui-md-12" style="text-align: right; font-weight: bolder">
+                            <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.0']}</div>
+                            <div class="invoice-value ui-g-4">
+                                <p:inputNumber id="imptiva0" value="#{facturaElectronicaHome.facturaElectronica.totalIVA0}" required="#{true}"
+                                               styleClass=""  inputStyle="text-align: right" symbol="$" disabled="#{true}"
+                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                </p:inputNumber>
+                            </div>
+                            <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.12']}</div>
+                            <div class="invoice-value ui-g-4">
+                                <p:inputNumber id="imptiva12" value="#{facturaElectronicaHome.facturaElectronica.totalIVA12}" required="#{true}"
+                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{true}"
+                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                </p:inputNumber>
+                            </div>
                             <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']}</div>
                             <div class="invoice-value ui-g-4">
                                 <p:inputNumber id="imptsi" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" required="#{true}"
-                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{true}"
+                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{false}"
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
@@ -261,25 +278,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax listener="#{facturaElectronicaHome.montoPorPagar()}" update="total fund-request" partialSubmit="true"></p:ajax>
                                 </p:inputNumber>
                             </div>
-                            <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.0']}</div>
-                            <div class="invoice-value ui-g-4">
-                                <p:inputNumber id="imptiva0" value="#{facturaElectronicaHome.facturaElectronica.totalIVA0}" required="#{true}"
-                                               styleClass=""  inputStyle="text-align: right" symbol="$" disabled="#{true}"
-                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                </p:inputNumber>
-                            </div>
-                            <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.12']}</div>
-                            <div class="invoice-value ui-g-4">
-                                <p:inputNumber id="imptiva12" value="#{facturaElectronicaHome.facturaElectronica.totalIVA12}" required="#{true}"
-                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{true}"
-                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                </p:inputNumber>
-                            </div>
-                            <div class="invoice-label ui-g-8" style="text-transform: uppercase; padding: 20px">#{i18n['common.total']}</div>
+                            <div class="invoice-label ui-g-8" style="text-transform: uppercase; padding: 20px">#{i18n['common.total.pay']}</div>
                             <div class="invoice-value ui-g-4">
                                 <div class="EmptyBox10"></div>
                                 <p:inputNumber id="impt" value="#{facturaElectronicaHome.facturaElectronica.importeTotal}" required="#{true}"

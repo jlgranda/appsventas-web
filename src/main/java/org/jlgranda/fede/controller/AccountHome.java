@@ -474,7 +474,6 @@ public class AccountHome extends FedeController implements Serializable {
             this.accountSelected = p;
             if (accountService.findByNamedQuery("Account.findByParentId", p.getId(), this.organizationData.getOrganization()).isEmpty()) {
                 setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", p, getStart(), getEnd(), this.organizationData.getOrganization()));
-                System.out.println("getRecordDetails: " + getRecordDetailsAccount());
             } else {
                 try {
                     redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
@@ -504,7 +503,6 @@ public class AccountHome extends FedeController implements Serializable {
      * @return
      */
     public boolean editarFormularioRecord(Long recordId) {
-        System.out.println("recordId A: " + recordId);
         if (recordId != null) {
             super.setSessionParameter("recordId", recordId);
         }
