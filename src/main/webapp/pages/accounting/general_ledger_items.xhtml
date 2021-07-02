@@ -46,7 +46,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      selection="#{accountHome.singleSelectedNode}" sortBy="#{account.code}"
                                      selectionMode="single"><!--filteredNode="#{accountHome.singleSelectedNode}" -->
                             <p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>
-                            
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{account.code}" filterable="false">
                                 <h:outputText value="#{account.code}" />
                             </p:column>
@@ -59,17 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-<!--                            <p:column headerText="#{i18n['app.fede.accounting.generalLedger']}" style="text-align: center">
-                                <p:commandButton id="button-generalLedger" update="form"
-                                                 title="#{i18n['app.fede.accounting.generalLedger']}" icon="fa fa-book"
-                                                 actionListener="#{accountHome.mostrarFormularioLedger(account)}">
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{accountHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandButton>
-                                <p:button icon="fa fa-plus-square-o"
-                                          styleClass="danger-btn" outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />
-                            </p:column>-->
                         </p:treeTable>
                     </div>
                 </div>

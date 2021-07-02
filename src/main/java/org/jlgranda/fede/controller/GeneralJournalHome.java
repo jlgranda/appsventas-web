@@ -345,7 +345,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             recordService.save(record);
             closeFormularioRecord(journal.getId());
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
         }
     }
 
