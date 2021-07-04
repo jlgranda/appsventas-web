@@ -434,6 +434,22 @@ public class AccountHome extends FedeController implements Serializable {
         try {
             if (event != null && event.getTreeNode().getData() != null) {
                 Account p = (Account) event.getTreeNode().getData();
+                redirectTo("/pages/accounting/account.jsf?accountId=" + p.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
+        }
+    }
+    /**
+     * Selección de un objeto específico de tipo <tt>Account</tt> para ingresar
+     * a su vista y detalles
+     *
+     * @param event
+     */
+    public void onNodeSelectTree(NodeSelectEvent event) {
+        try {
+            if (event != null && event.getTreeNode().getData() != null) {
+                Account p = (Account) event.getTreeNode().getData();
                 redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
             }
         } catch (IOException ex) {
