@@ -895,6 +895,9 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         return instancia;
     }
 
+    /**
+     * Guarda los datos
+     */
     public void save() {
         setOutcome("fede-inbox");
         this.facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
