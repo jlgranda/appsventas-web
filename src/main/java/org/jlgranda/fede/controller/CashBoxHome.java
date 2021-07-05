@@ -1113,19 +1113,20 @@ public class CashBoxHome extends FedeController implements Serializable {
             RuleRunner ruleRunner = new RuleRunner();
             Record record = recordService.createInstance();
 
-            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record1, record2, record3, record4); //Armar el registro contable según la regla en recordTemplate
+            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record); //Armar el registro contable según la regla en recordTemplate
+//            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record1, record2, record3, record4); //Armar el registro contable según la regla en recordTemplate
             
             
             
             Record recordFaltante = recordService.createInstance();
 
-            kbers = ruleRunner.run(this.recordTemplateFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
-             save(recordFaltante)
-                     
-            Record recordsssFaltante = recordService.createInstance();
-
-            kbers = ruleRunner.run(this.recordTemplatesssFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
-             save(recordFaltantesss)
+//            kbers = ruleRunner.run(this.recordTemplateFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
+//             save(recordFaltante)
+//                     
+//            Record recordsssFaltante = recordService.createInstance();
+//
+//            kbers = ruleRunner.run(this.recordTemplatesssFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
+//             save(recordFaltantesss)
 
             if (kbers != null) { //Contiene errores de compilación
                 logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
