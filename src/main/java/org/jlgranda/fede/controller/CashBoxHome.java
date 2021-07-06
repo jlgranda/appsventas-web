@@ -238,7 +238,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         //Instanciar regla de negocio para registrar ventas.
         setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registrocajadia", "REGISTRO_CAJA_DIA"), this.organizationData.getOrganization()));
         //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "false")));
+        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
+        setAccountingEnabled(true);
     }
 
     //GETTER AND SETTER
@@ -614,10 +615,15 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActivePanelBreakdown() {
+        chargeListCashBoxBillMoney(); //Cargar por defecto el detalle del CashBoxPartial en las tablas de la vista
         if (this.cashBoxPartial.getId() != null && CashBoxPartial.Status.OPEN.equals(this.cashBoxPartial.getStatusCashBoxPartial())) {
             activePanelBreakdown = true;
+            if (this.cashBoxPartial.getPriority_order().equals(CashBoxPartial.Priority.SECONDARY)) {
+                calculateTotals(this.saldoCashFund);
+            } else {
+                calculateTotals(this.saldoCash);
+            }
         }
-        chargeListCashBoxBillMoney(); //Cargar por defecto el detalle del CashBoxPartial en las tablas de la vista
         return activePanelBreakdown;
     }
 
@@ -722,6 +728,8 @@ public class CashBoxHome extends FedeController implements Serializable {
             List<CashBoxPartial> partialExist = cashBoxPartialService.findByNamedQueryWithLimit("CashBoxPartial.findByCashBoxGeneralAndOwner", 1, this.cashBoxGeneral, this.subject);
             if (!partialExist.isEmpty()) {
                 this.cashBoxPartial = partialExist.get(0);
+                this.cashBoxPartial.setAccountDeposit(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", "CAJA GENERAL", this.organizationData.getOrganization()));
+                this.cashBoxPartial.setAmountDeposit(BigDecimal.ZERO);
             }
             this.saldoCashFund = this.cashBoxGeneral.getTotalBreakdownFinal(); //Saldo registrado según el último cierre de caja
         }
@@ -1063,7 +1071,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             setActiveButtonSelectDeposit(!(this.cashBoxPartial.getAmountDeposit().compareTo(BigDecimal.ZERO) == 1 && (this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == 0 || this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == -1))); //Activar/Desactivar Select y Botón de Depósito
             if (this.cashBoxPartial.getAmountDeposit().compareTo(BigDecimal.ZERO) == 1) {
                 if (this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == 1) {
-                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.greater", "" , this.saldoCashFund.toString()));
+                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.greater", "" + this.saldoCashFund.toString()));
                 }
             } else {
                 this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.less.zero"));
@@ -1097,12 +1105,28 @@ public class CashBoxHome extends FedeController implements Serializable {
      */
     public void registerRecordInJournal() {
         boolean registradoEnContabilidad = false;
+        System.out.println("isAccountingEnabled(): "+isAccountingEnabled());
+        System.out.println("this.getRecordTemplate(): "+this.getRecordTemplate());
+        System.out.println("!Strings.isNullOrEmpty(this.getRecordTemplate().getRule()): "+!Strings.isNullOrEmpty(this.getRecordTemplate().getRule()));
         if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
 
             RuleRunner ruleRunner = new RuleRunner();
             Record record = recordService.createInstance();
 
             KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record); //Armar el registro contable según la regla en recordTemplate
+//            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record1, record2, record3, record4); //Armar el registro contable según la regla en recordTemplate
+            
+            
+            
+            Record recordFaltante = recordService.createInstance();
+
+//            kbers = ruleRunner.run(this.recordTemplateFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
+//             save(recordFaltante)
+//                     
+//            Record recordsssFaltante = recordService.createInstance();
+//
+//            kbers = ruleRunner.run(this.recordTemplatesssFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
+//             save(recordFaltantesss)
 
             if (kbers != null) { //Contiene errores de compilación
                 logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));

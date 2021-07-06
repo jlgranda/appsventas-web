@@ -386,6 +386,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     /**
      * El registro actual no esta referenciado a una entidad
+     *
      * @return
      */
     public boolean isRecordOfReferen() {

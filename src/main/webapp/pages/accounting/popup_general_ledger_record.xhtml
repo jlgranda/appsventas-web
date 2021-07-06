@@ -37,13 +37,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <li>/</li>
             <li><p:link outcome="/pages/accounting/popup_general_ledger_record.jsf">#{accountHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{accountHome.record.id}</p:link></li>
         </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+                .container-center{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                }
+                .bold-capital{
+                    font-weight: bolder;
+                    text-transform: uppercase;
+                }
+                .capital{
+                    text-transform: uppercase;
+                }
+                .container-right{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+                .container-lefth{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+            </style>
+        </ui:define>
         <ui:define name="content">
             <h:form id="form-nuevo-registro-detalle">
                 <p:messages id="messages" showDetail="true" closable="true" >
                     <p:autoUpdate />
                 </p:messages>
                 <div class="ui-g ui-fluid">
-                    <div class="ui-g ui-lg-6 ui-md-5">
+                    <div class="ui-g ui-lg-4 ui-md-4">
                         <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
                         <div class="EmptyBox10"></div>
                         <p:autoComplete value="#{accountHome.recordDetail.account}" effect="blind" 
@@ -57,7 +84,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="itemSelect" update="@this" partialSubmit="true"></p:ajax>
                         </p:autoComplete>
                     </div>
-                    <div class="ui-g ui-lg-3 ui-md-2">
+                    <div class="ui-g ui-lg-2 ui-md-2">
                         <h:outputText value="#{i18n['common.value']} #{i18n['common.money.letter']} *" />
                         <div class="EmptyBox10"></div>
                         <p:inputNumber id="number_amount" value="#{accountHome.recordDetail.amount}" 
@@ -71,7 +98,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
                         </p:inputNumber>
                     </div>
-                    <div class="ui-g ui-lg-3 ui-md-4">
+                    <div class="ui-g ui-lg-4 ui-md-4">
                         <h:outputText value="#{i18n['common.type']} *"/>
                         <div class="EmptyBox10"></div>
                         <p:selectOneRadio id="type" value="#{accountHome.recordDetail.recordDetailType}" unselectable="false"
@@ -80,11 +107,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                         </p:selectOneRadio>
                     </div>
-                    <div class="ui-g ui-lg-1 ui-md-1">
+                    <div class="ui-g ui-lg-2 ui-md-2">
                         <div class="EmptyBox10"></div>
-                        <p:commandButton id="add-record"  ajax="false"
+                        <p:commandButton id="add-record"  ajax="false" value="#{i18n['common.add']}"
                                          actionListener="#{accountHome.addRecordDetail()}" immediate="false"
-                                         update="form-registro" icon="fa fa-plus-square"/>
+                                         update="form-registro"
+                                         styleClass="warning-btn" icon="fa fa-plus-square"/>
                     </div>
                 </div>
             </h:form>
@@ -97,14 +125,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
                                              liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
                                              paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                             rows="10" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
+                                             rows="6" scrollRows="6" scrollHeight="100%" scrollWidth="100%"
                                              scrollable="true"
-                                             value="#{accountHome.record.recordDetails}" var="recordDetail"
-                                             selection="#{accountHome.selectedBussinesEntities}">
-                                    <p:column headerText="#{i18n['common.accounts']}" style="width: auto">
+                                             value="#{accountHome.recordDetailsUpdate}" var="recordDetail"
+                                             selection="#{accountHome.selectedBussinesEntities}"
+                                             editable="#{true}">
+                                    <p:column headerText="#{i18n['common.date']}" style="width: 15%">
+                                        <h:outputText value="#{recordDetail.createdOn}">
+                                            <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="#{i18n['common.details']}" style="width: auto">
                                         <p:cellEditor>
                                             <f:facet name="output">
-                                                <h:outputText value="#{recordDetail.account.name}"/>
+                                                <h:outputText value="#{recordDetail.account.name}" style="#{recordDetail.recordDetailType=='HABER' ? 'padding-left: 10%':''};"/>
                                             </f:facet>
                                             <f:facet name="input">
                                                 <h:selectOneMenu value="#{recordDetail.account}"
@@ -116,13 +150,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column style="width: 5%">
-                                        <h:outputText value="#{recordDetail.deleted}"/>
-                                    </p:column>
                                     <p:column headerText="#{i18n['common.debe']}" style="width: 15%">
                                         <p:cellEditor>
                                             <f:facet name="output">
-                                                <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" style="text-align: right"/>
+                                                <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                                </h:outputText>
                                             </f:facet>
                                             <f:facet name="input">
                                                 <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}"/>
@@ -132,15 +165,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:column headerText="#{i18n['common.haber']}" style="width: 15%">
                                         <p:cellEditor>
                                             <f:facet name="output">
-                                                <h:outputText value="$#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" style="text-align: right"/>
+                                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                                </h:outputText>
                                             </f:facet>
                                             <f:facet name="input">
                                                 <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}"/>
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column style="width: 5%">
-                                        <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
+                                    <p:column style="width: 8%">
+                                        <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.detail']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.changes']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                     </p:column>
                                 </p:dataTable>
                                 <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.accounting.record.description']}" class="Container100 BigTopic"
