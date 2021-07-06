@@ -29,6 +29,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.ui.model.LazyRecordTemplateDataModel;
 import org.jpapi.model.Group;
@@ -198,6 +199,11 @@ public class RecordTemplateHome extends FedeController implements Serializable {
             lazyDataModel.setFilterValue(getKeyword());
         }
 
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

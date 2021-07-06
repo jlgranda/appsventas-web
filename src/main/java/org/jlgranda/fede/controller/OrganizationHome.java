@@ -31,6 +31,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jpapi.model.Organization;
 import org.jlgranda.fede.ui.model.LazyOrganizationDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -281,6 +282,11 @@ public class OrganizationHome extends FedeController implements Serializable {
     
     public List<Organization> findOrganizations(Subject subject) {
         return organizationService.findByNamedQuery("Organization.findByEmployee", subject);
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

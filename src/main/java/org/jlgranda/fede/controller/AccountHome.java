@@ -843,4 +843,9 @@ public class AccountHome extends FedeController implements Serializable {
         return recordDetailGeneral;
     }
 
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

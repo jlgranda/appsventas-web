@@ -42,6 +42,7 @@ import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.model.talentohumano.Journal;
 import org.jlgranda.fede.ui.model.LazyEmployeeDataModel;
@@ -789,5 +790,10 @@ public class JournalHome extends FedeController implements Serializable {
         clear();
         System.out.println("start: " + getStart());
         System.out.println("end: " + getEnd());
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

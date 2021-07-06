@@ -31,6 +31,7 @@ import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.ui.model.LazyEmployeeDataModel;
 import org.jpapi.model.Group;
@@ -227,5 +228,10 @@ public class EmployeeHome extends FedeController implements Serializable {
         filters.put("surname", keyword);
         QueryData<Employee> queryData = employeeService.find("Employee.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
         return queryData.getResult();
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

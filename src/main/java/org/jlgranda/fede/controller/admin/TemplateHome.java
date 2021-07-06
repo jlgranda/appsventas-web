@@ -39,6 +39,7 @@ import net.tecnopro.mailing.Notification;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.ui.model.LazyTemplateDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -260,6 +261,11 @@ public class TemplateHome extends FedeController implements Serializable {
 
     @Override
     protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
