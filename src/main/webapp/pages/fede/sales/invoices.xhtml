@@ -169,7 +169,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          rowKey="#{invoice.id}" 
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                          id="dataTable" widgetVar="dataTable_wv" lazy="true">
-
                                 <!--                            <p:ajax event="rowSelectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
                                                             <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
                                 <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
@@ -186,7 +185,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{entity.total}"
                                           styleClass="text-right">
                                     <h:outputText value="#{entity.total}">
-                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>
                                 </p:column>
                                 <p:column  id="createdOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}"

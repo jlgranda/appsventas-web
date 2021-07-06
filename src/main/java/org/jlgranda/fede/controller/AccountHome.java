@@ -341,8 +341,8 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public BigDecimal getFundAccountMain() {
-        if (this.accountId != null){
-            this.fundAccountMain = accountService.mayorizar(this.accountService.find(this.accountId), this.organizationData.getOrganization(), getStart(), getEnd());
+        if (this.accountSelected != null) {
+            this.fundAccountMain = accountService.mayorizar(this.accountSelected, this.organizationData.getOrganization(), getStart(), getEnd());
         }
         return fundAccountMain;
     }
@@ -452,7 +452,7 @@ public class AccountHome extends FedeController implements Serializable {
     public TreeNode addChild(TreeNode parent, Account accountChild) {
         TreeNode child = null;
         List<Account> childs = accountService.findByNamedQuery("Account.findByParentId", accountChild.getId(), this.organizationData.getOrganization());
-        if (childs.isEmpty()){
+        if (childs.isEmpty()) {
             parent.setType("account");
         } else {
             for (Account x : childs) {
@@ -534,12 +534,12 @@ public class AccountHome extends FedeController implements Serializable {
      */
     public void onAccountSelect(NodeSelectEvent event) {
         if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
-            Account p = (Account) event.getTreeNode().getData();
-            this.accountSelected = p;
+            this.accountSelected = (Account) event.getTreeNode().getData();
             if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
                 setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
                 calculateBalance();
-            } /*else {
+            }
+            /*else {
                 try {
                     redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
                 } catch (IOException ex) {
@@ -547,6 +547,8 @@ public class AccountHome extends FedeController implements Serializable {
                 }
             }*/
         } else {
+            this.accountSelected = (Account) event.getTreeNode().getData();
+            this.recordDetailsAccount = new ArrayList<>();
             addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.ledger.noleaf"));
         }
     }
@@ -585,9 +587,8 @@ public class AccountHome extends FedeController implements Serializable {
      *
      */
     public void chargeListDetailsforAccount() {
-        System.out.println("getStart: " + getStart());
-        System.out.println("getEnd: " + getEnd());
         setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
+        calculateBalance();
     }
 
     /**
@@ -644,6 +645,21 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     /**
+     * El registro actual no esta referenciado a una entidad
+     *
+     * @return
+     */
+    public boolean isRecordOfReferen() {
+        return this.record.getBussinesEntityId() == null;
+    }
+
+    public void messageEditableRecord() {
+        if (!isRecordOfReferen()) {
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.message.not.editable", " " + this.record.getBussinesEntityType()));
+        }
+    }
+
+    /**
      * Agrega un detalle al Record
      */
     public void addRecordDetail() {
@@ -679,7 +695,7 @@ public class AccountHome extends FedeController implements Serializable {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
         }
     }
-    
+
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -755,8 +771,8 @@ public class AccountHome extends FedeController implements Serializable {
         }
         return recordDetailGeneral;
     }
-    
-        public void findRecordDetailAccountTop() {
+
+    public void findRecordDetailAccountTop() {
         this.amountDebeRdOld = BigDecimal.ZERO;
         this.amountHaberRdOld = BigDecimal.ZERO;
         Calendar dayDate = Calendar.getInstance();

@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="params">
             <f:metadata>
                 <f:viewAction action="#{accountHome.loadSessionParametersRecord}" />
+                <f:viewAction action="#{accountHome.messageEditableRecord}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -110,6 +111,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="ui-g ui-lg-2 ui-md-2">
                         <div class="EmptyBox10"></div>
                         <p:commandButton id="add-record"  ajax="false" value="#{i18n['common.add']}"
+                                         disabled="#{!accountHome.recordOfReferen}"
                                          actionListener="#{accountHome.addRecordDetail()}" immediate="false"
                                          update="form-registro"
                                          styleClass="warning-btn" icon="fa fa-plus-square"/>
@@ -129,7 +131,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              scrollable="true"
                                              value="#{accountHome.recordDetailsUpdate}" var="recordDetail"
                                              selection="#{accountHome.selectedBussinesEntities}"
-                                             editable="#{true}">
+                                             editable="#{accountHome.recordOfReferen}">
                                     <p:column headerText="#{i18n['common.date']}" style="width: 15%">
                                         <h:outputText value="#{recordDetail.createdOn}">
                                             <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
@@ -154,7 +156,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
-                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                 </h:outputText>
                                             </f:facet>
                                             <f:facet name="input">
@@ -162,11 +164,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.haber']}" style="width: 15%">
+                                    <p:column headerText="#{i18n['common.haber']}" style="width: 15%; text-align: right">
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}">
-                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                 </h:outputText>
                                             </f:facet>
                                             <f:facet name="input">

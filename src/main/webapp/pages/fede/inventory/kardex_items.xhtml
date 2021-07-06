@@ -68,9 +68,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                               style="#{kardex.quantity gt kardex.unitMaximum ? 'color: #9C0D0D': kardex.quantity lt kardex.unitMinimum ? 'color: #F94C00' : 'color: #0A8517'}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.fund']}  #{i18n['common.money.letter']}">
-                                <h:outputText value="#{kardex.fund lt 0 ? '-': ''}" style="#{kardex.fund lt 0 ? 'color: #e53935;': ''}"/>
+                                <!--<h:outputText value="#{kardex.fund lt 0 ? '-': ''}" style="#{kardex.fund lt 0 ? 'color: #e53935;': ''}"/>-->
                                 <h:outputText value="#{kardex.fund}" style="#{kardex.fund lt 0 ? 'color: #e53935;': ''}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
                             <p:column  id="fechaEmision"  headerText="#{i18n['common.date.update']}" sortBy="#{kardex.lastUpdate}" sortOrder="DESC"

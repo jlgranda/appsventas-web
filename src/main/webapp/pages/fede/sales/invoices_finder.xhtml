@@ -103,7 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:column>
                         <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{invoice.total}"  style="width:128px;text-align:right;">
                             <h:outputText value="#{invoice.total}">
-                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
                         <p:column  id="emissionOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" sortOrder="desc" style="width:160px;text-align:right;">
