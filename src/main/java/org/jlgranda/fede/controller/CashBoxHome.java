@@ -30,6 +30,7 @@ import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.jlgranda.fede.model.accounting.CashBoxGeneral;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail.RecordTDetailType;
+import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.rules.RuleRunner;
@@ -183,6 +185,8 @@ public class CashBoxHome extends FedeController implements Serializable {
     private CashBoxPartial cashBoxInitialFinish;
     private int activeIndex;
     private boolean activePanelVerification;
+
+    private static RuleRunner ruleRunner = new RuleRunner();
 
     @PostConstruct
     private void init() {
@@ -1101,59 +1105,78 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     /**
-     * Registar asiento contable mediante reglas de negocio.
+     *
+     * @param nombreRegla
+     * @param cashBoxPartial
+     * @return
      */
-    public void registerRecordInJournal() {
-        boolean registradoEnContabilidad = false;
-        System.out.println("isAccountingEnabled(): "+isAccountingEnabled());
-        System.out.println("this.getRecordTemplate(): "+this.getRecordTemplate());
-        System.out.println("!Strings.isNullOrEmpty(this.getRecordTemplate().getRule()): "+!Strings.isNullOrEmpty(this.getRecordTemplate().getRule()));
-        if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
-
-            RuleRunner ruleRunner = new RuleRunner();
-            Record record = recordService.createInstance();
-
-            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record); //Armar el registro contable según la regla en recordTemplate
-//            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.cashBoxPartial, record1, record2, record3, record4); //Armar el registro contable según la regla en recordTemplate
-            
-            
-            
-            Record recordFaltante = recordService.createInstance();
-
-//            kbers = ruleRunner.run(this.recordTemplateFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
-//             save(recordFaltante)
-//                     
-//            Record recordsssFaltante = recordService.createInstance();
-//
-//            kbers = ruleRunner.run(this.recordTemplatesssFaltante, this.cashBoxPartial, recordFaltante); //Armar el registro contable según la regla en recordTemplate
-//             save(recordFaltantesss)
+    private Record aplicarReglaNegocio(String nombreRegla, CashBoxPartial cashBoxPartial) {
+        RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
+        Record record = null;
+        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+            record = recordService.createInstance();
+            KnowledgeBuilderErrors kbers = CashBoxHome.ruleRunner.run(_recordTemplate, cashBoxPartial, record); //Armar el registro contable según la regla en recordTemplate
 
             if (kbers != null) { //Contiene errores de compilación
                 logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
                 logger.error(kbers.toString());
-                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
+                record = null; //Invalidar el record
             } else {
+                record.setBussinesEntityType(cashBoxPartial.getClass().getSimpleName());
+                record.setBussinesEntityId(cashBoxPartial.getId());
+                record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), cashBoxPartial.getId()));
+                record.setDescription(String.format("%s: %s \nCuenta de Depósito: %s \nMonto de Depósito: %s", _recordTemplate.getName(), cashBoxPartial.getOwner().getFullName(), cashBoxPartial.getAccountDeposit().getName(), Strings.format(cashBoxPartial.getAmountDeposit().doubleValue(), "$ #0.##")));
+            }
+
+        }
+
+        //El registro casí listo para agregar al journal
+        return record;
+    }
+
+    /**
+     * Registar asiento contable mediante reglas de negocio.
+     */
+    public void registerRecordInJournal() {
+        boolean registradoEnContabilidad = false;
+        if (isAccountingEnabled()) {
+
+            //Ejecutar las reglas de negocio para el registro del cierre de cada
+            List<String> reglas = new ArrayList<>(Arrays.asList(
+                    "REGLA01",
+                    "REGLA02"
+            ));
+
+            List<Record> records = new ArrayList<>();
+            reglas.forEach(regla -> {
+                records.add(aplicarReglaNegocio(regla, this.cashBoxPartial));
+            });
+
+            if (!records.isEmpty()) {
                 //La regla compiló bien
                 String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
                 String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
                 GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
                 //El General Journal del día
                 if (generalJournal != null) {
-                    record.setCode(UUID.randomUUID().toString());
-                    //TODO ver una forma de plantilla
-                    record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.cashBoxPartial.getId()));
-                    record.setDescription(String.format("Transferencia de Caja Día Parcial de: %s \nCuenta de Depósito: %s \nMonto de Depósito: %s", this.cashBoxPartial.getOwner().getFullName(), this.cashBoxPartial.getAccountDeposit().getName(), Strings.format(this.cashBoxPartial.getAmountDeposit().doubleValue(), "$ #0.##")));
-                    record.setOwner(this.subject);
-                    record.setAuthor(this.subject);
-                    record.setGeneralJournalId(generalJournal.getId());
-                    record.setBussinesEntityType(this.cashBoxPartial.getClass().getSimpleName());
-                    record.setBussinesEntityId(this.cashBoxPartial.getId());
-                    //Corregir objetos cuenta en los detalles
-                    record.getRecordDetails().forEach(rd -> {
-                        rd.setLastUpdate(Dates.now());
-                        rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
-                    });
-                    recordService.save(record);
+                    for (Record record : records) {
+                        
+                        record.setCode(UUID.randomUUID().toString());
+                        
+                        record.setOwner(this.subject);
+                        record.setAuthor(this.subject);
+                        
+                        record.setGeneralJournalId(generalJournal.getId());
+
+                        //Corregir objetos cuenta en los detalles
+                        record.getRecordDetails().forEach(rd -> {
+                            rd.setLastUpdate(Dates.now());
+                            rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
+                        });
+                        
+                        //Persistencia
+                        recordService.save(record);
+                    }
                     registradoEnContabilidad = true;
                 }
             }
