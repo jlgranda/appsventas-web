@@ -150,10 +150,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.debe']}" style="width: 15%">
+                                    <p:column headerText="#{i18n['common.debe']}" style="width: 15%; text-align: right">
                                         <p:cellEditor>
                                             <f:facet name="output">
-                                                <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                                 </h:outputText>
                                             </f:facet>

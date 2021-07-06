@@ -186,11 +186,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.quantity']}">
-                                            <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                        <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" >
-                                            <h:outputText  class="container-right" value="#{cashBoxDetail.amount}">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
                                         </p:column>
@@ -214,11 +214,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.quantity']}">
-                                            <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                        <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" >
-                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
                                         </p:column>
@@ -296,10 +296,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem" >
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">
                                             <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                                    <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
@@ -308,8 +308,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" >
-                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
                                         </p:column>
@@ -337,10 +337,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem">
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">
                                             <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                                    <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
@@ -349,8 +349,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" >
-                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
                                         </p:column> 
@@ -493,10 +493,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem" >
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">
                                             <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                                    <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
@@ -505,8 +505,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" >
-                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
                                         </p:column>
@@ -534,10 +534,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem">
+                                        <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">
                                             <p:cellEditor>
                                                 <f:facet name="output">
-                                                    <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                                    <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
                                                     <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
@@ -546,8 +546,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" >
-                                            <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                             </h:outputText>
                                         </p:column> 
@@ -648,11 +648,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                                 <h:outputText value="#{cashBoxDetail.denomination}"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.quantity']}">
-                                                <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                            <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
+                                                <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.amount']}" >
-                                                <h:outputText  class="container-right" value="#{cashBoxDetail.amount}">
+                                            <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                                <h:outputText value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                                 </h:outputText>
                                             </p:column>
@@ -676,11 +676,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
                                                 <h:outputText value="#{cashBoxDetail.denomination}"/>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.quantity']}">
-                                                <h:outputText class="container-right" value="#{cashBoxDetail.quantity}"></h:outputText>
+                                            <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
+                                                <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.amount']}" >
-                                                <h:outputText class="container-right" value="#{cashBoxDetail.amount}">
+                                            <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                                <h:outputText value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                                 </h:outputText>
                                             </p:column>

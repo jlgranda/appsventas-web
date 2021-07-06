@@ -94,18 +94,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <div class="ui-g ui-lg-8 ui-md-8">
-                    <h1 class="BigTopic">#{accountHome.account.name}</h1>
-                </div>
-                <p:splitter layout="horizontal" >
-                    <p:splitterPanel size="25">
-                        <div class="ui-g ui-lg-8 ui-md-8">
-                            <h3 class="Gray capital" style="color: #007ad9">#{i18n['common.fund']}:
-                                <h:outputText value="#{accountHome.fundAccountMain}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
-                                </h:outputText>
-                            </h3>
+                <div class="ui-g-12 ui-lg-12 ui-md-12">
+                    <div class="ui-g-6 ui-lg-6 ui-md-6">
+                        <h1 class="BigTopic">#{accountHome.account.name} |
+                            <h:outputText value="#{accountHome.fundAccountMain}">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                            </h:outputText>
+                        </h1>
+                    </div>
+                    <div class="ui-g-6 ui-lg-6 ui-md-6 ui-inputgroup">
+                        <div class="ui-g-6 ui-lg-6 ui-md-6">
+                            <p:outputLabel class="Gray" for="navigator1" value="#{i18n['common.from']}:"/>
+                            <p:datePicker id="navigator1" value="#{accountHome.start}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                                <p:ajax event="dateSelect" listener="#{accountHome.chargeListDetailsforAccount()}" oncomplete="form.submit();"/>
+                            </p:datePicker>
                         </div>
+                        <div class="ui-g-6 ui-lg-6 ui-md-6">
+                            <p:outputLabel class="Gray" for="navigator2" value="#{i18n['common.to']}:"/>
+                            <p:datePicker id="navigator2" value="#{accountHome.end}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                                <p:ajax event="dateSelect" listener="#{accountHome.chargeListDetailsforAccount()}" oncomplete="form.submit();"/>
+                            </p:datePicker>
+                        </div>
+                    </div>
+                </div>
+                <p:splitter layout="horizontal" class="ui-g-12 ui-lg-12 ui-md-12">
+                    <p:splitterPanel size="25">
                         <p:scrollPanel style="width: 100%; height: 100%; border: transparent; background-color: transparent" mode="native">
                             <p:tree id="tree-generalLedger" value="#{accountHome.accountChilds()}" var="account"
                                     selectionMode="single" style="border: transparent; width: 100%"
@@ -118,7 +131,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="fa fa-arrow-up" />
                         </p:scrollPanel>
                     </p:splitterPanel>
-                    <p:splitterPanel size="75" minSize="75"><!--size="75" minSize="75"-->
+                    <p:splitterPanel size="75" minSize="75">
                         <p:card style="background-color: #EFEFEF">
                             <f:facet name="header">
                                 <div class="ui-g ui-lg-12 ui-md-12 bold-capital container-center"><h1>#{organizationData.organization.initials}</h1></div>
@@ -169,18 +182,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="REF" style="width: 10%">
                                 <h:outputText value="#{recordDetail.record.code}"/>
                             </p:column>
-                            <p:column headerText="#{i18n['common.debe']}" style="width: 10%">
-                                <h:outputText  class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                            <p:column headerText="#{i18n['common.debe']}" style="width: 10%; text-align: right">
+                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.haber']}" style="width: 10%">
-                                <h:outputText  class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}">
+                            <p:column headerText="#{i18n['common.haber']}" style="width: 10%; text-align: right">
+                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.fund']}" style="width: 10%">
-                                <h:outputText  class="container-right" value="#{recordDetail.accumulatedBalance}">
+                            <p:column headerText="#{i18n['common.fund']}" style="width: 10%; text-align: right">
+                                <h:outputText value="#{recordDetail.accumulatedBalance lt 0 ? '-': ''}" style="#{recordDetail.accumulatedBalance lt 0 ? 'color: #e53935;': ''}"/>
+                                <h:outputText value="#{recordDetail.accumulatedBalance}" style="#{recordDetail.accumulatedBalance lt 0 ? 'color: #e53935;': ''}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
