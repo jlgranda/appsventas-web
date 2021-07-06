@@ -40,6 +40,7 @@ import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.sales.Kardex;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
@@ -677,6 +678,11 @@ public class InventoryHome extends FedeController implements Serializable {
         
         item = new SelectItem("changeto", "Cambiar tipo a");
         actions.add(item);
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     /**

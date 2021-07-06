@@ -39,6 +39,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.admin.TemplateHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -389,5 +390,10 @@ public class SubjectHome extends FedeController implements Serializable {
             this.addWarningMessage("Las contraseñas no coinciden! Intente nuevamente.", "");
         }
 
+    }
+    
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

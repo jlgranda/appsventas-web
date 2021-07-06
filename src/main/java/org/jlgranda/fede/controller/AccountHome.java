@@ -772,6 +772,7 @@ public class AccountHome extends FedeController implements Serializable {
         return recordDetailGeneral;
     }
 
+<<<<<<< HEAD
     public void findRecordDetailAccountTop() {
         this.amountDebeRdOld = BigDecimal.ZERO;
         this.amountHaberRdOld = BigDecimal.ZERO;
@@ -801,6 +802,11 @@ public class AccountHome extends FedeController implements Serializable {
             }
         });
         this.amountAccount = (this.amountDebeRdOld.add(this.amountDebeRd)).subtract(this.amountHaberRdOld.add(this.amountHaberRd));
+=======
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+>>>>>>> c7ae5075aa028f73151fdaf8a094a5aee7a20644
     }
 
 }

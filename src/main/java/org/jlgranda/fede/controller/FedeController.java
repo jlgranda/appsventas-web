@@ -34,11 +34,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.jlgranda.fede.controller.admin.TemplateHome;
-import org.jlgranda.fede.model.accounting.RecordTemplate;
+import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Lists;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -89,14 +91,12 @@ public abstract class FedeController {
      */
     protected String selectedAction;
     
-    /**
-     * Carga la plantilla de registro contable para aplicar a las ventas
-     */
-    protected RecordTemplate recordTemplate; 
-    
     protected boolean accountingEnabled = false;
     
-    //protected Categ
+    //Reglas de contabilidad para ejecutar en registro contable
+    List<String> reglas = new ArrayList<>();
+    
+    public static RuleRunner ruleRunner = new RuleRunner();
 
     public List<BussinesEntity> getSelectedBussinesEntities() {
         return selectedBussinesEntities;
@@ -130,10 +130,6 @@ public abstract class FedeController {
         this.selectedAction = selectedAction;
     }
 
-    public RecordTemplate getRecordTemplate() {
-        return recordTemplate;
-    }
-
     public boolean isAccountingEnabled() {
         return accountingEnabled;
     }
@@ -142,8 +138,20 @@ public abstract class FedeController {
         this.accountingEnabled = accountingEnabled;
     }
 
-    public void setRecordTemplate(RecordTemplate recordTemplate) {
-        this.recordTemplate = recordTemplate;
+    public List<String> getReglas() {
+        return reglas;
+    }
+
+    public void setReglas(List<String> reglas) {
+        this.reglas = reglas;
+    }
+    
+    /**
+     * Nombres de reglas separados por ,
+     * @param reglas 
+     */
+    public void setReglas(String reglas) {
+        this.reglas = Lists.toList(reglas);
     }
 
     public String redirect(){
@@ -442,6 +450,14 @@ public abstract class FedeController {
     }
 
     public abstract void handleReturn(SelectEvent event);
+    
+    /**
+     * 
+     * @param nombreRegla Nombre la regla a aplicar
+     * @param fuenteDatos El objeto fuente de datos para aplicar la regla de negocio
+     * @return la instancia <tt>Record</tt> resultante.
+     */
+    public abstract Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos);
 
     public String getOutcome() {
         return outcome;

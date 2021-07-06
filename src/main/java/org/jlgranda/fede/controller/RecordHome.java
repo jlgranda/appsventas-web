@@ -85,6 +85,11 @@ public class RecordHome extends FedeController implements Serializable {
     public List<Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     
     

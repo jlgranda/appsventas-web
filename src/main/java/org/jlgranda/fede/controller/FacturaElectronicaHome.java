@@ -81,6 +81,7 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
+import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
 import org.jlgranda.fede.model.sales.KardexDetail;
@@ -284,9 +285,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
         getProductsByType();
         setActivePanelProduct(false);
-
-        //Instanciar regla de negocio para registrar ventas.
-        setRecordTemplate(recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_COMPRAS"), this.organizationData.getOrganization()));
 
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "false")));
@@ -1324,47 +1322,45 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         boolean registradoEnContabilidad = false;
         setAccountingEnabled(true);
-        if (isAccountingEnabled() && this.getRecordTemplate() != null && !Strings.isNullOrEmpty(this.getRecordTemplate().getRule())) {
+        if (isAccountingEnabled()) {
 
-            RuleRunner ruleRunner = new RuleRunner();
-            Record record = recordService.createInstance();
+            //Ejecutar las reglas de negocio para el registro del cierre de cada
+            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_COMPRAS"));
 
-            KnowledgeBuilderErrors kbers = ruleRunner.run(this.recordTemplate, this.facturaElectronica, record); //Armar el registro contable según la regla en recordTemplate
+            List<Record> records = new ArrayList<>();
+            getReglas().forEach(regla -> {
+                records.add(aplicarReglaNegocio(regla, this.facturaElectronica));
+            });
 
-            if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
-                logger.error(kbers.toString());
-                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + this.recordTemplate.getCode(), this.recordTemplate.getName()));
-            } else {
-
+            if (!records.isEmpty()) {
                 //La regla compiló bien
                 String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
                 String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
                 GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
+                //Anular registros anteriores
+                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId());
+
                 //El General Journal del día
                 if (generalJournal != null) {
+                    for (Record record : records) {
 
-                    record.setCode(UUID.randomUUID().toString());
+                        record.setCode(UUID.randomUUID().toString());
 
-                    //TODO ver una forma de plantilla
-                    record.setName(String.format("%s: %s[id=%d]", recordTemplate.getName(), getClass().getSimpleName(), this.facturaElectronica.getId()));
-                    record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal: %s", this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
-                    record.setOwner(this.subject);
-                    record.setAuthor(this.subject);
-                    record.setGeneralJournalId(generalJournal.getId());
-                    record.setBussinesEntityType(this.facturaElectronica.getClass().getSimpleName());
-                    record.setBussinesEntityId(this.facturaElectronica.getId());
+                        record.setOwner(this.subject);
+                        record.setAuthor(this.subject);
 
-                    //Corregir objetos cuenta en los detalles
-                    record.getRecordDetails().forEach(rd -> {
-                        rd.setLastUpdate(Dates.now());
-                        rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
-                    });
+                        record.setGeneralJournalId(generalJournal.getId());
 
-                    recordService.save(record);
+                        //Corregir objetos cuenta en los detalles
+                        record.getRecordDetails().forEach(rd -> {
+                            rd.setLastUpdate(Dates.now());
+                            rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
+                        });
 
-                    registradoEnContabilidad = true;
+                        //Persistencia
+                        recordService.save(record);
+                    }
                 }
             }
         }
@@ -1679,5 +1675,40 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         });
 
         return datailables;
+    }
+
+    /**
+     * @param nombreRegla
+     * @param fuenteDatos
+     * @return 
+     */
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        
+        FacturaElectronica _instance = (FacturaElectronica) fuenteDatos;
+        
+        RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
+        Record record = null;
+        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+            record = recordService.createInstance();
+            KnowledgeBuilderErrors kbers = FedeController.ruleRunner.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
+
+            if (kbers != null) { //Contiene errores de compilación
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(kbers.toString());
+                record = null; //Invalidar el record
+            } else {
+                record.setBussinesEntityType(_instance.getClass().getSimpleName());
+                record.setBussinesEntityId(_instance.getId());
+                
+                record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
+                record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal: %s", _instance.getAuthor().getFullName(), _instance.getDescription(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                
+            }
+
+        }
+
+        //El registro casí listo para agregar al journal
+        return record;
     }
 }

@@ -30,6 +30,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.ui.model.LazyGroupDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -256,6 +257,11 @@ public class GroupInventoryHome extends FedeController implements Serializable {
     
     @Override
     protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
