@@ -341,7 +341,9 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public BigDecimal getFundAccountMain() {
-        this.fundAccountMain = accountService.mayorizar(accountService.find(accountId), this.organizationData.getOrganization(), getStart(), getEnd());
+        if (this.accountId != null){
+            this.fundAccountMain = accountService.mayorizar(this.accountService.find(this.accountId), this.organizationData.getOrganization(), getStart(), getEnd());
+        }
         return fundAccountMain;
     }
 
@@ -450,9 +452,13 @@ public class AccountHome extends FedeController implements Serializable {
     public TreeNode addChild(TreeNode parent, Account accountChild) {
         TreeNode child = null;
         List<Account> childs = accountService.findByNamedQuery("Account.findByParentId", accountChild.getId(), this.organizationData.getOrganization());
-        for (Account x : childs) {
-            child = new DefaultTreeNode(x, parent);
-            addChild(child, x);
+        if (childs.isEmpty()){
+            parent.setType("account");
+        } else {
+            for (Account x : childs) {
+                child = new DefaultTreeNode(x, parent);
+                addChild(child, x);
+            }
         }
         return parent;
     }
@@ -527,19 +533,21 @@ public class AccountHome extends FedeController implements Serializable {
      * @param event
      */
     public void onAccountSelect(NodeSelectEvent event) {
-        if (event != null && event.getTreeNode().getData() != null) {
+        if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
             Account p = (Account) event.getTreeNode().getData();
             this.accountSelected = p;
             if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
                 setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, getStart(), getEnd(), this.organizationData.getOrganization()));
                 calculateBalance();
-            } else {
+            } /*else {
                 try {
                     redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
                 } catch (IOException ex) {
                     java.util.logging.Logger.getLogger(AccountHome.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
+            }*/
+        } else {
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.ledger.noleaf"));
         }
     }
 
@@ -597,7 +605,7 @@ public class AccountHome extends FedeController implements Serializable {
      */
     public TreeNode accountChilds() {
         TreeNode parent = new DefaultTreeNode(this.account, null);
-        addChild(parent, account);
+        addChild(parent, this.account);
         return parent;
     }
 

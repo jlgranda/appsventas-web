@@ -107,11 +107,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </h3>
                         </div>
                         <p:scrollPanel style="width: 100%; height: 100%; border: transparent; background-color: transparent" mode="native">
-                            <p:tree id="tree-generalLedger" value="#{accountHome.accountChilds()}" var="account"
+                            <p:tree id="tree-generalLedger" value="#{accountHome.treeDataModel}" var="account"
                                     selectionMode="single" style="border: transparent; width: 100%"
                                     selection="#{accountHome.singleSelectedNode}">
-                                <p:treeNode expandedIcon="fa fa-circle" collapsedIcon="fa fa-circle-o">
-                                    <h:outputText value="#{account.name}"/>
+                                <p:treeNode type="default" expandedIcon="fa fa-folder-open-o " collapsedIcon="fa fa-folder-o">
+                                    <h:outputText value="#{account.code} #{account.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="account" icon="fa fa-book">
+                                    <h:outputText value="#{account.code} #{account.name}"/>
                                 </p:treeNode>
                                 <p:ajax event="select" listener="#{accountHome.onAccountSelect}" update="form:dataTable-record-details form:panel-detail-accountSelected"/>
                             </p:tree>
@@ -158,12 +161,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      selection="#{generalJournalHome.selectedBussinesEntities}"
                                      sortBy="#{recordDetail.createdOn}"
                                      editable="#{false}">
-                            <p:column headerText="#{i18n['common.date']}" style="width: 15%">
+                            <p:column headerText="#{i18n['common.date']}" style="width: 10%">
                                 <h:outputText value="#{recordDetail.createdOn}">
                                     <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.details']}" style="width: 35%">
+                            <p:column headerText="#{i18n['common.details']}" style="width: 40%">
                                 <h:outputText value="#{recordDetail.record.description}" />
                             </p:column>
                             <p:column headerText="REF" style="width: 10%">
