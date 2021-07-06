@@ -41,8 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li><p:link outcome="/pages/accounting/general_ledger_items.jsf">#{i18n['app.fede.accounting.ledger']}</p:link></li>
         <li>/</li>
         <li><p:link rendered="#{accountHome.account.parentAccountId!=null}" outcome="/pages/accounting/general_ledger.jsf?accountId=#{accountHome.account.parentAccountId}">#{accountHome.findParentAccount(accountHome.account).name}</p:link></li>
-        <li>#{accountHome.account.parentAccountId!=null ? '/':''}</li>
-        <li>#{i18n['common.report']} #{i18n['common.of']} #{accountHome.account.name}</li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -95,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g ui-fluid">
             <div class="ui-g ui-lg-12 ui-md-12">
                 <div class="ui-g ui-lg-12 ui-md-12">
-                    <h:panelGroup id="panel-account-fund" class="ui-g ui-lg-6 ui-md-6">
+                    <h:panelGroup id="panel-account-fund" class="ui-g ui-lg-12 ui-md-12">
                         <div class="EmptyBox10"/>
                         <h1 class="BigTopic capital">#{accountHome.accountSelected.name} #{not empty accountHome.accountSelected ? '|':i18n['app.fede.accounting.ledger']}
                             <h:outputText value="#{accountHome.fundAccountMain}">
@@ -103,25 +101,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </h:outputText>
                         </h1>
                     </h:panelGroup>
-                    <div class="ui-g ui-lg-6 ui-md-6">
-                        <div class="ui-g ui-lg-6 ui-md-6">
-                            <p:outputLabel class="Gray" for="navigator1" value="Desde"/>
-                            <p:datePicker id="navigator1" value="#{accountHome.start}" monthNavigator="true" yearNavigator="true" showWeek="false">
-                                <p:ajax event="dateSelect" oncomplete="this"/>
-                            </p:datePicker>
+                    <div class="ui-g ui-lg-12 ui-md-12">
+                        <div class="ui-g ui-lg-12 ui-md-12">
+                            <div class="ui-g ui-lg-6 ui-md-6">
+                                <p:outputLabel class="Gray" for="date-start" value="#{i18n['common.from']}"/>
+                                <p:datePicker id="date-start" value="#{accountHome.start}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                                    <p:ajax event="dateSelect" oncomplete="this"/>
+                                </p:datePicker>
+                            </div>
+                            <div class="ui-g ui-lg-5 ui-md-5">
+                                <p:outputLabel class="Gray" for="date-end" value="#{i18n['common.to']}"/>
+                                <p:datePicker id="date-end" value="#{accountHome.end}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                                    <p:ajax event="dateSelect" oncomplete="this"/>
+                                </p:datePicker>
+                            </div>
+                            <div class="ui-g ui-lg-1 ui-md-1">
+                                <div class="EmptyBox10"/>
+                                <p:commandButton id="btn-search-account-details" icon="fa fa-search" ajax="true" immediate="true"
+                                                 disabled="#{empty accountHome.accountSelected}"
+                                                 actionListener="#{accountHome.chargeListDetailsforAccount()}"
+                                                 update="dataTable-record-details panel-message-date"
+                                                 styleClass="warning-btn"/>
+                            </div>
                         </div>
-                        <div class="ui-g ui-lg-5 ui-md-5">
-                            <p:outputLabel class="Gray" for="navigator2" value="Hasta"/>
-                            <p:datePicker id="navigator2" value="#{accountHome.end}" monthNavigator="true" yearNavigator="true" showWeek="false">
-                                <p:ajax event="dateSelect" oncomplete="this"/></p:datePicker>
-                        </div>
-                        <div class="ui-g ui-lg-1 ui-md-1">
-                            <div class="EmptyBox10"/>
-                            <p:commandButton id="btn-search-account-details" icon="fa fa-search" ajax="true" immediate="true"
-                                             disabled="#{empty accountHome.accountSelected}"
-                                             actionListener="#{accountHome.chargeListDetailsforAccount()}"
-                                             update="dataTable-record-details panel-message-date"
-                                             styleClass="warning-btn"/>
+                        <div class="ui-g ui-lg-12 ui-md-12 container-center">
+                            <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="true" disabled="#{empty accountHome.accountSelected}">
+                                <f:selectItem itemLabel="Última semana" itemValue="0"/>
+                                <f:selectItem itemLabel="Último mes" itemValue="1"/>
+                                <f:selectItem itemLabel="Último año" itemValue="2"/>
+                                <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" update="date-start date-end dataTable-record-details panel-message-date" partialSubmit="true"></p:ajax> 
+                            </p:selectOneRadio>
                         </div>
                     </div>
                 </div>
@@ -137,7 +146,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:treeNode type="account" icon="fa fa-book">
                                     <h:outputText value="#{account.code} #{account.name}"/>
                                 </p:treeNode>
-                                <p:ajax event="select" listener="#{accountHome.onAccountSelect}" update="form:dataTable-record-details form:panel-detail-accountSelected form:btn-search-account-details form:panel-account-fund"/>
+                                <p:ajax event="select" listener="#{accountHome.onAccountSelect}"
+                                        update="form:dataTable-record-details form:panel-detail-accountSelected form:btn-search-account-details form:panel-account-fund form:radio-report-range" partialSubmit="true"/>
                             </p:tree>
                             <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="fa fa-arrow-up" />
                         </p:scrollPanel>

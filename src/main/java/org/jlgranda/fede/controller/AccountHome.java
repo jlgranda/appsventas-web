@@ -142,6 +142,8 @@ public class AccountHome extends FedeController implements Serializable {
      */
     private List<RecordDetail> recordDetailsUpdate;
 
+    private int rangeReport;
+
     @PostConstruct
     private void init() {
 
@@ -166,12 +168,13 @@ public class AccountHome extends FedeController implements Serializable {
 
         setRecord(recordService.createInstance());
         setRecordDetail(recordDetailService.createInstance());
+
+        setRangeReport(-1);
     }
 
     @Override
     public void handleReturn(SelectEvent event) {
-        setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
-        calculateBalance();
+        chargeListDetailsforAccount();
     }
 
     @Override
@@ -359,6 +362,14 @@ public class AccountHome extends FedeController implements Serializable {
         this.recordDetailsUpdate = recordDetailsUpdate;
     }
 
+    public int getRangeReport() {
+        return rangeReport;
+    }
+
+    public void setRangeReport(int rangeReport) {
+        this.rangeReport = rangeReport;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // MÉTODOS/FUNCIONES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -536,16 +547,8 @@ public class AccountHome extends FedeController implements Serializable {
         if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
             this.accountSelected = (Account) event.getTreeNode().getData();
             if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
-                setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
-                calculateBalance();
+                chargeListDetailsforAccount();
             }
-            /*else {
-                try {
-                    redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
-                } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(AccountHome.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }*/
         } else {
             this.accountSelected = (Account) event.getTreeNode().getData();
             this.recordDetailsAccount = new ArrayList<>();
@@ -589,6 +592,23 @@ public class AccountHome extends FedeController implements Serializable {
     public void chargeListDetailsforAccount() {
         setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
+    }
+
+    public void calculeRangeReport() {
+        Calendar dayDate = Calendar.getInstance();
+        setEnd(Dates.maximumDate(Dates.now()));
+        switch (this.rangeReport) {
+            case 0://Rango del reporte de la última semana
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * 7)));
+                break;
+            case 1://Rango del reporte del último mes
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1))));
+                break;
+            case 2://Rango del reporte del último año
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_YEAR) - 1))));
+                break;
+        }
+        chargeListDetailsforAccount();
     }
 
     /**
@@ -806,6 +826,39 @@ public class AccountHome extends FedeController implements Serializable {
             }
         });
         this.amountAccount = (this.amountDebeRdOld.add(this.amountDebeRd)).subtract(this.amountHaberRdOld.add(this.amountHaberRd));
+    }
+
+    //LIBRO MAYOR DE PLAN DE CUENTAS
+    public boolean mostrarFormularioLedgerValues(Map<String, List<String>> params) {
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
+        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
+        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALLEDGER, width, height, left, top, true, params);
+        return true;
+    }
+
+    public boolean mostrarFormularioLedger(Account account) {
+        if (account != null) {
+            this.accountSelected = account;
+        }
+        if (this.accountSelected != null) {
+            super.setSessionParameter("account", this.accountSelected);
+        }
+
+        return mostrarFormularioLedgerValues(null);
+    }
+
+    public void closeFormularioLedger(Object data) {
+        removeSessionParameter("account");
+        super.closeDialog(data);
+    }
+
+    public void loadSessionParameters() {
+        if (existsSessionParameter("account")) {
+            this.setAccountSelected((Account) getSessionParameter("account"));
+            this.getAccountSelected(); //Carga el objeto persistente
+        }
     }
 
 }
