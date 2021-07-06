@@ -74,20 +74,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </span>
                                 <p:menuButton value="#{i18n['More']}" iconPos="right"
                                               styleClass="MarRight10"
-                                              buttonStyleClass="ToolbarButton Fs14" 
-                                              iconStyleClass="Gray"
                                               menuStyleClass="Gray">
                                 </p:menuButton>
                                 <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
                                               styleClass="MarRight10"
-                                              buttonStyleClass="ToolbarButton Fs14" 
-                                              iconStyleClass="Gray"
                                               menuStyleClass="Gray">
                                 </p:menuButton>
                             </f:facet>
                             <f:facet name="right">
                                 <label class="Gray">#{i18n['common.type']}&nbsp;</label>
-                                <p:selectOneMenu value="#{invoiceHome.documentType}" effect="fade"
+                                <p:selectOneMenu value="#{invoiceHome.documentType}"
                                                  required="#{false}" immediate="true"> 
                                     <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                                     <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
