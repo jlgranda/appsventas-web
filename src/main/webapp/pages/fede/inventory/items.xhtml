@@ -85,25 +85,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="P.V.P A" sortBy="#{product.price}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.price}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="P.V.P B" sortBy="#{product.priceB}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.priceB}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="P.V.P C" sortBy="#{product.priceC}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.priceC}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}" sortBy="#{product.priceCost}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.priceCost}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="#{i18n['common.tax']}" sortBy="#{product.taxType}"

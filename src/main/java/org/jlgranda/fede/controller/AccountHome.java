@@ -170,7 +170,7 @@ public class AccountHome extends FedeController implements Serializable {
 
     @Override
     public void handleReturn(SelectEvent event) {
-        setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, getStart(), getEnd(), this.organizationData.getOrganization()));
+        setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
     }
 
@@ -341,8 +341,8 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public BigDecimal getFundAccountMain() {
-        if (this.accountId != null){
-            this.fundAccountMain = accountService.mayorizar(this.accountService.find(this.accountId), this.organizationData.getOrganization(), getStart(), getEnd());
+        if (this.accountSelected != null) {
+            this.fundAccountMain = accountService.mayorizar(this.accountSelected, this.organizationData.getOrganization(), getStart(), getEnd());
         }
         return fundAccountMain;
     }
@@ -452,7 +452,7 @@ public class AccountHome extends FedeController implements Serializable {
     public TreeNode addChild(TreeNode parent, Account accountChild) {
         TreeNode child = null;
         List<Account> childs = accountService.findByNamedQuery("Account.findByParentId", accountChild.getId(), this.organizationData.getOrganization());
-        if (childs.isEmpty()){
+        if (childs.isEmpty()) {
             parent.setType("account");
         } else {
             for (Account x : childs) {
@@ -534,12 +534,12 @@ public class AccountHome extends FedeController implements Serializable {
      */
     public void onAccountSelect(NodeSelectEvent event) {
         if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
-            Account p = (Account) event.getTreeNode().getData();
-            this.accountSelected = p;
+            this.accountSelected = (Account) event.getTreeNode().getData();
             if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
-                setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, getStart(), getEnd(), this.organizationData.getOrganization()));
+                setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
                 calculateBalance();
-            } /*else {
+            }
+            /*else {
                 try {
                     redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
                 } catch (IOException ex) {
@@ -547,6 +547,8 @@ public class AccountHome extends FedeController implements Serializable {
                 }
             }*/
         } else {
+            this.accountSelected = (Account) event.getTreeNode().getData();
+            this.recordDetailsAccount = new ArrayList<>();
             addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.ledger.noleaf"));
         }
     }
@@ -568,36 +570,6 @@ public class AccountHome extends FedeController implements Serializable {
         }
     }
 
-//    public void findRecordDetailAccountTop() {
-//        this.amountDebeRdOld = BigDecimal.ZERO;
-//        this.amountHaberRdOld = BigDecimal.ZERO;
-//        Calendar dayDate = Calendar.getInstance();
-//        Date _end = Dates.maximumDate(Dates.now());
-//        Date _start = Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1)));
-//        Date _end1 = Dates.maximumDate(Dates.addDays(_start, -1));
-//        //Obtener los recordDetails desde el mes anterior hasta el inicial
-//        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end1, this.organizationData.getOrganization());
-//        for (int i = 0; i < recordDetailsOld.size(); i++) {
-//            if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
-//                this.amountDebeRdOld = this.amountDebeRdOld.add(recordDetailsOld.get(i).getAmount());
-//            } else if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
-//                this.amountHaberRdOld = this.amountHaberRdOld.add(recordDetailsOld.get(i).getAmount());
-//            }
-//        }
-//        //Obtener los recordsDetails del mes actual
-//        this.objectsRecordDetail = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccAndOrg", this.accountSelected, _start, _end, this.organizationData.getOrganization());
-//        this.amountAccount = BigDecimal.ZERO;
-//        this.amountDebeRd = BigDecimal.ZERO;
-//        this.amountHaberRd = BigDecimal.ZERO;
-//        this.objectsRecordDetail.stream().forEach((Object[] object) -> {
-//            if (object[3] == RecordDetail.RecordTDetailType.DEBE) {
-//                this.amountDebeRd = this.amountDebeRd.add((BigDecimal) object[2]);
-//            } else if (object[3] == RecordDetail.RecordTDetailType.HABER) {
-//                this.amountHaberRd = this.amountHaberRd.add((BigDecimal) object[2]);
-//            }
-//        });
-//        this.amountAccount = (this.amountDebeRdOld.add(this.amountDebeRd)).subtract(this.amountHaberRdOld.add(this.amountHaberRd));
-//    }
     /**
      * Buscar los hijos de un objeto<tt>Account</tt>
      *
@@ -607,6 +579,16 @@ public class AccountHome extends FedeController implements Serializable {
         TreeNode parent = new DefaultTreeNode(this.account, null);
         addChild(parent, this.account);
         return parent;
+    }
+
+    /**
+     * Encontrar los detalles de un objeto <tt>Account</tt> según la
+     * modificación de fecha
+     *
+     */
+    public void chargeListDetailsforAccount() {
+        setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
+        calculateBalance();
     }
 
     /**
@@ -663,6 +645,21 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     /**
+     * El registro actual no esta referenciado a una entidad
+     *
+     * @return
+     */
+    public boolean isRecordOfReferen() {
+        return this.record.getBussinesEntityId() == null;
+    }
+
+    public void messageEditableRecord() {
+        if (!isRecordOfReferen()) {
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.message.not.editable", " " + this.record.getBussinesEntityType()));
+        }
+    }
+
+    /**
      * Agrega un detalle al Record
      */
     public void addRecordDetail() {
@@ -697,74 +694,6 @@ public class AccountHome extends FedeController implements Serializable {
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
         }
-    }
-
-    //LIBRO MAYOR DE PLAN DE CUENTAS
-    public boolean mostrarFormularioLedgerValues(Map<String, List<String>> params) {
-        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
-        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
-        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
-        super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALLEDGER, width, height, left, top, true, params);
-        return true;
-    }
-
-    public boolean mostrarFormularioLedger(Account account) {
-        if (account != null) {
-            this.accountSelected = account;
-        }
-        if (this.accountSelected != null) {
-            super.setSessionParameter("account", this.accountSelected);
-        }
-
-        return mostrarFormularioLedgerValues(null);
-    }
-
-    public void closeFormularioLedger(Object data) {
-        removeSessionParameter("account");
-        super.closeDialog(data);
-    }
-
-    public void loadSessionParameters() {
-        if (existsSessionParameter("account")) {
-            this.setAccountSelected((Account) getSessionParameter("account"));
-            this.getAccountSelected(); //Carga el objeto persistente
-        }
-    }
-
-    public void saveLedger() {
-        closeFormularioLedger(this.accountSelected);
-    }
-
-    public void findRecordDetailAccountTop() {
-        this.amountDebeRdOld = BigDecimal.ZERO;
-        this.amountHaberRdOld = BigDecimal.ZERO;
-        Calendar dayDate = Calendar.getInstance();
-        Date _end = Dates.maximumDate(Dates.now());
-        Date _start = Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1)));
-        Date _end1 = Dates.maximumDate(Dates.addDays(_start, -1));
-        //Obtener los recordDetails desde el mes anterior hasta el inicial
-        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end1, this.organizationData.getOrganization());
-        for (int i = 0; i < recordDetailsOld.size(); i++) {
-            if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
-                this.amountDebeRdOld = this.amountDebeRdOld.add(recordDetailsOld.get(i).getAmount());
-            } else if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
-                this.amountHaberRdOld = this.amountHaberRdOld.add(recordDetailsOld.get(i).getAmount());
-            }
-        }
-        //Obtener los recordsDetails del mes actual
-        this.objectsRecordDetail = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccAndOrg", this.accountSelected, _start, _end, this.organizationData.getOrganization());
-        this.amountAccount = BigDecimal.ZERO;
-        this.amountDebeRd = BigDecimal.ZERO;
-        this.amountHaberRd = BigDecimal.ZERO;
-        this.objectsRecordDetail.stream().forEach((Object[] object) -> {
-            if (object[3] == RecordDetail.RecordTDetailType.DEBE) {
-                this.amountDebeRd = this.amountDebeRd.add((BigDecimal) object[2]);
-            } else if (object[3] == RecordDetail.RecordTDetailType.HABER) {
-                this.amountHaberRd = this.amountHaberRd.add((BigDecimal) object[2]);
-            }
-        });
-        this.amountAccount = (this.amountDebeRdOld.add(this.amountDebeRd)).subtract(this.amountHaberRdOld.add(this.amountHaberRd));
     }
 
     @Override
@@ -846,6 +775,37 @@ public class AccountHome extends FedeController implements Serializable {
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void findRecordDetailAccountTop() {
+        this.amountDebeRdOld = BigDecimal.ZERO;
+        this.amountHaberRdOld = BigDecimal.ZERO;
+        Calendar dayDate = Calendar.getInstance();
+        Date _end = Dates.maximumDate(Dates.now());
+        Date _start = Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1)));
+        Date _end1 = Dates.maximumDate(Dates.addDays(_start, -1));
+        //Obtener los recordDetails desde el mes anterior hasta el inicial
+        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end1, this.organizationData.getOrganization());
+        for (int i = 0; i < recordDetailsOld.size(); i++) {
+            if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
+                this.amountDebeRdOld = this.amountDebeRdOld.add(recordDetailsOld.get(i).getAmount());
+            } else if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
+                this.amountHaberRdOld = this.amountHaberRdOld.add(recordDetailsOld.get(i).getAmount());
+            }
+        }
+        //Obtener los recordsDetails del mes actual
+        this.objectsRecordDetail = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccAndOrg", this.accountSelected, _start, _end, this.organizationData.getOrganization());
+        this.amountAccount = BigDecimal.ZERO;
+        this.amountDebeRd = BigDecimal.ZERO;
+        this.amountHaberRd = BigDecimal.ZERO;
+        this.objectsRecordDetail.stream().forEach((Object[] object) -> {
+            if (object[3] == RecordDetail.RecordTDetailType.DEBE) {
+                this.amountDebeRd = this.amountDebeRd.add((BigDecimal) object[2]);
+            } else if (object[3] == RecordDetail.RecordTDetailType.HABER) {
+                this.amountHaberRd = this.amountHaberRd.add((BigDecimal) object[2]);
+            }
+        });
+        this.amountAccount = (this.amountDebeRdOld.add(this.amountDebeRd)).subtract(this.amountHaberRdOld.add(this.amountHaberRd));
     }
 
 }
