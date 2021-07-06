@@ -97,8 +97,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g ui-lg-8 ui-md-8">
                     <h1 class="BigTopic">#{accountHome.account.name}</h1>
                 </div>
-                <p:splitter layout="horizontal" style="height: 500px">
-                    <p:splitterPanel size="25" minSize="10">
+                <p:splitter layout="horizontal" >
+                    <p:splitterPanel size="25">
                         <div class="ui-g ui-lg-8 ui-md-8">
                             <h3 class="Gray capital" style="color: #007ad9">#{i18n['common.fund']}:
                                 <h:outputText value="#{accountHome.fundAccountMain}">
@@ -108,7 +108,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <p:scrollPanel style="width: 100%; height: 100%; border: transparent; background-color: transparent" mode="native">
                             <p:tree id="tree-generalLedger" value="#{accountHome.accountChilds()}" var="account"
-                                    selectionMode="single" style="border: transparent"
+                                    selectionMode="single" style="border: transparent; width: 100%"
                                     selection="#{accountHome.singleSelectedNode}">
                                 <p:treeNode expandedIcon="fa fa-circle" collapsedIcon="fa fa-circle-o">
                                     <h:outputText value="#{account.name}"/>
@@ -118,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="fa fa-arrow-up" />
                         </p:scrollPanel>
                     </p:splitterPanel>
-                    <p:splitterPanel size="75" minSize="75">
+                    <p:splitterPanel size="75" minSize="75"><!--size="75" minSize="75"-->
                         <p:card style="background-color: #EFEFEF">
                             <f:facet name="header">
                                 <div class="ui-g ui-lg-12 ui-md-12 bold-capital container-center"><h1>#{organizationData.organization.initials}</h1></div>
@@ -152,7 +152,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
                                      liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                     rows="15" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
+                                     rows="10" scrollRows="10"
                                      scrollable="true"
                                      value="#{accountHome.recordDetailsAccount}" var="recordDetail"
                                      selection="#{generalJournalHome.selectedBussinesEntities}"
@@ -180,7 +180,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="#{i18n['common.fund']}" style="width: 10%">
-                                <h:outputText  class="container-right" value="#{recordDetail.amount}">
+                                <h:outputText  class="container-right" value="#{recordDetail.accumulatedBalance}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
