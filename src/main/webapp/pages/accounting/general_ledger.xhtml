@@ -120,15 +120,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:commandButton id="btn-search-account-details" icon="fa fa-search" ajax="true" immediate="true"
                                                  disabled="#{empty accountHome.accountSelected}"
                                                  actionListener="#{accountHome.chargeListDetailsforAccount()}"
-                                                 update="dataTable-record-details panel-message-date"
+                                                 update="dataTable-record-details panel-message-date radio-report-range"
                                                  styleClass="warning-btn"/>
                             </div>
                         </div>
                         <div class="ui-g ui-lg-12 ui-md-12 container-center">
-                            <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="true" disabled="#{empty accountHome.accountSelected}">
-                                <f:selectItem itemLabel="Última semana" itemValue="0"/>
-                                <f:selectItem itemLabel="Último mes" itemValue="1"/>
-                                <f:selectItem itemLabel="Último año" itemValue="2"/>
+                            <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="true"  disabled="#{empty accountHome.accountSelected}">
+                                <f:selectItem itemLabel="#{i18n['common.lasta']} #{i18n['common.week']}" itemValue="0"/>
+                                <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.month']}" itemValue="1"/>
+                                <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.year']}" itemValue="2"/>
                                 <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" update="date-start date-end dataTable-record-details panel-message-date" partialSubmit="true"></p:ajax> 
                             </p:selectOneRadio>
                         </div>

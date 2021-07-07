@@ -208,6 +208,8 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     private Long interval; //Intervalo de tiempo
 
+    private BigDecimal totalOverdues;
+
     @Inject
     private OrganizationData organizationData;
 
@@ -272,9 +274,8 @@ public class InvoiceHome extends FedeController implements Serializable {
 //                .filterValue(Arrays.asList(LocalDate.now().minusDays(28), LocalDate.now().plusDays(28)))
 //                .matchMode(MatchMode.RANGE)
 //                .build());
-
         setDocumentType(DocumentType.INVOICE); //Filtro por defecto
-        
+
         initializeActions();
     }
 
@@ -478,6 +479,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         initializeDateInterval();
     }
 
+    public BigDecimal getTotalOverdues() {
+        return totalOverdues;
+    }
+
+    public void setTotalOverdues(BigDecimal totalOverdues) {
+        this.totalOverdues = totalOverdues;
+    }
+
     /**
      * Obtiene la lista de Pre facturas en estado de PRE_INVOICE para la fecha
      *
@@ -639,7 +648,12 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setDocumentTypeSource(DocumentType.OVERDUE);
             getPayment().setDatePaymentCancel(null);
             collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
-            setOutcome("overdues");
+            //            setOutcome("invoices");
+            try {
+                redirectTo("/pages/fede/sales/invoices_finder.jsf?documentType=OVERDUE&interval=7&overcome=overdues");
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             addWarningMessage("¿Quién será reesponsable del crédito?", "Seleccione una persona/entidad como responsable del crédito.");
             setOutcome("currentpage.xhtml?faces-redirect=true");
@@ -695,7 +709,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
         if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
-                getInvoice().setDocumentType(documentType); //Se convierte en factura
+            getInvoice().setDocumentType(documentType); //Se convierte en factura
             //Agregar el pago
             getInvoice().addPayment(getPayment());
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
@@ -716,7 +730,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                     String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
                     String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
                     GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
-                    
+
                     //Anular registros anteriores
                     recordService.deleteLastRecords(generalJournal.getId(), this.invoice.getClass().getSimpleName(), this.invoice.getId());
 
@@ -1415,7 +1429,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
         try {
-            if (getInterval() != null && getInterval() > 0){
+            if (getInterval() != null && getInterval() > 0) {
                 range = getInterval().intValue();
             } else {
                 range = Integer.valueOf(settingHome.getValue("fede.preinvoices.range", "0"));
@@ -1467,20 +1481,32 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         return datailables;
     }
-    
+
     //Acciones sobre seleccionados
-    
-    public void execute(){
+    public void execute() {
         Invoice p = null;
-        if (this.isActionExecutable()){
-            if ("desactivar".equalsIgnoreCase(this.selectedAction)){
-                for (BussinesEntity be : this.getSelectedBussinesEntities()){
-                    p = (Invoice) be;
-                    p.setDeleted(true);
-                    this.invoiceService.save(p.getId(), p); //Actualizar el tipo de producto
+        if (this.isActionExecutable()) {
+            if ("collect".equalsIgnoreCase(this.selectedAction)) {
+                for (BussinesEntity be : this.getSelectedBussinesEntities()) {
+                    this.invoice = (Invoice) be;
+                    List<Payment> payments = paymentService.findByNamedQuery("Payment.findByInvoice", this.invoice);
+                    if (!payments.isEmpty()) {
+                        setPayment(payments.get(0));
+                    } else {
+                        getPayment().setAmount(this.invoice.getTotal());
+                        getPayment().setCash(this.invoice.getTotal());
+                        getPayment().setChange(BigDecimal.ZERO);
+                    }
+                    getPayment().setDatePaymentCancel(Dates.now());
+                    collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
                 }
                 setOutcome("");
-            } /*else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
+                this.totalOverdues = BigDecimal.ZERO;
+                this.selectedBussinesEntities.removeAll(this.getSelectedBussinesEntities());
+                this.selectedBussinesEntities.clear();
+                System.out.println("this.getSelected AAA:"+this.getSelectedBussinesEntities());
+            }
+            /*else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
                 for (BussinesEntity be : this.getSelectedBussinesEntities()){
                     p = (Product) be;
                     p.setCategory(this.getGroupSelected());
@@ -1498,9 +1524,9 @@ public class InvoiceHome extends FedeController implements Serializable {
             }*/
         }
     }
-    
-    public boolean isActionExecutable(){
-        if ("desactivar".equalsIgnoreCase(this.selectedAction)){
+
+    public boolean isActionExecutable() {
+        if ("collect".equalsIgnoreCase(this.selectedAction)) {
             return true;
         }/* else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
             return true;
@@ -1515,10 +1541,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         actions.add(item);
-        
-        item = new SelectItem("desactivar", "Desactivar");
+
+        item = new SelectItem("collect", "Cobrar");
         actions.add(item);
-        
+
 //        item = new SelectItem("moveto", "Mover a categoría");
 //        actions.add(item);
 //        
@@ -1528,9 +1554,9 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-        
+
         Invoice _instance = (Invoice) fuenteDatos;
-        
+
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
         if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
@@ -1544,7 +1570,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             } else {
                 record.setBussinesEntityType(_instance.getClass().getSimpleName());
                 record.setBussinesEntityId(_instance.getId());
-                
+
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal: %s", _instance.getOwner().getFullName(), _instance.getSummary(), Strings.format(_instance.getTotal().doubleValue(), "$ #0.##")));
             }
@@ -1554,7 +1580,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         //El registro casí listo para agregar al journal
         return record;
     }
-    
-  
-    
+
+    public void calculateTotalOverdue() {
+        this.totalOverdues = BigDecimal.ZERO;
+        System.out.println("this.getSelected BBB: "+this.getSelectedBussinesEntities());
+        Invoice p = null;
+        for (BussinesEntity be : this.getSelectedBussinesEntities()) {
+            p = (Invoice) be;
+            this.totalOverdues = this.totalOverdues.add(p.getTotal());
+        }
+    }
 }

@@ -590,6 +590,7 @@ public class AccountHome extends FedeController implements Serializable {
      *
      */
     public void chargeListDetailsforAccount() {
+        setRangeReport(-1);
         setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
     }
