@@ -213,17 +213,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <h:outputText value="#{facturaElectronicaDetail.description}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.price.unit']}">
-                                <h:outputText value="#{facturaElectronicaDetail.unitValue}">
+                                <h:outputText class="container-right" value="#{facturaElectronicaDetail.unitValue}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.tax']}">
-                                <h:outputText value="#{facturaElectronicaDetail.taxValue}">
+                            <p:column headerText="#{i18n['common.iva']}">
+                                <h:outputText class="container-right" value="#{facturaElectronicaDetail.taxValue}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.value']}">
-                                <h:outputText value="#{facturaElectronicaDetail.totalValue}">
+                            <p:column headerText="#{i18n['common.price']} #{i18n['common.total']}">
+                                <h:outputText class="container-right" value="#{facturaElectronicaDetail.totalValue}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
@@ -239,7 +239,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g ui-lg-4 ui-md-12" style="text-align: right; font-weight: bolder">
                             <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.0']}</div>
                             <div class="invoice-value ui-g-4">
-                                <p:inputNumber id="imptiva0" value="#{facturaElectronicaHome.facturaElectronica.totalIVA0}" required="#{true}"
+                                <p:inputNumber id="subtimptiva0" value="#{facturaElectronicaHome.facturaElectronica.subtotalIVA0}" required="#{true}"
                                                styleClass=""  inputStyle="text-align: right" symbol="$" disabled="#{true}"
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
@@ -248,23 +248,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']} #{i18n['common.iva.12']}</div>
                             <div class="invoice-value ui-g-4">
-                                <p:inputNumber id="imptiva12" value="#{facturaElectronicaHome.facturaElectronica.totalIVA12}" required="#{true}"
+                                <p:inputNumber id="subtimptiva12" value="#{facturaElectronicaHome.facturaElectronica.subtotalIVA12}" required="#{true}"
                                                styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{true}"
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                </p:inputNumber>
-                            </div>
-                            <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.subtotal']}</div>
-                            <div class="invoice-value ui-g-4">
-                                <p:inputNumber id="imptsi" value="#{facturaElectronicaHome.facturaElectronica.totalSinImpuestos}" required="#{true}"
-                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{false}"
-                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                    <p:ajax listener="#{facturaElectronicaHome.calcularIVA()}" update="imptiva0 imptiva12" partialSubmit="true"></p:ajax>
-                                    <p:ajax listener="#{facturaElectronicaHome.calcularTotalFactura()}" update="impt" partialSubmit="true"></p:ajax>
-                                    <p:ajax listener="#{facturaElectronicaHome.montoPorPagar()}" update="fund-request" partialSubmit="true"></p:ajax>
                                 </p:inputNumber>
                             </div>
                             <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.discount']}</div>
@@ -278,11 +266,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax listener="#{facturaElectronicaHome.montoPorPagar()}" update="total fund-request" partialSubmit="true"></p:ajax>
                                 </p:inputNumber>
                             </div>
+                            <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.iva.0']}</div>
+                            <div class="invoice-value ui-g-4">
+                                <p:inputNumber id="imptiva0" value="#{facturaElectronicaHome.facturaElectronica.totalIVA0}" required="#{true}"
+                                               styleClass=""  inputStyle="text-align: right" symbol="$" disabled="#{true}"
+                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                </p:inputNumber>
+                            </div>
+                            <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.iva.12']}</div>
+                            <div class="invoice-value ui-g-4">
+                                <p:inputNumber id="imptiva12" value="#{facturaElectronicaHome.facturaElectronica.totalIVA12}" required="#{true}"
+                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{true}"
+                                               decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                               thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                               decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                </p:inputNumber>
+                            </div>
                             <div class="invoice-label ui-g-8" style="text-transform: uppercase; padding: 20px">#{i18n['common.total.pay']}</div>
                             <div class="invoice-value ui-g-4">
                                 <div class="EmptyBox10"></div>
                                 <p:inputNumber id="impt" value="#{facturaElectronicaHome.facturaElectronica.importeTotal}" required="#{true}"
-                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{true}"
+                                               styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{false}"
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
@@ -317,7 +323,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  actionListener="#{facturaElectronicaHome.openPanelProduct()}"
                                                  disabled="#{not empty facturaElectronicaHome.facturaElectronicaDetail.product.id}"
                                                  update="btn-new-product panel-new-product panel-facturaElectronicaDetail-add auto-complete-product"
-                                                 styleClass="danger-btn">
+                                                 styleClass="success-btn">
                                 </p:commandButton>
                             </div>
                             <h:panelGroup id="panel-add-details">
@@ -411,7 +417,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton id="btn-facturaElectronicaDetail-save" value="#{i18n['common.add']}" icon="fa fa-check"
                                          actionListener="#{facturaElectronicaHome.addFacturaElectronicaDetail()}"
                                          update="pDialog-facturaElectronicaDetail-add dataTable-facturaElectronica-details
-                                         panel-facturaElectronicaDetail-add imptsi imptiva0 imptiva12 impt fund-request payment-tracking"
+                                         panel-facturaElectronicaDetail-add subtimptiva0 subtimptiva12 imptiva0 imptiva12 impt fund-request payment-tracking"
                                          disabled="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}"
                                          styleClass="secondary-button rounded-btn" style="margin-right: .5rem">
                         </p:commandButton>

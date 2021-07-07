@@ -1500,11 +1500,15 @@ public class InvoiceHome extends FedeController implements Serializable {
                     getPayment().setDatePaymentCancel(Dates.now());
                     collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
                 }
-                setOutcome("");
+//                setOutcome("");
+                try {
+                    redirectTo("/pages/fede/sales/invoices_finder.jsf?documentType=OVERDUE&interval=7&overcome=overdues");
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 this.totalOverdues = BigDecimal.ZERO;
                 this.selectedBussinesEntities.removeAll(this.getSelectedBussinesEntities());
                 this.selectedBussinesEntities.clear();
-                System.out.println("this.getSelected AAA:"+this.getSelectedBussinesEntities());
             }
             /*else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
                 for (BussinesEntity be : this.getSelectedBussinesEntities()){
@@ -1583,7 +1587,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void calculateTotalOverdue() {
         this.totalOverdues = BigDecimal.ZERO;
-        System.out.println("this.getSelected BBB: "+this.getSelectedBussinesEntities());
         Invoice p = null;
         for (BussinesEntity be : this.getSelectedBussinesEntities()) {
             p = (Invoice) be;

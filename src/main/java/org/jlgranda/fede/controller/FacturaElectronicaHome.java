@@ -897,7 +897,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * Guarda los datos
      */
     public void save() {
-        setOutcome("fede-inbox");
         this.facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
         this.facturaElectronica.setFilename(null);
         this.facturaElectronica.setContenido(null);
@@ -928,12 +927,12 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             }
         }
         facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
-
         //registerDetailInKardex();
         registerDetalleFacturaElectronicaInKardex(facturaElectronica.getFacturaElectronicaDetails()); //Procesa y guarda la factura electrónica en el medio persistente
 
         //Registrar asiento contable de la compra
         registerRecordInJournal();
+        setOutcome("fede-inbox");
     }
 
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
@@ -1302,22 +1301,20 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.facturaElectronica.setAuthor(getDefaultSupplier());
     }
 
-    public void calcularIVA() {
-        this.facturaElectronica.setTotalIVA0(BigDecimal.ZERO);
-        this.facturaElectronica.setTotalIVA12(BigDecimal.ZERO);
-        for (FacturaElectronicaDetail f : this.facturaElectronica.getFacturaElectronicaDetails()) {
-            if (f.getTaxValue().compareTo(BigDecimal.ZERO)==1) {
-                this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalIVA12().add(f.getTotalValue()));
-            } else {
-                this.facturaElectronica.setTotalIVA0(this.facturaElectronica.getTotalIVA0().add(f.getTotalValue()));
-            }
-        }
-    }
-
-    public void calcularTotalFactura() {
-        this.facturaElectronica.setImporteTotal((this.facturaElectronica.getTotalIVA0().add(this.facturaElectronica.getTotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
-    }
-
+//    public void calcularIVA() {
+//        this.facturaElectronica.setTotalIVA0(BigDecimal.ZERO);
+//        this.facturaElectronica.setTotalIVA12(BigDecimal.ZERO);
+//        for (FacturaElectronicaDetail f : this.facturaElectronica.getFacturaElectronicaDetails()) {
+//            if (f.getTaxValue().compareTo(BigDecimal.ZERO) == 1) {
+//                this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalIVA12().add(f.getTotalValue()));
+//            } else {
+//                this.facturaElectronica.setTotalIVA0(this.facturaElectronica.getTotalIVA0().add(f.getTotalValue()));
+//            }
+//        }
+//    }
+//    public void calcularTotalFactura() {
+//        this.facturaElectronica.setImporteTotal((this.facturaElectronica.getTotalIVA0().add(this.facturaElectronica.getTotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
+//    }
     public void registerRecordInJournal() {
 
         boolean registradoEnContabilidad = false;
@@ -1507,30 +1504,33 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     public void addFacturaElectronicaDetail() {
         if (this.activeTaxType == true) {
             this.facturaElectronicaDetail.setTaxValue(this.facturaElectronicaDetail.getUnitValue().multiply(BigDecimal.valueOf(0.12)));
-        } else {
-            this.facturaElectronicaDetail.setTaxValue(BigDecimal.ZERO);
         }
         this.facturaElectronicaDetail.setTotalValue(this.facturaElectronicaDetail.getUnitValue().multiply(this.facturaElectronicaDetail.getAmount()));
-        if (this.facturaElectronicaDetail.getTaxValue() != null) {
-            this.facturaElectronicaDetail.setTotalValue(this.facturaElectronicaDetail.getTotalValue().add(this.facturaElectronicaDetail.getTaxValue().multiply(this.facturaElectronicaDetail.getAmount())));
-        }
         this.facturaElectronica.addFacturaElectronicaDetail(this.facturaElectronicaDetail);
-        calcularTotalSinImpuestos();
+        calcularValoresFactura();
         this.facturaElectronicaDetail = facturaElectronicaDetailService.createInstance(); //Recargar para la nueva instancia
         setActiveTaxType(false);
     }
 
-    public void calcularTotalSinImpuestos() {
+    public void calcularValoresFactura() {
+        this.facturaElectronica.setSubtotalIVA0(BigDecimal.ZERO);
+        this.facturaElectronica.setSubtotalIVA12(BigDecimal.ZERO);
+        this.facturaElectronica.setTotalIVA0(BigDecimal.ZERO);
+        this.facturaElectronica.setTotalIVA12(BigDecimal.ZERO);
         this.facturaElectronica.setTotalSinImpuestos(BigDecimal.ZERO);
         if (!this.facturaElectronica.getFacturaElectronicaDetails().isEmpty()) {
-            facturaElectronica.getFacturaElectronicaDetails().forEach(facturaElectronicaDetail1 -> {
-                this.facturaElectronica.setTotalSinImpuestos(this.facturaElectronica.getTotalSinImpuestos().add(facturaElectronicaDetail1.getAmount().multiply(facturaElectronicaDetail1.getUnitValue())));
-            });
-        } else {
-            this.facturaElectronica.setTotalSinImpuestos(this.facturaElectronicaDetail.getTotalValue());
+            for (FacturaElectronicaDetail f : this.facturaElectronica.getFacturaElectronicaDetails()) {
+                if (f.getTaxValue().compareTo(BigDecimal.ZERO) == 1) {
+                    this.facturaElectronica.setSubtotalIVA12(this.facturaElectronica.getSubtotalIVA12().add(f.getTotalValue()));
+                    this.facturaElectronica.setTotalIVA12(this.facturaElectronica.getTotalIVA12().add(f.getTaxValue().multiply(f.getAmount())));
+                } else {
+                    this.facturaElectronica.setSubtotalIVA0(this.facturaElectronica.getSubtotalIVA0().add(f.getTotalValue()));
+                    this.facturaElectronica.setTotalIVA0(this.facturaElectronica.getTotalIVA0().add(f.getTaxValue().multiply(f.getAmount())));
+                }
+            }
         }
-        calcularIVA();
-        calcularTotalFactura();
+        this.facturaElectronica.setTotalSinImpuestos(this.facturaElectronica.getSubtotalIVA0().add(this.facturaElectronica.getSubtotalIVA12()));
+        this.facturaElectronica.setImporteTotal(this.facturaElectronica.getTotalSinImpuestos().add(this.facturaElectronica.getTotalIVA0()).add(this.facturaElectronica.getTotalIVA12()).subtract(this.facturaElectronica.getTotalDescuento()));
         montoPorPagar();
     }
 
@@ -1680,13 +1680,13 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     /**
      * @param nombreRegla
      * @param fuenteDatos
-     * @return 
+     * @return
      */
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-        
+
         FacturaElectronica _instance = (FacturaElectronica) fuenteDatos;
-        
+
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
         if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
@@ -1700,10 +1700,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             } else {
                 record.setBussinesEntityType(_instance.getClass().getSimpleName());
                 record.setBussinesEntityId(_instance.getId());
-                
+
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal: %s", _instance.getAuthor().getFullName(), _instance.getDescription(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
-                
+
             }
 
         }
