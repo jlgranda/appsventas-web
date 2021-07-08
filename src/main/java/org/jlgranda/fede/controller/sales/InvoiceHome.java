@@ -1500,12 +1500,12 @@ public class InvoiceHome extends FedeController implements Serializable {
                     getPayment().setDatePaymentCancel(Dates.now());
                     collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
                 }
-//                setOutcome("");
-                try {
-                    redirectTo("/pages/fede/sales/invoices_finder.jsf?documentType=OVERDUE&interval=7&overcome=overdues");
-                } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
-                }
+              setOutcome("");
+//                try {
+//                    redirectTo("/pages/fede/sales/invoices_finder.jsf?documentType=OVERDUE&interval=7&overcome=overdues");
+//                } catch (IOException ex) {
+//                    java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+//                }
                 this.totalOverdues = BigDecimal.ZERO;
                 this.selectedBussinesEntities.removeAll(this.getSelectedBussinesEntities());
                 this.selectedBussinesEntities.clear();

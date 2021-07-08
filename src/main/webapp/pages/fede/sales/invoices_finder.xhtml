@@ -140,7 +140,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 <!--                            <p:panel id="panelChangeTo" rendered="#{invoiceHome.selectedAction eq 'changeto'}">
                             </p:panel>-->
                             <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="false"
-                                             actionListener="#{invoiceHome.execute()}" action="#{invoiceHome.getOutcome()}"
+                                             actionListener="#{invoiceHome.execute()}" 
+                                             action="#{invoiceHome.getOutcome()}"
+                                             oncomplete="PF('dataTableInvoices').unselectAllRows()"
                                              disabled="#{not invoiceHome.actionExecutable}"
                                              style="width: auto !important;"
                                              type="submit"/>
