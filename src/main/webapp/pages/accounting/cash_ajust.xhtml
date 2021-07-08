@@ -287,13 +287,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  rows="10"  
                                                  value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 sortBy="#{cashBoxDetail.valuer}"
                                                  editable="true">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills @form:panel-breakdown-totals" partialSubmit="true"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                         </f:facet>
-                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                        <p:column headerText="#{i18n['common.money.letter']}">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">
@@ -329,12 +328,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  rows="10"
                                                  value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 sortBy="#{cashBoxDetail.valuer}" editable="true">
+                                                 editable="true">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="true"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
                                         </f:facet>
-                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                        <p:column headerText="#{i18n['common.money.letter']}">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">
@@ -484,13 +483,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  rows="10"  
                                                  value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 sortBy="#{cashBoxDetail.valuer}"
                                                  editable="true">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                         </f:facet>
-                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                        <p:column headerText="#{i18n['common.money.letter']}" >
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">
@@ -526,12 +524,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  rows="10"
                                                  value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 sortBy="#{cashBoxDetail.valuer}" editable="true">
+                                                 editable="true">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
                                         </f:facet>
-                                        <p:column headerText="#{i18n['common.money.letter']}" sortBy="#{cashBoxDetail.valuer}" sortOrder="desc">
+                                        <p:column headerText="#{i18n['common.money.letter']}">
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" style="width: 6rem; text-align: right">

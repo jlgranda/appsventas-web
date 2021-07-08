@@ -829,7 +829,7 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     /**
      * Generar los cashBoxDetails, calcular montos y cargar vista al crear una
- nueva instancia _instance.
+     * nueva instancia _instance.
      */
     public void openPanelBreakdown() {
         if (this.cashBoxPartial.getId() != null) {
@@ -845,6 +845,18 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     private void generateCashBoxPartialDetails() {
         List<Setting> denominations = settingHome.findByCodeType(CodeType.DENOMINATION);
+        Collections.sort(denominations, (Setting sett, Setting other) -> sett.getCategory().compareTo(other.getCategory())); //Ordenar la lista de denominaciones según su tipo
+        for (int i = (denominations.size() - 1); i >= 0; i--) {
+            for (int j = 1; j <= i; j++) {
+                if ((new BigDecimal(denominations.get(j - 1).getValue())).compareTo(new BigDecimal(denominations.get(j).getValue())) == -1
+                        && denominations.get(j - 1).getCategory().equals(denominations.get(j).getCategory())) {
+                    Setting temp = denominations.get(j - 1);
+                    denominations.set((j - 1), denominations.get(j));
+                    denominations.set(j, temp);
+                }
+            }
+
+        }
         if (this.cashBoxPartial.getCashBoxDetails().isEmpty()) {
             denominations.stream().map(d -> {
                 this.cashBoxDetail = cashBoxDetailService.createInstance(); //Preparar para un nuevo detalle del CashBox instanciado
@@ -872,8 +884,6 @@ public class CashBoxHome extends FedeController implements Serializable {
                 this.cashBoxPartial.addCashBoxDetail(this.cashBoxDetail);//Agregar el CashBoxDetail al CashBox instanciado
             });
         }
-        //Ordenar la lista de denominaciones según su valor
-        Collections.sort(this.cashBoxPartial.getCashBoxDetails(), Collections.reverseOrder((CashBoxDetail cashBoxDetail1, CashBoxDetail other) -> cashBoxDetail1.getValuer().compareTo(other.getValuer())));
         chargeListCashBoxBillMoney();
         if (this.cashBoxGeneral.getId() == null) {
             this.cashBoxPartial.setPriority(0);
@@ -1124,12 +1134,12 @@ public class CashBoxHome extends FedeController implements Serializable {
                 //El General Journal del día
                 if (generalJournal != null) {
                     for (Record record : records) {
-                        
+
                         record.setCode(UUID.randomUUID().toString());
-                        
+
                         record.setOwner(this.subject);
                         record.setAuthor(this.subject);
-                        
+
                         record.setGeneralJournalId(generalJournal.getId());
 
                         //Corregir objetos cuenta en los detalles
@@ -1137,7 +1147,7 @@ public class CashBoxHome extends FedeController implements Serializable {
                             rd.setLastUpdate(Dates.now());
                             rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
                         });
-                        
+
                         //Persistencia
                         recordService.save(record);
                     }
