@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li>/</li>
         <li><p:link>#{cashBoxHome.cashBoxPartial.id == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.partial']} #{i18n['common.of']} #{subject.fullName} </p:link></li>
     </ui:define>
-    <ui:define name="content" rendered="#{request.isUserInRole('CHECKER')}}">
+    <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.CashBoxDetail"/>
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
@@ -631,7 +631,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <p:toolbar id="toolbar-partial-fund" class="ui-g-12" rendered="#{empty cashBoxHome.cashBoxPartial.id || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN'}">
                                 <f:facet name="left">
-                                    <p:commandButton id="btn-close-partial-fund" icon="fa fa-check" value="Registrar Desglose Final de Caja Parcial" 
+                                    <p:commandButton id="btn-close-partial-fund" icon="fa fa-check" value="#{i18n['common.finish']} #{i18n['common.and']} #{i18n['common.depositto']}" 
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
                                                      update=" panel-cashboxs-partial panel-breakdown-fund panel-deposit panel-cashboxs-initial btn-breakdown"
                                                      styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"--><!--toolbar-close-->
