@@ -1589,7 +1589,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         Invoice p = null;
         for (BussinesEntity be : this.getSelectedBussinesEntities()) {
             p = (Invoice) be;
-            this.totalOverdues = this.totalOverdues.add(p.getTotal());
+            this.totalOverdues = this.totalOverdues.add(p.getTotal().subtract(p.getPaymentsDiscount()));
         }
     }
 }

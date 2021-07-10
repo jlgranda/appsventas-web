@@ -106,6 +106,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
+                        <p:column headerText="#{i18n['common.discount']}" sortBy="#{invoice.paymentsDiscount}"  style="width:128px;text-align:right;">
+                            <h:outputText value="#{invoice.paymentsDiscount}">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
                         <p:column  id="emissionOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" sortOrder="desc" style="width:160px;text-align:right;">
                             <h:outputText value="#{invoice.emissionOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
