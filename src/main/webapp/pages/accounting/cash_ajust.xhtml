@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li>/</li>
         <li><p:link>#{cashBoxHome.cashBoxPartial.id == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.partial']} #{i18n['common.of']} #{subject.fullName} </p:link></li>
     </ui:define>
-    <ui:define name="content">
+    <ui:define name="content" rendered="#{request.isUserInRole('CHECKER')}}">
         <o:importConstants type="org.jlgranda.fede.model.accounting.CashBoxDetail"/>
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
@@ -94,7 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      btn-close-general panel-deposit btn-close-general" 
                                      disabled="#{cashBoxHome.activeButtonBreakdown}"
                                      rendered="#{request.isUserInRole('CHECKER')}"
-                                     styleClass="info-btn">
+                                     styleClass="green-btn">
                     </p:commandButton>
                     <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
                                      action="#{cashBoxHome.closeCashBoxGeneral()}"
@@ -115,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:outputText id="init-cash" value="#{cashBoxHome.saldoInitial}"><f:convertNumber type="currency"/></h:outputText></div>
                     </div>-->
                     <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth bold-capital Fs20">#{i18n['common.date.yesterday']}</div>
-                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 Fs13">#{i18n['common.fund']} #{i18n['common.of']} Ejercicio Anterior</div>
+                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 Fs13">#{i18n['common.fund']} #{i18n['common.of']} #{i18n['app.fede.accounting.ajust.last']}</div>
                     <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
                         <h:outputText id="init-cash" value="#{cashBoxHome.saldoInitial}"><f:convertNumber type="currency"/></h:outputText>
                     </div>
@@ -204,11 +204,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <h:panelGroup id="panel-cashboxs-initial">
                     <h:panelGroup class="ui-g-8 ui-lg-8 ui-md-8" rendered="#{not empty cashBoxHome.cashBoxInitialFinish}">
                         <p:accordionPanel activeIndex="#{cashBoxHome.activeIndex}" class="ui-g-12">
-                            <!--<p:tab title="#{i18n['common.last']} #{i18n['common.detail']}: #{cashBoxHome.cashBoxInitialFinish.lastUpdate} - #{cashBoxHome.cashBoxInitialFinish.owner.fullName}">-->
                             <p:tab >
                                 <f:facet name="title">
                                     <h:outputText value="#{i18n['common.last']} #{i18n['common.detail']} #{' '}"></h:outputText>
-                                    <h:outputText value="#{cashBoxHome.cashBoxInitialFinish.lastUpdate}" styleClass="">
+                                    <!--<h:outputText value="#{cashBoxHome.cashBoxInitialFinish.lastUpdate}" styleClass="">-->
+                                    <h:outputText value="#{cashBoxHome.cashBoxInitialFinish.createdOn}" styleClass="">
                                         <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
                                     </h:outputText>
                                     <h:outputText value="#{' '} #{cashBoxHome.cashBoxInitialFinish.owner.fullName}"></h:outputText>
@@ -316,6 +316,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </h:panelGroup>
                 </h:panelGroup>
                 <div class="cash-detail ui-g-8 ui-lg-8 ui-md-8">
+                    <!-- Registro detalle sino se ha echo un depósito-->
                     <h:panelGroup id="panel-breakdown">
                         <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12" rendered="#{cashBoxHome.activePanelBreakdown}">
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 Fs20 capital container-center">
@@ -325,6 +326,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
+                                    <!-- Detalle inicial antes de deposito -->
                                     <p:dataTable id="dataTable-bills" draggableColumns="true" lazy="false"
                                                  paginator="true" paginatorAlwaysVisible="false"
                                                  paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
@@ -360,6 +362,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.quantity']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.edition']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                         </p:column>
                                     </p:dataTable>
+                                    <!-- //Detalle inicial antes de deposito -->
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6 Fs13 container-right">#{i18n['common.subtotal']} #{i18n['common.money.bills']} :</div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 Fs13 container-center">
                                         <h:outputText id="subtotal-bills" value="#{cashBoxHome.cashBoxPartial.totalcashBills}"><f:convertNumber type="currency"/></h:outputText>
@@ -435,7 +438,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
                                                      update="panel-breakdown"
                                                      styleClass="success-btn" style="width: auto !important;"/>
-                                    <p:commandButton id="btn-close-partial" icon="fa fa-check" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}"
+                                    <p:commandButton id="btn-close-partial" icon="fa fa-check" value="#{i18n['common.finish']} #{i18n['common.and']} #{i18n['common.depositto']}"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
                                                      update="  panel-cashboxs-partial panel-breakdown panel-deposit panel-cashboxs-initial btn-breakdown"
                                                      styleClass="info-btn" style="width: auto !important"><!--update=toolbar-close-->
@@ -510,6 +513,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accouting.validate.deposit.rule.message']}" style="width: 100%"/>
                         </h:panelGroup>
                     </h:panelGroup>
+                    <!-- //Registro detalle sino se ha echo un depósito-->
                     <div class="EmptyBox5"/>
                     <h:panelGroup id="panel-breakdown-fund">
                         <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activePanelBreakdownFund}">
@@ -657,7 +661,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <h:panelGroup id="panel-message-finish" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs20">
                             <h:panelGroup rendered="#{cashBoxHome.cashBoxGeneral.statusCashBoxGeneral=='CLOSED'}">
                                 <label>#{i18n['app.fede.accounting.close.cash']} #{i18n['common.general']}:
-                                    <h:outputText value="#{cashBoxHome.cashBoxGeneral.lastUpdate}">
+                                    <!--<h:outputText value="#{cashBoxHome.cashBoxGeneral.lastUpdate}">-->
+                                    <h:outputText value="#{cashBoxHome.cashBoxGeneral.createdOn}">
                                         <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="both"  pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                     </h:outputText>
                                 </label>
@@ -673,11 +678,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth bold-capital Fs20">#{i18n['common.details']} #{i18n['common.previouss']}</div>
                         <p:accordionPanel activeIndex="-1" class="ui-g-12 ">
                             <c:forEach var="cashBoxs" items="#{cashBoxHome.cashBoxsClosed}">
-                                <!--<p:tab title="#{cashBoxs.name} - #{cashBoxs.lastUpdate.hours}:#{cashBoxs.lastUpdate.minutes}:#{cashBoxs.lastUpdate.seconds}">-->
                                 <p:tab >
                                     <f:facet name="title">
                                         <h:outputText value="#{cashBoxs.name} #{' ('}"></h:outputText>
-                                        <h:outputText value="#{cashBoxs.lastUpdate}" styleClass="">
+                                        <!--<h:outputText value="#{cashBoxs.lastUpdate}" styleClass="">-->
+                                        <h:outputText value="#{cashBoxs.createdOn}" styleClass="">
                                             <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
                                         </h:outputText>
                                         <h:outputText value="#{')'} "></h:outputText>

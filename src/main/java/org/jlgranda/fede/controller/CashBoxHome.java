@@ -30,7 +30,6 @@ import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +49,6 @@ import org.jlgranda.fede.model.accounting.RecordDetail.RecordTDetailType;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
-import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
@@ -634,7 +632,8 @@ public class CashBoxHome extends FedeController implements Serializable {
     public boolean isActivePanelDeposit() {
         if (this.cashBoxGeneral.getId() != null && this.cashBoxInitialFinish != null /*&& existBreakdownSecondary() == false*/
                 && CashBoxGeneral.Status.OPEN.equals(this.cashBoxGeneral.getStatusCashBoxGeneral()) && CashBoxPartial.Status.CLOSED.equals(this.cashBoxInitialFinish.getStatusCashBoxPartial())
-                && CashBoxPartial.Priority.MAIN.equals(this.cashBoxInitialFinish.getPriority_order()) && this.subject.equals(this.cashBoxInitialFinish.getOwner())) {
+                && CashBoxPartial.Priority.MAIN.equals(this.cashBoxInitialFinish.getPriority_order()) && this.subject.equals(this.cashBoxInitialFinish.getOwner())
+                && (activePanelBreakdownFund == false && activePanelBreakdown == false)) {
             activePanelDeposit = true;
         }
         return activePanelDeposit;
@@ -682,17 +681,6 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActiveButtonCloseCash() {
-//        if (this.cashBoxPartial.getId() != null) {
-//            if (this.saldoCash.compareTo(this.cashBoxPartial.getCashPartial()) == 0) {
-//                if (this.cashBoxOpen != null && this.cashBoxGeneral.getId() == null) {
-//                    activeButtonCloseCash = false;
-//                } else {
-//                    if (CashBoxGeneral.Status.OPEN.equals(this.cashBoxGeneral.getStatusCashBoxGeneral()) && isActivePanelBreakdown() == false) {
-//                        activeButtonCloseCash = false;
-//                    }
-//                }
-//            }
-//        }
         if (this.cashBoxOpen != null && this.cashBoxGeneral.getId() == null) {
             activeButtonCloseCash = false;
         } else {
@@ -856,6 +844,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             this.cashBoxPartial = cashBoxPartialService.createInstance();
         }
         setActivePanelBreakdown(true); //Mostrar el Panel de Detalle de CashBox instanciado
+        setActivePanelDeposit(false); //Ocultar el Panel de Depósito mientras se detalla
         setActiveButtonBreakdown(true); //Deshabilitar el botón de inicio de desglose
         setActiveButtonCloseCash(true); //Deshabilitar el botón de finalización de caja del día
         setActiveIndex(-1); //Minimizar el Panel de Último CashBoxPartial cerrado
@@ -979,14 +968,18 @@ public class CashBoxHome extends FedeController implements Serializable {
 
     /**
      * Calcular el monto de dinero en cada evento.
+     *
+     * @param event
      */
     public void calculateAmount(RowEditEvent<CashBoxDetail> event) {
-        event.getObject().setAmount(event.getObject().getValuer().multiply(BigDecimal.valueOf(event.getObject().getQuantity())));
-        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.quantity.change", "" + event.getObject().getDenomination(), event.getObject().getQuantity().toString()));
-        if (this.cashBoxPartial.getPriority_order().equals(CashBoxPartial.Priority.SECONDARY)) {
-            calculateTotals(this.saldoCashFund);
-        } else {
-            calculateTotals(this.saldoCash);
+        if (event.getObject().getQuantity() != 0) { //¿Se realizó algún cambio?
+            event.getObject().setAmount(event.getObject().getValuer().multiply(BigDecimal.valueOf(event.getObject().getQuantity())));
+            if (this.cashBoxPartial.getPriority_order().equals(CashBoxPartial.Priority.SECONDARY)) {
+                calculateTotals(this.saldoCashFund);
+            } else {
+                calculateTotals(this.saldoCash);
+            }
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.quantity.change", "" + event.getObject().getDenomination(), event.getObject().getQuantity().toString()));
         }
     }
 
@@ -1187,6 +1180,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             setActiveSelectDeposit(false);//Ocultar el Panel de depósito
             setActiveButtonBreakdown(true);//Deshabilitar el botón de desglose
             setActivePanelBreakdownFund(true); //Mostrar el Panel de desglose Fund
+            setActivePanelDeposit(false);//Ocultar el Panel de depósito
             cleanPanelDeposit();
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.fail")); //Falló el depósito 
@@ -1210,7 +1204,7 @@ public class CashBoxHome extends FedeController implements Serializable {
         findCashBoxs(); //Recargar el CashBoxGeneral y CashBoxPartial
 
         this.cashBoxPartial.setAccountDeposit(accountService.findUniqueByNamedQuery("Account.findByNameAndOrganization", "CAJA GENERAL", this.organizationData.getOrganization()));
-        this.cashBoxPartial.setAmountDeposit(BigDecimal.ZERO);
+//        this.cashBoxPartial.setAmountDeposit(BigDecimal.ZERO);
     }
 
     /**
@@ -1229,19 +1223,24 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void save() {
         updateProperties(); //Cargar los atributos del CashBoxParcial y CashBoxGeneral instanciado
         this.cashBoxGeneral.addCashBoxPartial(this.cashBoxPartial); //Agregar un CashBox al CashBoxGeneral
-        if (this.cashBoxGeneral.isPersistent()) {
-            this.cashBoxGeneral.setLastUpdate(Dates.now());
-            this.cashBoxGeneral.setAuthor(this.subject); //Actualizar, para saber que sujeto lo cierra por última vez
+
+        if (this.selectedAccount == null || BigDecimal.ZERO.equals(this.cashBoxPartial.getTotalCashBreakdown())) {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.ajust.fail"));
         } else {
-            this.cashBoxGeneral.setAuthor(this.subject);
-            this.cashBoxGeneral.setOwner(this.subject);
-            this.cashBoxGeneral.setStatusCashBoxGeneral(CashBoxGeneral.Status.OPEN);
-            this.cashBoxGeneral.setAccount(this.selectedAccount);
-            this.cashBoxGeneral.setOrganization(this.organizationData.getOrganization());
+            if (this.cashBoxGeneral.isPersistent()) {
+                this.cashBoxGeneral.setLastUpdate(Dates.now());
+                this.cashBoxGeneral.setAuthor(this.subject); //Actualizar, para saber que sujeto lo cierra por última vez
+            } else {
+                this.cashBoxGeneral.setAuthor(this.subject);
+                this.cashBoxGeneral.setOwner(this.subject);
+                this.cashBoxGeneral.setStatusCashBoxGeneral(CashBoxGeneral.Status.OPEN);
+                this.cashBoxGeneral.setAccount(this.selectedAccount);
+                this.cashBoxGeneral.setOrganization(this.organizationData.getOrganization());
+            }
+            cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.breakdown.save"));
+            findCashBoxs();
         }
-        cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
-        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.breakdown.save"));
-        findCashBoxs();
     }
 
     /**
