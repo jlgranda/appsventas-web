@@ -260,7 +260,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
 
-        setAccountingEnabled(true);
         filterBy = new ArrayList<>();
 
 //        filterBy.add(FilterMeta.builder()

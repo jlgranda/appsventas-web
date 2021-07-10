@@ -240,7 +240,6 @@ public class CashBoxHome extends FedeController implements Serializable {
         //Instanciar regla de negocio para registrar ventas.
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
-        setAccountingEnabled(true);
     }
 
     //GETTER AND SETTER
@@ -580,7 +579,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActiveButtonBreakdown() {
-        if (this.cashBoxOpen == null && existBreakdownSecondary() == false && BigDecimal.ZERO.compareTo(this.saldoCash) == -1 && isActivePanelBreakdown() == false) {
+        if (this.cashBoxOpen == null /*&& existBreakdownSecondary() == false */ && BigDecimal.ZERO.compareTo(this.saldoCash) == -1 && isActivePanelBreakdown() == false) {
             if (this.cashBoxInitialFinish == null) {
                 if (this.cashBoxGeneral.getId() == null) {
                     activeButtonBreakdown = false;
@@ -633,7 +632,7 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActivePanelDeposit() {
-        if (this.cashBoxGeneral.getId() != null && this.cashBoxInitialFinish != null && existBreakdownSecondary() == false
+        if (this.cashBoxGeneral.getId() != null && this.cashBoxInitialFinish != null /*&& existBreakdownSecondary() == false*/
                 && CashBoxGeneral.Status.OPEN.equals(this.cashBoxGeneral.getStatusCashBoxGeneral()) && CashBoxPartial.Status.CLOSED.equals(this.cashBoxInitialFinish.getStatusCashBoxPartial())
                 && CashBoxPartial.Priority.MAIN.equals(this.cashBoxInitialFinish.getPriority_order()) && this.subject.equals(this.cashBoxInitialFinish.getOwner())) {
             activePanelDeposit = true;
@@ -683,6 +682,17 @@ public class CashBoxHome extends FedeController implements Serializable {
     }
 
     public boolean isActiveButtonCloseCash() {
+//        if (this.cashBoxPartial.getId() != null) {
+//            if (this.saldoCash.compareTo(this.cashBoxPartial.getCashPartial()) == 0) {
+//                if (this.cashBoxOpen != null && this.cashBoxGeneral.getId() == null) {
+//                    activeButtonCloseCash = false;
+//                } else {
+//                    if (CashBoxGeneral.Status.OPEN.equals(this.cashBoxGeneral.getStatusCashBoxGeneral()) && isActivePanelBreakdown() == false) {
+//                        activeButtonCloseCash = false;
+//                    }
+//                }
+//            }
+//        }
         if (this.cashBoxOpen != null && this.cashBoxGeneral.getId() == null) {
             activeButtonCloseCash = false;
         } else {
@@ -691,6 +701,16 @@ public class CashBoxHome extends FedeController implements Serializable {
             }
         }
         return activeButtonCloseCash;
+    }
+
+    public void messageButtonCloseCash() {
+        if (this.activeButtonCloseCash = true) {
+            if (this.cashBoxPartial.getId() != null) {
+                if (this.saldoCash.compareTo(this.cashBoxPartial.getCashPartial()) != 0) {
+                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Para terminar el cierre de caja del todo el día deberá registrar el último dinero en efectivo.");
+                }
+            }
+        }
     }
 
     public void setActiveButtonCloseCash(boolean activeButtonCloseCash) {
@@ -1119,7 +1139,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro del cierre de cada
-            setReglas("REGLA01, REGLA02, REGLA03");
+//            setReglas("REGLA01, REGLA02, REGLA03");
+            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocajadia", "REGISTRO_CAJA_DIA"));
 
             List<Record> records = new ArrayList<>();
             getReglas().forEach(regla -> {
