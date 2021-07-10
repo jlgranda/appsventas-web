@@ -287,7 +287,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setActivePanelProduct(false);
 
         //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "false")));
+        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
     }
 
     public List<UploadedFile> getUploadedFiles() {

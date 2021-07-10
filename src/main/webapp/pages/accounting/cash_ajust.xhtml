@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <f:metadata>
             <!--<f:viewParam name="" value=""/>-->
             <f:viewAction action="#{cashBoxHome.messageValidate()}" />
+            <f:viewAction action="#{cashBoxHome.messageButtonCloseCash()}"/>
         </f:metadata>
     </ui:define>
     <ui:define name="style">
@@ -81,11 +82,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <div class="cash-summary card ui-g-4 ui-lg-4 ui-md-4">
-                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs20">#{i18n['common.fund']} #{i18n['common.initial']}
-                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs30">
+                    <h:panelGroup id="panel-saldo" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs20">#{i18n['app.fede.accounting.ajust.money']}
+                            <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs30">
+                                <h:outputText id="total-saldo" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText></div>
+                        </div>
+                    </h:panelGroup>
+                    <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" 
+                                     action="#{cashBoxHome.openPanelBreakdown()}" 
+                                     update="btn-breakdown panel-breakdown saldo-cash panel-saldo panel-cashboxs-initial panel-cashboxs-partial 
+                                     btn-close-general panel-deposit btn-close-general" 
+                                     disabled="#{cashBoxHome.activeButtonBreakdown}"
+                                     rendered="#{request.isUserInRole('CHECKER')}"
+                                     styleClass="info-btn">
+                    </p:commandButton>
+                    <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
+                                     action="#{cashBoxHome.closeCashBoxGeneral()}"
+                                     disabled="#{cashBoxHome.activeButtonCloseCash}"
+                                     update=" panel-deposit btn-breakdown panel-cashboxs-partial panel-cashboxs-initial panel-breakdown panel-message-finish
+                                     panel-message-rule"
+                                     rendered="#{not empty cashBoxHome.cashBoxsClosed and request.isUserInRole('CHECKER')}"
+                                     styleClass="danger-btn"><!--update=toolbar-close-->
+                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>
+                    </p:commandButton>
+                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
+                        <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
+                    </p:confirmDialog>
+                    <div class="EmptyBox20"/>
+                    <!--<div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs15">#{i18n['common.fund']} #{i18n['common.initial']}
+                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs20">
                             <h:outputText id="init-cash" value="#{cashBoxHome.saldoInitial}"><f:convertNumber type="currency"/></h:outputText></div>
+                    </div>-->
+                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth bold-capital Fs20">#{i18n['common.date.yesterday']}</div>
+                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 Fs13">#{i18n['common.fund']} #{i18n['common.of']} Ejercicio Anterior</div>
+                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
+                        <h:outputText id="init-cash" value="#{cashBoxHome.saldoInitial}"><f:convertNumber type="currency"/></h:outputText>
                     </div>
+                    <div class="ui-g-12"><p:separator class="line-separator"/></div>
                     <h:panelGroup id="panel-sales" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth bold-capital Fs20">#{i18n['common.date.today']}</div>
                         <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13">#{i18n['app.fede.sales.net']}</div>
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
                             <h:outputText id="sales-total" value="#{cashBoxHome.salesTotal}"><f:convertNumber type="currency"/></h:outputText>
@@ -106,7 +142,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="sales-credit-collect" value="#{cashBoxHome.salesCreditCollect}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
-                        <div class="ui-g-12"><p:separator class="line-separator"/></div>
+                        <!--<div class="ui-g-12"><p:separator class="line-separator"/></div>-->
                     </h:panelGroup>
                     <h:panelGroup id="panel-purchases" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                         <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13">#{i18n['common.purchases']} (#{i18n['common.cash']} + #{i18n['common.overdue']}) </div>
@@ -125,7 +161,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="purchases-credit-paid" value="#{cashBoxHome.purchasesCreditPaid}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
-                        <div class="ui-g-12"><p:separator class="line-separator"/></div>
+                        <!--                        <div class="ui-g-12"><p:separator class="line-separator"/></div>-->
                     </h:panelGroup>
                     <h:panelGroup id="panel-transactions" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                         <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13">#{i18n['common.transactions.others']}</div>
@@ -144,31 +180,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="transactions-credit" value="#{cashBoxHome.transactionCredit}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
-                        <div class="ui-g-12"><p:separator class="line-separator"/></div>
+                        <!--                        <div class="ui-g-12"><p:separator class="line-separator"/></div>-->
                     </h:panelGroup>
-                    <h:panelGroup id="panel-saldo" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 capital Fs15">#{i18n['app.fede.accounting.account.fund.book']} </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 capital Fs15 container-right">
-                            <h:outputText id="total-cash" value="#{cashBoxHome.cashTotal}"><f:convertNumber type="currency"/></h:outputText>
-                        </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs15 container-right">#{i18n['app.fede.accounting.ajust.money']}: </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs15 container-lefth">
-                            <h:outputText id="total-saldo" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
-                        </div>
-                    </h:panelGroup>
-                    <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" 
+                    <!--                    <h:panelGroup id="panel-saldo" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
+                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 capital Fs15">#{i18n['app.fede.accounting.account.fund.book']} </div>
+                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 capital Fs15 container-right">
+                                                <h:outputText id="total-cash" value="#{cashBoxHome.cashTotal}"><f:convertNumber type="currency"/></h:outputText>
+                                            </div>
+                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs15 container-right">#{i18n['app.fede.accounting.ajust.money']}: </div>
+                                            <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs15 container-lefth">
+                                                <h:outputText id="total-saldo" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
+                                            </div>
+                                        </h:panelGroup>-->
+<!--                    <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" 
                                      action="#{cashBoxHome.openPanelBreakdown()}" 
                                      update="btn-breakdown panel-breakdown saldo-cash panel-saldo panel-cashboxs-initial panel-cashboxs-partial 
                                      btn-close-general panel-deposit btn-close-general" 
                                      disabled="#{cashBoxHome.activeButtonBreakdown}"
                                      rendered="#{request.isUserInRole('CHECKER')}"
                                      styleClass="info-btn">
-                    </p:commandButton>
+                    </p:commandButton>-->
                 </div>
                 <h:panelGroup id="panel-cashboxs-initial">
                     <h:panelGroup class="ui-g-8 ui-lg-8 ui-md-8" rendered="#{not empty cashBoxHome.cashBoxInitialFinish}">
                         <p:accordionPanel activeIndex="#{cashBoxHome.activeIndex}" class="ui-g-12">
-                            <p:tab title="#{i18n['common.registry']} #{i18n['common.finished']}:  #{cashBoxHome.cashBoxInitialFinish.lastUpdate} - #{cashBoxHome.cashBoxInitialFinish.owner.fullName}">
+                            <!--<p:tab title="#{i18n['common.last']} #{i18n['common.detail']}: #{cashBoxHome.cashBoxInitialFinish.lastUpdate} - #{cashBoxHome.cashBoxInitialFinish.owner.fullName}">-->
+                            <p:tab >
+                                <f:facet name="title">
+                                    <h:outputText value="#{i18n['common.last']} #{i18n['common.detail']} #{' '}"></h:outputText>
+                                    <h:outputText value="#{cashBoxHome.cashBoxInitialFinish.lastUpdate}" styleClass="">
+                                        <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
+                                    </h:outputText>
+                                    <h:outputText value="#{' '} #{cashBoxHome.cashBoxInitialFinish.owner.fullName}"></h:outputText>
+                                </f:facet>
                                 <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 Fs15 capital container-center">
                                     <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
                                         <h:outputText class="bold-capital" value="#{cashBoxHome.cashBoxInitialFinish.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
@@ -393,8 +437,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      styleClass="success-btn" style="width: auto !important;"/>
                                     <p:commandButton id="btn-close-partial" icon="fa fa-check" value="#{i18n['common.finish']} #{i18n['app.fede.accounting.close.cash']} #{i18n['common.partial']}"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
-                                                     update="toolbar-close  panel-cashboxs-partial panel-breakdown panel-deposit panel-cashboxs-initial btn-breakdown"
-                                                     styleClass="info-btn" style="width: auto !important">
+                                                     update="  panel-cashboxs-partial panel-breakdown panel-deposit panel-cashboxs-initial btn-breakdown"
+                                                     styleClass="info-btn" style="width: auto !important"><!--update=toolbar-close-->
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                                     </p:commandButton>
                                     <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
@@ -585,8 +629,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:facet name="left">
                                     <p:commandButton id="btn-close-partial-fund" icon="fa fa-check" value="Registrar Desglose Final de Caja Parcial" 
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
-                                                     update="toolbar-close panel-cashboxs-partial panel-breakdown-fund panel-deposit panel-cashboxs-initial btn-breakdown"
-                                                     styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"-->
+                                                     update=" panel-cashboxs-partial panel-breakdown-fund panel-deposit panel-cashboxs-initial btn-breakdown"
+                                                     styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"--><!--toolbar-close-->
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                                     </p:commandButton>
                                     <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
@@ -625,10 +669,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <h:panelGroup id="panel-cashboxs-partial">
                     <h:panelGroup class="card ui-g-12 ui-lg-12 ui-md-12" rendered="#{not empty cashBoxHome.cashBoxsClosed}">
-                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth Fs15">#{i18n['app.fede.accounting.close.cashs.partials.history']}</div>
+                        <!--<div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth Fs15">#{i18n['app.fede.accounting.close.cashs.partials.history']}</div>-->
+                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth bold-capital Fs20">#{i18n['common.details']} #{i18n['common.previouss']}</div>
                         <p:accordionPanel activeIndex="-1" class="ui-g-12 ">
                             <c:forEach var="cashBoxs" items="#{cashBoxHome.cashBoxsClosed}">
-                                <p:tab title="#{cashBoxs.name} - #{cashBoxs.lastUpdate.hours}:#{cashBoxs.lastUpdate.minutes}:#{cashBoxs.lastUpdate.seconds}">
+                                <!--<p:tab title="#{cashBoxs.name} - #{cashBoxs.lastUpdate.hours}:#{cashBoxs.lastUpdate.minutes}:#{cashBoxs.lastUpdate.seconds}">-->
+                                <p:tab >
+                                    <f:facet name="title">
+                                        <h:outputText value="#{cashBoxs.name} #{' ('}"></h:outputText>
+                                        <h:outputText value="#{cashBoxs.lastUpdate}" styleClass="">
+                                            <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
+                                        </h:outputText>
+                                        <h:outputText value="#{')'} "></h:outputText>
+                                    </f:facet>
                                     <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 capital Fs20">
                                         <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
                                             <h:outputText class="bold-capital" value="#{cashBoxs.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
@@ -718,30 +771,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 <div class="EmptyBox20"></div>
 
-                <h:panelGroup id="toolbar-close">
-                    <p:toolbar rendered="#{not empty cashBoxHome.cashBoxsClosed and request.isUserInRole('CHECKER')}">
-                        <f:facet name="left">
-                            <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
-                                             action="#{cashBoxHome.closeCashBoxGeneral()}"
-                                             disabled="#{cashBoxHome.activeButtonCloseCash}"
-                                             update="toolbar-close panel-deposit btn-breakdown panel-cashboxs-partial panel-cashboxs-initial panel-breakdown panel-message-finish
-                                             panel-message-rule"
-                                             style="width: auto !important;">
-                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>
-                            </p:commandButton>
-                            <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
-                                <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
-                            </p:confirmDialog>
-                        </f:facet>
-                        <f:facet name="right">
-                            <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
-                                             action="#{cashBoxHome.redirect()}"
-                                             icon="fa fa-trash" styleClass="secondary-button" 
-                                             type="submit"/>
-                        </f:facet>
-                    </p:toolbar>
-                </h:panelGroup>
+                <!--                <h:panelGroup id="toolbar-close">
+                                    <p:toolbar rendered="#{not empty cashBoxHome.cashBoxsClosed and request.isUserInRole('CHECKER')}">
+                                        <f:facet name="left">
+                                            <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
+                                                             action="#{cashBoxHome.closeCashBoxGeneral()}"
+                                                             disabled="#{cashBoxHome.activeButtonCloseCash}"
+                                                             update="toolbar-close panel-deposit btn-breakdown panel-cashboxs-partial panel-cashboxs-initial panel-breakdown panel-message-finish
+                                                             panel-message-rule"
+                                                             style="width: auto !important;">
+                                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>
+                                            </p:commandButton>
+                                            <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                                <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
+                                                <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
+                                            </p:confirmDialog>
+                                        </f:facet>
+                                        <f:facet name="right">
+                                            <p:commandButton actionListener="#{cashBoxHome.closeDialog(null)}" 
+                                                             action="#{cashBoxHome.redirect()}"
+                                                             icon="fa fa-trash" styleClass="secondary-button" 
+                                                             type="submit"/>
+                                        </f:facet>
+                                    </p:toolbar>
+                                </h:panelGroup>-->
             </div>
         </div>
     </ui:define>
