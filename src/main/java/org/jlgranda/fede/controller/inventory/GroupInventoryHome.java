@@ -247,7 +247,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
             //Redireccioar a RIDE de Objeto Seleccionado
             if (event != null && event.getObject() != null) {
                 Group g = (Group) event.getObject();
-                redirectTo("/pages/fede/inventory/group.jsf?groupId=" + g.getId());
+                redirectTo("/pages/inventory/group.jsf?groupId=" + g.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());

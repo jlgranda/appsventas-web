@@ -81,17 +81,17 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>inventory-inbox</from-outcome>
-            <to-view-id>/pages/fede/inventory/items.jsf</to-view-id>
+            <to-view-id>/pages/inventory/items.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>inventory-groups</from-outcome>
-            <to-view-id>/pages/fede/inventory/group_items.jsf</to-view-id>
+            <to-view-id>/pages/inventory/group_items.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>inventory-kardexs</from-outcome>
-            <to-view-id>/pages/fede/inventory/kardex_items.jsf</to-view-id>
+            <to-view-id>/pages/inventory/kardex_items.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

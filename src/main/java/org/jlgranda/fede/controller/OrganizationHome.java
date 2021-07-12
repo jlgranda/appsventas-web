@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -287,6 +288,22 @@ public class OrganizationHome extends FedeController implements Serializable {
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /**
+     * Ir al inicio
+     */
+    public void irAInicio(){
+        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
+        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
+        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
+        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
+        setOutcome("");
+        try {
+            this.redirectTo(getOutcome());
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(OrganizationHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

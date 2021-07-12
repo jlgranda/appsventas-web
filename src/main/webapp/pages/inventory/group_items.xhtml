@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.inventory']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/inventory/group_items.jsf">#{i18n['app.fede.inventory.categories']}</p:link></li>
+            <li><p:link outcome="/pages/inventory/group_items.jsf">#{i18n['app.fede.inventory.categories']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;"
                                          styleClass="raised-btn" actionListener="#{groupInventoryHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/inventory/group.jsf"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/inventory/group.jsf"/>
                     </div>
                     <div class="card">
                         <p:dataTable id="dataTable-categories" draggableColumns="true" lazy="true" liveResize="true"

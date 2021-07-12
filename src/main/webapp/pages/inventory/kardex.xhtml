@@ -36,9 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/kardex_items.jsf">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
+        <li><p:link outcome="/pages/inventory/kardex_items.jsf">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/kardex.jsf">#{kardexInventoryHome.kardexId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
+        <li><p:link outcome="/pages/inventory/kardex.jsf">#{kardexInventoryHome.kardexId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">

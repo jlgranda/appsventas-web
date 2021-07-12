@@ -2,7 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 
     <h:head>
@@ -12,13 +11,13 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
             <meta name="apple-mobile-web-app-capable" content="yes" />
         </f:facet>
-        <title>PrimeFaces Ecuador - Access Denied</title>
+        <title>#{i18n['app.name']} - Accesso denegado</title>
     </h:head>
 
     <h:body styleClass="exception-body">
         <div class="exception-topbar">
             <h:link outcome="/dashboard"  class="logo">
-                <p:graphicImage name="images/ecuador-logo.png" library="ecuador-layout"/>
+                <p:graphicImage name="images/appsventas.png" library="appsventas"/>
             </h:link>
         </div>
        
@@ -30,9 +29,9 @@
                 <div class="seperator"></div>
             </div>
             <div class="bottom">
-                <span class="exception-panel-header">Access Denied</span>
-                <span class="exception-panel-subheader">You don't have permission.</span>
-                <p:commandButton type="button" value="Turn to home page" styleClass="raised-btn"/>
+                <span class="exception-panel-header">Acceso denegado</span>
+                <span class="exception-panel-subheader">No tiene los permisos necesarios.</span>
+                <p:link outcome="home" styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only btn raised-btn">Ir al inicio</p:link>
             </div>
         </div>
         

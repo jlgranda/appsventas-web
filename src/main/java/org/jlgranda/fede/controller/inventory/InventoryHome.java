@@ -379,7 +379,7 @@ public class InventoryHome extends FedeController implements Serializable {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 Product p = (Product) event.getObject();
-                redirectTo("/pages/fede/inventory/product.jsf?productId=" + p.getId());
+                redirectTo("/pages/inventory/product.jsf?productId=" + p.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());

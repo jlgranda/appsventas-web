@@ -174,12 +174,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <!--./toolbar-->
         <ui:define name="sidebar">
             <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/inventory/product.jsf"/>
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/inventory/product.jsf"/>
             </div>
             <div class="EmptyBox10"></div>
             <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
                 <li class="" role="menuitem">
-                    <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/inventory/items.jsf" 
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/inventory/items.jsf" 
                        class="menulink ripplelink #{inventoryHome.tags eq null ? 'active-menu active-menu-restore' : ''}">#{i18n['common.all']}</a>
                 </li>
                 <ui:repeat var="tag" value="#{inventoryHome.groups}">

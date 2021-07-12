@@ -273,7 +273,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 Kardex k = (Kardex) event.getObject();
-                redirectTo("/pages/fede/inventory/kardex.jsf?kardexId=" + k.getId());
+                redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());

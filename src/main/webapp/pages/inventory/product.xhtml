@@ -35,9 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/items.jsf">#{i18n['common.products']}</p:link></li>
+        <li><p:link outcome="/pages/inventory/items.jsf">#{i18n['common.products']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.product']}</p:link></li>
+        <li><p:link outcome="/pages/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.product']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.sales.ProductType" />
