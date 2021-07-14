@@ -684,10 +684,14 @@ public class AccountHome extends FedeController implements Serializable {
      * Agrega un detalle al Record
      */
     public void addRecordDetail() {
-        this.recordDetail.setOwner(subject);
-        this.recordDetailsUpdate.add(this.recordDetail);
-        //Preparar para una nueva entrada
-        this.recordDetail = recordDetailService.createInstance();
+        if (this.recordDetail.getAccount() != null && (BigDecimal.ZERO.compareTo(this.recordDetail.getAmount()) == -1) && this.recordDetail.getRecordDetailType() != null) {
+            this.recordDetail.setOwner(subject);
+            this.recordDetailsUpdate.add(this.recordDetail);
+            //Preparar para una nueva entrada
+            this.recordDetail = recordDetailService.createInstance();
+        } else {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
+        }
     }
 
     /**

@@ -1312,9 +1312,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 //            }
 //        }
 //    }
-//    public void calcularTotalFactura() {
-//        this.facturaElectronica.setImporteTotal((this.facturaElectronica.getTotalIVA0().add(this.facturaElectronica.getTotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
-//    }
+    
+    public void calcularTotalFactura() {
+        this.facturaElectronica.setImporteTotal((this.facturaElectronica.getSubtotalIVA0().add(this.facturaElectronica.getSubtotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
+    }
     public void registerRecordInJournal() {
 
         boolean registradoEnContabilidad = false;
@@ -1564,7 +1565,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void saveProductNew() {
         this.productNew.setName(this.productNew.getName());
-        this.productNew.setProductType(ProductType.PRODUCT);
+//        this.productNew.setProductType(ProductType.PRODUCT);
         this.productNew.setDescription(this.productNew.getName());
         this.productNew.setCategory(this.groupSelected);
         this.productNew.setAuthor(this.subject);

@@ -309,21 +309,23 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         }
     }
 
+    public void messageEditableRecord() {
+        if (!isRecordOfReferen()) {
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.message.not.editable", " " + this.record.getBussinesEntityType()));
+        }
+    }
     /**
      * Agrega un detalle al Record
      */
     public void addRecordDetail() {
-        this.recordDetail.setOwner(subject);
-        this.record.addRecordDetail(this.recordDetail);
-        //Preparar para una nueva entrada
-        this.recordDetail = recordDetailService.createInstance();
-    }
-
-    /**
-     * Eliminar un detalle al Record
-     */
-    public void removeRecordDetail() {
-
+        if (this.recordDetail.getAccount() != null && (BigDecimal.ZERO.compareTo(this.recordDetail.getAmount()) == -1) && this.recordDetail.getRecordDetailType() != null) {
+            this.recordDetail.setOwner(subject);
+            this.record.addRecordDetail(this.recordDetail);
+            //Preparar para una nueva entrada
+            this.recordDetail = recordDetailService.createInstance();
+        }else{
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
+        }
     }
 
     /**
@@ -342,7 +344,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             }
         }
         if (sumDebe.compareTo(sumHaber) == 0) {
-            recordService.save(record.getId(),record);
+            recordService.save(record.getId(), record);
             closeFormularioRecord(journal.getId());
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
@@ -350,18 +352,10 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
 
     private GeneralJournal buildJournal() {
-        GeneralJournal generalJournal = journalService.createInstance();
-        generalJournal.setOrganization(this.organizationData.getOrganization());
-        generalJournal.setOwner(subject);
-        generalJournal.setCode(UUID.randomUUID().toString());
-        generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
-        return generalJournal;
-    }
+        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+        return journalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
-    public void newJournal() {
-        if (this.journalId == null) {
-            this.journal = journalService.save(buildJournal());
-        }
     }
 
     public void validateNewJournal() throws IOException {
@@ -369,18 +363,13 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         if (generalJournal.isEmpty()) {
             redirectTo("/pages/accounting/journal.jsf");
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date") + " " + Dates.toDateString(Dates.now()));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date", " " + Dates.toDateString(Dates.now())));
         }
     }
 
     public void validateNewReloadJournal() throws IOException {
         if (this.journalId == null) {
-            GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-            if (generalJournal == null) {
-                this.journal = journalService.save(buildJournal());
-            } else {
-                this.journal = generalJournal;
-            }
+            this.journal = buildJournal();
         }
     }
 

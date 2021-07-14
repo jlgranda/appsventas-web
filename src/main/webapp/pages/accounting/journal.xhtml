@@ -40,17 +40,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li>/</li>
         <li><p:link outcome="/pages/accounting/journal.jsf">#{generalJournalHome.journalId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.journal']}</p:link></li>
     </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+            .container-center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .bold-capital{
+                font-weight: bolder;
+                text-transform: uppercase;
+            }
+            .capital{
+                text-transform: uppercase;
+            }
+            .container-right{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .container-lefth{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+        </style>
+    </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.GeneralJournal"/>
         <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <div class="card">
-                    <h1 class="BigTopic">#{i18n['app.fede.accounting.journal']}</h1> <!--Sección 1: Título-->
+            <div class=" ui-g ui-lg-12 ui-md-12">
+                <h1 class="BigTopic capital">#{i18n['app.fede.accounting.journal']}</h1>
+                <div class="EmptyBox10"/>
+                <div class="card ui-g ui-lg-12 ui-md-12">
+<!--                    <div class="ui-g ui-lg-12 ui-md-12">
+                        <p:outputLabel for="date-created" value="#{i18n['common.date.created']}"/>
+                        <p:datePicker id="date-created" value="#{generalJournalHome.journal.createdOn}"
+                                      monthNavigator="true" yearNavigator="true" showWeek="false" required="#{true}">
+                            <p:ajax event="dateSelect" oncomplete="this"/>
+                        </p:datePicker>
+                    </div>-->
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
                                     value="#{generalJournalHome.journal.code}" required="true"
                                     inlinehelp="#{messages['common.code.UUID.inlinehelp']}"
                                     execute="@this save" render="code"/>
-                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.label']}"
+                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.label']}/#{i18n['common.name']}"
                                     value="#{generalJournalHome.journal.name}" required="true"
                                     inlinehelp="#{messages['app.fede.accounting.journal.name.inlinehelp']}"
                                     execute="@this save" render="nme"/>
@@ -59,12 +94,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     inlinehelp="#{messages['app.fede.accounting.journal.description.inlinehelp']}"
                                     execute="@this save" render="dscrpn"/>
                     <div class="EmptyBox10"></div><!--Separador de sección-->
+                    <p:toolbar class="Container100" rendered="#{true}"><!--Sección Envío de formulario-->
+                        <f:facet name="left">
+                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
+                                             actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
+                                             disabled="#{false}"
+                                             style="width: auto !important;" styleClass="danger-btn"
+                                             type="submit"/>
+                            <i class="fa fa-bars p-px-2"/>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
+                                             actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
+                                             disabled="false" immediate="true"
+                                             styleClass="GrayButton"
+                                             type="submit"/>                          
+                        </f:facet>
+                    </p:toolbar>
                 </div>
-                <div class="card">
-                    <label class="BigTopic" style="font-weight: 600">#{i18n['app.fede.accounting.records']} </label>
-                    <p:commandButton id="button-record-add" icon="fa fa-plus-square" 
+                <div class="EmptyBox10"></div>
+                <div class="card ui-g ui-lg-12 ui-md-12">
+                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs20">#{i18n['app.fede.accounting.records']}</div>
+                    <p:commandButton id="button-record-add" icon="fa fa-plus-square" value="#{i18n['common.new']}"
                                      actionListener="#{generalJournalHome.mostrarFormularioRecord()}" ajax="true"
-                                     immediate="true">
+                                     immediate="true" styleClass="success-btn">
                         <p:ajax event="dialogReturn" update="@form"
                                 listener="#{generalJournalHome.handleReturn}">
                         </p:ajax>
@@ -77,7 +130,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  value="#{generalJournalHome.journal.records}" var="record"
                                  selection="#{generalJournalHome.selectedBussinesEntities}"
                                  sortBy="#{record.createdOn}">
-                        <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.created']}" sortBy="#{record.createdOn}" style="width: 15%">
+                        <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.created']}" sortBy="#{record.createdOn}" style="width: 20%">
                             <h:outputText value="#{record.createdOn}">
                                 <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                             </h:outputText>
@@ -97,26 +150,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:column>
                     </p:dataTable>
                 </div>
-                <div class="EmptyBox10"></div>
-                <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
-                    <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
-                                         actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
-                                         disabled="#{false}"
-                                         style="width: auto !important;"
-                                         type="submit"/>
-                        <span class="ui-separator">
-                            <span class="fa fa-ellipsis-v SoftGray" />
-                        </span>
-                    </f:facet>
-                    <f:facet name="right">
-                        <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
-                                         actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
-                                         disabled="false" immediate="true"
-                                         styleClass="GrayButton"
-                                         type="submit"/>                          
-                    </f:facet>
-                </p:toolbar>
             </div>
         </div>
     </ui:define>
