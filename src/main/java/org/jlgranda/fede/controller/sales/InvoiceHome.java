@@ -968,6 +968,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         //Se modificó el detalle, cambiar a estado abierto
         getInvoice().setStatus(StatusType.OPEN.toString());
         //Valores Impresos
+        System.out.println("A: "+getPayment().getChange());
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {
@@ -1081,7 +1082,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         } else {
             this.candidateDetails.add(getCandidateDetail());
         }
-
+        System.out.println("<>>>>>>");
         calculeChange();
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
