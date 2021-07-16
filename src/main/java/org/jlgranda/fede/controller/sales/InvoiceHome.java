@@ -31,6 +31,7 @@ import com.jlgranda.fede.ejb.sales.KardexDetailService;
 import com.jlgranda.fede.ejb.sales.KardexService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
+import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -67,6 +68,7 @@ import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
 import org.jlgranda.fede.model.Detailable;
+import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.CashBoxPartial;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
@@ -84,6 +86,7 @@ import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
 import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.BussinesEntity;
+import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
@@ -165,6 +168,9 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     @EJB
     private ProductCache productCache;
+
+    @EJB
+    private EmployeeService employeeService;
 
     @Inject
     private InventoryHome inventoryHome;
@@ -715,9 +721,37 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setStatus(status);
 
             if (isAccountingEnabled()) {
-
-                //Ejecutar las reglas de negocio para el registro del cierre de cada
-                setReglas(settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"));
+                setReglas(new ArrayList<>());
+                //Ejecutar las reglas de negocio para el registro de ventas
+                if (DocumentType.INVOICE.equals(getInvoice().getDocumentType())) {
+                    if (DocumentType.OVERDUE.equals(getInvoice().getDocumentTypeSource())) {
+                        if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, getInvoice().getOwner(), this.organizationData.getOrganization()).isEmpty()) {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocobroventascreditoclientes", "REGISTRO_COBRO_VENTAS_CREDITO_CLIENTES_EFECTIVO"));
+                        } else {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocobroventascreditoempleados", "REGISTRO_COBRO_VENTAS_CREDITO_EMPLEADOS"));
+                        }
+                    } else {
+                        if (DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocobrocortesiasauspicios", "REGISTRO_COBRO_CORTESIAS_AUSPICIOS"));
+                        } else {
+                            if (getPayment().getMethod().equals("TARJETA CREDITO") || getPayment().getMethod().equals("TARJETA DEBITO")) {
+                                setReglas(settingHome.getValue("app.fede.accounting.rule.registroventastarjetas", "REGISTRO_VENTAS_TARJETAS"));
+                            } else {
+                                setReglas(settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"));
+                            }
+                        }
+                    }
+                } else {
+                    if (DocumentType.COURTESY.equals(getInvoice().getDocumentType())) {
+                        setReglas(settingHome.getValue("app.fede.accounting.rule.registrocortesiasauspicios", "REGISTRO_CORTESIAS_AUSPICIOS"));
+                    } else if (DocumentType.OVERDUE.equals(getInvoice().getDocumentType())) {
+                        if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, getInvoice().getOwner(), this.organizationData.getOrganization()).isEmpty()) {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoclientes", "REGISTRO_VENTAS_CREDITO_CLIENTES"));
+                        } else {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoempleados", "REGISTRO_VENTAS_CREDITO_EMPLEADOS"));
+                        }
+                    }
+                }
 
                 List<Record> records = new ArrayList<>();
                 getReglas().forEach(regla -> {
@@ -726,13 +760,13 @@ public class InvoiceHome extends FedeController implements Serializable {
 
                 if (!records.isEmpty()) {
                     //La regla compiló bien
-                    String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+                    String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", I18nUtil.getMessages("app.fede.accounting.journal"));
                     String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
                     GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
                     //Anular registros anteriores
-                    recordService.deleteLastRecords(generalJournal.getId(), this.invoice.getClass().getSimpleName(), this.invoice.getId());
-
+//                    recordService.deleteLastRecords(generalJournal.getId(), this.invoice.getClass().getSimpleName(), this.invoice.getId());
+                    recordService.deleteLastRecords(generalJournal.getId(), this.invoice.getClass().getSimpleName(), this.invoice.getId(), this.invoice.hashCode());
                     //El General Journal del día
                     if (generalJournal != null) {
                         for (Record record : records) {
@@ -747,7 +781,31 @@ public class InvoiceHome extends FedeController implements Serializable {
                             //Corregir objetos cuenta en los detalles
                             record.getRecordDetails().forEach(rd -> {
                                 rd.setLastUpdate(Dates.now());
-                                rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
+                                if (rd.getAccountName().contains("$CEDULA")) {
+                                    Account cuentaPadre = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
+                                    String nombreCuenta = rd.getAccountName().substring(0, rd.getAccountName().length() - 7).concat(this.getInvoice().getOwner().getCode());
+                                    Account cuentaXCobrarOwner = accountCache.lookupByName(nombreCuenta, this.organizationData.getOrganization());
+                                    if (cuentaXCobrarOwner == null) {
+                                        cuentaXCobrarOwner = accountService.createInstance();//crear la cuenta
+                                        cuentaXCobrarOwner.setCode(this.accountCache.genereNextCode(cuentaPadre.getId()));
+                                        cuentaXCobrarOwner.setCodeType(CodeType.SYSTEM);
+                                        cuentaXCobrarOwner.setUuid(UUID.randomUUID().toString());
+                                        cuentaXCobrarOwner.setName(nombreCuenta.toUpperCase());
+                                        cuentaXCobrarOwner.setDescription(cuentaXCobrarOwner.getName());
+                                        cuentaXCobrarOwner.setParentAccountId(cuentaPadre.getId());
+                                        cuentaXCobrarOwner.setOrganization(this.organizationData.getOrganization());
+                                        cuentaXCobrarOwner.setAuthor(this.subject);
+                                        cuentaXCobrarOwner.setOwner(this.subject);
+                                        cuentaXCobrarOwner.setOrden(Short.MIN_VALUE);
+                                        cuentaXCobrarOwner.setPriority(0);
+                                        accountService.save(cuentaXCobrarOwner.getId(), cuentaXCobrarOwner);
+                                        this.accountCache.load(); //recargar todas las cuentas
+                                    }
+                                    rd.setAccount(cuentaXCobrarOwner);
+                                    rd.setAccountName(rd.getAccount().getName());
+                                } else {
+                                    rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
+                                }
                             });
 
                             //Persistencia
@@ -968,7 +1026,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         //Se modificó el detalle, cambiar a estado abierto
         getInvoice().setStatus(StatusType.OPEN.toString());
         //Valores Impresos
-        System.out.println("A: "+getPayment().getChange());
     }
 
     public LazyInvoiceDataModel getLazyDataModel() {
@@ -1082,7 +1139,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         } else {
             this.candidateDetails.add(getCandidateDetail());
         }
-        System.out.println("<>>>>>>");
         calculeChange();
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
@@ -1500,7 +1556,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                     getPayment().setDatePaymentCancel(Dates.now());
                     collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
                 }
-              setOutcome("");
+                setOutcome("");
 //                try {
 //                    redirectTo("/pages/fede/sales/invoices_finder.jsf?documentType=OVERDUE&interval=7&overcome=overdues");
 //                } catch (IOException ex) {
@@ -1546,7 +1602,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         actions.add(item);
 
-        item = new SelectItem("collect", "Cobrar");
+        item = new SelectItem("collect", I18nUtil.getMessages("common.collect"));
         actions.add(item);
 
 //        item = new SelectItem("moveto", "Mover a categoría");
@@ -1565,8 +1621,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         Record record = null;
         if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
-            KnowledgeBuilderErrors kbers = FedeController.ruleRunner.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
-
+            RuleRunner ruleRunner1 = new RuleRunner();
+            KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
             if (kbers != null) { //Contiene errores de compilación
                 logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
@@ -1574,6 +1630,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             } else {
                 record.setBussinesEntityType(_instance.getClass().getSimpleName());
                 record.setBussinesEntityId(_instance.getId());
+                record.setBussinesEntityHashCode(_instance.hashCode());
 
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal: %s", _instance.getOwner().getFullName(), _instance.getSummary(), Strings.format(_instance.getTotal().doubleValue(), "$ #0.##")));

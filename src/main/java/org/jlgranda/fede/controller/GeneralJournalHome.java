@@ -25,6 +25,7 @@ import com.jlgranda.fede.ejb.RecordService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -314,6 +315,11 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.message.not.editable", " " + this.record.getBussinesEntityType()));
         }
     }
+
+    public void orderRecordDetails() {
+        Collections.sort(this.record.getRecordDetails(), (RecordDetail recordDetail1, RecordDetail other) -> recordDetail1.getRecordDetailType().compareTo(other.getRecordDetailType()));//Ordenar por tipo de entrada/salida de transacción
+    }
+
     /**
      * Agrega un detalle al Record
      */
@@ -323,7 +329,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             this.record.addRecordDetail(this.recordDetail);
             //Preparar para una nueva entrada
             this.recordDetail = recordDetailService.createInstance();
-        }else{
+        } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
         }
     }

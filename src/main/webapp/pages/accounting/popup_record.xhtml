@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <f:metadata>
                 <f:viewAction action="#{generalJournalHome.loadSessionParameters}" />
                 <f:viewAction action="#{generalJournalHome.messageEditableRecord}" />
+                <f:viewAction action="#{generalJournalHome.orderRecordDetails}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -74,7 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="ui-g ui-lg-4 ui-md-4">
                         <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
                         <div class="EmptyBox10"></div>
-                        <p:autoComplete value="#{generalJournalHome.recordDetail.account}" effect="blind" 
+                        <p:autoComplete value="#{generalJournalHome.recordDetail.account}" effect="fade" 
                                         minQueryLength="2" completeMethod="#{accountHome.find}" required="true" 
                                         var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter" forceSelection="true"
@@ -128,7 +129,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
                                              liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
                                              paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                             rows="10" scrollRows="10" scrollHeight="100%" scrollWidth="100%"
+                                             rows="6" scrollRows="6" scrollHeight="100%" scrollWidth="100%"
                                              scrollable="true"
                                              value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
                                              selection="#{generalJournalHome.selectedBussinesEntities}"
@@ -197,8 +198,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:commandButton ajax="true" disabled="false" immediate="true"
                                          actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal.id)}"
                                          action="#{generalJournalHome.redirect}"
-                                         icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
-                                         />
+                                         icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"/>
                     </f:facet>
                 </p:toolbar>
             </h:form>

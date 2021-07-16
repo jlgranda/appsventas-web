@@ -330,10 +330,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <h:panelGroup rendered="#{not empty facturaElectronicaHome.facturaElectronicaDetail.product.id}">
                                     <div class="ui-g-4">
                                         <h4>#{i18n['common.quantity']}:</h4>
-                                        <p:spinner id="quantity" value="#{facturaElectronicaHome.facturaElectronicaDetail.amount}" min="1" immediate="true" 
+                                        <p:inputNumber id="amount" value="#{facturaElectronicaHome.facturaElectronicaDetail.amount}" required="#{false}"
+                                                       styleClass="" inputStyle="text-align: right" disabled="#{false}"
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}"
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '4')}">
+                                            <p:ajax listener="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="true"></p:ajax>
+                                        </p:inputNumber>
+<!--                                        <p:spinner id="quantity" value="#{facturaElectronicaHome.facturaElectronicaDetail.amount}" min="1" immediate="true" 
                                                    styleClass="" required="#{false}">
                                             <p:ajax listener="#{facturaElectronicaHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="true"></p:ajax>
-                                        </p:spinner>
+                                        </p:spinner>-->
                                     </div>
                                     <div class="ui-g-5">
                                         <h4>#{i18n['common.price']}: </h4>
