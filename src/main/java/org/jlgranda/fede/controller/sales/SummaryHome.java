@@ -770,16 +770,19 @@ public class SummaryHome extends FedeController implements Serializable {
 
     @Override
     protected void initializeDateInterval() {
-        int range = 0; //Rango de fechas para visualiar lista de entidades
-        try {
-            range = Integer.valueOf(settingHome.getValue("fede.dashboard.summary.range", "7"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 1;
-        }
+//        int range = 0; //Rango de fechas para visualiar lista de entidades
+//        try {
+//            range = Integer.valueOf(settingHome.getValue("fede.dashboard.summary.range", "7"));
+//        } catch (java.lang.NumberFormatException nfe) {
+//            nfe.printStackTrace();
+//            range = 1;
+//        }
+        //Iniciar el 1er día de la semana
         Calendar dayDate = Calendar.getInstance();
+        dayDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1))));
+        //setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1)))); //Primer día del mes
+        setStart(Dates.minimumDate(dayDate.getTime())); //Primer día de la semana
     }
 
 //    public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
