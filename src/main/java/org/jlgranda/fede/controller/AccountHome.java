@@ -136,6 +136,10 @@ public class AccountHome extends FedeController implements Serializable {
      * Valor de la cuenta principal
      */
     private BigDecimal fundAccountMain;
+    /**
+     * Valor acumulado anterior de la cuenta seleccionada
+     */
+    private BigDecimal fundOldAccountSelected;
 
     /*  
      * Lista con los recordsDetails true
@@ -170,6 +174,8 @@ public class AccountHome extends FedeController implements Serializable {
         setRecordDetail(recordDetailService.createInstance());
 
         setRangeReport(-1);
+        setFundAccountMain(BigDecimal.ZERO);
+        setFundOldAccountSelected(BigDecimal.ZERO);
     }
 
     @Override
@@ -352,6 +358,14 @@ public class AccountHome extends FedeController implements Serializable {
 
     public void setFundAccountMain(BigDecimal fundAccountMain) {
         this.fundAccountMain = fundAccountMain;
+    }
+
+    public BigDecimal getFundOldAccountSelected() {
+        return fundOldAccountSelected;
+    }
+
+    public void setFundOldAccountSelected(BigDecimal fundOldAccountSelected) {
+        this.fundOldAccountSelected = fundOldAccountSelected;
     }
 
     public List<RecordDetail> getRecordDetailsUpdate() {
@@ -563,6 +577,7 @@ public class AccountHome extends FedeController implements Serializable {
      */
     private void calculateBalance() {
         BigDecimal accumulativeBalance = new BigDecimal(0);
+        accumulativeBalance = accumulativeBalance.add(this.fundOldAccountSelected);
         for (RecordDetail rd : this.recordDetailsAccount) {
             if (RecordDetail.RecordTDetailType.DEBE.equals(rd.getRecordDetailType())) {
                 accumulativeBalance = accumulativeBalance.add(rd.getAmount());
@@ -571,6 +586,24 @@ public class AccountHome extends FedeController implements Serializable {
             }
             rd.setAccumulatedBalance(accumulativeBalance);
         }
+    }
+
+    /**
+     * Calcula el saldo de la cuenta desde la fecha inicial de su creación hasta
+     * antes de la fecha getStart() del reporte
+     */
+    private void calculateCumulativeOld() {
+        this.fundOldAccountSelected = BigDecimal.ZERO;
+        Date _end = Dates.maximumDate(Dates.addDays(getStart(), -1));
+        //Obtener los recordDetails desde el mes anterior hasta el inicial
+        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end, this.organizationData.getOrganization());
+        recordDetailsOld.forEach(rd -> {
+            if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
+                this.fundOldAccountSelected = this.fundOldAccountSelected.add(rd.getAmount());
+            } else if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
+                this.fundOldAccountSelected = this.fundOldAccountSelected.subtract(rd.getAmount());
+            }
+        });
     }
 
     /**
@@ -591,6 +624,7 @@ public class AccountHome extends FedeController implements Serializable {
      */
     public void chargeListDetailsforAccount() {
         setRangeReport(-1);
+        calculateCumulativeOld();
         setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
     }

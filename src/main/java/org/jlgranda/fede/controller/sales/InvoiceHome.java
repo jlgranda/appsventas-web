@@ -1633,7 +1633,12 @@ public class InvoiceHome extends FedeController implements Serializable {
                 record.setBussinesEntityHashCode(_instance.hashCode());
 
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
-                record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal: %s", _instance.getOwner().getFullName(), _instance.getSummary(), Strings.format(_instance.getTotal().doubleValue(), "$ #0.##")));
+
+                if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, _instance.getOwner().getFullName(), this.organizationData.getOrganization()).isEmpty()) {
+                    record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getOwner().getFullName(), _instance.getSummary(), Strings.format(_instance.getTotal().doubleValue(), "$ #0.##")));
+                } else {
+                    record.setDescription(String.format("Empleado: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getOwner().getFullName(), _instance.getSummary(), Strings.format(_instance.getTotal().doubleValue(), "$ #0.##")));
+                }
             }
 
         }

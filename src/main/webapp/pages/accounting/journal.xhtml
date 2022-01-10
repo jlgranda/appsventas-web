@@ -70,17 +70,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.GeneralJournal"/>
         <div class="ui-g ui-fluid">
-            <div class=" ui-g ui-lg-12 ui-md-12">
+            <div class="ui-g ui-lg-12 ui-md-12">
                 <h1 class="BigTopic capital">#{i18n['app.fede.accounting.journal']}</h1>
                 <div class="EmptyBox10"/>
                 <div class="card ui-g ui-lg-12 ui-md-12">
-<!--                    <div class="ui-g ui-lg-12 ui-md-12">
-                        <p:outputLabel for="date-created" value="#{i18n['common.date.created']}"/>
-                        <p:datePicker id="date-created" value="#{generalJournalHome.journal.createdOn}"
-                                      monthNavigator="true" yearNavigator="true" showWeek="false" required="#{true}">
-                            <p:ajax event="dateSelect" oncomplete="this"/>
-                        </p:datePicker>
-                    </div>-->
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
                                     value="#{generalJournalHome.journal.code}" required="true"
                                     inlinehelp="#{messages['common.code.UUID.inlinehelp']}"

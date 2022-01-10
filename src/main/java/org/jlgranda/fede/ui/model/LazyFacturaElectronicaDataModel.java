@@ -315,7 +315,7 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         range.put("start", getStart());
         range.put("end", getEnd());
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
-
+        
         if (!Strings.isNullOrEmpty(getCode())) {
             _filters.put(FacturaElectronica_.code.getName(), getCode()); //Filtro por número de factura
         }
