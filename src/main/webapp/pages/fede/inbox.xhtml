@@ -34,6 +34,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['common.purchases']}</p:link></li>
         </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+                .ui-dataTable * {
+                    /*border : 0px !important;*/
+                }
+                .container-center{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                }
+                .bold-capital{
+                    font-weight: bolder;
+                    text-transform: uppercase;
+                }
+                .capital{
+                    text-transform: uppercase;
+                }
+                .container-right{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+                .container-lefth{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+                .line-separator{
+                    color: #FBFCFC !important;
+                    border-width: 0.5px;
+                }
+            </style>
+        </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
@@ -56,9 +90,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:calendar>                        
                             </h:panelGroup>
                         </h:panelGroup>
-                        <!--                    <p:selectBooleanCheckbox value="#{invoiceHome.busquedaAvanzada}">
-                        <p:ajax event="change" update="controles-busqueda-avanzada" />
-                    </p:selectBooleanCheckbox>-->
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
                                          actionListener="#{facturaElectronicaHome.clear()}" ajax="false" immediate="true">
                         </p:commandButton>
@@ -98,18 +129,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column id="summary" headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}" styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.importeTotal}">
+                            <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}">
+                                <h:outputText class="container-right" value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.emissionType}">
+                            <p:column headerText="#{i18n['common.amount']} #{i18n['common.pay.by']}">
+                                <h:outputText class="container-right" value="#{facturaElectronicaHome.montoPorPagar(facturaElectronica)}" 
+                                              title="#{facturaElectronicaHome.messageDatePaymentExpired(facturaElectronica.fechaVencimiento)}" 
+                                              style="#{facturaElectronicaHome.calculateDayOfExpiration(facturaElectronica)==true ? 'color: #F94C00' : ''}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}">
+                                <h:outputText class="capital" value="#{facturaElectronica.emissionType == 'PURCHASE_CREDIT' ? i18n['OVERDUE']: facturaElectronica.emissionType == 'PURCHASE_CASH' ? i18n['PURCHASE_CASH_LIT']:
+                                                                       facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
                                 </h:outputText>
                             </p:column>
                             <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="fechaUltimoPago"  headerText="Último Pago">
+                                <h:outputText value="#{facturaElectronica.ultimaFechaPago}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>

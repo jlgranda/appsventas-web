@@ -691,15 +691,15 @@ public class CashBoxHome extends FedeController implements Serializable {
         return activeButtonCloseCash;
     }
 
-    public void messageButtonCloseCash() {
-        if (this.activeButtonCloseCash = true) {
-            if (this.cashBoxPartial.getId() != null) {
-                if (this.saldoCash.compareTo(this.cashBoxPartial.getCashPartial()) != 0) {
-                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Para terminar el cierre de caja del todo el día deberá registrar el último dinero en efectivo.");
-                }
-            }
-        }
-    }
+//    public void messageButtonCloseCash() {
+//        if (this.activeButtonCloseCash = true) {
+//            if (this.cashBoxPartial.getId() != null) {
+//                if (this.saldoCash.compareTo(this.cashBoxPartial.getCashPartial()) != 0) {
+//                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Para terminar el cierre de caja del todo el día deberá registrar el último dinero en efectivo.");
+//                }
+//            }
+//        }
+//    }
 
     public void setActiveButtonCloseCash(boolean activeButtonCloseCash) {
         this.activeButtonCloseCash = activeButtonCloseCash;
@@ -1342,7 +1342,7 @@ public class CashBoxHome extends FedeController implements Serializable {
                 record.setBussinesEntityType(_instance.getClass().getSimpleName());
                 record.setBussinesEntityId(_instance.getId());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
-                record.setDescription(String.format("%s: %s \nCuenta de Depósito: %s \nMonto de Depósito: %s", _recordTemplate.getName(), _instance.getOwner().getFullName(), _instance.getAccountDeposit().getName(), Strings.format(_instance.getAmountDeposit().doubleValue(), "$ #0.##")));
+                record.setDescription(String.format("%s. %s| \nCuenta de Depósito: %s, \nMonto de Depósito: %s", _recordTemplate.getName(), _instance.getOwner().getFullName(), _instance.getAccountDeposit().getName(), Strings.format(_instance.getAmountDeposit().doubleValue(), "$ #0.##")));
             }
 
         }

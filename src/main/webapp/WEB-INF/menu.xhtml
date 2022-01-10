@@ -29,7 +29,7 @@
                             <p:menuitem id="om_tasks" value="#{i18n['app.documents.tasks']}" icon="fa fa-fw fa-tasks" outcome="/pages/management/tarea/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
                         </p:submenu>
                         <p:menuitem id="om_home" value="#{i18n['common.home']}" icon="fa fa-fw fa-home" outcome="home"  rendered="#{request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER') or request.isUserInRole('USER')}"/>
-                        <p:menuitem id="om_profile" value="#{i18n['common.profile']}" icon="fa fa-fw fa-user" outcome="/pages/fede/gifts/profile.jsf"  rendered="#{request.isUserInRole('USER')}"/>
+                        <p:menuitem id="om_profile" value="#{i18n['common.profile']}" icon="fa fa-fw fa-user" outcome="/pages/fede/gifts/profile.jsf"/>
 
                         <p:submenu id="om_smart_bussines" label="#{i18n['app.fede.smart']}" icon="fa fa-area-chart" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}">
                             <p:menuitem id="om_dashboard" value="#{i18n['app.fede.smart.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN')  or request.isUserInRole('MANAGER')}"/>

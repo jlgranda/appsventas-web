@@ -257,6 +257,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     private String productName;
 
+    private BigDecimal amoutPending;
+
     public FacturaElectronicaHome() {
     }
 
@@ -288,6 +290,12 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
+
+        getPayment().setAmount(BigDecimal.ZERO);
+        getPayment().setDiscount(BigDecimal.ZERO);
+        getPayment().setCash(BigDecimal.ZERO);
+        getPayment().setChange(BigDecimal.ZERO);
+        setAmoutPending(BigDecimal.ZERO);
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -355,6 +363,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     public FacturaElectronica getFacturaElectronica() {
         if (this.facturaElectronicaId != null && !this.facturaElectronica.isPersistent()) {
             this.facturaElectronica = facturaElectronicaService.find(facturaElectronicaId);
+            montoPorPagar();
+            calcularValoresFactura();
         }
         return facturaElectronica;
     }
@@ -542,6 +552,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public BigDecimal getAmoutPending() {
+        return amoutPending;
+    }
+
+    public void setAmoutPending(BigDecimal amoutPending) {
+        this.amoutPending = amoutPending;
     }
 
     /**
@@ -1139,10 +1157,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * Calcular valores del monto abonado del pago de la factura.
      */
     public void calcularMontoAbonado() {
-        if (getPayment().getAmount() != null && getPayment().getDiscount() != null) {
+        if (this.amoutPending.compareTo(getPayment().getAmount()) == 0 || this.amoutPending.compareTo(getPayment().getAmount()) == 1) {
             getPayment().setCash(getPayment().getAmount().subtract(getPayment().getDiscount()));
-        } else if (getPayment().getAmount() != null) {
-            getPayment().setCash(getPayment().getAmount());
+            getPayment().setChange(getPayment().getCash().subtract(getPayment().getAmount()));
+        } else {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.invalid", " " + this.amoutPending));
         }
     }
 
@@ -1158,37 +1177,62 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
      * Agrega o actualiza el pago de la factura.
      */
     public void addPayment() {
-        montoPorPagar();
         if (getPayment().getAmount() != null) {
             Payment p = paymentService.createInstance();
             p.setAmount(getPayment().getAmount());
             p.setDiscount(getPayment().getDiscount());
             p.setCash(getPayment().getCash());
             p.setChange(getPayment().getChange());
+            p.setDatePaymentCancel(Dates.now());
             this.getFacturaElectronica().addPayment(p);
+            facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);///guardar el pago
+            System.out.println("patmentMeto: " + getPayment().getMethod());
+            if (getPayment().getMethod() != null) {
+                registerRecordInJournalPaymentCredit();//registrar el asiento contable para pago de compra a crédito
+            }
             setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
+            getPayment().setAmount(BigDecimal.ZERO);
+            getPayment().setDiscount(BigDecimal.ZERO);
+            getPayment().setCash(BigDecimal.ZERO);
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.required"));
         }
+        if (!facturaElectronica.getPayments().isEmpty()) {
+//            Collections.sort(facturaElectronica.getPayments(), Collections.reverseOrder((Payment pay, Payment other) -> pay.getLastUpdate().compareTo(other.getLastUpdate())));
+            facturaElectronica.getPayments().get(0).getAmount();
+        }
+        montoPorPagar();//Lo que resta por pagar, luego de registrar un pago
     }
 
-    public BigDecimal montoPorPagar() {
-        BigDecimal total = new BigDecimal(0);
-        BigDecimal residuo = new BigDecimal(0);
-        for (int i = 0; i < facturaElectronica.getPayments().size(); i++) {
-            total = total.add(facturaElectronica.getPayments().get(i).getAmount());
+    public void montoPorPagar() {
+        BigDecimal total = BigDecimal.ZERO;
+        this.amoutPending = BigDecimal.ZERO;
+        for (Payment p : facturaElectronica.getPayments()) {
+            total = total.add(p.getAmount());
         }
-        if (getPayment().getAmount() != null) {
-            residuo = facturaElectronica.getImporteTotal().subtract(total.add(getPayment().getAmount()));
-        } else if (total.compareTo(BigDecimal.ZERO) == 1) {
-            residuo = facturaElectronica.getImporteTotal().subtract(total);
+        this.amoutPending = facturaElectronica.getImporteTotal().subtract(total);
+        if (BigDecimal.ZERO.compareTo(getPayment().getAmount()) == -1) {
+            this.amoutPending = this.amoutPending.subtract(getPayment().getAmount());
+        }
+        if (this.amoutPending != null) {
+            this.payableTotal = this.amoutPending.compareTo(BigDecimal.ZERO) == 0;
+        }
+    }
+
+    public BigDecimal montoPorPagar(FacturaElectronica facturaElectronica) {
+        BigDecimal total = BigDecimal.ZERO;
+        if (EmissionType.PURCHASE_CREDIT.equals(facturaElectronica.getEmissionType())) {
+            for (Payment p : facturaElectronica.getPayments()) {
+                total = total.add(p.getAmount());
+            }
         } else {
-            residuo = facturaElectronica.getImporteTotal();
+            if (facturaElectronica.getPayments().isEmpty()) {
+                total = facturaElectronica.getImporteTotal();
+            } else {
+                total = facturaElectronica.getPayments().get(facturaElectronica.getPayments().size() - 1).getAmount();
+            }
         }
-        if (residuo != null) {
-            this.payableTotal = residuo.compareTo(BigDecimal.ZERO) == 0;
-        }
-        return residuo;
+        return facturaElectronica.getImporteTotal().subtract(total);
     }
 
     /**
@@ -1211,7 +1255,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             p.setCash(facturaElectronica.getImporteTotal());
             p.setChange(BigDecimal.ZERO);
             p.setDatePaymentCancel(Dates.now());
-            this.getFacturaElectronica().addPayment(p);
+            facturaElectronica.addPayment(p);
             setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.incorrect"));
@@ -1312,9 +1356,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 //            }
 //        }
 //    }
-//    public void calcularTotalFactura() {
-//        this.facturaElectronica.setImporteTotal((this.facturaElectronica.getTotalIVA0().add(this.facturaElectronica.getTotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
-//    }
+    public void calcularTotalFactura() {
+        this.facturaElectronica.setImporteTotal((this.facturaElectronica.getSubtotalIVA0().add(this.facturaElectronica.getSubtotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
+    }
+
     public void registerRecordInJournal() {
 
         boolean registradoEnContabilidad = false;
@@ -1322,7 +1367,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro del cierre de cada
-            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_COMPRAS"));
+            if (EmissionType.PURCHASE_CASH.equals(facturaElectronica.getEmissionType())) {
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprasefectivo", "REGISTRO_COMPRAS_EFECTIVO"));
+            } else if (EmissionType.PURCHASE_CREDIT.equals(facturaElectronica.getEmissionType())) {
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprascredito", "REGISTRO_COMPRAS_CREDITO"));
+            }
 
             List<Record> records = new ArrayList<>();
             getReglas().forEach(regla -> {
@@ -1336,7 +1385,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                 GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
                 //Anular registros anteriores
-                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId());
+                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId(), this.facturaElectronica.hashCode());
 
                 //El General Journal del día
                 if (generalJournal != null) {
@@ -1352,6 +1401,106 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
                         //Corregir objetos cuenta en los detalles
                         record.getRecordDetails().forEach(rd -> {
                             rd.setLastUpdate(Dates.now());
+                            if (rd.getAccountName().contains("$CEDULA")) {
+                                Account cuentaPadre = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
+                                String nombreCuenta = rd.getAccountName().substring(0, rd.getAccountName().length() - 7).concat(this.facturaElectronica.getAuthor().getCode());
+                                Account cuentaXCobrarOwner = accountCache.lookupByName(nombreCuenta, this.organizationData.getOrganization());
+                                if (cuentaXCobrarOwner == null) {
+                                    cuentaXCobrarOwner = accountService.createInstance();//crear la cuenta
+                                    cuentaXCobrarOwner.setCode(this.accountCache.genereNextCode(cuentaPadre.getId()));
+                                    cuentaXCobrarOwner.setCodeType(CodeType.SYSTEM);
+                                    cuentaXCobrarOwner.setUuid(UUID.randomUUID().toString());
+                                    cuentaXCobrarOwner.setName(nombreCuenta.toUpperCase());
+                                    cuentaXCobrarOwner.setDescription(cuentaXCobrarOwner.getName());
+                                    cuentaXCobrarOwner.setParentAccountId(cuentaPadre.getId());
+                                    cuentaXCobrarOwner.setOrganization(this.organizationData.getOrganization());
+                                    cuentaXCobrarOwner.setAuthor(this.subject);
+                                    cuentaXCobrarOwner.setOwner(this.subject);
+                                    cuentaXCobrarOwner.setOrden(Short.MIN_VALUE);
+                                    cuentaXCobrarOwner.setPriority(0);
+                                    accountService.save(cuentaXCobrarOwner.getId(), cuentaXCobrarOwner);
+                                    this.accountCache.load(); //recargar todas las cuentas
+                                }
+                                rd.setAccount(cuentaXCobrarOwner);
+                                rd.setAccountName(rd.getAccount().getName());
+                            } else {
+                                rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
+                            }
+                        });
+
+                        //Persistencia
+                        recordService.save(record);
+                    }
+                }
+            }
+        }
+    }
+
+    public void registerRecordInJournalPaymentCredit() {
+
+        boolean registradoEnContabilidad = false;
+        setAccountingEnabled(true);
+        if (isAccountingEnabled()) {
+
+            //Ejecutar las reglas de negocio para el registro del cierre de cada
+            if (getPayment().getMethod().equals("EFECTIVO")) {
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registropagocomprascreditoefectivo", "REGISTRO_PAGO_COMPRAS_CREDITO_EFECTIVO"));
+            } else if (getPayment().getMethod().equals("TARJETA CREDITO") || getPayment().getMethod().equals("TARJETA DEBITO")) {
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registropagocomprascreditotransferencia", "REGISTRO_PAGO_COMPRAS_CREDITO_TRANSFERENCIA"));
+            }
+
+            List<Record> records = new ArrayList<>();
+            getReglas().forEach(regla -> {
+                records.add(aplicarReglaNegocio(regla, this.facturaElectronica));
+            });
+
+            if (!records.isEmpty()) {
+                //La regla compiló bien
+                String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+                String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+
+                //Anular registros anteriores
+                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId(), this.facturaElectronica.hashCode());
+
+                //El General Journal del día
+                if (generalJournal != null) {
+                    for (Record record : records) {
+
+                        record.setCode(UUID.randomUUID().toString());
+
+                        record.setOwner(this.subject);
+                        record.setAuthor(this.subject);
+
+                        record.setGeneralJournalId(generalJournal.getId());
+
+                        //Corregir objetos cuenta en los detalles
+                        record.getRecordDetails().forEach(rd -> {
+                            rd.setLastUpdate(Dates.now());
+                            if (rd.getAccountName().contains("$CEDULA")) {
+                                Account cuentaPadre = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
+                                String nombreCuenta = rd.getAccountName().substring(0, rd.getAccountName().length() - 7).concat(this.facturaElectronica.getAuthor().getCode());
+                                Account cuentaXCobrarOwner = accountCache.lookupByName(nombreCuenta, this.organizationData.getOrganization());
+                                if (cuentaXCobrarOwner == null) {
+                                    cuentaXCobrarOwner = accountService.createInstance();//crear la cuenta
+                                    cuentaXCobrarOwner.setCode(this.accountCache.genereNextCode(cuentaPadre.getId()));
+                                    cuentaXCobrarOwner.setCodeType(CodeType.SYSTEM);
+                                    cuentaXCobrarOwner.setUuid(UUID.randomUUID().toString());
+                                    cuentaXCobrarOwner.setName(nombreCuenta.toUpperCase());
+                                    cuentaXCobrarOwner.setDescription(cuentaXCobrarOwner.getName());
+                                    cuentaXCobrarOwner.setParentAccountId(cuentaPadre.getId());
+                                    cuentaXCobrarOwner.setOrganization(this.organizationData.getOrganization());
+                                    cuentaXCobrarOwner.setAuthor(this.subject);
+                                    cuentaXCobrarOwner.setOwner(this.subject);
+                                    cuentaXCobrarOwner.setOrden(Short.MIN_VALUE);
+                                    cuentaXCobrarOwner.setPriority(0);
+                                    accountService.save(cuentaXCobrarOwner.getId(), cuentaXCobrarOwner);
+                                    this.accountCache.load(); //recargar todas las cuentas
+                                }
+                                rd.setAccount(cuentaXCobrarOwner);
+                                rd.setAccountName(rd.getAccount().getName());
+                            } else {
+                            }
                             rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
                         });
 
@@ -1546,6 +1695,35 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         }
     }
 
+    public boolean calculateDayOfExpiration(FacturaElectronica facturaElectronica) {
+        if (facturaElectronica.getPayments().isEmpty()) {
+            facturaElectronica.setUltimaFechaPago(facturaElectronica.getFechaEmision());
+        } else {
+            if (facturaElectronica.getPayments().get(facturaElectronica.getPayments().size() - 1).getDatePaymentCancel() != null) {
+                facturaElectronica.setUltimaFechaPago(facturaElectronica.getPayments().get(facturaElectronica.getPayments().size() - 1).getDatePaymentCancel());
+            } else {
+                facturaElectronica.setUltimaFechaPago(facturaElectronica.getPayments().get(facturaElectronica.getPayments().size() - 1).getCreatedOn());
+            }
+        }
+        if (facturaElectronica.getFechaVencimiento() != null && BigDecimal.ZERO.compareTo(montoPorPagar(facturaElectronica)) == -1) {
+            if (Dates.isInRange(getEnd(), Dates.minimumDate(Dates.addDays(getEnd(), 5)), facturaElectronica.getFechaVencimiento())) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public String messageDatePaymentExpired(Date fechaVencimiento) {
+        if (fechaVencimiento != null) {
+            return I18nUtil.getMessages("app.fede.purchases.credit.payment.message.alert", " " + Dates.calculateNumberOfDaysBetween(getEnd(), fechaVencimiento));
+        } else {
+            return "";
+        }
+    }
+
     public void openPanelDetail() {
         this.activePanelProduct = false;
     }
@@ -1564,14 +1742,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void saveProductNew() {
         this.productNew.setName(this.productNew.getName());
-        this.productNew.setProductType(ProductType.PRODUCT);
+//        this.productNew.setProductType(ProductType.PRODUCT);
         this.productNew.setDescription(this.productNew.getName());
         this.productNew.setCategory(this.groupSelected);
         this.productNew.setAuthor(this.subject);
         this.productNew.setOrganization(this.organizationData.getOrganization());
         this.productNew.setOwner(this.subject);
         productService.save(this.productNew.getId(), this.productNew); //Volver a guardar el producto para almacenar el ggroup
-        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se añadió correctamente el producto " + this.productNew.getName() + " al Inventario");
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.product.add", " " + this.productNew.getName()));
         this.activePanelProduct = false;
 
         //Cargar producto en el cache
@@ -1582,7 +1760,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void messageAlert() {
         if (this.facturaElectronicaId == null) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), "Para iniciar el registro seleccione un proveedor");
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.message.start"));
         }
     }
 
@@ -1691,7 +1869,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         Record record = null;
         if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
-            KnowledgeBuilderErrors kbers = FedeController.ruleRunner.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
+            RuleRunner ruleRunner1 = new RuleRunner();
+            KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
 
             if (kbers != null) { //Contiene errores de compilación
                 logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
@@ -1700,10 +1879,18 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             } else {
                 record.setBussinesEntityType(_instance.getClass().getSimpleName());
                 record.setBussinesEntityId(_instance.getId());
+                record.setBussinesEntityHashCode(_instance.hashCode());
 
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
-                record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal: %s", _instance.getAuthor().getFullName(), _instance.getDescription(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
-
+                if (EmissionType.PURCHASE_CASH.equals(_instance.getEmissionType())) {
+                    record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal facturado: %s", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                } else if (EmissionType.PURCHASE_CREDIT.equals(_instance.getEmissionType())) {
+                    if (_instance.getPayments().isEmpty()) {
+                        record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                    } else {
+                        record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(_instance.getPayments().get(_instance.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##")));
+                    }
+                }
             }
 
         }

@@ -74,8 +74,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="ui-g ui-lg-4 ui-md-4">
                         <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
                         <div class="EmptyBox10"></div>
-                        <p:autoComplete value="#{accountHome.recordDetail.account}" effect="blind" 
-                                        minQueryLength="2" completeMethod="#{accountHome.find}"
+                        <p:autoComplete value="#{accountHome.recordDetail.account}" effect="fade" 
+                                        minQueryLength="2" completeMethod="#{accountHome.find}"  required="true"
                                         var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter" forceSelection="true"
                                         placeholder="#{i18n['common.account.find']}">
@@ -131,11 +131,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              value="#{accountHome.recordDetailsUpdate}" var="recordDetail"
                                              selection="#{accountHome.selectedBussinesEntities}"
                                              editable="#{accountHome.recordOfReferen}">
-                                    <p:column headerText="#{i18n['common.date']}" style="width: 15%">
-                                        <h:outputText value="#{recordDetail.createdOn}">
-                                            <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
-                                        </h:outputText>
-                                    </p:column>
                                     <p:column headerText="#{i18n['common.details']}" style="width: auto">
                                         <p:cellEditor>
                                             <f:facet name="output">
@@ -188,7 +183,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                 </div>
                 <div class="EmptyBox10"></div>
-                <p:toolbar>
+                <p:toolbar rendered="#{accountHome.recordOfReferen}">
                     <f:facet name="left">
                         <p:commandButton id="save" value="#{i18n['common.save']}" 
                                          ajax="false" 
@@ -198,10 +193,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton ajax="true" disabled="false" immediate="true"
-                                         actionListener="#{accountHome.closeDialog(accountHome.journal.id)}"
+                                         actionListener="#{accountHome.closeDialog(accountHome.record.id)}"
                                          action="#{accountHome.redirect}"
-                                         icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"
-                                         />
+                                         icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"/>
                     </f:facet>
                 </p:toolbar>
             </h:form>
