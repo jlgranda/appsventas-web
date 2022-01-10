@@ -40,27 +40,28 @@ and open the template in the editor.
                             <div class="ui-g ui-fluid">
                                 <div class="ui-g ui-lg-12">
                                     <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['common.ruc']}" 
-                                                    value="#{organizationHome.organization.ruc}" required="true" 
-                                                    inlinehelp="#{messages['common.ruc.inlinehelp']}" execute="@this save" render="ruc"
+                                                    value="#{organizationHome.organization.ruc}" 
+                                                    required="true" 
+                                                    inlinehelp="#{messages['common.ruc.inlinehelp']}"
                                                     container="none"/>
                                     <jlgranda:input id="nm" name="name" type="text" label="#{i18n['common.names.full']}"
-                                                    value="#{organizationHome.organization.name}" required="true" 
-                                                    inlinehelp="#{messages['app.management.organization.name.inlinehelp']}" execute="@this save" render="nm"
+                                                    value="#{organizationHome.organization.name}" 
+                                                    required="true" 
+                                                    inlinehelp="#{messages['app.management.organization.name.inlinehelp']}"
                                                     container="none"/>
                                     <jlgranda:input id="type" name="type" type="select" label="#{i18n['common.type']}" 
                                                     value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
                                                     converter="omnifaces.SelectItemsConverter"
                                                     required="true" inlinehelp="#{messages['app.management.organization.type.inlinehelp']}" 
                                                     onchange="return;"
-                                                    execute="@this save" render="type"
                                                     container="none"/>
                                     <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['common.company.initials']}" 
                                                     value="#{organizationHome.organization.initials}" required="true" 
-                                                    inlinehelp="#{messages['initials.inlinehelp']}" execute="@this save" render="intls"
+                                                    inlinehelp="#{messages['initials.inlinehelp']}"
                                                     container="none"/>
                                     <jlgranda:input id="dsc" name="description" type="textarea" label="#{i18n['common.description']}" 
                                                     value="#{organizationHome.organization.description}" required="false" 
-                                                    inlinehelp="#{messages['common.description.inlinehelp']}" execute="@this save" render="dsc"
+                                                    inlinehelp="#{messages['common.description.inlinehelp']}"
                                                     container="none"/>
                                 </div>                           
                             </div>
