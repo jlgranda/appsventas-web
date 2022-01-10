@@ -44,10 +44,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-lg-12 ui-md-12">
                     <div class="ui-g ui-fluid">
-                        <div class="ui-g ui-lg-8">
+                        <div class="ui-g ui-lg-8" style="align-self: center">
                             <h1>#{subjectAdminHome.subjectEdit.fullName}</h1>
                         </div>
-                        <div class="ui-g ui-lg-4">
+                        <div class="ui-g ui-lg-4" style="place-content: flex-end;">
                             <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}"  
                                             height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
                                             width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
@@ -103,11 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:panel>
                         </div>                           
                     </div>
-
-
-
                     <div class="EmptyBox10"></div>
-
                     <p:toolbar>
                         <f:facet name="left">
                             <p:commandButton id="save" value="#{i18n['common.save']}" 
@@ -117,23 +113,58 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              style="width: auto !important;"
                                              type="submit"/>
                         </f:facet>
-
                         <f:facet name="right">
-
                             <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                             <p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem rendered="#{subjectAdminHome.subjectEdit.persistent}" value="#{i18n['app.signin.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
+                                <p:menuitem icon="fa fa-key" value="#{i18n['app.signin.password.change']}" onclick="PF('dlgCambiarClave').show()"
+                                            rendered="#{subjectAdminHome.subjectEdit.persistent}"
+                                            immediate="true"/>
+                                <p:menuitem icon="fa fa-group" value="#{i18n['app.signin.setting.roles']}"
+                                            action="#{subjectAdminHome.cargarRoles()}"
+                                            onclick="PF('dlgConfigurarRoles').show()"
+                                            rendered="#{subjectAdminHome.subjectEdit.persistent}"
+                                            immediate="true"/>
                                 <p:menuitem value="#{i18n['common.submit']} #{i18n['common.message']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(false)}" icon="fa fa-magic" 
                                             immediate="true" rendered="#{!subjectAdminHome.subjectEdit.confirmed}"/>
                                 <p:menuitem value="#{i18n['common.force']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(true)}" icon="fa fa-magic" 
                                             immediate="true" rendered="#{subjectAdminHome.subjectEdit.confirmed}"/>
                             </p:menuButton>
                         </f:facet>
-
                     </p:toolbar>
                 </div>
             </div>
+            <p:dialog id="dlgConfigurarRoles" widgetVar="dlgConfigurarRoles" 
+                      modal="true" draggable="true" position="center" closable="false" >
+                <f:facet name="header">
+                    <i class="fa fa-fw fa fa-group"></i>
+                    <h:outputText value="#{i18n['app.signin.setting.roles']}"/>
+                </f:facet>
+                <div class="p-d-flex" style="text-align-last: center;">(Seleccionar los roles del usuario)</div>
+                #{subjectAdminHome.roles.source}
+                <p:pickList id="pickList-roles" value="#{subjectAdminHome.roles}"
+                            var="rol" itemValue="#{rol}" itemLabel="#{rol.name eq 'ADMIN' ? 'Administrador' : 
+                                                   (rol.name eq 'CHECKER' ? 'Cajero' : (rol.name eq 'ACCOUNTING' ? 'Contador' : 
+                                                   (rol.name eq 'EMPLOYEE' ? 'Empleado' : (rol.name eq 'MANAGER' ? 'Gestor' : 
+                                                   (rol.name eq 'USER' ? 'Usuario' : rol.name)))))}"
+                            showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                            showTargetControls="true"
+                            converter="org.jlgranda.fede.ui.converter.RolesConverter" responsive="true">
+                    <f:facet name="sourceCaption">NO ASIGNADO</f:facet>
+                    <f:facet name="targetCaption">ASIGNADO</f:facet>
+                </p:pickList>
+                #{subjectAdminHome.roles.target}
+                <f:facet name="footer">
+                    <p:commandButton icon="pi pi-check" styleClass="primary-button"
+                                     value="#{i18n['common.save']}"
+                                     update="@form"
+                                     action="#{subjectAdminHome.changeRoles()}"
+                                     onsuccess="PF('dlgConfigurarRoles').hide()"/>
+                    <p:commandButton type="button" icon="fa fa-close Fs14" styleClass="danger-btn"
+                                     value="#{i18n['common.cancel']}"
+                                     onclick="PF('dlgConfigurarRoles').hide()"/>
+                </f:facet>
+            </p:dialog>
             <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
                       header="#{i18n['app.signin.password.change']}" 
                       modal="true" draggable="true" position="center" closable="false" >
@@ -168,10 +199,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div>
             </p:dialog>
             <!--/.panel-body -->
-
         </ui:define>
         <ui:define name="script">
-
         </ui:define>
     </ui:composition>
 </html>
