@@ -121,7 +121,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             rendered="#{subjectAdminHome.subjectEdit.persistent}"
                                             immediate="true"/>
                                 <p:menuitem icon="fa fa-group" value="#{i18n['app.signin.setting.roles']}"
-                                            action="#{subjectAdminHome.cargarRoles()}"
                                             onclick="PF('dlgConfigurarRoles').show()"
                                             rendered="#{subjectAdminHome.subjectEdit.persistent}"
                                             immediate="true"/>
@@ -141,19 +140,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <h:outputText value="#{i18n['app.signin.setting.roles']}"/>
                 </f:facet>
                 <div class="p-d-flex" style="text-align-last: center;">(Seleccionar los roles del usuario)</div>
-                #{subjectAdminHome.roles.source}
                 <p:pickList id="pickList-roles" value="#{subjectAdminHome.roles}"
-                            var="rol" itemValue="#{rol}" itemLabel="#{rol.name eq 'ADMIN' ? 'Administrador' : 
-                                                   (rol.name eq 'CHECKER' ? 'Cajero' : (rol.name eq 'ACCOUNTING' ? 'Contador' : 
-                                                   (rol.name eq 'EMPLOYEE' ? 'Empleado' : (rol.name eq 'MANAGER' ? 'Gestor' : 
-                                                   (rol.name eq 'USER' ? 'Usuario' : rol.name)))))}"
+                            var="rol" itemValue="#{rol}"
                             showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
                             showTargetControls="true"
-                            converter="org.jlgranda.fede.ui.converter.RolesConverter" responsive="true">
+                            converter="org.jlgranda.fede.ui.converter.RolesConverter" responsive="true"
+                            >
                     <f:facet name="sourceCaption">NO ASIGNADO</f:facet>
                     <f:facet name="targetCaption">ASIGNADO</f:facet>
+                    <p:ajax event="transfer" listener="#{subjectAdminHome.onTransfer}" />
+                    <p:column style="width:94%">
+                        <div class="p-d-flex p-ai-center">
+                            <h:outputText value="#{rol.name}"/>
+                        </div>
+                    </p:column>
                 </p:pickList>
-                #{subjectAdminHome.roles.target}
+                
                 <f:facet name="footer">
                     <p:commandButton icon="pi pi-check" styleClass="primary-button"
                                      value="#{i18n['common.save']}"

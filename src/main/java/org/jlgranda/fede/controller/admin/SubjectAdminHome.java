@@ -32,8 +32,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -103,7 +105,9 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private String clave;
     private boolean cambiarClave;
     PasswordService svc = new DefaultPasswordService();
-    private DualListModel<Roles> roles;
+    
+    
+    private DualListModel<Roles> roles = new DualListModel<>();
     private List<Roles> rolesSource;
     private List<Roles> rolesTarget;
 
@@ -375,16 +379,8 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
     }
 
-    public void cargarRoles() throws IOException {
-        if (subjectEdit.getId() != null) {
-            rolesTarget = rolesService.findByNamedQuery("Roles.findByUsername", subjectEdit.getUsername());
-            rolesSource = rolesService.findByNamedQuery("Roles.findAll");
-            rolesSource.removeAll(rolesTarget);
-            roles = new DualListModel<>(rolesSource, rolesTarget);
-        }
-    }
-
     public void changeRoles() {
+        System.out.println(">>>>>roles: " + roles);
         System.out.println(">>>>>roles.getSource()" + roles.getSource());
         System.out.println(">>>>>roles.getTarget()" + roles.getTarget());
     }
@@ -420,7 +416,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 rolesTarget = rolesService.findByNamedQuery("Roles.findByUsername", subjectEdit.getUsername());
                 rolesSource = rolesService.findByNamedQuery("Roles.findAll");
                 rolesSource.removeAll(rolesTarget);
-                roles = new DualListModel<>(rolesSource, rolesTarget);
+                roles = new DualListModel<>(new ArrayList<>(rolesSource), new ArrayList<>(rolesTarget));
             }
         }
         return subjectEdit;
@@ -531,6 +527,20 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void onTransfer(TransferEvent event) {
+        StringBuilder builder = new StringBuilder();
+        for (Object item : event.getItems()) {
+            builder.append(((Roles) item).getName()).append("<br />");
+        }
+
+        FacesMessage msg = new FacesMessage();
+        msg.setSeverity(FacesMessage.SEVERITY_INFO);
+        msg.setSummary("Items Transferred");
+        msg.setDetail(builder.toString());
+
+        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
 }
