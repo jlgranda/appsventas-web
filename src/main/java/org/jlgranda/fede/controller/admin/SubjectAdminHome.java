@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
@@ -105,11 +106,10 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private String clave;
     private boolean cambiarClave;
     PasswordService svc = new DefaultPasswordService();
-    
-    
+
     private DualListModel<Roles> roles = new DualListModel<>();
-    private List<Roles> rolesSource;
-    private List<Roles> rolesTarget;
+    private List<Roles> rolesNoAsignadosUsuario;
+    private List<Roles> rolesAsignadosUsuario;
 
     public SubjectAdminHome() {
         this.grupos = new ArrayList<>();
@@ -379,13 +379,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         }
     }
 
-    public void changeRoles() {
-        System.out.println(">>>>>roles: " + roles);
-        System.out.println(">>>>>roles.getSource()" + roles.getSource());
-        System.out.println(">>>>>roles.getTarget()" + roles.getTarget());
-    }
-    
-
     /**
      * Probar si el código ingresado por el usario pertenece aun usuario
      * inactivo o registrado por el operador Si el usuario existe, cargar los
@@ -412,14 +405,44 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 FacesContext context = FacesContext.getCurrentInstance();
                 context.getExternalContext().getSessionMap().put("photoUser", this.subjectEdit.getPhoto());
             }
-            if (subjectEdit.getId() != null) {
-                rolesTarget = rolesService.findByNamedQuery("Roles.findByUsername", subjectEdit.getUsername());
-                rolesSource = rolesService.findByNamedQuery("Roles.findAll");
-                rolesSource.removeAll(rolesTarget);
-                roles = new DualListModel<>(new ArrayList<>(rolesSource), new ArrayList<>(rolesTarget));
-            }
+            loadRoles();//Cargar los roles
         }
         return subjectEdit;
+    }
+
+    public void loadRoles() {
+        if (subjectEdit.getId() != null) {
+            rolesAsignadosUsuario = rolesService.findByNamedQuery("Roles.findByUsername", subjectEdit.getUsername());
+            List<String> rolesName = new ArrayList<>();
+            rolesAsignadosUsuario.forEach(r -> {
+                rolesName.add(r.getName());
+            });
+            rolesNoAsignadosUsuario = rolesService.findByNamedQuery("Roles.findNotByUsername", rolesName);
+            roles = new DualListModel<>(new ArrayList<>(rolesNoAsignadosUsuario), rolesAsignadosUsuario);
+        }
+    }
+
+    public void onTransfer(TransferEvent event) {
+        StringBuilder builder = new StringBuilder();
+//        System.out.println("event.getItems(): " + event.getItems());
+        for (Object item : event.getItems()) {
+//            System.out.println("item " + item);
+            builder.append(((Roles) item).getName());
+            UsersRoles shiroUsersRoles = new UsersRoles();
+            UsersRolesPK usersRolesPK = new UsersRolesPK(subjectEdit.getUsername(), ((Roles) item).getName());
+            shiroUsersRoles.setUsersRolesPK(usersRolesPK);
+            FacesMessage msg = new FacesMessage();
+            msg.setSeverity(FacesMessage.SEVERITY_INFO);
+            if (Objects.equals(event.isAdd(), Boolean.TRUE) && null == usersRolesFacade.find(usersRolesPK)) {//Agregar rol
+                usersRolesFacade.create(shiroUsersRoles);
+                msg.setSummary("Rol asignado correctamente!");
+            } else if (Objects.equals(event.isRemove(), Boolean.TRUE) && null != usersRolesFacade.find(usersRolesPK)) {//Remover rol
+                usersRolesFacade.remove(shiroUsersRoles);
+                msg.setSummary("Rol desasignado correctamente!");
+            }
+            msg.setDetail(builder.toString());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
     }
 
     public void setSubjectEdit(Subject subjectEdit) {
@@ -527,20 +550,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    public void onTransfer(TransferEvent event) {
-        StringBuilder builder = new StringBuilder();
-        for (Object item : event.getItems()) {
-            builder.append(((Roles) item).getName()).append("<br />");
-        }
-
-        FacesMessage msg = new FacesMessage();
-        msg.setSeverity(FacesMessage.SEVERITY_INFO);
-        msg.setSummary("Items Transferred");
-        msg.setDetail(builder.toString());
-
-        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
 }

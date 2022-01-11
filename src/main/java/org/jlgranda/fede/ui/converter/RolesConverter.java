@@ -17,13 +17,17 @@
 package org.jlgranda.fede.ui.converter;
 
 import com.jlgranda.shiro.Roles;
+import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import org.omnifaces.converter.SelectItemsConverter;
 import org.primefaces.component.picklist.PickList;
 import org.primefaces.model.DualListModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,19 +36,75 @@ import org.primefaces.model.DualListModel;
 @RequestScoped
 @FacesConverter("org.jlgranda.fede.ui.converter.RolesConverter")
 public class RolesConverter extends SelectItemsConverter {
-    
+
+//    private static final Logger LOG = LoggerFactory.getLogger(RolesConverter.class);
+//
+//    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+//        LOG.trace("String value: {}", value);
+//        return getObjectFromUIPickListComponent(component, value);
+//    }
+//
+//    public String getAsString(FacesContext context, UIComponent component, Object object) {
+//        String string;
+//        LOG.trace("Object value: {}", object);
+//        if (object == null) {
+//            string = "";
+//        } else {
+//            try {
+//                string = String.valueOf(((Roles) object).getName());
+//            } catch (ClassCastException cce) {
+//                throw new ConverterException();
+//            }
+//        }
+//        return string;
+//    }
+//
+//    @SuppressWarnings("unchecked")
+//    private Roles getObjectFromUIPickListComponent(UIComponent component, String value) {
+//        final DualListModel<Roles> dualList;
+//        try {
+//            dualList = (DualListModel<Roles>) ((PickList) component).getValue();
+//            Roles team = getObjectFromList(dualList.getSource(), Integer.valueOf(value));
+//            if (team == null) {
+//                team = getObjectFromList(dualList.getTarget(), Integer.valueOf(value));
+//            }
+//
+//            return team;
+//        } catch (ClassCastException cce) {
+//            throw new ConverterException();
+//        } catch (NumberFormatException nfe) {
+//            throw new ConverterException();
+//        }
+//    }
+//
+//    private Roles getObjectFromList(final List<?> list, final Integer identifier) {
+//        for (final Object object : list) {
+//            final Roles team = (Roles) object;
+//            if (team.getName().equals(identifier)) {
+//                return team;
+//            }
+//        }
+//        return null;
+//    }
     @Override
     public Object getAsObject(FacesContext facesContext, UIComponent component, String submittedValue) {
         PickList p = (PickList) component;
         DualListModel dl = (DualListModel) p.getValue();
-        for (int i = 0; i < dl.getSource().size(); i++) {
-            if ( ( (Roles) dl.getSource().get(i)).getName().contentEquals(submittedValue)) {
-                return dl.getSource().get(i);
+        if (dl.getSource() != null && dl.getSource().size() > 0) {
+            for (int i = 0; i < dl.getSource().size(); i++) {
+                if (((Roles) dl.getSource().get(i)).getName().contentEquals(submittedValue)) {
+                    return dl.getSource().get(i);
+                }
             }
         }
-        for (int i = 0; i < dl.getTarget().size(); i++) {
-            if ( ( (Roles) dl.getSource().get(i)).getName().contentEquals(submittedValue)) {
-                return dl.getTarget().get(i);
+        if (dl.getTarget() != null && dl.getTarget().size() > 0) {
+            for (int i = 0; i < dl.getTarget().size(); i++) {
+//                System.out.println("SubmittedValue: " + submittedValue);
+//                System.out.println("dl.getTarget().get(i)).getName(): " + ((Roles) dl.getTarget().get(i)).getName());
+//                System.out.println("if: " + ((Roles) dl.getTarget().get(i)).getName().equals(submittedValue));
+                if (((Roles) dl.getTarget().get(i)).getName().equals(submittedValue)) {
+                    return dl.getTarget().get(i);
+                }
             }
         }
         return null;
@@ -55,7 +115,7 @@ public class RolesConverter extends SelectItemsConverter {
         String key = null;
         if (value instanceof Roles) {
             key = ((Roles) value).getName();
-        } 
+        }
         return key;
     }
 }

@@ -122,6 +122,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             immediate="true"/>
                                 <p:menuitem icon="fa fa-group" value="#{i18n['app.signin.setting.roles']}"
                                             onclick="PF('dlgConfigurarRoles').show()"
+                                            actionListener="#{subjectAdminHome.loadRoles()}"
                                             rendered="#{subjectAdminHome.subjectEdit.persistent}"
                                             immediate="true"/>
                                 <p:menuitem value="#{i18n['common.submit']} #{i18n['common.message']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(false)}" icon="fa fa-magic" 
@@ -134,38 +135,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div>
             </div>
             <p:dialog id="dlgConfigurarRoles" widgetVar="dlgConfigurarRoles" 
-                      modal="true" draggable="true" position="center" closable="false" >
+                      modal="true" draggable="true" position="center" closeOnEscape="true">
                 <f:facet name="header">
                     <i class="fa fa-fw fa fa-group"></i>
                     <h:outputText value="#{i18n['app.signin.setting.roles']}"/>
                 </f:facet>
                 <div class="p-d-flex" style="text-align-last: center;">(Seleccionar los roles del usuario)</div>
-                <p:pickList id="pickList-roles" value="#{subjectAdminHome.roles}"
-                            var="rol" itemValue="#{rol}"
-                            showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
-                            showTargetControls="true"
-                            converter="org.jlgranda.fede.ui.converter.RolesConverter" responsive="true"
-                            >
-                    <f:facet name="sourceCaption">NO ASIGNADO</f:facet>
-                    <f:facet name="targetCaption">ASIGNADO</f:facet>
-                    <p:ajax event="transfer" listener="#{subjectAdminHome.onTransfer}" />
-                    <p:column style="width:94%">
-                        <div class="p-d-flex p-ai-center">
-                            <h:outputText value="#{rol.name}"/>
-                        </div>
-                    </p:column>
+                <p:pickList id="pickListRoles" widgetVar="pickListRoles" 
+                            value="#{subjectAdminHome.roles}"
+                            var="rol" converter="org.jlgranda.fede.ui.converter.RolesConverter"
+                            itemLabel="#{rol.name}" itemValue="#{rol}"
+                            addLabel="Añadir" addAllLabel="Añadir todos"
+                            removeLabel="Quitar" removeAllLabel="Quitar todos"
+                            showTargetControls="true" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                            style="text-align:center;" responsive="true">
+                    <f:facet name="sourceCaption"><h:outputLabel value="NO ASIGNADOS"/></f:facet>
+                    <f:facet name="targetCaption"><h:outputLabel value="ASIGNADOS"/></f:facet>
+                    <p:ajax event="transfer" listener="#{subjectAdminHome.onTransfer}" update="@this"/>
                 </p:pickList>
-                
-                <f:facet name="footer">
-                    <p:commandButton icon="pi pi-check" styleClass="primary-button"
-                                     value="#{i18n['common.save']}"
-                                     update="@form"
-                                     action="#{subjectAdminHome.changeRoles()}"
-                                     onsuccess="PF('dlgConfigurarRoles').hide()"/>
-                    <p:commandButton type="button" icon="fa fa-close Fs14" styleClass="danger-btn"
-                                     value="#{i18n['common.cancel']}"
-                                     onclick="PF('dlgConfigurarRoles').hide()"/>
-                </f:facet>
+                <!--                <f:facet name="footer">
+                                    <p:commandButton icon="fa fa-close Fs14" styleClass="secondary-button"
+                                                     value="#{i18n['common.close']}"
+                                                     action="#{subjectAdminHome.changeRoles()}"
+                                                     onclick="PF('dlgConfigurarRoles').hide()"
+                                                     update="dlgConfigurarRoles,pickListRoles"/>
+                                </f:facet>-->
             </p:dialog>
             <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
                       header="#{i18n['app.signin.password.change']}" 
