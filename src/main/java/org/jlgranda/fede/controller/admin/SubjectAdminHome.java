@@ -412,12 +412,18 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public void loadRoles() {
         if (subjectEdit.getId() != null) {
+            rolesAsignadosUsuario = new ArrayList<>();
+            rolesNoAsignadosUsuario = new ArrayList<>();
             rolesAsignadosUsuario = rolesService.findByNamedQuery("Roles.findByUsername", subjectEdit.getUsername());
             List<String> rolesName = new ArrayList<>();
             rolesAsignadosUsuario.forEach(r -> {
                 rolesName.add(r.getName());
             });
-            rolesNoAsignadosUsuario = rolesService.findByNamedQuery("Roles.findNotByUsername", rolesName);
+            if (!rolesName.isEmpty()) {
+                rolesNoAsignadosUsuario = rolesService.findByNamedQuery("Roles.findNotByUsername", rolesName);
+            } else {
+                rolesNoAsignadosUsuario = rolesService.findByNamedQuery("Roles.findAll");
+            }
             roles = new DualListModel<>(new ArrayList<>(rolesNoAsignadosUsuario), rolesAsignadosUsuario);
         }
     }
