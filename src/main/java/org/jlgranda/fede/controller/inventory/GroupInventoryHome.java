@@ -49,31 +49,31 @@ import org.slf4j.LoggerFactory;
 @Named
 @RequestScoped
 public class GroupInventoryHome extends FedeController implements Serializable {
-    
+
     private static final long serialVersionUID = -1007161141552849702L;
-    
+
     Logger logger = LoggerFactory.getLogger(GroupInventoryHome.class);
-    
+
     @Inject
     private SettingHome settingHome;
-    
+
     @Inject
     private Subject subject;
-    
+
     @EJB
     private GroupService groupService;
-    
+
     private LazyGroupDataModel lazyDataModel;
-    
+
     private Group.Type groupType;
-    
+
     private Group group;
-    
+
     private Long groupId;
-    
+
     @Inject
     private OrganizationData organizationData;
-    
+
     @PostConstruct
     private void init() {
         int range = 0;
@@ -95,7 +95,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
         setOutcome("inventory-groups");
         filter();
-        
+
     }
 
     /**
@@ -105,7 +105,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
      * @param subject
      */
     public void createDefaultGroups(Subject subject) {
-        
+
         Map<String, String> props = new HashMap<>();
 
         //email settings
@@ -115,7 +115,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         props.put("educacion", "Educación {4, panel-yellow, fa fa-graduation-cap fa-5x, fede}");
         props.put("vivienda", "Vivienda {5, panel-red, fa fa-home fa-5x, fede}");
         props.put("favorito", "Favoritos {1, panel-red, fa fa-heart-o, " + SettingNames.GENERAL_MODULE + "}");
-        
+
         Group group = null;
         String value = null;
         Short orden = null;
@@ -140,23 +140,23 @@ public class GroupInventoryHome extends FedeController implements Serializable {
             group.setModule(module.trim()); //Marcar con null para el caso de etiquetas generales
             group.setOrden(orden);
             group.setGroupType(Group.Type.LABEL);
-            
+
             groupService.save(group);
 
             //logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
         }
     }
-    
+
     @Override
     public void handleReturn(SelectEvent event) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public Group getDefaultGroup() {
         return this.defaultGroup;
     }
-    
+
     @Override
     public List<Group> getGroups() {
         if (this.groups.isEmpty()) {
@@ -165,72 +165,74 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
         return this.groups;
     }
-    
+
     public Long getGroupId() {
         return groupId;
     }
-    
+
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
-    
+
     public Group getGroup() {
         if (this.groupId != null && !this.group.isPersistent()) {
             this.group = groupService.find(groupId);
         }
         return group;
     }
-    
+
     public void setGroup(Group group) {
         this.group = group;
     }
-    
+
     public Group.Type getGroupType() {
         return groupType;
     }
-    
+
     public void setGroupType(Group.Type groupType) {
         this.groupType = groupType;
     }
-    
+
     public LazyGroupDataModel getLazyDataModel() {
         return lazyDataModel;
     }
-    
+
     public void setLazyDataModel(LazyGroupDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-    
+
     public List<Group> getGroupsTypeProduct() {
 //        return groupService.findByType(Group.Type.PRODUCT);
         return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.PRODUCT);
     }
-    
+
     public void clear() {
         filter();
     }
-    
+
     private void filter() {
-        if (lazyDataModel == null) {
-            lazyDataModel = new LazyGroupDataModel(groupService);
-        }
-        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+        if (this.organizationData.getOrganization() != null) {
+            if (lazyDataModel == null) {
+                lazyDataModel = new LazyGroupDataModel(groupService);
+            }
+            lazyDataModel.setOrganization(this.organizationData.getOrganization());
 //        lazyDataModel.setOwner(subject);
 //        lazyDataModel.setStart(getStart());
-        lazyDataModel.setEnd(getEnd());
-        lazyDataModel.setGroupType(getGroupType());
-        if (getKeyword() != null && getKeyword().startsWith("label:")) {
-            String parts[] = getKeyword().split(":");
-            if (parts.length > 1) {
-                lazyDataModel.setTags(parts[1]);
+            lazyDataModel.setEnd(getEnd());
+            lazyDataModel.setGroupType(getGroupType());
+            if (getKeyword() != null && getKeyword().startsWith("label:")) {
+                String parts[] = getKeyword().split(":");
+                if (parts.length > 1) {
+                    lazyDataModel.setTags(parts[1]);
+                }
+                lazyDataModel.setFilterValue(null);//No buscar por keyword
+            } else {
+                lazyDataModel.setTags(getTags());
+                lazyDataModel.setFilterValue(getKeyword());
             }
-            lazyDataModel.setFilterValue(null);//No buscar por keyword
-        } else {
-            lazyDataModel.setTags(getTags());
-            lazyDataModel.setFilterValue(getKeyword());
         }
     }
-    
+
     public void save() {
         if (group.isPersistent()) {
             group.setLastUpdate(Dates.now());
@@ -241,7 +243,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
         groupService.save(group.getId(), group);
     }
-    
+
     public void onRowSelect(SelectEvent event) {
         try {
             //Redireccioar a RIDE de Objeto Seleccionado
@@ -252,9 +254,9 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
         }
-        
+
     }
-    
+
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

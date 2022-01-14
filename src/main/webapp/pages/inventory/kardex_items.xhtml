@@ -44,7 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:inputText>
                         <p:commandButton value="#{i18n['common.find']}" styleClass="btn raised-btn" actionListener="#{kardexInventoryHome.clear()}" ajax="false">
                         </p:commandButton>
-                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/inventory/kardex.jsf" disabled="#{not kardexInventoryHome.hasProductsWithoutKardex()}"/>
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/inventory/kardex.jsf" 
+                                  disabled="#{not organizationData.organization or not kardexInventoryHome.hasProductsWithoutKardex()}"/>
                     </div>
                     <div class="card">
                         <p:dataTable id="dataTable-kardexs" draggableColumns="true" lazy="true" liveResize="true"
