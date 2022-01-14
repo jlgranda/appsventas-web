@@ -302,7 +302,42 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     }
 
     @Override
-    public int count(Map<String, FilterMeta> map) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (getOwner() != null) {
+            _filters.put(Product_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getOrganization() != null) {
+            _filters.put(Product_.organization.getName(), getOrganization()); //Filtro de organizacion
+        }
+        if (!range.isEmpty()) {
+            _filters.put(Product_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        if (getGroupSelected() != null) {
+            _filters.put("category", getGroupSelected()); //Filtro de categoria
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        if (getProductType() != null) {
+            _filters.put("productType", getProductType()); //Filtro de tipo de producto
+        }
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+        QueryData<Product> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
 }

@@ -270,7 +270,36 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
     }
 
     @Override
-    public int count(Map<String, FilterMeta> map) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(JobRole_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        if(getOwner()!=null){
+        _filters.put(JobRole_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getOrganization() != null) {
+            _filters.put(JobRole_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        _filters.putAll(filters);
+       
+
+        QueryData<JobRole> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
 }

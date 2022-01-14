@@ -216,8 +216,41 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
     }
 
     @Override
-    public int count(Map<String, FilterMeta> map) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+
+        if (!range.isEmpty()) {
+            _filters.put(Kardex_.createdOn.getName(), range); //Filtro de fechas
+        }
+        if (getOwner() != null) {
+            _filters.put(Kardex_.owner.getName(), getOwner()); //Filtro de Subject
+        }
+        if (getOrganization() != null) {
+            _filters.put(Kardex_.organization.getName(), getOrganization()); //Filtro de org
+
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+
+        QueryData<Kardex> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
 
 }
