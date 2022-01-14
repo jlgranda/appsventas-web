@@ -14,12 +14,12 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <primefaces.version>10.0.0</primefaces.version>
+        <primefaces.version>11.0.0</primefaces.version>
         <primefaces.extension.version>6.0.0</primefaces.extension.version>
         <primefaces.theme.version>1.0.10</primefaces.theme.version>
         <hibernate.version>5.3.6.Final</hibernate.version>
 
-        <shiro.version>1.7.1</shiro.version>
+        <shiro.version>1.8.0</shiro.version>
         <deltaspike.version>1.8.2</deltaspike.version>
         <slf4j.version>1.6.4</slf4j.version>
         <!-- WildFly dependency versions -->

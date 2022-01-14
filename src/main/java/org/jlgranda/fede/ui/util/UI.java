@@ -17,6 +17,8 @@
  */
 package org.jlgranda.fede.ui.util;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -510,6 +512,11 @@ public class UI {
 
     public String truncateFilename(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.documents.filename.length", "14")));
+    }
+    
+    public static final Object getPropertyValueViaReflection(Object o, String field)
+                throws ReflectiveOperationException, IllegalArgumentException, IntrospectionException {
+        return new PropertyDescriptor(field, o.getClass()).getReadMethod().invoke(o);
     }
 
 }

@@ -296,4 +296,9 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
+
+    @Override
+    public int count(Map<String, FilterMeta> map) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

@@ -344,4 +344,14 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         
         return _filters;
     }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = buildFilters(true); //Filtros desde atributos de clase
+        
+        _filters.putAll(filters);
+
+        QueryData<Invoice> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 }

@@ -194,6 +194,38 @@ public class LazyTemplateDataModel extends LazyDataModel<Template> implements Se
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
+    
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()) {
+            _filters.put(Template_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+        _filters.put(Template_.owner.getName(), getOwner()); //Filtro por defecto
+
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+        QueryData<Template> qData = service.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 
     public BussinesEntityType getType() {
         return type;

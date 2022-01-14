@@ -226,6 +226,27 @@ public class LazyBalancedScoreCardDataModel extends LazyDataModel<BalancedScoreC
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
+    
+    
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        range.put("start", getStart());
+        range.put("end", getEnd());
+        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+        _filters.put(FacturaElectronica_.owner.getName(), getOwner()); //Filtro por defecto
+        _filters.put(FacturaElectronica_.fechaEmision.getName(), range); //Filtro de fecha inicial
+        _filters.put("tag", getTags()); //Filtro de etiquetas
+        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        
+        _filters.putAll(filters);
+        
+        QueryData<BalancedScoreCard> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 
     public BussinesEntity[] getSelectedBussinesEntities() {
         return selectedBussinesEntities;
@@ -242,4 +263,5 @@ public class LazyBalancedScoreCardDataModel extends LazyDataModel<BalancedScoreC
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
+    
 }
