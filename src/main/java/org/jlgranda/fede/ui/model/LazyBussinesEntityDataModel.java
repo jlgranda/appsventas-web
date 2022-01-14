@@ -202,7 +202,13 @@ public class LazyBussinesEntityDataModel extends LazyDataModel<BussinesEntity> i
     }
 
     @Override
-    public int count(Map<String, FilterMeta> map) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+        _filters.put(BussinesEntity_.owner.getName(), getOwner()); //Filtro por defecto
+        _filters.putAll(filters);
+
+        QueryData<BussinesEntity> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
 }
