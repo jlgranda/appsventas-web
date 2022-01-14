@@ -348,4 +348,13 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
 
         return _filters;
     }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        
+        Map<String, Object> _filters = buildFilters(true); //Filtros desde atributos de clase
+        _filters.putAll(filters);
+        QueryData<FacturaElectronica> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 }

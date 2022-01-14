@@ -215,4 +215,9 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         return qData.getResult();
     }
 
+    @Override
+    public int count(Map<String, FilterMeta> map) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

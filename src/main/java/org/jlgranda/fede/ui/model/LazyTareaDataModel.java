@@ -297,5 +297,10 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
         this.state = state;
     }
 
+    @Override
+    public int count(Map<String, FilterMeta> map) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 
 }

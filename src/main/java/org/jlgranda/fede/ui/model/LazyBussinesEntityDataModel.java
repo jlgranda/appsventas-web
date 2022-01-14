@@ -200,4 +200,9 @@ public class LazyBussinesEntityDataModel extends LazyDataModel<BussinesEntity> i
         FacesContext.getCurrentInstance().addMessage(null, msg);
         this.setSelectedBussinesEntity(null);
     }
+
+    @Override
+    public int count(Map<String, FilterMeta> map) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

@@ -262,6 +262,45 @@ public class LazyRecordTemplateDataModel  extends LazyDataModel<RecordTemplate> 
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
+    
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (getOwner() != null) {
+            _filters.put(RecordTemplate_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getOrganization() != null) {
+            _filters.put(RecordTemplate_.organization.getName(), getOrganization()); //Filtro de organizacion
+        }
+        if (!range.isEmpty()) {
+            _filters.put(RecordTemplate_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        if(getGroupSelected() != null){
+            _filters.put("category", getGroupSelected()); //Filtro de categoria
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+       
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        
+        _filters.putAll(filters);
+
+        QueryData<RecordTemplate> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 
     public BussinesEntity[] getSelectedBussinesEntities() {
         return selectedBussinesEntities;
@@ -278,4 +317,5 @@ public class LazyRecordTemplateDataModel  extends LazyDataModel<RecordTemplate> 
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
+
 }

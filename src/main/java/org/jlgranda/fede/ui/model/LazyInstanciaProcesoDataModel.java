@@ -284,4 +284,9 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
 
+    @Override
+    public int count(Map<String, FilterMeta> map) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

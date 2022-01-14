@@ -275,4 +275,47 @@ public class LazySubjectDataModel extends LazyDataModel<Subject> implements Seri
     public void setFilterValue(String filterValue) {
         this.filterValue = filterValue;
     }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(Subject_.createdOn.getName(), range); //Filtro de fecha de creación
+        }
+        
+        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+        if (null != getOwner())
+            _filters.put(Subject_.owner.getName(), getOwner()); //Filtro por defecto
+        
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
+        if (!Strings.isNullOrEmpty(getFilterValue())){
+            Map<String, String> columns = new HashMap<>();
+            columns.put(Subject_.name.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.firstname.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.surname.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.email.getName(), getFilterValue()); //Filtro general
+            columns.put(Subject_.mobileNumber.getName(), getFilterValue()); //Filtro general
+            
+            _filters.put("search", columns);
+        }
+
+        _filters.putAll(filters);
+
+
+        QueryData<Subject> qData = service.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 }
