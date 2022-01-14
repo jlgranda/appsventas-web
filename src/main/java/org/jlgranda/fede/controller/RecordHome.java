@@ -18,52 +18,85 @@ package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.accounting.AccountCache;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
+import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.primefaces.event.SelectEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author kellypaulinc
  */
+@Named
+@ViewScoped
 public class RecordHome extends FedeController implements Serializable {
-    
-    private static final long serialVersionUID = -1007161141552849702L;
 
-    Logger logger = LoggerFactory.getLogger(GeneralJournalHome.class);
-    
     @Inject
     private Subject subject;
-    
+    @Inject
+    private OrganizationData organizationData;
+
     @EJB
     private RecordService recordService;
-    
     @EJB
     private RecordDetailService recordDetailService;
-    
-    /**
-     * El objeto Record para edición
-     */
-    private Record record;
+    @EJB
+    AccountCache accountCache;
 
-    /**
-     * RecordDetail para edición
-     */
+    private List<Record> recordPorCreatedOn;
+    private Record record;
     private RecordDetail recordDetail;
-    
+
     @PostConstruct
     private void init() {
-        this.record = recordService.createInstance();
-        this.recordDetail = recordDetailService.createInstance();
+        recordPorCreatedOn = recordService.findUniqueByNamedQuery("Record.findByCreatedOnAndOrganization", this.organizationData.getOrganization(), Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()));
+    }
+
+    public List<Record> getRecordPorCreatedOn() {
+        return recordPorCreatedOn;
+    }
+
+    public void setRecordPorCreatedOn(List<Record> recordPorCreatedOn) {
+        this.recordPorCreatedOn = recordPorCreatedOn;
+    }
+
+    public Record getRecord() {
+        return record;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
+
+    public RecordDetail getRecordDetail() {
+        return recordDetail;
+    }
+
+    public void setRecordDetail(RecordDetail recordDetail) {
+        this.recordDetail = recordDetail;
+    }
+
+    public List<Account> filterAccounts(String query) {
+        return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
+    }
+    
+    public void recordAdd(){
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
+        System.out.println(">>>>>>>>>>>><<llegóaqwe");
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
     }
 
     @Override
@@ -90,7 +123,5 @@ public class RecordHome extends FedeController implements Serializable {
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
-    
+
 }
