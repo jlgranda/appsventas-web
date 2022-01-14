@@ -95,6 +95,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>production-aggregation</from-outcome>
+            <to-view-id>/pages/production/aggregation_items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>close-cash</from-outcome>
             <to-view-id>/pages/accounting/close_cash.jsf</to-view-id>
             <redirect />

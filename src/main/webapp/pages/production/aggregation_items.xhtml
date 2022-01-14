@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.production']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <!--<f:viewParam name="" value="" />-->
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.production']}</li>
+            <li>/</li>
+            <li><p:link outcome="production-aggregation">#{i18n['app.fede.production.aggregation']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="card product">
+                <h:form id="form">
+                    <p:dataView var="prodAgg" value="#{aggregationHome.productosAgregaciones}"
+                                rows="10" rowsPerPageTemplate="5,10,20" paginator="true"
+                                gridIcon="fa fa-th-large" listIcon="fa fa-bars">
+                        <p:dataViewGridItem>
+                            <div class="product-grid-item card border-1">
+                                <div class="product-grid-item-top">
+                                    <div>
+                                        <i class="pi pi-tag product-category-icon"/>
+                                        <span class="product-category">Nº Elem: #{prodAgg.agregaciones.size()}</span>
+                                    </div>
+                                    <span class="product-badge status-#{prodAgg.producto.productType}">#{prodAgg.producto.productType == 'PRODUCT' ? 'PRODUCTO' : prodAgg.producto.productType}</span>
+                                </div>
+                                <div class="product-grid-item-content">
+                                    <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
+                                    <div class="product-name">#{prodAgg.producto.name.toUpperCase()}</div>
+                                    <div class="product-description">#{prodAgg.producto.description}</div>
+                                </div>
+                                <div class="product-grid-item-bottom">
+                                    <div>
+                                        <h5>Costo:</h5>
+                                        <h:outputText value="#{prodAgg.costoTotal}" styleClass="product-price">
+                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                        </h:outputText>
+                                    </div>
+                                    <p:commandButton type="button" icon="fa fa-pencil"
+                                                     value="#{i18n['common.edition']}"
+                                                     action="#{aggregationHome.handleReturn(event)}"
+                                                     update="@form"/>
+                                </div>
+                            </div>
+                        </p:dataViewGridItem>
+                        <p:dataViewListItem>
+                            <div class="product-list-item">
+                                <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
+                                <div class="product-list-detail">
+                                    <div class="product-name">#{prodAgg.producto.name.toUpperCase()}</div>
+                                    <div class="product-description">#{prodAgg.producto.description}</div>
+                                </div>
+                            </div>
+                            <!--                            <h:panelGrid columns="3" style="width:100%" columnClasses="logo,detail">
+                                                            <p:outputPanel>
+                                                                <h:panelGrid columns="2" cellpadding="5">
+                                                                    <h:outputText value="Id:" />
+                                                                    <h:outputText value="#{prodAgg.producto.name}" style="font-weight: bold"/>
+                            
+                                                                    <h:outputText value="Year:" />
+                                                                    <h:outputText value="#{prodAgg}" style="font-weight: bold"/>
+                            
+                                                                    <h:outputText value="Color:" />
+                                                                    <h:outputText value="#{prodAgg}" style="font-weight: bold"/>
+                                                                </h:panelGrid>
+                                                            </p:outputPanel>
+                            
+                                                        </h:panelGrid>-->
+                        </p:dataViewListItem>
+                    </p:dataView>
+                </h:form>
+            </div>
+        </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+                .product-badge {
+                    border-radius: 2px;
+                    padding: .25em .5rem;
+                    text-transform: uppercase;
+                    font-weight: 700;
+                    font-size: 12px;
+                    letter-spacing: .3px; }
+                .product-badge.status-PRODUCT {
+                    background: #C8E6C9;
+                    color: #256029; }
+                .product-badge.status-RAW_MATERIAL {
+                    background: #FFCDD2;
+                    color: #C63737; }
+                .product-badge.status-DEPRECATED {
+                    background: #FEEDAF;
+                    color: #8A5340; }
+                .product-badge.status-SERVICE {
+                    background:#B3E5FC;
+                    color: #23547B; }
+                .product .product-grid-item.border-1 {
+                    border: 1px solid var(--surface-d);
+                }
+                .product .product-grid-item .product-grid-item-top, .product .product-grid-item .product-grid-item-bottom {
+                    display: -ms-flexbox;
+                    display: flex;
+                    -ms-flex-align: center;
+                    align-items: center;
+                    -ms-flex-pack: justify;
+                    justify-content: space-between;
+                }
+                .product .product-category-icon {
+                    vertical-align: middle;
+                    margin-right: 0.5rem;
+                }
+                .product .product-category {
+                    font-weight: 600;
+                    vertical-align: middle;
+                }
+                .product .product-grid-item .product-grid-item-content {
+                    text-align: center;
+                }
+                .product .product-grid-item img {
+                    width: 25%;
+                }
+                .product .product-name {
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                }
+                .product .product-description {
+                    margin: 0 0 1rem 0;
+                }
+                .product .product-grid-item .ui-rating {
+                    margin: 0 0 1rem 0;
+                }
+                .product .product-grid-item .product-grid-item-bottom {
+                    margin-top: 0.5rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+                .product .product-grid-item .product-price {
+                    font-size: 1rem;
+                    font-weight: 600;
+                }
+                body .ui-button {
+                    background: #2196F3;
+                    color: #ffffff;
+                    border: 1px solid #2196F3;
+                    margin: 0;
+                    outline: 0 none;
+                    border-radius: 4px;
+                    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+                }
+                .product .product-list-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 1rem;
+                }
+                .product .product-list-item .product-list-detail {
+                    flex: 1 1 0;
+                }
+                .product .product-list-item .ui-rating {
+                    margin: 0 0 0.5rem 0;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>

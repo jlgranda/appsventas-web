@@ -58,6 +58,9 @@
                             <p:menuitem id="om_products" value="#{i18n['common.products']}" icon="fa fa-fw fa-apple" outcome="/pages/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                             <p:menuitem id="om_kardex" value="#{i18n['app.fede.inventory.kardex']}" icon="fa fa-fw fa-table" outcome="/pages/inventory/kardex_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                         </p:submenu>
+                        <p:submenu id="production" label="#{i18n['app.fede.production']}" icon="fa fa-fw fa-shopping-bag" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
+                            <p:menuitem id="om_grouping" value="#{i18n['app.fede.production.aggregation']}" icon="fa fa-fw fa-plus-circle" outcome="production-aggregation" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                        </p:submenu>
                         <p:submenu id="om_admin_accounting" label="#{i18n['app.fede.accounting']}" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
                             <p:menuitem id="om_recordtemplates" value="#{i18n['common.recordtemplates']}" icon="fa fa-fw fa-gears" outcome="record-templates"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                             <p:menuitem id="om_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="fa fa-fw fa-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
