@@ -16,22 +16,30 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.model.accounting.Account;
+import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -46,7 +54,11 @@ public class RecordHome extends FedeController implements Serializable {
     private Subject subject;
     @Inject
     private OrganizationData organizationData;
+    @Inject
+    private SettingHome settingHome;
 
+    @EJB
+    private GeneralJournalService generalJournalService;
     @EJB
     private RecordService recordService;
     @EJB
@@ -54,12 +66,15 @@ public class RecordHome extends FedeController implements Serializable {
     @EJB
     AccountCache accountCache;
 
-    private List<Record> recordPorCreatedOn;
+    private GeneralJournal generalJournal;
     private Record record;
+    private List<Record> recordPorCreatedOn;
     private RecordDetail recordDetail;
 
     @PostConstruct
     private void init() {
+        record = recordService.createInstance();
+        recordDetail = recordDetailService.createInstance();
         recordPorCreatedOn = recordService.findUniqueByNamedQuery("Record.findByCreatedOnAndOrganization", this.organizationData.getOrganization(), Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()));
     }
 
@@ -90,13 +105,51 @@ public class RecordHome extends FedeController implements Serializable {
     public List<Account> filterAccounts(String query) {
         return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
     }
-    
-    public void recordAdd(){
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
-        System.out.println(">>>>>>>>>>>><<llegóaqwe");
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>><");
+
+    public void recordAdd() {
+        this.recordDetail.setOwner(this.subject);
+        this.record.addRecordDetail(this.recordDetail);
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
+        this.recordDetail = recordDetailService.createInstance();
+    }
+
+    public void recordSave() {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+        if (!this.record.getRecordDetails().isEmpty()) {
+            BigDecimal sumDebe = new BigDecimal(0);
+            BigDecimal sumHaber = new BigDecimal(0);
+            for (RecordDetail rd : this.record.getRecordDetails()) {
+                if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
+                    sumDebe = sumDebe.add(rd.getAmount());
+                } else if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
+                    sumHaber = sumHaber.add(rd.getAmount());
+                }
+            }
+            if (sumDebe.compareTo(sumHaber) == 0) {
+                this.record.setOwner(subject);
+                //Localizar o generar el generalJournal
+                this.generalJournal = this.buildJournal(this.record.getEmissionDate());
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                System.out.println("this.generalJournal: " + this.generalJournal);
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                if (this.generalJournal.getId() != null) {
+                    this.record.setGeneralJournalId(this.generalJournal.getId());
+                    recordService.save(record.getId(), record);
+                }
+            } else {
+                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
+            }
+        }
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+    }
+
+    private GeneralJournal buildJournal(Date fechaRegistro) {
+        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+        return generalJournalService.find(fechaRegistro, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+
     }
 
     @Override
