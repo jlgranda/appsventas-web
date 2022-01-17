@@ -29,7 +29,7 @@
             <div class="layout-main">
                 <div class="route-bar">
                     <div class="route-bar-breadcrumb">
-                        <i class="fa fa-home"></i> 
+                        <i class="pi pi-home"></i> 
                         <span>/ </span>
                         <ui:insert name="viewname" />
                     </div>
@@ -44,8 +44,8 @@
                             <p:autoUpdate />
                         </p:messages>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
-                            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat primary-button" icon="pi pi-times" />
+                            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes danger-btn" icon="pi pi-check" />
                         </p:confirmDialog>
                     </h:form>
                     <h:form id="frmReporteViewer">
@@ -61,7 +61,7 @@
 
             <p:ajaxStatus styleClass="layout-ajax-loader">
                 <f:facet name="start">
-                    <i class="fa fa-circle-o-notch fa-spin layout-ajax-loader-icon" aria-hidden="true"></i>
+                    <i class="pi pi-circle-o-notch pi-spin layout-ajax-loader-icon" aria-hidden="true"></i>
                 </f:facet>
 
                 <f:facet name="complete">

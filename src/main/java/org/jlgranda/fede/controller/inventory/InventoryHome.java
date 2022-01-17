@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -649,6 +650,18 @@ public class InventoryHome extends FedeController implements Serializable {
                     this.productCache.load(); //Actualizar el cache
                 }
                 setOutcome("");
+            } else if ("gotokardex".equalsIgnoreCase(this.selectedAction) && this.getProductType() != null) {
+                for (BussinesEntity be : this.getSelectedBussinesEntities()) {
+                    p = (Product) be;
+                    Kardex k = kardexService.findByProductAndOrganization(p, subject, this.organizationData.getOrganization());
+                    try {
+                        redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
+                    } catch (IOException ex) {
+                        java.util.logging.Logger.getLogger(InventoryHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
+                }
+                setOutcome("");
             }
         }
     }
@@ -659,6 +672,8 @@ public class InventoryHome extends FedeController implements Serializable {
         } else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null) {
             return true;
         } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType() != null) {
+            return true;
+        } else if ("gotokardex".equalsIgnoreCase(this.selectedAction) && !this.selectedBussinesEntities.isEmpty()) {
             return true;
         }
         return false;
@@ -677,6 +692,9 @@ public class InventoryHome extends FedeController implements Serializable {
         actions.add(item);
 
         item = new SelectItem("changeto", "Cambiar tipo a");
+        actions.add(item);
+        
+        item = new SelectItem("gotokardex", "Ir a kardex");
         actions.add(item);
     }
 

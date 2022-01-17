@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition template="/WEB-INF/template_popup.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewAction action="#{recordHome.loadSessionParameters}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting.journal']}</li>
+            <li>/</li>
+            <li>#{recordHome.generalJournal.id != null ? recordHome.generalJournal.id : ''}</li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                    <p:dataView id="records" var="record" value="#{recordHome.recordPorGeneralJournal}"
+                                rows="5" paginator="true" rowsPerPageTemplate="5,10,20" 
+                                gridIcon="pi pi-th-large" listIcon="pi pi-bars">
+                        <f:facet name="header">
+                            <p:outputLabel class="Fs18 FontBold" style="text-transform: uppercase;" value="#{recordHome.generalJournal.name }"/>
+                        </f:facet>
+                        <p:dataViewListItem>
+                            <div class="ui-g" style="padding: 0.1rem">
+                                <div class="ui-g-4 ui-md-4 ui-lg-4" style="background-color: #E9E9E9">
+                                    <span class="Fs16" style="font-weight: 700;"> Asiento <i class="pi pi-hashtag"/>#{record.id}</span>
+                                    <div style="margin: 0.5rem 0 0 0;">RAZÓN: #{record.description}</div>
+                                </div>
+                                <div class="ui-g-8 ui-md-8 ui-lg-8" style="padding: 0rem">
+                                    <p:dataTable id="recordDetails" 
+                                                 value="#{record.recordDetails}" var="recordDetail"
+                                                 rowKey="#{recordDetail.id}">
+                                        <p:column headerText="#{i18n['common.account']}">
+                                            <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.debe']}">
+                                            <h:outputText value="#{recordDetail.amount}"
+                                                          rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.haber']}">
+                                            <h:outputText value="#{recordDetail.amount}"
+                                                          rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </p:dataViewListItem>
+                    </p:dataView>
+                </div>
+            </div>
+        </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+                .product-badge {
+                    border-radius: 2px;
+                    padding: .25em .5rem;
+                    text-transform: uppercase;
+                    font-weight: 700;
+                    font-size: 12px;
+                    letter-spacing: .3px; 
+                    margin: 0 0 0.5rem 0;
+                    width: 8rem;
+                    text-align: center}
+                .product-badge.status-false {
+                    background: #C8E6C9;
+                    color: #256029; }
+                .product-badge.status-true {
+                    background: #FFCDD2;
+                    color: #C63737;}
+                .list-detail {
+                    flex: 1 1 0;
+                    -ms-flex: 1 1 0;
+                }
+                .list-action {
+                    display: -ms-flexbox;
+                    display: flex;
+                    -ms-flex-direction: column;
+                    flex-direction: column;
+                    align-items: self-end;}
+                body .ui-button {
+                    margin: 0;
+                    outline: 0 none;
+                    border-radius: 4px;
+                    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+                }
+                .product-name {
+                    font-size: 1rem;
+                    font-weight: 700;
+                }
+                .product-description {
+                    margin: 0.5rem 0 0 0;
+                }
+                .product-category-icon {
+                    vertical-align: middle;
+                    margin-right: 0.5rem;
+                }
+                .product-category {
+                    font-weight: 600;
+                    vertical-align: middle;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>
