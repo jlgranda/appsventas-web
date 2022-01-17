@@ -75,7 +75,7 @@ public class RecordHome extends FedeController implements Serializable {
     private void init() {
         record = recordService.createInstance();
         recordDetail = recordDetailService.createInstance();
-        recordPorCreatedOn = recordService.findUniqueByNamedQuery("Record.findByCreatedOnAndOrganization", this.organizationData.getOrganization(), Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()));
+        this.recordPorCreatedOn = recordService.findByNamedQuery("Record.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()), this.organizationData.getOrganization());
     }
 
     public List<Record> getRecordPorCreatedOn() {
@@ -106,7 +106,7 @@ public class RecordHome extends FedeController implements Serializable {
         return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
     }
 
-    public void recordAdd() {
+    public void recordDetailAdd() {
         this.recordDetail.setOwner(this.subject);
         this.record.addRecordDetail(this.recordDetail);
         this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
@@ -129,27 +129,32 @@ public class RecordHome extends FedeController implements Serializable {
                 this.record.setOwner(subject);
                 //Localizar o generar el generalJournal
                 this.generalJournal = this.buildJournal(this.record.getEmissionDate());
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
-                System.out.println("this.generalJournal: " + this.generalJournal);
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
-                if (this.generalJournal.getId() != null) {
+                if (this.generalJournal != null && this.generalJournal.getId() != null) {
                     this.record.setGeneralJournalId(this.generalJournal.getId());
                     recordService.save(record.getId(), record);
+                    this.recordDetail = recordDetailService.createInstance();
+                    this.record = recordService.createInstance();
+                    this.generalJournal = generalJournalService.createInstance();
                 }
             } else {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
             }
         }
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
     }
 
-    private GeneralJournal buildJournal(Date fechaRegistro) {
+    private GeneralJournal buildJournal(Date emissionDate) {
         String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
         String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
-        return generalJournalService.find(fechaRegistro, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+        return generalJournalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+    }
 
+    public void confirmRecordDelete(Record record) {
+        this.recordDelete(record);
+    }
+
+    public void recordDelete(Record record) {
+        recordService.deleteRecord(record);
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf("Asiento # " + record.getId() + " eliminado."));
     }
 
     @Override

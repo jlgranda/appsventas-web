@@ -6,16 +6,16 @@
 
     <div class="layout-topbar">
         <a href="#" id="topbar-menu-button">
-            <i class="fa fa-angle-left arrow"></i>
-            <i class="fa fa-angle-up mobile"></i>
+            <i class="pi pi-angle-left arrow"></i>
+            <i class="pi pi-angle-up mobile"></i>
         </a>
         <a href="#" onclick="history.go(-1)" id="topbar-back-button">
-            <i class="fa fa-arrow-left arrow"></i>
-            <i class="fa fa-arrow-left mobile"></i>
+            <i class="pi pi-arrow-left arrow"></i>
+            <i class="pi pi-arrow-left mobile"></i>
         </a>
 
 <!--        <div class="search-input">
-            <i class="fa fa-search icon-search"></i>
+            <i class="pi pi-search icon-search"></i>
             <input type="text"></input>
         </div>-->
 
@@ -27,45 +27,45 @@
             <span>#{subject.fullName}#{empty organizationData.organization ? '' : ' ['.concat(organizationData.organization.initials).concat(']')}</span>
             <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
                                                 class="profile-image"/>
-            <i class="fa fa-angle-down"></i>
+            <i class="pi pi-angle-down"></i>
         </a>
 
         <ul id="topbar-usermenu">
             <li>
                 <a href="#{facesContext.externalContext.requestContextPath}/pages/fede/gifts/profile.jsf">
-                    <i class="fa fa-fw fa-bell-o"></i>
+                    <i class="pi pi-fw pi-bell-o"></i>
                     <span class="topbar-item-name">#{i18n['common.profile']}</span>
                     <span class="topbar-submenuitem-badge">4</span>
                 </a>
             </li>
 <!--            <li>
                 <a href="#">
-                    <i class="fa fa-fw fa-cog"></i>
+                    <i class="pi pi-fw pi-cog"></i>
                     <span class="topbar-item-name">Settings</span>
                     <span class="topbar-submenuitem-badge">2</span>
                 </a>
                 <ul>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-paint-brush"></i>
+                            <i class="pi pi-fw pi-paint-brush"></i>
                             <span>Change</span>
                         </a>
                     </li>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-star-o"></i>
+                            <i class="pi pi-fw pi-star-o"></i>
                             <span>Favorites</span>
                         </a>
                     </li>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-lock"></i>
+                            <i class="pi pi-fw pi-lock"></i>
                             <span>Lock Screen</span>
                         </a>
                     </li>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-picture-o"></i>
+                            <i class="pi pi-fw pi-picture-o"></i>
                             <span>Wallpaper</span>
                         </a>
                     </li>
@@ -73,7 +73,7 @@
             </li>-->
 <!--            <li>
                 <a href="#">
-                    <i class="fa fa-fw fa-envelope-o"></i>
+                    <i class="pi pi-fw pi-envelope-o"></i>
                     <span class="topbar-item-name">Messages</span>
                 </a>
                 <ul>
@@ -105,31 +105,31 @@
             </li>
             <li>
                 <a href="#">
-                    <i class="fa fa-fw fa-bell-o"></i>
+                    <i class="pi pi-fw pi-bell-o"></i>
                     <span class="topbar-item-name">Notifications</span>
                 </a>
                 <ul>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-tasks"></i>
+                            <i class="pi pi-fw pi-tasks"></i>
                             <span>Pending tasks</span>
                         </a>
                     </li>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-calendar-check-o"></i>
+                            <i class="pi pi-fw pi-calendar-check-o"></i>
                             <span>Meeting today</span>
                         </a>
                     </li>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-download"></i>
+                            <i class="pi pi-fw pi-download"></i>
                             <span>Download</span>
                         </a>
                     </li>
                     <li role="menuitem">
                         <a href="#">
-                            <i class="fa fa-fw fa-plane"></i>
+                            <i class="pi pi-fw pi-plane"></i>
                             <span>Book flight</span>
                         </a>
                     </li>
@@ -137,14 +137,14 @@
             </li>-->
             <li>
                 <a href="#{facesContext.externalContext.requestContextPath}/logout">
-                    <i class="fa fa-fw fa-sign-out"></i>
+                    <i class="pi pi-fw pi-sign-out"></i>
                     <span class="topbar-item-name">#{i18n['common.logout']}</span>
                 </a>
             </li>
         </ul>
 
         <a href="#" id="right-panel-button">
-            <i class="fa fa-angle-double-left"></i>
+            <i class="pi pi-angle-double-left"></i>
         </a>
     </div>
 

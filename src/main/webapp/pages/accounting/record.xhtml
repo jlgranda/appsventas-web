@@ -36,20 +36,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-6 ui-lg-8">
-                    <div class="card ui-fluid p-shadow-1" style="height: 600px; max-height: 600px">
+                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                    <div class="card p-shadow-1 ui-fluid" style="height: 600px; max-height: 600px">
                         <div style="text-align: -webkit-center">
                             <p:outputLabel class="Fs18 FontBold" style="text-transform: uppercase;" value="Registro de Asiento Contable"/>
                         </div>
                         <div class="ui-g" style="padding: 0.5rem;">
-                            <!--<h:form id="recordForm">-->
                             <h:form id="registerRecordForm">
-                                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                <div class="ui-g-10 ui-md-10 ui-lg-10">
                                     <p:outputLabel value="Fecha de Registro del Asiento" for="@next"/>
                                     <p:datePicker id="emissionDate" value="#{recordHome.record.emissionDate}"
-                                                  touchUI="true" showOtherMonths="true" showIcon="true" pattern="yyyy/MM/dd"
+                                                  touchUI="true" showOtherMonths="true" showIcon="true" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}"
                                                   required="true">
                                     </p:datePicker>
+                                </div>
+                                <div class="ui-g-2 ui-md-2 ui-lg-2">
+                                      <p:button value="Primary" styleClass="ui-button-raised ui-button-flat" />
                                 </div>
                                 <div class="ui-g-12 ui-md-12 ui-lg-12">
                                     <p:outputLabel value="Detalle del Asiento" for="@next"/>
@@ -98,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:commandButton id="btnRecordAdd"
                                                                  icon="pi pi-check-square" styleClass="warning-btn"
                                                                  value="#{i18n['common.add']}"
-                                                                 actionListener="#{recordHome.recordAdd()}" 
+                                                                 actionListener="#{recordHome.recordDetailAdd()}" 
                                                                  ajax="false" type="submit"
                                                                  update="registerRecordForm"/>
                                             </div>
@@ -191,8 +193,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:commandButton id="btnRecordSave"
                                                      icon="pi pi-save"  styleClass="danger-btn p-mr-2"
                                                      value="#{i18n['common.save']}"
-                                                     actionListener="#{recordHome.recordSave()}" 
+                                                     actionListener="#{recordHome.recordSave()}"
                                                      type="submit" immediate="true"
+                                                     update="registerRecordForm"
                                                      disabled="#{empty recordHome.record.recordDetails}"/>
                                     <i class="pi pi-bars p-px-2"/>
                                 </p:toolbarGroup>
@@ -204,47 +207,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      type="button"/>
                                 </p:toolbarGroup>
                             </p:toolbar>
-<!--                            <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
-                                             actionListener="#{recordHome.closeDialog(null)}" action="#{recordHome.getOutcome()}"
-                                             disabled="false" immediate="true"
-                                             styleClass="GrayButton"
-                                             type="submit"/>    -->
-                            <!--</h:form>-->
                         </div>
                     </div>
                 </div>
-                <div class="ui-g-12 ui-md-6 ui-lg-4">
-                    <div class="card p-shadow-1"  style="height: 600px; max-height: 600px">
-                        <!--Historial de asientos contables registrados por createdOn-->
-                        <span class="FontBold" style="text-transform: uppercase;">Historial de Asientos Contables</span>
-                        <p:dataView var="prodAgg" value="#{recordHome.recordPorCreatedOn}"
-                                    rows="10" rowsPerPageTemplate="5,10,20" paginator="true"
-                                    gridIcon="fa fa-th-large" listIcon="fa fa-bars">
-                            <!--                        <p:dataViewListItem>
-                                                        <div class="product-list-item">
-                                                            <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
-                                                            <div class="product-list-detail">
-                                                                <div class="product-name">#{prodAgg.producto.name.toUpperCase()}</div>
-                                                                <div class="product-description">#{prodAgg.producto.description}</div>
-                                                                <p:rating readonly="true" value="#{prodAgg.costoTotal}"/>
-                                                                <i class="pi pi-tag product-category-icon"/><span
-                                                                    class="product-category">#{prodAgg.producto.productType}</span>
-                                                            </div>
-                                                            <div class="product-list-action">
-                                                                <h:outputText value="#{prodAgg.costoTotal}" styleClass="product-price">
-                                                                    <f:convertNumber currencySymbol="$" type="currency"/>
-                                                                </h:outputText>
-                                                                <p:commandButton type="button" icon="fa fa-pencil"
-                                                                                 value="#{i18n['common.edition']}"
-                                                                                 action="#{aggregationHome.handleReturn(event)}"
-                                                                                 update="@form"/>
-                                                                <span class="product-badge status-#{prodAgg.producto.productType}">#{prodAgg.producto.productType == 'PRODUCT' ? 'PRODUCTO' : prodAgg.producto.productType}</span>
-                                                            </div>
-                                                        </div>
-                                                    </p:dataViewListItem>-->
+<!--                <div class="ui-g-12 ui-md-6 ui-lg-4">
+                    <div class="card p-shadow-1 ui-fluid"  style="height: 600px; max-height: 600px">
+                        <p:outputLabel class="Fs18 FontBold" style="text-transform: uppercase;" value="Historial de Asientos Contables"/>
+                        <p:dataView id="records" var="record" value="#{recordHome.recordPorCreatedOn}"
+                                    rows="10" paginator="true" rowsPerPageTemplate="5,10,20" 
+                                    gridIcon="pi pi-th-large" listIcon="pi pi-bars">
+                            <p:dataViewListItem>
+                                <div class="ui-g">
+                                    <div class="ui-g-12 ui-md-6 ui-lg-6 list-detail">
+                                        <div class="product-name"> <h:outputText value="#{record.emissionDate}">
+                                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                            </h:outputText></div>
+                                        <div class="product-description">#{record.description}</div>
+                                        <i class="pi pi-hashtag product-category-icon"/><span
+                                            class="product-category">#{record.id}</span>
+                                    </div>
+                                    <div class="ui-g-12 ui-md-6 ui-lg-6 list-action">
+                                        <span class="product-badge status-#{record.deleted}">#{record.deleted == true ? 'Eliminado' : 'Activo'}</span>
+                                        <div style="width: 8rem; text-align: -webkit-center;">
+                                            <p:commandButton id="btnRecordDetails"
+                                                             icon="pi pi-list"  styleClass="secondary-button p-mr-2"
+                                                             actionListener="#{recordHome.handleReturn(event)}"
+                                                             type="button" immediate="true"
+                                                             update="form:registerRecordForm records"/>
+                                            <p:commandButton id="btnRecordDelete"
+                                                             icon="pi pi-trash"  styleClass="danger-btn p-mr-2"
+                                                             actionListener="#{recordHome.confirmRecordDelete(record)}"
+                                                             type="submit" immediate="true"
+                                                             update="form:registerRecordForm records"
+                                                             disabled="#{record.deleted}">
+                                                <p:confirm header="#{i18n['common.confirmation']}" message="¿Está seguro de eliminar este registro?" icon="pi pi-exclamation-triangle"/>
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:dataViewListItem>
                         </p:dataView>
                     </div>
-                </div>
+                </div>-->
             </div>
         </ui:define> 
         <ui:define name="style">
@@ -255,83 +259,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     text-transform: uppercase;
                     font-weight: 700;
                     font-size: 12px;
-                    letter-spacing: .3px; }
-                .product-badge.status-PRODUCT {
+                    letter-spacing: .3px; 
+                    margin: 0 0 0.5rem 0;
+                    width: 8rem;
+                    text-align: center}
+                .product-badge.status-false {
                     background: #C8E6C9;
                     color: #256029; }
-                .product-badge.status-RAW_MATERIAL {
+                .product-badge.status-true {
                     background: #FFCDD2;
-                    color: #C63737; }
-                .product-badge.status-DEPRECATED {
-                    background: #FEEDAF;
-                    color: #8A5340; }
-                .product-badge.status-SERVICE {
-                    background:#B3E5FC;
-                    color: #23547B; }
-                .product .product-grid-item.border-1 {
-                    border: 1px solid var(--surface-d);
+                    color: #C63737;}
+                .list-detail {
+                    flex: 1 1 0;
+                    -ms-flex: 1 1 0;
                 }
-                .product .product-grid-item .product-grid-item-top, .product .product-grid-item .product-grid-item-bottom {
+                .list-action {
                     display: -ms-flexbox;
                     display: flex;
-                    -ms-flex-align: center;
-                    align-items: center;
-                    -ms-flex-pack: justify;
-                    justify-content: space-between;
-                }
-                .product .product-category-icon {
-                    vertical-align: middle;
-                    margin-right: 0.5rem;
-                }
-                .product .product-category {
-                    font-weight: 600;
-                    vertical-align: middle;
-                }
-                .product .product-grid-item .product-grid-item-content {
-                    text-align: center;
-                }
-                .product .product-grid-item img {
-                    width: 25%;
-                }
-                .product .product-name {
-                    font-size: 0.75rem;
-                    font-weight: 700;
-                }
-                .product .product-description {
-                    margin: 0 0 1rem 0;
-                }
-                .product .product-grid-item .ui-rating {
-                    margin: 0 0 1rem 0;
-                }
-                .product .product-grid-item .product-grid-item-bottom {
-                    margin-top: 0.5rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                }
-                .product .product-grid-item .product-price {
-                    font-size: 1rem;
-                    font-weight: 600;
-                }
+                    -ms-flex-direction: column;
+                    flex-direction: column;
+                    align-items: self-end;}
                 body .ui-button {
-                    /*background: #2196F3;*/
-                    /*color: #ffffff;*/
-                    /*border: 1px solid #2196F3;*/
                     margin: 0;
                     outline: 0 none;
                     border-radius: 4px;
                     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
                 }
-                .product .product-list-item {
-                    display: flex;
-                    align-items: center;
-                    padding: 1rem;
+                .product-name {
+                    font-size: 1rem;
+                    font-weight: 700;
                 }
-                .product .product-list-item .product-list-detail {
-                    flex: 1 1 0;
+                .product-description {
+                    margin: 0.5rem 0 0 0;
                 }
-                .product .product-list-item .ui-rating {
-                    margin: 0 0 0.5rem 0;
+                .product-category-icon {
+                    vertical-align: middle;
+                    margin-right: 0.5rem;
+                }
+                .product-category {
+                    font-weight: 600;
+                    vertical-align: middle;
                 }
             </style>
         </ui:define>

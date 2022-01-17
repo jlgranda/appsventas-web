@@ -20,184 +20,184 @@
                         </p:selectOneMenu>
                     </div>
                     <pe:menu widgetVar="me">
-                        <p:submenu id="om_documents" label="#{i18n['app.documents']}" icon="fa fa-fw fa-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}">
-                            <p:menuitem id="om_process_start" value="#{i18n['app.documents.active']}" icon="fa fa-fw fa-hourglass-start" outcome="/pages/management/proceso/inbox.jsf?statusType=ACTIVE"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
-                            <p:menuitem id="om_process_close" value="#{i18n['app.documents.close']}" icon="fa fa-fw fa-hourglass-end" outcome="/pages/management/proceso/inbox.jsf?statusType=CLOSE"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
-                            <p:menuitem id="om_tasks" value="#{i18n['app.documents.tasks']}" icon="fa fa-fw fa-tasks" outcome="/pages/management/tarea/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
+                        <p:submenu id="om_documents" label="#{i18n['app.documents']}" icon="pi pi-fw pi-paperclip" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}">
+                            <p:menuitem id="om_process_start" value="#{i18n['app.documents.active']}" icon="pi pi-fw pi-hourglass-start" outcome="/pages/management/proceso/inbox.jsf?statusType=ACTIVE"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
+                            <p:menuitem id="om_process_close" value="#{i18n['app.documents.close']}" icon="pi pi-fw pi-hourglass-end" outcome="/pages/management/proceso/inbox.jsf?statusType=CLOSE"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
+                            <p:menuitem id="om_tasks" value="#{i18n['app.documents.tasks']}" icon="pi pi-fw pi-tasks" outcome="/pages/management/tarea/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE') or request.isUserInRole('MANAGER') or request.isUserInRole('USER')}"/>
                         </p:submenu>
-                        <p:menuitem id="om_home" value="#{i18n['common.home']}" icon="fa fa-fw fa-home" outcome="home"  rendered="#{request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER') or request.isUserInRole('USER')}"/>
-                        <p:menuitem id="om_profile" value="#{i18n['common.profile']}" icon="fa fa-fw fa-user" outcome="/pages/fede/gifts/profile.jsf"/>
-                        <p:submenu id="om_smart_bussines" label="#{i18n['app.fede.smart']}" icon="fa fa-area-chart" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}">
-                            <p:menuitem id="om_dashboard" value="#{i18n['app.fede.smart.dashboard']}" icon="fa fa-fw fa-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN')  or request.isUserInRole('MANAGER')}"/>
-                            <p:menuitem id="om_smart" value="#{i18n['common.products']}" icon="fa fa-fw fa-apple" outcome="products"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>                            
-                            <p:menuitem id="om_purchases" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-cart-plus" outcome="purchases" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/> 
-                            <p:menuitem id="om_trends" value="#{i18n['app.fede.smart.trends']}" icon="fa fa-line-chart" outcome="trends"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
+                        <p:menuitem id="om_home" value="#{i18n['common.home']}" icon="pi pi-fw pi-home" outcome="home"  rendered="#{request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER') or request.isUserInRole('USER')}"/>
+                        <p:menuitem id="om_profile" value="#{i18n['common.profile']}" icon="pi pi-fw pi-user" outcome="/pages/fede/gifts/profile.jsf"/>
+                        <p:submenu id="om_smart_bussines" label="#{i18n['app.fede.smart']}" icon="pi pi-area-chart" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}">
+                            <p:menuitem id="om_dashboard" value="#{i18n['app.fede.smart.dashboard']}" icon="pi pi-fw pi-dashboard" outcome="dashboard"  rendered="#{request.isUserInRole('ADMIN')  or request.isUserInRole('MANAGER')}"/>
+                            <p:menuitem id="om_smart" value="#{i18n['common.products']}" icon="pi pi-fw pi-apple" outcome="products"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>                            
+                            <p:menuitem id="om_purchases" value="#{i18n['common.purchases']}" icon="pi pi-fw pi-cart-plus" outcome="purchases" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/> 
+                            <p:menuitem id="om_trends" value="#{i18n['app.fede.smart.trends']}" icon="pi pi-line-chart" outcome="trends"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
                         </p:submenu>
-                        <p:submenu id="om_mysales" label="#{i18n['app.fede.sales.my.orders']}" icon="fa fa-fw fa-cutlery" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')  or request.isUserInRole('ACCOUNTING') or request.isUserInRole('MANAGER')}">
-                            <p:menuitem id="om_new" value="#{i18n['common.new']}" icon="fa fa-fw fa-plus" outcome="/pages/fede/sales/invoice.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
-                            <p:menuitem id="om_current" value="#{i18n['common.current']}" icon="fa fa-fw fa-circle-o" outcome="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
-                            <p:menuitem id="om_search" value="#{i18n['common.historic']}" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/sales/invoices_finder.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('MANAGER')}"/>
-                            <p:menuitem id="rm_myoverdues" value="#{i18n['common.overdue']}" icon="fa fa-fw fa-credit-card" outcome="/pages/fede/sales/invoices_finder.jsf?documentType=OVERDUE&amp;interval=7&amp;overcome=overdues"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')  or request.isUserInRole('MANAGER')}"/>    
+                        <p:submenu id="om_mysales" label="#{i18n['app.fede.sales.my.orders']}" icon="pi pi-fw pi-cutlery" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')  or request.isUserInRole('ACCOUNTING') or request.isUserInRole('MANAGER')}">
+                            <p:menuitem id="om_new" value="#{i18n['common.new']}" icon="pi pi-fw pi-plus" outcome="/pages/fede/sales/invoice.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_current" value="#{i18n['common.current']}" icon="pi pi-fw pi-circle-o" outcome="/pages/fede/sales/preinvoices.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_search" value="#{i18n['common.historic']}" icon="pi pi-fw pi-clock-o" outcome="/pages/fede/sales/invoices_finder.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('MANAGER')}"/>
+                            <p:menuitem id="rm_myoverdues" value="#{i18n['common.overdue']}" icon="pi pi-fw pi-credit-card" outcome="/pages/fede/sales/invoices_finder.jsf?documentType=OVERDUE&amp;interval=7&amp;overcome=overdues"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')  or request.isUserInRole('MANAGER')}"/>    
                         </p:submenu>
-                        <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="fa fa-fw fa-cart-plus" outcome="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
-                        <!--<p:menuitem id="rm_inventory_products" value="#{i18n['common.products']}" icon="fa fa-fw fa-apple" outcome="/pages/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>-->
-                        <p:menuitem id="rm_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="fa fa-fw fa-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
-                        <p:submenu id="om_admin" label="#{i18n['common.management']}" icon="fa fa-fw fa-suitcase" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER') or request.isUserInRole('MANAGER')}">
-                            <p:menuitem id="om_organizations" value="#{i18n['app.management.organizations']}" icon="fa fa-fw fa-building" outcome="/pages/management/organization/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
-                            <p:menuitem id="om_subjects" value="#{i18n['app.management.persons']}" icon="fa fa-fw fa-user" outcome="/pages/admin/subject/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')  or request.isUserInRole('ACCOUNTING')  or request.isUserInRole('CHECKER')}"/>
-                            <p:menuitem id="om_settings" value="#{i18n['common.setting']}" icon="fa fa-fw fa-cog" outcome="/pages/admin/setting.jsf" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
+                        <p:menuitem id="rm_purchase" value="#{i18n['common.purchases']}" icon="pi pi-fw pi-cart-plus" outcome="/pages/fede/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
+                        <!--<p:menuitem id="rm_inventory_products" value="#{i18n['common.products']}" icon="pi pi-fw pi-apple" outcome="/pages/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>-->
+                        <p:menuitem id="rm_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="pi pi-fw pi-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER')}"/>
+                        <p:submenu id="om_admin" label="#{i18n['common.management']}" icon="pi pi-fw pi-suitcase" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER') or request.isUserInRole('MANAGER')}">
+                            <p:menuitem id="om_organizations" value="#{i18n['app.management.organizations']}" icon="pi pi-fw pi-building" outcome="/pages/management/organization/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
+                            <p:menuitem id="om_subjects" value="#{i18n['app.management.persons']}" icon="pi pi-fw pi-user" outcome="/pages/admin/subject/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')  or request.isUserInRole('ACCOUNTING')  or request.isUserInRole('CHECKER')}"/>
+                            <p:menuitem id="om_settings" value="#{i18n['common.setting']}" icon="pi pi-fw pi-cog" outcome="/pages/admin/setting.jsf" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
                         </p:submenu>
-                            <!--<p:menuitem id="om_close_cash" value="#{i18n['common.salesvspurchases']}" icon="fa fa-fw fa-usd" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER')}"/>-->
-                        <p:submenu id="om_admin_inventory" label="#{i18n['app.fede.inventory']}" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
-                            <p:menuitem id="om_groups" value="#{i18n['app.fede.inventory.categories']}" icon="fa fa-fw fa-object-group" outcome="/pages/inventory/group_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
-                            <p:menuitem id="om_products" value="#{i18n['common.products']}" icon="fa fa-fw fa-apple" outcome="/pages/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
-                            <p:menuitem id="om_kardex" value="#{i18n['app.fede.inventory.kardex']}" icon="fa fa-fw fa-table" outcome="/pages/inventory/kardex_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                            <!--<p:menuitem id="om_close_cash" value="#{i18n['common.salesvspurchases']}" icon="pi pi-fw pi-usd" outcome="close-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING') or request.isUserInRole('CHECKER')}"/>-->
+                        <p:submenu id="om_admin_inventory" label="#{i18n['app.fede.inventory']}" icon="pi pi-fw pi-pencil" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
+                            <p:menuitem id="om_groups" value="#{i18n['app.fede.inventory.categories']}" icon="pi pi-fw pi-object-group" outcome="/pages/inventory/group_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                            <p:menuitem id="om_products" value="#{i18n['common.products']}" icon="pi pi-fw pi-apple" outcome="/pages/inventory/items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                            <p:menuitem id="om_kardex" value="#{i18n['app.fede.inventory.kardex']}" icon="pi pi-fw pi-table" outcome="/pages/inventory/kardex_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                         </p:submenu>
-                        <p:submenu id="production" label="#{i18n['app.fede.production']}" icon="fa fa-fw fa-shopping-bag" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
-                            <p:menuitem id="om_grouping" value="#{i18n['app.fede.production.aggregation']}" icon="fa fa-fw fa-plus-circle" outcome="production-aggregation" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                        <p:submenu id="production" label="#{i18n['app.fede.production']}" icon="pi pi-fw pi-shopping-bag" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
+                            <p:menuitem id="om_grouping" value="#{i18n['app.fede.production.aggregation']}" icon="pi pi-fw pi-plus-circle" outcome="production-aggregation" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                         </p:submenu>
-                        <p:submenu id="om_admin_accounting" label="#{i18n['app.fede.accounting']}" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
-                            <p:menuitem id="om_recordtemplates" value="#{i18n['common.recordtemplates']}" icon="fa fa-fw fa-gears" outcome="record-templates"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
-                            <p:menuitem id="om_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="fa fa-fw fa-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                        <p:submenu id="om_admin_accounting" label="#{i18n['app.fede.accounting']}" icon="pi pi-fw pi-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
+                            <p:menuitem id="om_recordtemplates" value="#{i18n['common.recordtemplates']}" icon="pi pi-fw pi-gears" outcome="record-templates"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                            <p:menuitem id="om_ajust_cash" value="#{i18n['app.fede.accounting.close.cash']}" icon="pi pi-fw pi-lock" outcome="ajust-cash"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                             <p:menuitem id="records" value="#{i18n['app.fede.accounting.records']}" icon="pi pi-sliders-h" outcome="record-register" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
-                            <p:menuitem id="om_journals" value="#{i18n['app.fede.accounting.journals']}" icon="fa fa-sticky-note" outcome="/pages/accounting/journal_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
-                            <p:menuitem id="om_account_items" value="#{i18n['app.fede.accounting.accounts.plan']}" icon="fa  fa-fw fa-book" outcome="/pages/accounting/account_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
-                            <p:menuitem id="om_generalLedger" value="#{i18n['app.fede.accounting.ledger']}" icon="fa  fa-fw fa-balance-scale" outcome="/pages/accounting/general_ledger.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/><!--or request.isUserInRole('ACCOUNTING')-->
+                            <p:menuitem id="om_journals" value="#{i18n['app.fede.accounting.journals']}" icon="pi pi-sticky-note" outcome="/pages/accounting/journal_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                            <p:menuitem id="om_account_items" value="#{i18n['app.fede.accounting.accounts.plan']}" icon="fa  pi-fw pi-book" outcome="/pages/accounting/account_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                            <p:menuitem id="om_generalLedger" value="#{i18n['app.fede.accounting.ledger']}" icon="fa  pi-fw pi-balance-scale" outcome="/pages/accounting/general_ledger.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/><!--or request.isUserInRole('ACCOUNTING')-->
                         </p:submenu>
-                        <p:submenu id="om_talento_humano" label="#{i18n['app.fede.talentohumano']}" icon="fa fa-fw fa-clock-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
-                            <p:menuitem id="om_talentohumano_registrar" value="#{i18n['common.register']}" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
-                            <p:menuitem id="om_talentohumano_detalle_registro" value="#{i18n['app.fede.talentohumano.register.detail']}" icon="fa fa-fw fa-list-ol" outcome="/pages/fede/talentohumano/detalle_registros.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
-                            <p:menuitem id="om_talentohumano_registrar_manual" value="#{i18n['app.fede.talentohumano.register.manual']}" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar_manual.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
-                            <p:menuitem id="om_talentohumano_reporte" value="#{i18n['app.fede.talentohumano.report.employe']}" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/reporte_trabajo.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
-                            <p:menuitem id="om_talentohumano_registrar_rapido" value="#{i18n['app.fede.talentohumano.register.fast']}" icon="fa fa-fw fa-clock-o" outcome="/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('ADMIN')}"/>
-                            <p:menuitem id="om_talentohumano_role" value="#{i18n['app.fede.talentohumano.roles']}" icon="fa fa-fw fa fa-group" outcome="/pages/fede/talentohumano/roles.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
-                            <p:menuitem id="om_talentohumano_employee" value="#{i18n['app.fede.talentohumano.employees']}" icon="fa fa-fw fa fa-drivers-license" outcome="/pages/fede/talentohumano/employees.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                        <p:submenu id="om_talento_humano" label="#{i18n['app.fede.talentohumano']}" icon="pi pi-fw pi-clock-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}">
+                            <p:menuitem id="om_talentohumano_registrar" value="#{i18n['common.register']}" icon="pi pi-fw pi-clock-o" outcome="/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
+                            <p:menuitem id="om_talentohumano_detalle_registro" value="#{i18n['app.fede.talentohumano.register.detail']}" icon="pi pi-fw pi-list-ol" outcome="/pages/fede/talentohumano/detalle_registros.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('EMPLOYEE')}"/>
+                            <p:menuitem id="om_talentohumano_registrar_manual" value="#{i18n['app.fede.talentohumano.register.manual']}" icon="pi pi-fw pi-clock-o" outcome="/pages/fede/talentohumano/registrar_manual.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_reporte" value="#{i18n['app.fede.talentohumano.report.employe']}" icon="pi pi-fw pi-clock-o" outcome="/pages/fede/talentohumano/reporte_trabajo.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_registrar_rapido" value="#{i18n['app.fede.talentohumano.register.fast']}" icon="pi pi-fw pi-clock-o" outcome="/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_role" value="#{i18n['app.fede.talentohumano.roles']}" icon="pi pi-fw pi pi-group" outcome="/pages/fede/talentohumano/roles.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_talentohumano_employee" value="#{i18n['app.fede.talentohumano.employees']}" icon="pi pi-fw pi pi-drivers-license" outcome="/pages/fede/talentohumano/employees.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
-                        <p:submenu id="om_reportes" label="#{i18n['common.reports']}" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN')}">
-                            <p:menuitem id="om_resumen_ventas_productos" value="#{i18n['app.fede.reports.summary.sales']}" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/products.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
-                            <p:menuitem id="om_resumen_ventas_compras" value="#{i18n['app.fede.reports.summary.salesvspurchases']}" icon="fa fa-fw fa-bars" outcome="/pages/fede/sales/summary.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                        <p:submenu id="om_reportes" label="#{i18n['common.reports']}" icon="pi pi-fw pi-cog" rendered="#{request.isUserInRole('ADMIN')}">
+                            <p:menuitem id="om_resumen_ventas_productos" value="#{i18n['app.fede.reports.summary.sales']}" icon="pi pi-fw pi-bars" outcome="/pages/fede/sales/products.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                            <p:menuitem id="om_resumen_ventas_compras" value="#{i18n['app.fede.reports.summary.salesvspurchases']}" icon="pi pi-fw pi-bars" outcome="/pages/fede/sales/summary.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
-                        <p:submenu id="om_templates" label="#{i18n['app.fede.crm']}" icon="fa fa-fw fa-cog" rendered="#{request.isUserInRole('ADMIN')}">
-                            <p:menuitem id="om_templates_management" value="#{i18n['app.mail.templates']} #{i18n['common.of']} #{i18n['common.email']}" icon="fa fa-fw fa-bars" outcome="/pages/admin/template/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
+                        <p:submenu id="om_templates" label="#{i18n['app.fede.crm']}" icon="pi pi-fw pi-cog" rendered="#{request.isUserInRole('ADMIN')}">
+                            <p:menuitem id="om_templates_management" value="#{i18n['app.mail.templates']} #{i18n['common.of']} #{i18n['common.email']}" icon="pi pi-fw pi-bars" outcome="/pages/admin/template/inbox.jsf"  rendered="#{request.isUserInRole('ADMIN')}"/>
                         </p:submenu>
-<!--<p:menuitem id="om_gifts" value="#{i18n['app.gifts.my']}" icon="fa fa-fw fa-cog" outcome="/pages/fede/gifts/gifts.jsf" rendered="#{request.isUserInRole('USER')}"/>-->
+<!--<p:menuitem id="om_gifts" value="#{i18n['app.gifts.my']}" icon="pi pi-fw pi-cog" outcome="/pages/fede/gifts/gifts.jsf" rendered="#{request.isUserInRole('USER')}"/>-->
 
-                        <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="fa fa-fw fa-cog">
-                                                    <p:menuitem id="om_customization_mode_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.setLightMenu(true)}" ajax="false" />
-                                                    <p:menuitem id="om_customization_mode_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.setLightMenu(false)}" ajax="false" />
+                        <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="pi pi-fw pi-cog">
+                                                    <p:menuitem id="om_customization_mode_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.setLightMenu(true)}" ajax="false" />
+                                                    <p:menuitem id="om_customization_mode_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.setLightMenu(false)}" ajax="false" />
                                                 </p:submenu>
-                                                <p:submenu id="om_customization" label="Layouts" icon="fa fa-fw fa-cog">
-                                                    <p:menuitem id="om_customization_1" value="Static" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-static')}" ajax="false" />
-                                                    <p:menuitem id="om_customization_2" value="Overlay" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-overlay')}" ajax="false" />
-                                                    <p:menuitem id="om_customization_3" value="Slim" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-slim')}" ajax="false" />
-                                                    <p:menuitem id="om_customization_4" value="Horizontal" icon="fa fa-fw fa-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-horizontal')}" ajax="false" />
+                                                <p:submenu id="om_customization" label="Layouts" icon="pi pi-fw pi-cog">
+                                                    <p:menuitem id="om_customization_1" value="Static" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-static')}" ajax="false" />
+                                                    <p:menuitem id="om_customization_2" value="Overlay" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-overlay')}" ajax="false" />
+                                                    <p:menuitem id="om_customization_3" value="Slim" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-slim')}" ajax="false" />
+                                                    <p:menuitem id="om_customization_4" value="Horizontal" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-horizontal')}" ajax="false" />
                                                 </p:submenu>
-                                                <p:submenu id="om_themes" label="Themes" icon="fa fa-fw fa-paint-brush">
+                                                <p:submenu id="om_themes" label="Themes" icon="pi pi-fw pi-paint-brush">
                                                     <f:attribute name="badge" value="15" />
-                                                    <p:submenu id="om_indigo" label="Indigo" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_indigo_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo')}" ajax="false"/>
-                                                        <p:menuitem id="om_indigo_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_indigo" label="Indigo" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_indigo_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo')}" ajax="false"/>
+                                                        <p:menuitem id="om_indigo_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_pink" label="Pink" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_pink_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('pink')}" ajax="false"/>
-                                                        <p:menuitem id="om_pink_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('pink-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_pink" label="Pink" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_pink_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('pink')}" ajax="false"/>
+                                                        <p:menuitem id="om_pink_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('pink-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_green" label="Green" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_green_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('green')}" ajax="false"/>
-                                                        <p:menuitem id="om_green_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('green-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_green" label="Green" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_green_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('green')}" ajax="false"/>
+                                                        <p:menuitem id="om_green_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('green-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_amber" label="Amber" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_amber_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('amber')}" ajax="false"/>
-                                                        <p:menuitem id="om_amber_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('amber-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_amber" label="Amber" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_amber_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('amber')}" ajax="false"/>
+                                                        <p:menuitem id="om_amber_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('amber-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_deeppurple" label="Deep Purple" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_deeppurple_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple')}" ajax="false"/>
-                                                        <p:menuitem id="om_deeppurple_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_deeppurple" label="Deep Purple" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_deeppurple_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple')}" ajax="false"/>
+                                                        <p:menuitem id="om_deeppurple_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_blue" label="Blue" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_blue_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('blue')}" ajax="false"/>
-                                                        <p:menuitem id="om_blue_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('blue-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_blue" label="Blue" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_blue_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('blue')}" ajax="false"/>
+                                                        <p:menuitem id="om_blue_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('blue-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_darkblue" label="Dark Blue" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_darkblue_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('darkblue')}" ajax="false"/>
-                                                        <p:menuitem id="om_darkblue_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('darkblue-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_darkblue" label="Dark Blue" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_darkblue_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('darkblue')}" ajax="false"/>
+                                                        <p:menuitem id="om_darkblue_2" value="Dark" icon="pi pi-fw vpaint-brush" actionListener="#{guestPreferences.changeTheme('darkblue-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_cyan" label="Cyan" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_cyan_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan')}" ajax="false"/>
-                                                        <p:menuitem id="om_cyan_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_cyan" label="Cyan" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_cyan_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan')}" ajax="false"/>
+                                                        <p:menuitem id="om_cyan_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_purple" label="Purple" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_purple_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('purple')}" ajax="false"/>
-                                                        <p:menuitem id="om_purple_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('purple-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_purple" label="Purple" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_purple_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('purple')}" ajax="false"/>
+                                                        <p:menuitem id="om_purple_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('purple-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_deeporange" label="Deep Orange" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_deeporange_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange')}" ajax="false"/>
-                                                        <p:menuitem id="om_deeporange_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_deeporange" label="Deep Orange" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_deeporange_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange')}" ajax="false"/>
+                                                        <p:menuitem id="om_deeporange_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_lime" label="Lime" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_lime_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('lime')}" ajax="false"/>
-                                                        <p:menuitem id="om_lime_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('lime-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_lime" label="Lime" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_lime_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('lime')}" ajax="false"/>
+                                                        <p:menuitem id="om_lime_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('lime-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_yellow" label="Yellow" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_yellow_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow')}" ajax="false"/>
-                                                        <p:menuitem id="om_yellow_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_yellow" label="Yellow" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_yellow_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow')}" ajax="false"/>
+                                                        <p:menuitem id="om_yellow_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_bluegrey" label="Blue Grey" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_bluegrey_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey')}" ajax="false"/>
-                                                        <p:menuitem id="om_bluegrey_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_bluegrey" label="Blue Grey" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_bluegrey_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey')}" ajax="false"/>
+                                                        <p:menuitem id="om_bluegrey_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_mojito" label="Mojito" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_mojito_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito')}" ajax="false"/>
-                                                        <p:menuitem id="om_mojito_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito-dark')}" ajax="false"/>
+                                                    <p:submenu id="om_mojito" label="Mojito" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_mojito_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito')}" ajax="false"/>
+                                                        <p:menuitem id="om_mojito_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito-dark')}" ajax="false"/>
                                                     </p:submenu>
-                                                    <p:submenu id="om_grey" label="Grey" icon="fa fa-fw fa-paint-brush">
-                                                        <p:menuitem id="om_grey_1" value="Light" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('grey')}" ajax="false"/>
-                                                        <p:menuitem id="om_grey_2" value="Dark" icon="fa fa-fw fa-paint-brush" actionListener="#{guestPreferences.changeTheme('grey-dark')}" ajax="false"/>
-                                                    </p:submenu>
-                                                </p:submenu>
-                                                <p:submenu id="om_components" label="Components" icon="fa fa-fw fa-bars">
-                                                    <p:menuitem id="om_sample" value="Sample Page" icon="fa fa-fw fa-columns" outcome="/sample" />
-                                                    <p:menuitem id="om_forms" value="Forms" icon="fa fa-fw fa-code" outcome="/forms" />
-                                                    <p:menuitem id="om_data" value="Data" icon="fa fa-fw fa-table" outcome="/data" />
-                                                    <p:menuitem id="om_panels" value="Panels" icon="fa fa-fw fa-list-alt" outcome="/panel" />
-                                                    <p:menuitem id="om_overlays" value="Overlays" icon="fa fa-fw fa-square" outcome="/overlay" />
-                                                    <p:menuitem id="om_menus" value="Menus" icon="fa fa-fw fa-minus-square-o" outcome="/menu" />
-                                                    <p:menuitem id="om_messages" value="Messages" icon="fa fa-fw fa-circle-o-notch" outcome="/messages" />
-                                                    <p:menuitem id="om_charts" value="Charts" icon="fa fa-fw fa-area-chart" outcome="/charts" />
-                                                    <p:menuitem id="om_file" value="File" icon="fa fa-fw fa-arrow-circle-o-up" outcome="/file" />
-                                                    <p:menuitem id="om_misc" value="Misc" icon="fa fa-fw fa-user-secret" outcome="/misc" />
-                                                </p:submenu>
-                                                <p:submenu id="om_default" label="Pages" icon="fa fa-fw fa-cube">
-                                                    <p:menuitem id="om_empty" value="Empty" icon="fa fa-fw fa-square-o" outcome="/empty" />
-                                                    <p:menuitem id="om_login" value="Login" icon="fa fa-fw fa-sign-in" outcome="/login" />
-                                                    <p:menuitem id="om_db_landing" value="Landing" icon="fa fa-fw fa-certificate" outcome="/landing" />
-                                                    <p:menuitem id="om_error" value="Error" icon="fa fa-fw fa-exclamation-circle" outcome="/error" />
-                                                    <p:menuitem id="om_404" value="404" icon="fa fa-fw fa-times" outcome="/404" />
-                                                    <p:menuitem id="om_access" value="Access Denied" icon="fa fa-fw fa-exclamation-triangle" outcome="/access" />
-                                                </p:submenu>
-                                                <p:submenu id="om_hierarchy" label="Hierarchy" icon="fa fa-fw fa-sitemap">
-                                                    <p:submenu id="om_sm1" label="Submenu 1" icon="fa fa-fw fa-sign-in">
-                                                        <p:submenu id="om_sm11" label="Submenu 1.1" icon="fa fa-fw fa-sign-in">
-                                                            <p:menuitem id="om_lnk111" value="Link 1.1.1" icon="fa fa-fw fa-sign-in" url="#" />
-                                                            <p:menuitem id="om_lnk112" value="Link 1.1.2" icon="fa fa-fw fa-sign-in" url="#" />
-                                                            <p:menuitem id="om_lnk113" value="Link 1.1.3" icon="fa fa-fw fa-sign-in" url="#" />
-                                                        </p:submenu>
-                                                        <p:submenu id="om_sm12" label="Submenu 1.2" icon="fa fa-fw fa-sign-in">
-                                                            <p:menuitem id="om_lnk121" value="Link 1.2.1" icon="fa fa-fw fa-sign-in" url="#" />
-                                                        </p:submenu>
-                                                    </p:submenu>
-                                                    <p:submenu id="om_sm2" label="Submenu 2" icon="fa fa-fw fa-sign-in">
-                                                        <p:submenu id="om_sm21" label="Submenu 2.1" icon="fa fa-fw fa-sign-in">
-                                                            <p:menuitem id="om_lnk211" value="Link 2.1.1" icon="fa fa-fw fa-sign-in" url="#" />
-                                                            <p:menuitem id="om_lnk212" value="Link 2.1.2" icon="fa fa-fw fa-sign-in" url="#" />
-                                                        </p:submenu>
-                                                        <p:submenu id="om_sm22" label="Submenu 2.2" icon="fa fa-fw fa-sign-in">
-                                                            <p:menuitem id="om_lnk221" value="Link 2.2.1" icon="fa fa-fw fa-sign-in" url="#" />
-                                                        </p:submenu>
+                                                    <p:submenu id="om_grey" label="Grey" icon="pi pi-fw pi-paint-brush">
+                                                        <p:menuitem id="om_grey_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('grey')}" ajax="false"/>
+                                                        <p:menuitem id="om_grey_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('grey-dark')}" ajax="false"/>
                                                     </p:submenu>
                                                 </p:submenu>
-                                                <p:menuitem id="om_doc" value="Docs" icon="fa fa-fw fa-file-code-o" outcome="/docs" />
-                                                <p:menuitem id="om_buy" value="Buy Now" icon="fa fa-fw fa-credit-card-alt" url="https://www.primefaces.org/store"/>-->
+                                                <p:submenu id="om_components" label="Components" icon="pi pi-fw pi-bars">
+                                                    <p:menuitem id="om_sample" value="Sample Page" icon="pi pi-fw pi-columns" outcome="/sample" />
+                                                    <p:menuitem id="om_forms" value="Forms" icon="pi pi-fw pi-code" outcome="/forms" />
+                                                    <p:menuitem id="om_data" value="Data" icon="pi pi-fw pi-table" outcome="/data" />
+                                                    <p:menuitem id="om_panels" value="Panels" icon="pi pi-fw pi-list-alt" outcome="/panel" />
+                                                    <p:menuitem id="om_overlays" value="Overlays" icon="pi pi-fw pi-square" outcome="/overlay" />
+                                                    <p:menuitem id="om_menus" value="Menus" icon="pi pi-fw pi-minus-square-o" outcome="/menu" />
+                                                    <p:menuitem id="om_messages" value="Messages" icon="pi pi-fw pi-circle-o-notch" outcome="/messages" />
+                                                    <p:menuitem id="om_charts" value="Charts" icon="pi pi-fw pi-area-chart" outcome="/charts" />
+                                                    <p:menuitem id="om_file" value="File" icon="pi pi-fw pi-arrow-circle-o-up" outcome="/file" />
+                                                    <p:menuitem id="om_misc" value="Misc" icon="pi pi-fw pi-user-secret" outcome="/misc" />
+                                                </p:submenu>
+                                                <p:submenu id="om_default" label="Pages" icon="pi pi-fw pi-cube">
+                                                    <p:menuitem id="om_empty" value="Empty" icon="pi pi-fw pi-square-o" outcome="/empty" />
+                                                    <p:menuitem id="om_login" value="Login" icon="pi pi-fw pi-sign-in" outcome="/login" />
+                                                    <p:menuitem id="om_db_landing" value="Landing" icon="pi pi-fw pi-certificate" outcome="/landing" />
+                                                    <p:menuitem id="om_error" value="Error" icon="pi pi-fw pi-exclamation-circle" outcome="/error" />
+                                                    <p:menuitem id="om_404" value="404" icon="pi pi-fw pi-times" outcome="/404" />
+                                                    <p:menuitem id="om_access" value="Access Denied" icon="pi pi-fw pi-exclamation-triangle" outcome="/access" />
+                                                </p:submenu>
+                                                <p:submenu id="om_hierarchy" label="Hierarchy" icon="pi pi-fw pi-sitemap">
+                                                    <p:submenu id="om_sm1" label="Submenu 1" icon="pi pi-fw pi-sign-in">
+                                                        <p:submenu id="om_sm11" label="Submenu 1.1" icon="pi pi-fw pi-sign-in">
+                                                            <p:menuitem id="om_lnk111" value="Link 1.1.1" icon="pi pi-fw pi-sign-in" url="#" />
+                                                            <p:menuitem id="om_lnk112" value="Link 1.1.2" icon="pi pi-fw pi-sign-in" url="#" />
+                                                            <p:menuitem id="om_lnk113" value="Link 1.1.3" icon="pi pi-fw pi-sign-in" url="#" />
+                                                        </p:submenu>
+                                                        <p:submenu id="om_sm12" label="Submenu 1.2" icon="pi pi-fw pi-sign-in">
+                                                            <p:menuitem id="om_lnk121" value="Link 1.2.1" icon="pi pi-fw pi-sign-in" url="#" />
+                                                        </p:submenu>
+                                                    </p:submenu>
+                                                    <p:submenu id="om_sm2" label="Submenu 2" icon="pi pi-fw pi-sign-in">
+                                                        <p:submenu id="om_sm21" label="Submenu 2.1" icon="pi pi-fw pi-sign-in">
+                                                            <p:menuitem id="om_lnk211" value="Link 2.1.1" icon="pi pi-fw pi-sign-in" url="#" />
+                                                            <p:menuitem id="om_lnk212" value="Link 2.1.2" icon="pi pi-fw pi-sign-in" url="#" />
+                                                        </p:submenu>
+                                                        <p:submenu id="om_sm22" label="Submenu 2.2" icon="pi pi-fw pi-sign-in">
+                                                            <p:menuitem id="om_lnk221" value="Link 2.2.1" icon="pi pi-fw pi-sign-in" url="#" />
+                                                        </p:submenu>
+                                                    </p:submenu>
+                                                </p:submenu>
+                                                <p:menuitem id="om_doc" value="Docs" icon="pi pi-fw pi-file-code-o" outcome="/docs" />
+                                                <p:menuitem id="om_buy" value="Buy Now" icon="pi pi-fw pi-credit-card-alt" url="https://www.primefaces.org/store"/>-->
                     </pe:menu>
                 </h:form>
             </div>
