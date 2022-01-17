@@ -16,14 +16,18 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -67,8 +71,10 @@ public class RecordHome extends FedeController implements Serializable {
     AccountCache accountCache;
 
     private GeneralJournal generalJournal;
+    private Long generalJournalId;
     private Record record;
     private List<Record> recordPorCreatedOn;
+    private List<Record> recordPorGeneralJournal;
     private RecordDetail recordDetail;
 
     @PostConstruct
@@ -78,12 +84,40 @@ public class RecordHome extends FedeController implements Serializable {
         this.recordPorCreatedOn = recordService.findByNamedQuery("Record.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()), this.organizationData.getOrganization());
     }
 
+    public GeneralJournal getGeneralJournal() {
+        if (this.generalJournalId != null) {
+            System.out.println(">>this.generalJournalId: " + generalJournalId);
+            return generalJournalService.find(this.generalJournalId);
+        }
+        return generalJournal;
+    }
+
+    public void setGeneralJournal(GeneralJournal generalJournal) {
+        this.generalJournal = generalJournal;
+    }
+
+    public Long getGeneralJournalId() {
+        return generalJournalId;
+    }
+
+    public void setGeneralJournalId(Long generalJournalId) {
+        this.generalJournalId = generalJournalId;
+    }
+
     public List<Record> getRecordPorCreatedOn() {
         return recordPorCreatedOn;
     }
 
     public void setRecordPorCreatedOn(List<Record> recordPorCreatedOn) {
         this.recordPorCreatedOn = recordPorCreatedOn;
+    }
+
+    public List<Record> getRecordPorGeneralJournal() {
+        return recordPorGeneralJournal;
+    }
+
+    public void setRecordPorGeneralJournal(List<Record> recordPorGeneralJournal) {
+        this.recordPorGeneralJournal = recordPorGeneralJournal;
     }
 
     public Record getRecord() {
@@ -146,6 +180,49 @@ public class RecordHome extends FedeController implements Serializable {
         String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
         String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
         return generalJournalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+    }
+
+    public void viewGeneralJournal() {
+        this.generalJournal = this.buildJournal(this.record.getEmissionDate());
+        if (this.generalJournal != null && this.generalJournal.getId() != null) {
+            this.buildDialog();
+        }
+    }
+
+    public boolean buildDialog() {
+        super.setSessionParameter("generalJournalId", this.generalJournal.getId());
+        return mostrarFormularioGeneralJournal(null);
+    }
+
+    public boolean mostrarFormularioGeneralJournal(Map<String, List<String>> params) {
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
+        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
+        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALJOURNAL, width, height, left, top, true, params);
+        return true;
+    }
+
+    public void closeFormularioGeneralJournal(Object data) {
+        removeSessionParameter("generalJournalId");
+        super.closeDialog(data);
+    }
+
+    public void loadSessionParameters() {
+        if (existsSessionParameter("generalJournalId")) {
+            this.setGeneralJournalId((Long) getSessionParameter("generalJournalId"));
+            this.setGeneralJournal(this.getGeneralJournal()); //Carga el objeto persistente
+            if (this.generalJournal != null && this.generalJournal.getId() != null) {
+                this.recordPorGeneralJournal = recordService.findByNamedQuery("Record.findByJournalId", this.generalJournal.getId());
+            }
+        }
+    }
+
+    public void irALibroDiario(Long generalJournalId) throws IOException {
+        //Redireccionar a RIDE de objeto seleccionado
+        if (generalJournalId != null) {
+            redirectTo("//pages/accounting/journal.jsf?journalId=" + generalJournalId);
+        }
     }
 
     public void confirmRecordDelete(Record record) {
