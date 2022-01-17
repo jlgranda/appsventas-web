@@ -324,6 +324,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public void asignedKardexDetailProperties(String type) {//Establecer valores previos para el KardexDetail
+        
         if (this.kardex.getProduct() != null) {
             
             this.kardexDetail.setOperationType("input".equals(type) ? KardexDetail.OperationType.PRODUCCION : KardexDetail.OperationType.SALIDA_INVENTARIO);
@@ -339,7 +340,13 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public boolean validatedKardexDetail() {
-        return !(this.kardexDetail.getOperationType() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnitValue() != null);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        System.out.println("Validar validatedKardexDetail: " + (this.kardexDetail.getOperationType() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnitValue() != null));
+        System.out.println("Validar getOperationType: " + this.kardexDetail.getOperationType());
+        System.out.println("Validar getQuantity: " + this.kardexDetail.getQuantity());
+        System.out.println("Validar getUnitValue: " + this.kardexDetail.getUnitValue());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        return this.kardexDetail.getOperationType() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnitValue() != null;
     }
 
     public void refreshFundKardex() {

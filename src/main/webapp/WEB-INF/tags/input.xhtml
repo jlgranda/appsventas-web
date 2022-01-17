@@ -31,7 +31,9 @@ limitations under the License.
     <c:set var="defaultrender" value="#{not empty render ? ''.concat(render) : (not empty id ? ''.concat(id) : ''.concat(mame))}" />
     <c:set var="render" value="#{not empty render ? 'panel-group-'.concat(render) : (not empty id ? 'panel-group-'.concat(id) : 'panel-group-'.concat(mame))}" />
     <c:set var="mode" value="#{not empty mode ? mode : 'write'}" />   
+    <c:set var="decimalSeparator" value="#{not empty decimalSeparator ? decimalSeparator : '.'}" />   
     <c:set var="decimalPlaces" value="#{not empty decimalPlaces ? decimalPlaces : '3'}" />   
+    <c:set var="thousandSeparator" value="#{not empty thousandSeparator ? thousandSeparator : '3'}" />   
     <c:set var="requiredMessage" value="#{not empty requiredMessage ? requiredMessage : 'Ingrese un valor'}" />   
     <c:set var="listener" value="#{not empty listener ? listener : ''}" />   
     <c:set var="update" value="#{not empty update ? update : ''}" />   
@@ -58,13 +60,13 @@ limitations under the License.
             <c:if test="#{container != 'default'}">
 
                     <c:if test="#{placeholder == 'false' and rendered == 'true'}">
-                        <h:panelGroup id="panel-group-label-#{id}" rendered="#{rendered}" styleClass="ui-panelgrid-cell ui-g-12 ui-md-12">
+                        <h:panelGroup id="panel-group-label-#{id}" rendered="#{rendered}" styleClass="ui-g ui-g-12 ui-md-12">
                             <p:outputLabel for="#{name}" value="#{label}" />
                         </h:panelGroup>
                         <!--<label>#{label}</label>-->
                     </c:if>
                     <!--<h:panelGroup id="panel-group-#{id}" layout="block" class="form-group" rendered="#{rendered}">-->
-                    <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}" styleClass="ui-panelgrid-cell ui-g-12 ui-md-12">
+                    <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="ui-g ui-g-12 ui-md-12">
                     <c:choose>
                         <c:when test="#{type == 'text' or type == 'number' }">
                             <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}" maxlength="#{maxlength}"
@@ -78,6 +80,24 @@ limitations under the License.
                                     <p:ajax event="#{event}" listener="#{listener}" update="#{update}" process="@this"/>
                                 </c:if>
                             </p:inputText>
+                        </c:when>
+                        <c:when test="#{type == 'decimal' }">
+                            <p:inputNumber id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
+                                         required="#{required}" disabled="#{disabled}" requiredMessage="#{label}: #{cache}"
+                                         class="#{class}" title="#{cache}" style="#{style}"
+                                         decimalSeparator="#{decimalSeparator}" 
+                                         thousandSeparator="#{thousandSeparator}" 
+                                         decimalPlaces="#{decimalPlaces}">
+                                <c:if test="#{not empty validator}">
+                                    <f:validator validatorId="#{validator}"/>
+                                </c:if>
+                                <c:if test="#{not empty listener and not empty update }">
+                                    <p:ajax listener="#{listener}" update="#{update}" partialSubmit="true" process="@this"/>
+                                </c:if>
+                                <c:if test="#{empty listener and not empty update }">
+                                    <p:ajax update="#{update}" partialSubmit="true"  process="@this"/>
+                                </c:if>
+                            </p:inputNumber>
                         </c:when>
                         <c:when test="#{type == 'text-lowercase'}">
                             <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
@@ -138,7 +158,7 @@ limitations under the License.
                             </p:textEditor>
                         </c:when>
                         <c:when test="#{type == 'java.lang.String[]' or type == 'select'}">
-                            <p:selectOneMenu value="#{value}" effect="fade" id="#{name}"
+                            <p:selectOneMenu value="#{value}" id="#{name}"
                                              required="#{required}" requiredMessage="#{label}: #{cache}" 
                                              class="#{empty class ? 'ui-selectcheckboxmenu-label ui-corner-all' : class}"
                                              title="#{cache}" disabled="#{disabled}">
