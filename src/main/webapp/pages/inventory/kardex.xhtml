@@ -147,12 +147,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </p:commandButton>
                 </div>
                 <h:panelGroup class="ui-g-10" rendered="#{kardexInventoryHome.kardexId!=null}">
-                    <p:commandButton id="btn-edit-kardex-properties" icon="fa fa-pencil-square-o" title="#{i18n['common.edit']} #{i18n['properties']}"
+                    <p:commandButton id="btn-edit-kardex-properties" icon="fa fa-pencil-square-o" 
+                                     title="#{i18n['common.edit']} #{i18n['properties']}"
                                      actionListener="#{kardexInventoryHome.activePanelKardex()}"
                                      disabled="#{!kardexInventoryHome.activeKardexEdition}"
                                      update="btn-edit-kardex-properties btn-save-kardex-properties panel-kardex-properties"
                                      styleClass="secondary-button" style="width:  2.5rem"/>
-                    <p:commandButton id="btn-save-kardex-properties" icon="fa fa-floppy-o" title="#{i18n['common.save']} #{i18n['properties']}"
+                    <p:commandButton id="btn-save-kardex-properties" icon="fa fa-floppy-o" 
+                                     title="#{i18n['common.save']} #{i18n['properties']}"
                                      actionListener="#{kardexInventoryHome.editKardex()}"
                                      disabled="#{kardexInventoryHome.activeKardexEdition}"
                                      update="btn-save-kardex-properties btn-edit-kardex-properties panel-kardex-properties"

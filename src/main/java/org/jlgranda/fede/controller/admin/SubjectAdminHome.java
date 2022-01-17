@@ -29,11 +29,8 @@ import com.jlgranda.shiro.ejb.UsersRolesFacade;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -50,12 +47,10 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.SubjectHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.ui.model.LazySubjectDataModel;
-import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import org.jpapi.util.Lists;
 import org.jpapi.util.StringValidations;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
@@ -204,7 +199,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId() + "&faces-redirect=true");
+                redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((Subject) event.getObject()).getId() + "&faces-redirect=true");
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
@@ -456,32 +451,32 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     public void applySelectedGroups() {
-        String status = "";
-        Group group = null;
-        Set<String> addedGroups = new LinkedHashSet<>();
-        for (BussinesEntity fe : getSelectedBussinesEntities()) {
-            for (String key : selectedTriStateGroups.keySet()) {
-                group = findGroup(key);
-                status = selectedTriStateGroups.get(key);
-                if ("0".equalsIgnoreCase(status)) {
-                    if (fe.containsGroup(key)) {
-                        fe.remove(group);
-                    }
-                } else if ("1".equalsIgnoreCase(status)) {
-                    if (!fe.containsGroup(key)) {
-                        fe.add(group);
-                        addedGroups.add(group.getName());
-                    }
-                } else if ("2".equalsIgnoreCase(status)) {
-                    if (!fe.containsGroup(key)) {
-                        fe.add(group);
-                        addedGroups.add(group.getName());
-                    }
-                }
-            }
-            subjectService.save(fe.getId(), (Subject) fe);
-        }
-        this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
+//        String status = "";
+//        Group group = null;
+//        Set<String> addedGroups = new LinkedHashSet<>();
+//        for (BussinesEntity fe : getSelectedBussinesEntities()) {
+//            for (String key : selectedTriStateGroups.keySet()) {
+//                group = findGroup(key);
+//                status = selectedTriStateGroups.get(key);
+//                if ("0".equalsIgnoreCase(status)) {
+//                    if (fe.containsGroup(key)) {
+//                        fe.remove(group);
+//                    }
+//                } else if ("1".equalsIgnoreCase(status)) {
+//                    if (!fe.containsGroup(key)) {
+//                        fe.add(group);
+//                        addedGroups.add(group.getName());
+//                    }
+//                } else if ("2".equalsIgnoreCase(status)) {
+//                    if (!fe.containsGroup(key)) {
+//                        fe.add(group);
+//                        addedGroups.add(group.getName());
+//                    }
+//                }
+//            }
+//            subjectService.save(fe.getId(), (Subject) fe);
+//        }
+//        this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
     }
 
     private Group findGroup(String key) {
@@ -494,18 +489,18 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     public void mostrarAsignarGruposUsuarios() {
-        try {
-            @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-            List<Subject> subjects = new ArrayList<>();
-            getSelectedBussinesEntities().stream().map((entity) -> (Subject) entity).forEach((s) -> {
-                subjects.add(s);
-            });
-
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(I18nUtil.getMessages("subject.selected"), getSelectedBussinesEntities());
-            redirectTo("/pages/admin/subject/subjects_group.jsf");
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
+//        try {
+//            @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+//            List<Subject> subjects = new ArrayList<>();
+//            getSelectedBussinesEntities().stream().map((entity) -> (Subject) entity).forEach((s) -> {
+//                subjects.add(s);
+//            });
+//
+//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(I18nUtil.getMessages("subject.selected"), getSelectedBussinesEntities());
+//            redirectTo("/pages/admin/subject/subjects_group.jsf");
+//        } catch (IOException e) {
+//            logger.error(e.getMessage(), e);
+//        }
     }
 
     public String getConfirmarClave() {

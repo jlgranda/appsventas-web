@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:commandButton value="#{i18n['common.find']}" styleClass="btn raised-btn" actionListener="#{inventoryHome.clear()}" ajax="false">
                         </p:commandButton>
                         <p:button value="#{i18n['common.new']}" styleClass="btn danger-btn" outcome="/pages/inventory/product.jsf"
-                                  disabled="#{not organizationData.organization}"/>
+                                  disabled="#{empty organizationData.organization}"/>
                     </div>
                     <div class="EmptyBox10"></div>
                     <div class="ui-g ui-lg-12 ui-md-12">
