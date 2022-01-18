@@ -225,11 +225,11 @@ public class UI {
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL.toString(), KardexDetail.OperationType.EXISTENCIA_INICIAL.toString());
-//        items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.PRODUCCION, KardexDetail.OperationType.PRODUCCION.toString());
+        item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL, "INVENTARIO INICIAL");
         items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.SALIDA_INVENTARIO, KardexDetail.OperationType.SALIDA_INVENTARIO.toString());
+        item = new SelectItem(KardexDetail.OperationType.PRODUCCION, "PRODUCCIÓN");
+        items.add(item);
+        item = new SelectItem(KardexDetail.OperationType.SALIDA_INVENTARIO, "SALIDA DE INVENTARIO");
         items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
 //        items.add(item);
