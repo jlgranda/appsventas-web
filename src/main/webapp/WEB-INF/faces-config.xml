@@ -86,7 +86,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>inventory-groups</from-outcome>
-            <to-view-id>/pages/inventory/group_items.jsf</to-view-id>
+            <to-view-id>/pages/inventory/group_items.jsf?groupType=CATEGORY</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

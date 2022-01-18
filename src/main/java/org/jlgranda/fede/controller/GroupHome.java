@@ -207,9 +207,9 @@ public class GroupHome extends FedeController implements Serializable {
         this.lazyDataModel = lazyDataModel;
     }
 
-    public List<Group> getGroupsTypeProduct() {
+    public List<Group> getGroupsTypeCategory() {
 //        return groupService.findByType(Group.Type.PRODUCT);
-        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.PRODUCT);
+        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.CATEGORY);
     }
 
     public void clear() {

@@ -123,7 +123,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:selectOneMenu id="grupo" value="#{inventoryHome.groupSelected}"
                                              required="#{false}" immediate="true"
                                              converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
-                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this" />
                             </p:selectOneMenu>
                         </div>

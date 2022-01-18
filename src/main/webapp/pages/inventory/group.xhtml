@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="groupId" value="#{groupInventoryHome.groupId}"/>
+            <f:viewParam name="groupType" value="#{groupInventoryHome.groupType}" valueChangeListener="#{groupInventoryHome.groupTypeChange}"/>
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
@@ -43,12 +44,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <o:importConstants type="org.jpapi.model.Group"/>
         <div class="ui-g ui-fluid"> <!--Contenedor General-->
             <div class="ui-g-12 ui-lg-12 ui-md-12"><!--Contenedor General-->
-                <h1 class="BigTopic">#{i18n['app.fede.inventory.category']}</h1> <!--Sección 1: Título-->
+                <h1 class="BigTopic">#{i18n['app.fede.inventory.categories.'.concat(groupInventoryHome.groupType)]}</h1> <!--Sección 1: Título-->
                 <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}"
                                     value="#{groupInventoryHome.group.name}" required="true"
                                     inlinehelp="#{messages['app.fede.inventory.group.name.inlinehelp']}"
-                                    execute="@this save" render="nme"/>
+                                    render="nme"/>
 <!--                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}"
                                     value="#{groupInventoryHome.group.icon}" required="true"
                                     inlinehelp="#{messages['common.icon.inlinehelp']}"/>                 -->
@@ -73,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
                                     value="#{groupInventoryHome.group.description}" required="false"
                                     inlinehelp="#{messages['app.fede.inventory.group.description.inlinehelp']}"
-                                    execute="@this save" render="dscrpn"/>
+                                    render="dscrpn"/>
                 </div>
                 <div class="EmptyBox10"></div><!--Separador de sección-->
                 <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->

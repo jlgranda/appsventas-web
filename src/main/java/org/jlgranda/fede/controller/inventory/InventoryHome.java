@@ -96,6 +96,8 @@ public class InventoryHome extends FedeController implements Serializable {
     private ProductType productType;
 
     private List<Product> lastProducts = new ArrayList<>();
+    
+    private List<Product> selectedProducts = new ArrayList<>();
 
     private LazyProductDataModel lazyDataModel;
 
@@ -196,6 +198,14 @@ public class InventoryHome extends FedeController implements Serializable {
             lastProducts = productService.findByNamedQuery("Product.findLastProductsOrg", limit, this.organizationData.getOrganization());
         }
         return lastProducts;
+    }
+
+    public List<Product> getSelectedProducts() {
+        return selectedProducts;
+    }
+
+    public void setSelectedProducts(List<Product> selectedProducts) {
+        this.selectedProducts = selectedProducts;
     }
 
     public String getSelectedKeys() {
@@ -626,36 +636,35 @@ public class InventoryHome extends FedeController implements Serializable {
 
     //Acciones sobre seleccionados
     public void execute() {
-        Product p = null;
         if (this.isActionExecutable()) {
             if ("desactivar".equalsIgnoreCase(this.selectedAction)) {
-                for (BussinesEntity be : this.getSelectedBussinesEntities()) {
-                    p = (Product) be;
+                for (Product p : this.getSelectedProducts()) {
                     p.setProductType(ProductType.DEPRECATED);
                     this.productService.save(p.getId(), p); //Actualizar el tipo de producto
                 }
                 setOutcome("");
             } else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null) {
-                for (BussinesEntity be : this.getSelectedBussinesEntities()) {
-                    p = (Product) be;
+                for (Product p : this.getSelectedProducts()) {
                     p.setCategory(this.getGroupSelected());
                     this.productService.save(p.getId(), p); //Actualizar el tipo de producto
                 }
                 setOutcome("");
             } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType() != null) {
-                for (BussinesEntity be : this.getSelectedBussinesEntities()) {
-                    p = (Product) be;
+                for (Product p : this.getSelectedProducts()) {
                     p.setProductType(this.getProductType());
                     this.productService.save(p.getId(), p); //Actualizar el tipo de producto
                     this.productCache.load(); //Actualizar el cache
                 }
                 setOutcome("");
             } else if ("gotokardex".equalsIgnoreCase(this.selectedAction) && this.getProductType() != null) {
-                for (BussinesEntity be : this.getSelectedBussinesEntities()) {
-                    p = (Product) be;
+                for (Product p : this.getSelectedProducts()) {
                     Kardex k = kardexService.findByProductAndOrganization(p, subject, this.organizationData.getOrganization());
                     try {
-                        redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
+                        if (k != null && k.isPersistent()){
+                            redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
+                        } else {
+                            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.kardex.nofount"));
+                        }
                     } catch (IOException ex) {
                         java.util.logging.Logger.getLogger(InventoryHome.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -673,7 +682,7 @@ public class InventoryHome extends FedeController implements Serializable {
             return true;
         } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType() != null) {
             return true;
-        } else if ("gotokardex".equalsIgnoreCase(this.selectedAction) && !this.selectedBussinesEntities.isEmpty()) {
+        } else if ("gotokardex".equalsIgnoreCase(this.selectedAction) && !this.selectedProducts.isEmpty()) {
             return true;
         }
         return false;

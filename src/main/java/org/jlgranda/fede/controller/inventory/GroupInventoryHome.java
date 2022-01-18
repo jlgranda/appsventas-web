@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.model.accounting.Record;
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author jlgranda
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class GroupInventoryHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -1007161141552849702L;
@@ -85,17 +86,15 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        setGroupType(Group.Type.PRODUCT);
-        if (Group.Type.PRODUCT.equals(getGroupType())) {
+//        setGroupType(Group.Type.PRODUCT);
+//        if (Group.Type.PRODUCT.equals(getGroupType())) {
             Group instance = groupService.createInstance(getGroupType());//Instancia de Grupo
             instance.setColor("panel-primary");
             instance.setIcon("fa fa-object-group");
             instance.setModule("inventory");
             setGroup(instance);//Instancia de Grupo
-        }
-        setOutcome("inventory-groups");
-        filter();
-
+//        }
+        setOutcome("inventory-groups-category");
     }
 
     /**
@@ -109,42 +108,42 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         Map<String, String> props = new HashMap<>();
 
         //email settings
-        props.put("salud", "Salud {1, panel-primary, fa fa-heartbeat fa-5x, fede}");
-        props.put("alimentos", "Alimentos {2, panel-sucess, fa fa-icon-shopping-cart fa-5x, fede}");
-        props.put("ropa", "Ropa {3, panel-green, fa fa-tag fa-5x, fede}");
-        props.put("educacion", "Educación {4, panel-yellow, fa fa-graduation-cap fa-5x, fede}");
-        props.put("vivienda", "Vivienda {5, panel-red, fa fa-home fa-5x, fede}");
-        props.put("favorito", "Favoritos {1, panel-red, fa fa-heart-o, " + SettingNames.GENERAL_MODULE + "}");
-
-        Group group = null;
-        String value = null;
-        Short orden = null;
-        String icon = null;
-        String module = null;
-        String color = null;
-        String attrs = null;
-        for (String key : props.keySet()) {
-            value = props.get(key);
-            attrs = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
-            orden = Short.valueOf(attrs.split(",")[0]);
-            color = attrs.split(",")[1];
-            icon = attrs.split(",")[2];
-            module = attrs.split(",")[3];
-            value = value.substring(0, (value.indexOf("{") - 1));
-            group = groupService.createInstance();
-            group.setCode(key.trim());
-            group.setName(value.trim());
-            group.setOwner(subject);
-            group.setColor(color.trim());
-            group.setIcon(icon.trim());
-            group.setModule(module.trim()); //Marcar con null para el caso de etiquetas generales
-            group.setOrden(orden);
-            group.setGroupType(Group.Type.LABEL);
-
-            groupService.save(group);
-
-            //logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
-        }
+//        props.put("salud", "Salud {1, panel-primary, fa fa-heartbeat fa-5x, fede}");
+//        props.put("alimentos", "Alimentos {2, panel-sucess, fa fa-icon-shopping-cart fa-5x, fede}");
+//        props.put("ropa", "Ropa {3, panel-green, fa fa-tag fa-5x, fede}");
+//        props.put("educacion", "Educación {4, panel-yellow, fa fa-graduation-cap fa-5x, fede}");
+//        props.put("vivienda", "Vivienda {5, panel-red, fa fa-home fa-5x, fede}");
+//        props.put("favorito", "Favoritos {1, panel-red, fa fa-heart-o, " + SettingNames.GENERAL_MODULE + "}");
+//
+//        Group group = null;
+//        String value = null;
+//        Short orden = null;
+//        String icon = null;
+//        String module = null;
+//        String color = null;
+//        String attrs = null;
+//        for (String key : props.keySet()) {
+//            value = props.get(key);
+//            attrs = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
+//            orden = Short.valueOf(attrs.split(",")[0]);
+//            color = attrs.split(",")[1];
+//            icon = attrs.split(",")[2];
+//            module = attrs.split(",")[3];
+//            value = value.substring(0, (value.indexOf("{") - 1));
+//            group = groupService.createInstance();
+//            group.setCode(key.trim());
+//            group.setName(value.trim());
+//            group.setOwner(subject);
+//            group.setColor(color.trim());
+//            group.setIcon(icon.trim());
+//            group.setModule(module.trim()); //Marcar con null para el caso de etiquetas generales
+//            group.setOrden(orden);
+//            group.setGroupType(Group.Type.LABEL);
+//
+//            groupService.save(group);
+//
+//            //logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
+//        }
     }
 
     @Override
@@ -202,8 +201,7 @@ public class GroupInventoryHome extends FedeController implements Serializable {
     }
 
     public List<Group> getGroupsTypeProduct() {
-//        return groupService.findByType(Group.Type.PRODUCT);
-        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.PRODUCT);
+        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), getGroupType());
     }
 
     public void clear() {
@@ -211,7 +209,8 @@ public class GroupInventoryHome extends FedeController implements Serializable {
     }
 
     private void filter() {
-        if (this.organizationData.getOrganization() != null) {
+        
+      if (this.organizationData.getOrganization() != null) {
             if (lazyDataModel == null) {
                 lazyDataModel = new LazyGroupDataModel(groupService);
             }
@@ -233,15 +232,17 @@ public class GroupInventoryHome extends FedeController implements Serializable {
         }
     }
 
-    public void save() {
+    public void save() throws IOException {
         if (group.isPersistent()) {
             group.setLastUpdate(Dates.now());
         } else {
             group.setAuthor(this.subject);
             group.setOwner(this.subject);
             group.setOrganization(this.organizationData.getOrganization());
+            group.setGroupType(getGroupType());
         }
         groupService.save(group.getId(), group);
+        this.redirectTo(getOutcome());
     }
 
     public void onRowSelect(SelectEvent event) {
@@ -266,4 +267,12 @@ public class GroupInventoryHome extends FedeController implements Serializable {
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    public void groupTypeChange(javax.faces.event.ValueChangeEvent event){
+        if (!event.getNewValue().equals(event.getOldValue())){
+            this.setGroupType((Group.Type) event.getNewValue());
+            setOutcome("/pages/inventory/group_items.jsf?groupType=" + this.getGroupType().toString());
+            this.clear();
+        }
+    } 
 }

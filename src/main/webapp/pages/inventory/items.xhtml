@@ -45,7 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:selectOneMenu value="#{inventoryHome.groupSelected}"
                                          immediate="true"
                                          converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
-                            <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                         </p:selectOneMenu>
                         <label class="Gray" style="padding-top: 8px;">#{i18n['common.type']}&nbsp;</label>
                         <p:selectOneMenu value="#{inventoryHome.productType}"
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{product.id}"
                                      rows="25" scrollRows="25"
                                      value="#{inventoryHome.lazyDataModel}" var="product"
-                                     selection="#{inventoryHome.selectedBussinesEntities}"
+                                     selection="#{inventoryHome.selectedProducts}"
                                      sortBy="#{product.createdOn}">
                             
                             <p:ajax event="rowSelect" listener="#{inventoryHome.onRowSelect}"/>
@@ -126,7 +126,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                     <div class="EmptyBox10"></div>
                     <p:panel id="panelSelectedToolBar">
-                        <p:toolbar id="selectedToolBar" rendered="#{not empty inventoryHome.selectedBussinesEntities}">
+                        <p:toolbar id="selectedToolBar" rendered="#{not empty inventoryHome.selectedProducts}">
                             <f:facet name="left">
                                 <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
                                 <p:selectOneMenu value="#{inventoryHome.selectedAction}">
