@@ -96,7 +96,7 @@ public class InventoryHome extends FedeController implements Serializable {
     private ProductType productType;
 
     private List<Product> lastProducts = new ArrayList<>();
-    
+
     private List<Product> selectedProducts = new ArrayList<>();
 
     private LazyProductDataModel lazyDataModel;
@@ -119,6 +119,8 @@ public class InventoryHome extends FedeController implements Serializable {
 
     @EJB
     private KardexService kardexService;
+
+    private Kardex kardex;
 
     @PostConstruct
     private void init() {
@@ -237,7 +239,6 @@ public class InventoryHome extends FedeController implements Serializable {
     }
 
     public void save() {
-
         if (product.isPersistent()) {
             product.setLastUpdate(Dates.now());
 //            if (!product.getGroups().isEmpty()) {
@@ -255,10 +256,21 @@ public class InventoryHome extends FedeController implements Serializable {
         productService.save(product.getId(), product); //Volver a guardar el producto para almacenar el ggroup
 
         //if el producto tiene un kardex asociado y se cambia el nombre actualizar el nombre del kardex
-        Kardex kardex = kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization());
-        if (kardex != null && product.getName().equalsIgnoreCase(kardex.getName())) {
-            kardex.setName(product.getName());
-            kardexService.save(kardex); //Actualizar el nombre
+        kardex = kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization());
+        System.out.println("kardexService.findByProductAndOrganization:: " + kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization()));
+        if (this.kardex == null) {
+            this.kardex = kardexService.createInstance();
+            this.kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-") + (product.getId() != null ? product.getId() : ""));
+            this.kardex.setName(product.getName() != null ? product.getName() : "");
+            this.kardex.setUnitMinimum(BigDecimal.ZERO);
+            this.kardex.setUnitMaximum(BigDecimal.ZERO);
+            this.kardex.setQuantity(BigDecimal.ZERO);
+            this.kardex.setFund(BigDecimal.ZERO);
+            this.kardex.setProduct(product);
+            this.kardex.setAuthor(this.subject);
+            this.kardex.setOwner(this.subject);
+            this.kardex.setOrganization(this.organizationData.getOrganization());
+            kardexService.save(this.kardex); //Actualizar el nombre
         }
         //Cargar producto en el cache
         productCache.load();
@@ -660,7 +672,7 @@ public class InventoryHome extends FedeController implements Serializable {
                 for (Product p : this.getSelectedProducts()) {
                     Kardex k = kardexService.findByProductAndOrganization(p, subject, this.organizationData.getOrganization());
                     try {
-                        if (k != null && k.isPersistent()){
+                        if (k != null && k.isPersistent()) {
                             redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
                         } else {
                             this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.kardex.nofount"));
@@ -702,7 +714,7 @@ public class InventoryHome extends FedeController implements Serializable {
 
         item = new SelectItem("changeto", "Cambiar tipo a");
         actions.add(item);
-        
+
         item = new SelectItem("gotokardex", "Ir a kardex");
         actions.add(item);
     }
