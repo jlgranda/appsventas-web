@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <ui:composition template="/WEB-INF/templates/fede-inbox-template.xhtml">
+        <ui:param name="sitename" value="#{i18n['Sitename']}" />
+        <ui:param name="title" value="#{i18n['RIDE']}" />
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="key" value="#{facturaElectronicaHome.keys}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="toolbar">
+            <!-- SUB TOPBAR START -->
+            <div class="Container100 UserLinks">
+                <div class="ContainerIndent">
+                    <span class="BoldGray Fs18 FontRobotoLight Fleft ShowOnDesktop"><i class="icon-arrow-right"></i>
+                        <ui:insert name="subheader">
+                            #{i18n['ride.title']} - #{i18n['ride.intro']} (#{facturaElectronicaHome.listarFacturasElectronicasPorIds().size()})
+                        </ui:insert></span>
+                </div>
+
+                <div class="Container100 UserLinks">
+                    <div class="ContainerIndent TexAlLeft">
+                        <p:toolbar id="toolbar">
+                            <f:facet name="left">
+
+                                <p:commandButton type="button" icon="fa fa-arrow-left" styleClass="ToolbarButton Fs14" 
+                                                 onclick="triggerHiddenCommandLinkBack(); return false;" />
+                                <span class="ui-separator">
+                                    <span class="fa fa-ellipsis-v SoftGray" />
+                                </span>
+                                <p:menuButton value="#{i18n['Import']}" iconPos="right" 
+                                              styleClass="MarRight10"
+                                              menuStyleClass="Gray"><!--buttonStyleClass="ToolbarButton Fs14" iconStyleClass="Gray"-->
+                                    <p:menuitem value="#{i18n['common.update']} #{i18n['FromFile']}" icon="fa fa-upload Fs15"
+                                                onclick="triggerHiddenEventUpdateFromFile(); return false;"/>
+                                    <p:menuitem value="#{i18n['common.update']} #{i18n['FromURL']}" icon="fa fa-link Fs15" 
+                                                onclick="triggerHiddenEventUpdateFromURL(); return false;"/>
+                                </p:menuButton>
+                            </f:facet>
+                        </p:toolbar>
+
+                        <!--hidden buttons for trigger dialogReturn-->
+                        <!--http://stackoverflow.com/questions/20931384/primefaces-dialog-framework-dialogreturn-event-from-menuitem-->
+                        <p:commandButton id="hiddenCommandUpdateFromFile" styleClass="button" style="display:none"
+                                         actionListener="#{facturaElectronicaHome.mostrarFormularioActualizacionFacturaElectronica('file')}">
+                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{facturaElectronicaHome.handleReturn}">
+                            </p:ajax>
+                        </p:commandButton>
+                        <p:commandButton id="hiddenCommandUpdateFromURL" styleClass="button" style="display:none"
+                                         actionListener="#{facturaElectronicaHome.mostrarFormularioActualizacionFacturaElectronica('url')}">
+                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{facturaElectronicaHome.handleReturn}">
+                            </p:ajax>
+                        </p:commandButton>
+                        <h:outputLink id="hiddenCommandLinkBack" styleClass="button" style="display:none"
+                                      value="#{facesContext.externalContext.requestContextPath}/pages/fede/inbox.jsf?tags=#{facturaElectronicaHome.tags}">
+                        </h:outputLink>
+                    </div>
+                </div>
+                <div class="EmptyBox5"></div>
+            </div>
+            <!-- SUB TOPBAR END -->
+        </ui:define>
+        <!--//toolbar-->
+
+        <ui:define name="content">
+            <div class="Container100 Responsive100">
+                <div class="ContainerIndent Card ShadowEffect">
+                    <!-- Impresion de RIDE -->
+                    <ui:repeat var="facturaElectronica" value="#{facturaElectronicaHome.listarFacturasElectronicasPorIds()}">
+                        <div class="Container100 Responsive100">
+                            <div class="Container100 Responsive100">
+                                <div class="Container100 Responsive100">
+                                    <div class="Container50 Responsive100">
+                                        <div class="Container100 Responsive100">
+                                            <span class="text-center"><h1>#{facturaElectronica.author.initials}</h1></span>
+                                        </div>
+                                        <div class="Container100 Responsive100">
+                                            <div class="Container100 Responsive100"><h3>#{facturaElectronica.author.initials}</h3></div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.head']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.branch']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.contribuyenteEspecial']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.obligadoContabilidad']}" escape="false" styleClass="text-uppercase"/>&nbsp;</div>
+                                        </div>
+                                    </div>
+                                    <div class="Container50 Responsive100">
+                                        <div class="Container100 Responsive100">#{i18n['common.ruc']}&nbsp;#{facturaElectronica.author.code}
+                                        </div>
+                                        <div class="Container100 Responsive100"><strong>#{i18n['common.invoice']}</strong>
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['common.nr']}&nbsp;#{facturaElectronica.code}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.authorization']}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{facturaElectronica.numeroAutorizacion}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.authorizationDate']}&nbsp;#{facturaElectronica.fechaAutorizacion}
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.environment']}&nbsp;
+                                        </div>
+                                        <div class="Container100 Responsive100">#{i18n['ride.emission']}&nbsp;
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="EmptyBox10"></div>
+                                <div class="Container100 Responsive100">
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.company.name']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.firstname}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.dni.ruc']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.owner.code}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.date.emission']}" escape="false" styleClass="text-muted"/>&nbsp;#{facturaElectronica.fechaEmision}</div>
+                                    <div class="Container50 Responsive100"><h:outputText value="#{i18n['common.guide.remission']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                </div>
+                                <div class="EmptyBox10"></div>
+                                <div class="Container100 Responsive100">
+                                    <div class="Container60 Fs50 FontRobotoLight Gray">
+                                        <span class="DispBlock">
+                                            #{facturaElectronica.description}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="Container100 Responsive100">
+                                    <div class="Container80 Responsive100">
+                                        <div class="EmptyBox5"></div>
+                                    </div>
+                                    <div class="Container20 Responsive100">
+                                        <div class="EmptyBox10"></div>
+                                        <div class="Container100 Responsive100">
+                                            
+                                        </div>
+                                        <div class="Container100 Responsive100">
+                                            <div class="Container80 Responsive100">
+                                                <h:outputText value="#{i18n['ride.infoFactura.totalSinImpuestos']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                            </div>
+                                            <div class="Container20 Responsive100 TexAlRight">
+                                                <h:outputText value="#{facturaElectronica.totalSinImpuestos}" class="text-primary">
+                                                    <f:convertNumber type="currency" currencySymbol="$" locale="es_EC"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                        <div class="Container100 Responsive100">
+                                            <div class="Container80 Responsive100">
+                                                <h:outputText value="#{i18n['ride.infoFactura.totalDescuento']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                            </div>
+                                            <div class="Container20 Responsive100 TexAlRight">
+                                                <h:outputText value="#{facturaElectronica.totalDescuento}" class="text-primary">
+                                                    <f:convertNumber type="currency" currencySymbol="$" locale="es_EC"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                        <div class="EmptyBox10"></div>
+                                        <div class="Container100 Responsive100 Bold">
+                                            <div class="Container80 Responsive100">
+                                                <h:outputText value="#{i18n['ride.infoFactura.importeTotal']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                            </div>
+                                            <div class="Container20 Responsive100 TexAlRight">
+                                                <h:outputText value="#{facturaElectronica.importeTotal}" class="text-primary">
+                                                    <f:convertNumber type="currency" currencySymbol="$" locale="es_EC"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="EmptyBox20"></div>
+                        <div class="Separator"></div>
+                        <!-- ./Impresion de RIDE -->
+                    </ui:repeat>
+                </div>
+            </div>
+            <!-- /.row -->
+
+        </ui:define>
+        <ui:define name="script">
+            <script>
+                function triggerHiddenEventUpdateFromFile() {
+                    document.getElementById("form:hiddenCommandUpdateFromFile").click();
+                }
+                function triggerHiddenEventUpdateFromURL() {
+                    document.getElementById("form:hiddenCommandUpdateFromURL").click();
+                }
+                function triggerHiddenCommandLinkBack() {
+                    document.getElementById("form:hiddenCommandLinkBack").click();
+                }
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

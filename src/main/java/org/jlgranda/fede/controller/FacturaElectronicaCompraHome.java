@@ -1,10 +1,10 @@
 /*
- * Copyright (C) 2015 jlgranda
+ * Copyright (C) 2022 jlgranda
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,44 +12,23 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.jlgranda.fede.controller;
 
-import javax.ejb.EJB;
-import com.jlgranda.fede.ejb.FacturaElectronicaService;
-import com.jlgranda.fede.ejb.SubjectService;
-import com.jlgranda.fede.ejb.mail.reader.FacturaElectronicaMailReader;
-import com.jlgranda.fede.ejb.mail.reader.FacturaReader;
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import javax.inject.Named;
-import javax.mail.MessagingException;
-import org.jlgranda.fede.model.document.FacturaElectronica;
-import org.jlgranda.fede.sri.jaxb.exception.FacturaXMLReadException;
-import org.jlgranda.fede.util.FacturaUtil;
-import org.primefaces.event.SelectEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.jpapi.model.CodeType;
-import org.jpapi.model.Group;
-import org.jpapi.model.profile.Subject;
-import org.jpapi.util.Dates;
-import org.primefaces.event.FileUploadEvent;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.FacturaElectronicaDetailService;
+import com.jlgranda.fede.ejb.FacturaElectronicaService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.RecordTemplateService;
+import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
+import com.jlgranda.fede.ejb.mail.reader.FacturaElectronicaMailReader;
+import com.jlgranda.fede.ejb.mail.reader.FacturaReader;
 import com.jlgranda.fede.ejb.sales.KardexDetailService;
 import com.jlgranda.fede.ejb.sales.KardexService;
 import com.jlgranda.fede.ejb.sales.PaymentService;
@@ -57,24 +36,34 @@ import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import com.jlgranda.fede.ejb.url.reader.FacturaElectronicaURLReader;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.mail.MessagingException;
 import org.apache.commons.io.IOUtils;
+import static org.jlgranda.fede.controller.FedeController.KEY_SEPARATOR;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.model.Detailable;
 import org.jlgranda.fede.model.accounting.Account;
@@ -83,36 +72,49 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
+import org.jlgranda.fede.model.document.FacturaType;
 import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.sri.jaxb.exception.FacturaXMLReadException;
 import org.jlgranda.fede.sri.jaxb.factura.v110.Factura;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
+import org.jlgranda.fede.util.FacturaUtil;
 import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.BussinesEntity;
+import org.jpapi.model.CodeType;
+import org.jpapi.model.Group;
 import org.jpapi.model.SourceType;
+import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
 import org.jpapi.util.Strings;
 import org.kie.internal.builder.KnowledgeBuilderErrors;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.file.UploadedFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Controlador de aplicaciones de factura electrónica
- *
+ * Especilización de compras via factura electrónica
+ * 
  * @author jlgranda
  */
 @ViewScoped
 @Named
-public class FacturaElectronicaHome extends FedeController implements Serializable {
+public class FacturaElectronicaCompraHome extends FedeController  implements Serializable {
+    
+    Logger logger = LoggerFactory.getLogger(FacturaElectronicaCompraHome.class);
+    
+    private static final long serialVersionUID = -8639341517802126909L;
 
-    Logger logger = LoggerFactory.getLogger(FacturaElectronicaHome.class);
-
-    private static final long serialVersionUID = -8639341517802129909L;
-
+   
     @Inject
     private Subject subject;
 
@@ -257,7 +259,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     private BigDecimal amoutPending;
 
-    public FacturaElectronicaHome() {
+    public FacturaElectronicaCompraHome() {
     }
 
     @PostConstruct
@@ -265,19 +267,18 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         int amount = 0;
         amount = 30;
         try {
-//            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
+            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
         } catch (java.lang.NumberFormatException nfe) {
-//            amount = 30;
+            amount = 30;
         }
         setEnd(Dates.now());
-//        setStart(Dates.addDays(getEnd(), -1 * amount));
+        setStart(Dates.addDays(getEnd(), -1 * amount));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * amount)));
 
         setFacturaElectronica(facturaElectronicaService.createInstance());
         setUseDefaultSupplier(false); //TODO desde configuraciones
 
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
-        setOutcome("fede-inbox");
 
         setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
         if (this.organizationData.getOrganization() != null) {
@@ -294,6 +295,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         getPayment().setCash(BigDecimal.ZERO);
         getPayment().setChange(BigDecimal.ZERO);
         setAmoutPending(BigDecimal.ZERO);
+        
+        setOutcome("compras");
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -1019,6 +1022,14 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         filter(null, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), getKeyword(), getTags());
     }
 
+    /**
+     * Filta facturas del tipo COMPRA
+     * @param _subject
+     * @param _start
+     * @param _end
+     * @param _keyword
+     * @param _tags 
+     */
     public void filter(Subject _subject, Date _start, Date _end, String _keyword, String _tags) {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyFacturaElectronicaDataModel(facturaElectronicaService);
@@ -1034,6 +1045,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         if (_subject != null) {
             lazyDataModel.setAuthor(_subject);
         }
+        
+        lazyDataModel.setFacturaType(FacturaType.COMPRA);
 
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
 
