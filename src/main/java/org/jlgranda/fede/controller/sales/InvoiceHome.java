@@ -755,7 +755,10 @@ public class InvoiceHome extends FedeController implements Serializable {
 
                 List<Record> records = new ArrayList<>();
                 getReglas().forEach(regla -> {
-                    records.add(aplicarReglaNegocio(regla, this.invoice));
+                    Record r = aplicarReglaNegocio(regla, this.invoice);
+                    if (r != null) {
+                        records.add(r);
+                    }
                 });
 
                 if (!records.isEmpty()) {

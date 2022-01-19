@@ -32,6 +32,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaElectronica_;
+import org.jlgranda.fede.model.document.FacturaType;
 import org.jpapi.model.Organization;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
@@ -93,6 +94,8 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
 
     private String filterValue;
+    
+    private FacturaType facturaType;
 
     public LazyFacturaElectronicaDataModel(FacturaElectronicaService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -247,7 +250,7 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         Map<String, Object> _filters = buildFilters(true); //Filtros desde atributos de clase
 
         _filters.putAll(filters);
-
+        
         if (sortField == null) {
             sortField = FacturaElectronica_.fechaEmision.getName();
         }
@@ -345,6 +348,10 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         if (!Strings.isNullOrEmpty(getFilterValue())) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
+        
+        if (getFacturaType() != null && !Strings.isNullOrEmpty(getFacturaType().toString())) {
+            _filters.put(FacturaElectronica_.facturaType.getName(), getFacturaType()); //Tipo de factura
+        }
 
         return _filters;
     }
@@ -357,4 +364,13 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
         QueryData<FacturaElectronica> qData = bussinesEntityService.find(_filters);
         return qData.getTotalResultCount().intValue();
     }
+
+    public FacturaType getFacturaType() {
+        return facturaType;
+    }
+
+    public void setFacturaType(FacturaType facturaType) {
+        this.facturaType = facturaType;
+    }
+
 }

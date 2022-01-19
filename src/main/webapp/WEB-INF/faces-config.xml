@@ -75,8 +75,13 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>fede-inbox</from-outcome>
-            <to-view-id>/pages/fede/inbox.jsf</to-view-id>
+            <from-outcome>facturas</from-outcome>
+            <to-view-id>/pages/fede/compras/compras.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>compras</from-outcome>
+            <to-view-id>/pages/fede/compras/compras.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
