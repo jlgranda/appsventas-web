@@ -213,7 +213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:ajax update="btn-agregar" partialSubmit="true"></p:ajax>
                 </p:selectOneMenu>
                 <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}" 
-                                execute="@this save-button" render="quantity" value="#{kardexInventoryHome.kardexDetail.quantity}" 
+                                render="quantity" value="#{kardexInventoryHome.kardexDetail.quantity}" 
                                 required="true" requiredMessage="#{i18n['common.quantity']}"
                                 placeholder="false" minValue="0"
                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -223,7 +223,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 update="btn-agregar"/>
 
                 <jlgranda:input id="unit_value" name="unit_value" type="decimal" label="#{i18n['common.price.unit']}" 
-                                execute="@this save-button" render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
+                                render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
                                 required="true" requiredMessage="#{i18n['common.price.unit']}"
                                 placeholder="false" minValue="0"
                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 

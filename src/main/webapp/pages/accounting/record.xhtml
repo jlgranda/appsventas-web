@@ -20,7 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
         <ui:define name="head"></ui:define>
@@ -37,9 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12">
-                    <div class="card p-shadow-1 ui-fluid" style="height: 600px; max-height: 600px">
+                    <div class="card p-shadow-1 ui-fluid">
                         <div style="text-align: -webkit-center">
-                            <p:outputLabel class="Fs18 FontBold" style="text-transform: uppercase;" value="Registro de Asiento Contable"/>
+                            <p:outputLabel class="Fs18 FontBold" style="text-transform: uppercase;" value="Asiento Contable"/>
                         </div>
                         <div class="ui-g" style="padding: 0.5rem;">
                             <!--<h:form id="registerRecordForm">-->
@@ -47,8 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:outputLabel value="Fecha de Registro del Asiento" for="@next"/>
                                 <p:datePicker id="emissionDate" value="#{recordHome.record.emissionDate}"
                                               touchUI="true" showOtherMonths="true" showIcon="true" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}"
-                                              required="true">
-                                    <p:ajax event="dateSelect" update="btnGeneralJournal" partialSubmit="true"/>
+                                              required="true"
+                                              immediate="true">
+                                    <p:ajax event="dateSelect" update="btnRecordAdd btnGeneralJournal" process="@this"/>
                                 </p:datePicker>
                             </div>
                             <div class="ui-g-2 ui-md-2 ui-lg-2" style="align-self: flex-end">
@@ -60,10 +62,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  disabled="#{empty recordHome.record.emissionDate}"/>
                             </div>
                             <div class="ui-g-12 ui-md-12 ui-lg-12">
-                                <p:outputLabel value="Detalle del Asiento" for="@next"/>
+                                <h2>Agregar cuenta al asiento contable</h2>
                                 <div class="card ui-fluid p-shadow-1">
-                                    <div class="ui-g">
-                                        <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                    <div  class="ui-g">
+                                        <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-12">
                                             <p:outputLabel value="#{i18n['app.fede.accounting.account.catalogue']}" for="@next"/>
                                             <p:autoComplete id="account" 
                                                             value="#{recordHome.recordDetail.account}" var="account"
@@ -79,9 +81,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:column>
                                                     <span style="text-transform: uppercase"><strong> #{account.code} </strong> - #{account.name}</span>
                                                 </p:column>
+                                                <p:ajax process="@this"/>
+                                                <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
                                             </p:autoComplete>
                                         </div>
-                                        <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                        <div class="ui-g-4 ui-md-3 ui-lg-3 ui-sm-12">
                                             <p:outputLabel value="Seleccione el tipo:" for="@next"/>
                                             <p:selectOneRadio id="recordDetailType" 
                                                               value="#{recordHome.recordDetail.recordDetailType}" 
@@ -89,124 +93,135 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                               required="true">
                                                 <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
                                                                itemLabel="#{recordDetailType.label}" itemValue="#{recordDetailType}"/>
+                                                <p:ajax process="@this"/>
                                             </p:selectOneRadio>
                                         </div>
-                                        <div class="ui-g-10 ui-md-10 ui-lg-10">
-                                            <p:outputLabel value="#{i18n['common.value']} #{i18n['common.money.letter']}" for="@next"/>
-                                            <p:inputNumber id="amount" 
-                                                           value="#{recordHome.recordDetail.amount}" 
-                                                           placeholder="0.00"
-                                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}"
-                                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                                           required="true">
-                                            </p:inputNumber>
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12">
+                                            <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}" 
+                                                            render="amount" value="#{recordHome.recordDetail.amount}" 
+                                                            required="true" requiredMessage="#{i18n['common.money.letter']}"
+                                                            placeholder="false"
+                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                            container="none" rendered="true"/>
                                         </div>
-                                        <div class="ui-g-2 ui-md-2 ui-lg-2" style="align-self: flex-end">
+                                        
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: flex-end">
                                             <p:commandButton id="btnRecordAdd"
-                                                             icon="pi pi-check-square" styleClass="warning-btn"
+                                                             icon="fa fa-check-square" styleClass="warning-btn"
                                                              value="#{i18n['common.add']}"
-                                                             actionListener="#{recordHome.recordDetailAdd()}" 
-                                                             type="submit" ajax="false" 
+                                                             actionListener="#{recordHome.recordDetailAdd}" 
+                                                             ajax="true" immediate="true"
+                                                             disabled="#{empty recordHome.record.emissionDate}"
                                                              update="@form"/>
                                         </div>
-                                        <div class="ui-g-12 ui-md-12 ui-lg-12">
-                                            <p:dataTable id="recordDetails"
-                                                         value="#{recordHome.record.recordDetails}" var="recordDetail" 
-                                                         rowKey="#{recordDetail.account}"
-                                                         editable="true">
-                                                <p:column headerText="#{i18n['common.account']}">
-                                                    <p:cellEditor>
-                                                        <f:facet name="output">
-                                                            <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
-                                                        </f:facet>
-                                                        <f:facet name="input">
-                                                            <p:autoComplete id="recordDetailAccount" 
-                                                                            value="#{recordDetail.account}" var="account"
-                                                                            itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                                                            completeMethod="#{recordHome.filterAccounts}"
-                                                                            converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                                            converterMessage="El convertidor no responde."
-                                                                            minQueryLength="3" maxResults="5" effect="fade"
-                                                                            placeholder="Buscar por código/nombre..."
-                                                                            forceSelection="true" emptyMessage="No se encontraron resultados."
-                                                                            cache="true" queryDelay="1000" scrollHeight="1000"
-                                                                            required="true"
-                                                                            style="width:100%">
-                                                                <p:column>
-                                                                    <span style="text-transform: uppercase"><strong> #{account.code} </strong> - #{account.name}</span>
-                                                                </p:column>
-                                                            </p:autoComplete>
-                                                        </f:facet>
-                                                    </p:cellEditor>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.debe']}">
-                                                    <p:cellEditor>
-                                                        <f:facet name="output">
-                                                            <h:outputText value="#{recordDetail.amount}"
-                                                                          rendered="#{recordDetail.recordDetailType=='DEBE'}">
-                                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                                            </h:outputText>
-                                                        </f:facet>
-                                                        <f:facet name="input">
-                                                            <p:inputNumber id="amountDebe" 
-                                                                           value="#{recordDetail.amount}" 
-                                                                           placeholder="0.00"
-                                                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}"
-                                                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                                                           rendered="#{recordDetail.recordDetailType=='DEBE'}"
-                                                                           required="true"
-                                                                           style="width:100%">
-                                                            </p:inputNumber>
-                                                        </f:facet>
-                                                    </p:cellEditor>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.haber']}">
-                                                    <p:cellEditor>
-                                                        <f:facet name="output">
-                                                            <h:outputText value="#{recordDetail.amount}"
-                                                                          rendered="#{recordDetail.recordDetailType=='HABER'}">
-                                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                                            </h:outputText>
-                                                        </f:facet>
-                                                        <f:facet name="input">
-                                                            <p:inputNumber id="amountHaber" 
-                                                                           value="#{recordDetail.amount}" 
-                                                                           placeholder="0.00"
-                                                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}"
-                                                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                                                           rendered="#{recordDetail.recordDetailType=='HABER'}"
-                                                                           required="true"
-                                                                           style="width:100%">
-                                                            </p:inputNumber>
-                                                        </f:facet>
-                                                    </p:cellEditor>
-                                                </p:column>
-                                                <p:column style="width:5rem">
-                                                    <p:rowEditor editTitle="Editar" cancelTitle="Cancelar" saveTitle="Guardar"/>
-                                                </p:column>
-                                            </p:dataTable>
-                                        </div>
-                                        <div class="ui-g-12 ui-md-12 ui-lg-12">
-                                            <p:outputLabel value="Razón" for="@next"/>
-                                            <p:inputTextarea value="#{recordHome.record.description}" 
-                                                             rows="3" cols="30" autoResize="false"
-                                                             required="true"/>
-                                        </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                <h2>Configuración del asiento contable</h2>
+                                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                    <p:dataTable id="recordDetails"
+                                                 value="#{recordHome.record.recordDetails}" var="recordDetail" 
+                                                 rowKey="#{recordDetail.account}"
+                                                 selection="#{recordHome.recordDetailSelected}" 
+                                                 selectionMode="single"
+                                                 editable="true">
+                                        <p:ajax event="rowSelect" listener="#{recordHome.onRowSelect}" update="@form"/>
+                                        <p:ajax event="rowUnselect" listener="#{recordHome.onRowUnselect}" update="@form"/>
+                                        
+                                        <p:column headerText="#{i18n['common.account']}">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:autoComplete id="recordDetailAccount" 
+                                                                    value="#{recordDetail.account}" var="account"
+                                                                    itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                                                    completeMethod="#{recordHome.filterAccounts}"
+                                                                    converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                                                    converterMessage="El convertidor no responde."
+                                                                    minQueryLength="3" maxResults="5" effect="fade"
+                                                                    placeholder="Buscar por código/nombre..."
+                                                                    forceSelection="true" emptyMessage="No se encontraron resultados."
+                                                                    cache="true" queryDelay="1000" scrollHeight="1000"
+                                                                    required="true"
+                                                                    style="width:100%">
+                                                        <p:column>
+                                                            <span style="text-transform: uppercase"><strong> #{account.code} </strong> - #{account.name}</span>
+                                                        </p:column>
+                                                    </p:autoComplete>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.debe']}">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{recordDetail.amount}"
+                                                                  rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                    </h:outputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:inputNumber id="amountDebe" 
+                                                                   value="#{recordDetail.amount}" 
+                                                                   placeholder="0.00"
+                                                                   decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}"
+                                                                   decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                                   thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                                   rendered="#{recordDetail.recordDetailType=='DEBE'}"
+                                                                   required="true"
+                                                                   style="width:100%">
+                                                    </p:inputNumber>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column headerText="#{i18n['common.haber']}">
+                                            <p:cellEditor>
+                                                <f:facet name="output">
+                                                    <h:outputText value="#{recordDetail.amount}"
+                                                                  rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                    </h:outputText>
+                                                </f:facet>
+                                                <f:facet name="input">
+                                                    <p:inputNumber id="amountHaber" 
+                                                                   value="#{recordDetail.amount}" 
+                                                                   placeholder="0.00"
+                                                                   decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}"
+                                                                   decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                                   thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                                   rendered="#{recordDetail.recordDetailType=='HABER'}"
+                                                                   required="true"
+                                                                   style="width:100%">
+                                                    </p:inputNumber>
+                                                </f:facet>
+                                            </p:cellEditor>
+                                        </p:column>
+                                        <p:column style="width:5rem">
+                                            <p:rowEditor editTitle="Editar" cancelTitle="Cancelar" saveTitle="Guardar"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                    <p:outputLabel value="Razón" for="@next"/>
+                                    <p:inputTextarea value="#{recordHome.record.description}" 
+                                                     rows="3" cols="30" autoResize="false"
+                                                     required="true">
+                                        <p:ajax process="@this"/>
+                                    </p:inputTextarea>
                                 </div>
                             </div>
                             <!--</h:form>-->
                             <p:toolbar style="flex: auto">
                                 <p:toolbarGroup style="flex-wrap: initial">
                                     <p:commandButton id="btnRecordSave"
-                                                     icon="pi pi-save"  styleClass="danger-btn p-mr-2"
+                                                     icon="pi pi-save" styleClass="danger-btn p-mr-2"
                                                      value="#{i18n['common.save']}"
                                                      actionListener="#{recordHome.recordSave()}"
-                                                     type="submit" immediate="true"
-                                                     update="@form"
+                                                     ajax="true" immediate="false" update="@form"
                                                      disabled="#{empty recordHome.record.recordDetails}"/>
                                     <i class="pi pi-bars p-px-2"/>
                                 </p:toolbarGroup>
@@ -270,16 +285,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     text-transform: uppercase;
                     font-weight: 700;
                     font-size: 12px;
-                    letter-spacing: .3px; 
+                    letter-spacing: .3px;
                     margin: 0 0 0.5rem 0;
                     width: 8rem;
-                    text-align: center}
+                    text-align: center
+                }
                 .product-badge.status-false {
                     background: #C8E6C9;
-                    color: #256029; }
+                    color: #256029;
+                }
                 .product-badge.status-true {
                     background: #FFCDD2;
-                    color: #C63737;}
+                    color: #C63737;
+                }
                 .list-detail {
                     flex: 1 1 0;
                     -ms-flex: 1 1 0;
@@ -289,7 +307,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     display: flex;
                     -ms-flex-direction: column;
                     flex-direction: column;
-                    align-items: self-end;}
+                    align-items: self-end;
+                }
                 body .ui-button {
                     margin: 0;
                     outline: 0 none;

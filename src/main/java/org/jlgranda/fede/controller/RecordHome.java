@@ -24,15 +24,14 @@ import com.jlgranda.fede.ejb.accounting.AccountCache;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +44,7 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 /**
  *
@@ -76,6 +76,7 @@ public class RecordHome extends FedeController implements Serializable {
     private List<Record> recordPorCreatedOn;
     private List<Record> recordPorGeneralJournal;
     private RecordDetail recordDetail;
+    private RecordDetail recordDetailSelected;
 
     @PostConstruct
     private void init() {
@@ -136,44 +137,115 @@ public class RecordHome extends FedeController implements Serializable {
         this.recordDetail = recordDetail;
     }
 
+    public RecordDetail getRecordDetailSelected() {
+        return recordDetailSelected;
+    }
+
+    public void setRecordDetailSelected(RecordDetail recordDetailSelected) {
+        this.recordDetailSelected = recordDetailSelected;
+    }
+    
     public List<Account> filterAccounts(String query) {
         return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
     }
 
-    public void recordDetailAdd() {
+    public void recordDetailAdd(ActionEvent e) {
+        
+        
         this.recordDetail.setOwner(this.subject);
         this.record.addRecordDetail(this.recordDetail);
+        
         this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
+        
+        //Encerar el registro
         this.recordDetail = recordDetailService.createInstance();
+        
+        //Calcular valor sugerido, que sería el faltanta para cuadrar el registro
+        double debe;
+        debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
+                .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+        double haber;
+        haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
+                .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+
+        BigDecimal suggestedAmount = BigDecimal.ZERO;
+        if (debe > haber){
+            suggestedAmount = BigDecimal.valueOf(debe - haber);
+        } else {
+            suggestedAmount = BigDecimal.valueOf(haber - debe);
+        }
+        this.recordDetail.setAmount(suggestedAmount); //Por si el valor es el mismo
+        
+        this.recordDetailSelected = null;
+    }
+    
+    public void onItemAccountSelect(SelectEvent<Account> event) {
+        Account account =  event.getObject();
+        Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().equals(account)).findFirst();
+        if (find.isPresent()){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> cuenta ya existente!!! ");
+            this.setRecordDetail(find.get());
+        }
+    }
+    
+    public void onRowSelect(SelectEvent<RecordDetail> event) {
+        this.recordDetail = event.getObject();
+        addInfoMessage(I18nUtil.getMessages("action.info"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
+        
+    }
+
+    public void onRowUnselect(UnselectEvent<RecordDetail> event) {
+        
+        this.setRecordDetail(recordDetailService.createInstance()); //Encerar formulario de edición
     }
 
     public void recordSave() {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
-        if (!this.record.getRecordDetails().isEmpty()) {
-            BigDecimal sumDebe = new BigDecimal(0);
-            BigDecimal sumHaber = new BigDecimal(0);
-            for (RecordDetail rd : this.record.getRecordDetails()) {
-                if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
-                    sumDebe = sumDebe.add(rd.getAmount());
-                } else if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
-                    sumHaber = sumHaber.add(rd.getAmount());
-                }
-            }
-            if (sumDebe.compareTo(sumHaber) == 0) {
+        boolean valido = true;
+        if ( this.record.getRecordDetails().isEmpty() ){
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
+        }
+        if ( org.jpapi.util.Strings.isNullOrEmpty(this.record.getDescription()) ){
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.required"));
+        }
+        
+        if (this.record.getEmissionDate() == null){
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.emision.required"));
+        }
+        
+        if ( valido ) {
+            
+            Date lastEmissionDate = this.record.getEmissionDate();
+            double debe;
+            debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
+                    .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+            double haber;
+            haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
+                    .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+
+            if (debe == haber) {
                 this.record.setOwner(subject);
                 //Localizar o generar el generalJournal
                 this.generalJournal = this.buildJournal(this.record.getEmissionDate());
                 if (this.generalJournal != null && this.generalJournal.getId() != null) {
                     this.record.setGeneralJournalId(this.generalJournal.getId());
                     recordService.save(record.getId(), record);
+                    
+                    //Encerar objetos de pantalla
                     this.recordDetail = recordDetailService.createInstance();
                     this.record = recordService.createInstance();
-                    this.generalJournal = generalJournalService.createInstance();
+                    this.record.setEmissionDate(lastEmissionDate);
+                    
+                    this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.manual.sucessfully"));
+                    //this.generalJournal = generalJournalService.createInstance();
                 }
             } else {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
             }
-        }
+           
+        } 
     }
 
     private GeneralJournal buildJournal(Date emissionDate) {
