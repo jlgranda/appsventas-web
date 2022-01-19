@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -386,6 +387,15 @@ public class GeneralJournalHome extends FedeController implements Serializable {
      */
     public boolean isRecordOfReferen() {
         return this.record.getBussinesEntityId() == null;
+    }
+    
+    public void onItemAccountSelect(SelectEvent<Account> event) {
+        Account account =  event.getObject();
+        Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().equals(account)).findFirst();
+        if (find.isPresent()){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> cuenta ya existente!!! ");
+            this.setRecordDetail(find.get());
+        }
     }
 
     @Override

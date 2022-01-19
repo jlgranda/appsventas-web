@@ -39,85 +39,71 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <li>/</li>
             <li><p:link outcome="/pages/accounting/popup_record.jsf">#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</p:link></li>
         </ui:define>
-        <ui:define name="style">
-            <style type="text/css">
-                .container-center{
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    text-align: center;
-                }
-                .bold-capital{
-                    font-weight: bolder;
-                    text-transform: uppercase;
-                }
-                .capital{
-                    text-transform: uppercase;
-                }
-                .container-right{
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-end;
-                }
-                .container-lefth{
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-start;
-                }
-            </style>
-        </ui:define>
         <ui:define name="content">
             <h:form id="form-nuevo-registro-detalle">
                 <p:messages id="messages" showDetail="true" closable="true" >
                     <p:autoUpdate />
                 </p:messages>
-                <div class="ui-g ui-fluid">
-                    <div class="ui-g ui-lg-4 ui-md-4">
-                        <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
-                        <div class="EmptyBox10"></div>
-                        <p:autoComplete value="#{generalJournalHome.recordDetail.account}" effect="fade" 
-                                        minQueryLength="2" completeMethod="#{accountHome.find}" required="true" 
-                                        var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
-                                        converter="org.jlgranda.fede.ui.converter.AccountConverter" forceSelection="true"
-                                        placeholder="#{i18n['common.account.find']}">
-                            <p:column>
-                                <h:outputText value="#{entidad.code} #{entidad.name}"/>
-                            </p:column>
-                            <p:ajax event="itemSelect" update="@this" partialSubmit="true"></p:ajax>
-                        </p:autoComplete>
-                    </div>
+                <div class="card ui-fluid p-shadow-1">
+                    <div  class="ui-g">
+                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                            <p:outputLabel value="#{i18n['app.fede.accounting.account.catalogue']}" for="@next"/>
+                            <p:autoComplete id="account"
+                                            value="#{generalJournalHome.recordDetail.account}" var="account"
+                                            itemLabel="#{account.name}"  itemValue="#{account}" 
+                                            completeMethod="#{accountHome.find}"
+                                            converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                            converterMessage="El convertidor no responde."
+                                            minQueryLength="3" maxResults="5" effect="fade"
+                                            placeholder="#{i18n['common.account.find']}"
+                                            forceSelection="true" emptyMessage="No se encontraron resultados."
+                                            cache="true" queryDelay="1000" scrollHeight="1000"
+                                            required="true">
+                                <p:column>
+                                    <span style="text-transform: uppercase"><strong> #{account.code} </strong> - #{account.name}</span>
+                                </p:column>
+                                <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
+                            </p:autoComplete>
+                        </div>
+                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                            <p:outputLabel value="Seleccione el tipo:" for="@next"/>
+                            <p:selectOneRadio id="recordDetailType" 
+                                              value="#{generalJournalHome.recordDetail.recordDetailType}" 
+                                              layout="responsive" columns="3"
+                                              required="true" style="width: 20rem">
+                                <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            </p:selectOneRadio>
+                        </div>
+                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12">
+                            <h:outputText value="#{i18n['common.money.letter']}" />
+                            <div class="EmptyBox10"></div>
+                            <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
+                                           required="true" 
+                                           requiredMessage="#{i18n['common.value']} #{i18n['common.money.letter']} es requerido."
+                                           immediate="true" disabled="false"
+                                           styleClass=""
+                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
+                            </p:inputNumber>
+                        </div>
+                        <div class="ui-g ui-lg-2 ui-md-2">
+                            <div class="EmptyBox10"></div>
+<!--                            <p:commandButton id="add-record"  ajax="false" value="#{i18n['common.add']}"
+                                             disabled="#{!generalJournalHome.recordOfReferen}"
+                                             actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
+                                             update="form-registro"
+                                             styleClass="warning-btn" icon="fa fa-plus-square"/>-->
 
-                    <div class="ui-g ui-lg-2 ui-md-2">
-                        <h:outputText value="#{i18n['common.value']} #{i18n['common.money.letter']} *" />
-                        <div class="EmptyBox10"></div>
-                        <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
-                                       required="true" 
-                                       requiredMessage="#{i18n['common.value']} #{i18n['common.money.letter']} es requerido."
-                                       immediate="true" disabled="false"
-                                       styleClass=""
-                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                            <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
-                        </p:inputNumber>
-                    </div>
-
-                    <div class="ui-g ui-lg-4 ui-md-4">
-                        <h:outputText value="#{i18n['common.type']} *"/>
-                        <div class="EmptyBox10"></div>
-                        <p:selectOneRadio id="type" value="#{generalJournalHome.recordDetail.recordDetailType}" unselectable="false"
-                                          required="#{true}" 
-                                          requiredMessage="#{i18n['common.type']} es requerido.">
-                            <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                        </p:selectOneRadio>
-                    </div>
-                    <div class="ui-g ui-lg-2 ui-md-2">
-                        <div class="EmptyBox10"></div>
-                        <p:commandButton id="add-record"  ajax="false" value="#{i18n['common.add']}"
-                                         disabled="#{!generalJournalHome.recordOfReferen}"
-                                         actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
-                                         update="form-registro"
-                                         styleClass="warning-btn" icon="fa fa-plus-square"/>
+                            <p:commandButton id="add-record"
+                                             icon="pi pi-check-square" styleClass="warning-btn"
+                                             value="#{i18n['common.add']}"
+                                            actionListener="#{generalJournalHome.addRecordDetail}"
+                                             ajax="true" immediate="true"
+                                             disabled="#{!generalJournalHome.recordOfReferen}"
+                                             update="@form"/>
+                        </div>
                     </div>
                 </div>
             </h:form>
@@ -202,6 +188,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </f:facet>
                 </p:toolbar>
             </h:form>
+        </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+                .container-center{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                }
+                .bold-capital{
+                    font-weight: bolder;
+                    text-transform: uppercase;
+                }
+                .capital{
+                    text-transform: uppercase;
+                }
+                .container-right{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+                .container-lefth{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+                body .ui-button {
+                    margin: 0;
+                    outline: 0 none;
+                    border-radius: 4px;
+                    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+                }
+            </style>
         </ui:define>
         <ui:define name="script">
         </ui:define>

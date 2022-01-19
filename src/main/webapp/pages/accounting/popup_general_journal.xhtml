@@ -31,8 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting.journal']}</li>
-            <li>/</li>
-            <li>#{recordHome.generalJournal.id != null ? recordHome.generalJournal.id : ''}</li>
+            <li># #{recordHome.generalJournal.id != null ? recordHome.generalJournal.id : ''}</li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -110,20 +109,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     border-radius: 4px;
                     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
                 }
-                .product-name {
-                    font-size: 1rem;
-                    font-weight: 700;
-                }
-                .product-description {
-                    margin: 0.5rem 0 0 0;
-                }
-                .product-category-icon {
-                    vertical-align: middle;
-                    margin-right: 0.5rem;
-                }
-                .product-category {
+                body .ui-dataview .ui-dataview-header {
+                    background: #f8f9fa;
+                    color: #495057;
+                    padding: 0rem;
                     font-weight: 600;
-                    vertical-align: middle;
+                    border: 1px solid #e9ecef;
+                    border-width: 1px 0 1px 0;
                 }
             </style>
         </ui:define>

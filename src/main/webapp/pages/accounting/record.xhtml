@@ -73,8 +73,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                             completeMethod="#{recordHome.filterAccounts}"
                                                             converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                             converterMessage="El convertidor no responde."
-                                                            minQueryLength="3" maxResults="5" effect="fade"
-                                                            placeholder="Buscar por código/nombre..."
+                                                            minQueryLength="3" maxResults="100" effect="fade"
+                                                            placeholder="#{i18n['common.account.find']}"
                                                             forceSelection="true" emptyMessage="No se encontraron resultados."
                                                             cache="true" queryDelay="1000" scrollHeight="1000"
                                                             required="true">

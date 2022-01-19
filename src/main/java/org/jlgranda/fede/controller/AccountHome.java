@@ -558,15 +558,16 @@ public class AccountHome extends FedeController implements Serializable {
      * @param event
      */
     public void onAccountSelect(NodeSelectEvent event) {
-        if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
+//        if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
+        if (event != null && event.getTreeNode().getData() != null) {
             this.accountSelected = (Account) event.getTreeNode().getData();
-            if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
-                chargeListDetailsforAccount();
-            }
+//            if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
+            chargeListDetailsforAccount();
+//            }
         } else {
             this.accountSelected = (Account) event.getTreeNode().getData();
             this.recordDetailsAccount = new ArrayList<>();
-            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.ledger.noleaf"));
+//            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.ledger.noleaf"));
         }
     }
 
@@ -625,7 +626,7 @@ public class AccountHome extends FedeController implements Serializable {
     public void chargeListDetailsforAccount() {
         setRangeReport(-1);
         calculateCumulativeOld();
-        setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
+        setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
     }
 
@@ -662,7 +663,7 @@ public class AccountHome extends FedeController implements Serializable {
 
     public boolean mostrarFormularioRecord(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "400");
         String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
         String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
         super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALLEDGER_RECORD, width, height, left, top, true, params);
