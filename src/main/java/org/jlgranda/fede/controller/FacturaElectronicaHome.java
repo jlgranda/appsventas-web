@@ -1375,9 +1375,11 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
             List<Record> records = new ArrayList<>();
             getReglas().forEach(regla -> {
-                records.add(aplicarReglaNegocio(regla, this.facturaElectronica));
+                Record r = aplicarReglaNegocio(regla, this.facturaElectronica);
+                if (r != null) {
+                    records.add(r);
+                }
             });
-
             if (!records.isEmpty()) {
                 //La regla compiló bien
                 String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
@@ -1451,7 +1453,10 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
             List<Record> records = new ArrayList<>();
             getReglas().forEach(regla -> {
-                records.add(aplicarReglaNegocio(regla, this.facturaElectronica));
+                Record r = aplicarReglaNegocio(regla, this.facturaElectronica);
+                if (r != null) {
+                    records.add(r);
+                }
             });
 
             if (!records.isEmpty()) {
