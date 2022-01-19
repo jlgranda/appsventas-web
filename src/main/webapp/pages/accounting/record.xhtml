@@ -85,12 +85,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
                                             </p:autoComplete>
                                         </div>
-                                        <div class="ui-g-4 ui-md-3 ui-lg-3 ui-sm-12">
+                                        <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12">
                                             <p:outputLabel value="Seleccione el tipo:" for="@next"/>
                                             <p:selectOneRadio id="recordDetailType" 
                                                               value="#{recordHome.recordDetail.recordDetailType}" 
                                                               layout="responsive" columns="3"
-                                                              required="true">
+                                                              required="true" style="width: 20rem">
                                                 <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
                                                                itemLabel="#{recordDetailType.label}" itemValue="#{recordDetailType}"/>
                                                 <p:ajax process="@this"/>
@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                             container="none" rendered="true"/>
                                         </div>
                                         
-                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: flex-end">
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: center; margin-top: 1rem">
                                             <p:commandButton id="btnRecordAdd"
                                                              icon="fa fa-check-square" styleClass="warning-btn"
                                                              value="#{i18n['common.add']}"
@@ -207,7 +207,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <div class="ui-g-12 ui-md-12 ui-lg-12">
                                     <p:outputLabel value="Razón" for="@next"/>
-                                    <p:inputTextarea value="#{recordHome.record.description}" 
+                                    <p:inputTextarea  class="Container100 BigTopic" 
+                                                      value="#{recordHome.record.description}" 
                                                      rows="3" cols="30" autoResize="false"
                                                      required="true">
                                         <p:ajax process="@this"/>
