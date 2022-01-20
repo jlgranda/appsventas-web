@@ -284,6 +284,18 @@ public class UI {
         return items;
     }
 
+    public List<SelectItem> getEmisionCompraTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (EmissionType t : getEmissionTypes()) {
+            if (t.equals(EmissionType.PURCHASE_CASH) || t.equals(EmissionType.PURCHASE_CREDIT)) {
+                item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
     public List<SelectItem> getDocumentFacturaTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
@@ -513,9 +525,9 @@ public class UI {
     public String truncateFilename(String string) {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.documents.filename.length", "14")));
     }
-    
+
     public static final Object getPropertyValueViaReflection(Object o, String field)
-                throws ReflectiveOperationException, IllegalArgumentException, IntrospectionException {
+            throws ReflectiveOperationException, IllegalArgumentException, IntrospectionException {
         return new PropertyDescriptor(field, o.getClass()).getReadMethod().invoke(o);
     }
 

@@ -155,7 +155,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:selectOneMenu value="#{facturaElectronicaCompraHome.facturaElectronica.emissionType}"
                                                      required="#{false}" immediate="true" style="width: 100%"> 
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                                        <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                        <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@form" />
                                     </p:selectOneMenu>
                                 </div>

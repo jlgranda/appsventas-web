@@ -951,7 +951,7 @@ public class FacturaElectronicaCompraHome extends FedeController  implements Ser
 
         //Registrar asiento contable de la compra
         registerRecordInJournal();
-        setOutcome("fede-inbox");
+        setOutcome("compras");
     }
 
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
