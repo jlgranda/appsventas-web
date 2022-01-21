@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['common.purchases']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -34,43 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['common.purchases']}</p:link></li>
+        <li><p:link outcome="/pages/fede/compras/compras.jsf">#{i18n['common.purchases']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/factura.jsf">#{facturaElectronicaCompraHome.facturaElectronicaId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['common.purchase']}</p:link></li>
-    </ui:define>
-    <ui:define name="style">
-        <style type="text/css">
-            .ui-dataTable * {
-                /*border : 0px !important;*/
-            }
-            .container-center{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            .bold-capital{
-                font-weight: bolder;
-                text-transform: uppercase;
-            }
-            .capital{
-                text-transform: uppercase;
-            }
-            .container-right{
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-            }
-            .container-lefth{
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-            }
-            .line-separator{
-                color: #FBFCFC !important;
-                border-width: 0.5px;
-            }
-        </style>
+        <li><p:link outcome="compra">#{facturaElectronicaCompraHome.facturaElectronicaId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['common.purchase']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
@@ -300,7 +266,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:toolbar class="Container100" rendered="#{true}">
                         <f:facet name="left">
                             <p:commandButton id="btn-save" value="#{i18n['common.save']}" ajax="true"
-                                             actionListener="#{facturaElectronicaCompraHome.save()}" action="#{facturaElectronicaCompraHome.redirect()}"
+                                             actionListener="#{facturaElectronicaCompraHome.save()}" 
                                              disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.payments or empty facturaElectronicaCompraHome.facturaElectronica.facturaElectronicaDetails}"
                                              style="width: auto !important;" styleClass="danger-btn"
                                              type="submit"/>
@@ -586,6 +552,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </p:panel>
             </div>
         </div>
+    </ui:define>
+    <ui:define name="popups">
+        <p:dialog id="myDialogID" widgetVar="myDialogVar" modal="true" closable="false" width="400px" style="text-align: -webkit-center;">
+            <span> El asiento contable no se registró debido a que las cuentas intervinientes no coinciden o no se encuentran dentro del Plan de Cuentas.! 
+            </span>
+            <h4 style="text-align: center"> ¡Por favor verífique e inténte el registro de asiento manualmente.!</h4>
+            <p:button icon="fa fa-check-square" styleClass="warning-btn"
+                      value="#{i18n['common.continue']}" 
+                      outcome="compras" 
+                      style="width: -webkit-fill-available;"/>
+        </p:dialog>
+    </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+            .ui-dataTable * {
+                /*border : 0px !important;*/
+            }
+            .container-center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .bold-capital{
+                font-weight: bolder;
+                text-transform: uppercase;
+            }
+            .capital{
+                text-transform: uppercase;
+            }
+            .container-right{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .container-lefth{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            .line-separator{
+                color: #FBFCFC !important;
+                border-width: 0.5px;
+            }
+        </style>
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">

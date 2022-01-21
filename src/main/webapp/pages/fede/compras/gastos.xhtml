@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.purchases']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -32,41 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['common.purchases']}</p:link></li>
-        </ui:define>
-        <ui:define name="style">
-            <style type="text/css">
-                .ui-dataTable * {
-                    /*border : 0px !important;*/
-                }
-                .container-center{
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    text-align: center;
-                }
-                .bold-capital{
-                    font-weight: bolder;
-                    text-transform: uppercase;
-                }
-                .capital{
-                    text-transform: uppercase;
-                }
-                .container-right{
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-end;
-                }
-                .container-lefth{
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-start;
-                }
-                .line-separator{
-                    color: #FBFCFC !important;
-                    border-width: 0.5px;
-                }
-            </style>
+            <li><p:link outcome="gastos">#{i18n['common.gastos']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -93,7 +59,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
                                          actionListener="#{facturaElectronicaGastoHome.clear()}" ajax="false" immediate="true">
                         </p:commandButton>
-                        <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
+                        <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="gasto"/>
                         <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
                                          styleClass="secondary-button" style="margin-bottom:10px;"
                                          actionListener="#{facturaElectronicaGastoHome.mostrarFormularioCargaFacturaElectronica()}">
@@ -160,6 +126,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                 </div>
             </div>
+        </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+                .ui-dataTable * {
+                    /*border : 0px !important;*/
+                }
+                .container-center{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                }
+                .bold-capital{
+                    font-weight: bolder;
+                    text-transform: uppercase;
+                }
+                .capital{
+                    text-transform: uppercase;
+                }
+                .container-right{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+                .container-lefth{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+                .line-separator{
+                    color: #FBFCFC !important;
+                    border-width: 0.5px;
+                }
+            </style>
         </ui:define>
         <ui:define name="script">
         </ui:define>

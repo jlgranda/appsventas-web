@@ -132,7 +132,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <f:param name="key" value="#{facturaElectronicaHome.selectedKeys}"></f:param>
                     </h:link>
                     <h:link id="hiddenCommandEdit" rendered="#{true}" 
-                            outcome="/pages/fede/factura.jsf?faces-redirect=true">
+                            outcome="/pages/fede/compras/compra.jsf?faces-redirect=true">
                         <f:param name="facturaElectronicaId" value="#{facturaElectronicaHome.facturaElectronicaIdFromSelectedKeys}"></f:param>
                     </h:link>
                     
@@ -191,7 +191,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <!--./toolbar-->
         <ui:define name="sidebar">
             <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/factura.jsf"/>
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/compras/compra.jsf"/>
             </div>
             <div class="EmptyBox10"></div>
             <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">

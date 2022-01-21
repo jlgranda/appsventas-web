@@ -280,7 +280,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         setUseDefaultSupplier(false); //TODO desde configuraciones
 
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
-        setOutcome("fede-inbox");
+        setOutcome("gastos");
 
         setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
         if (this.organizationData.getOrganization() != null) {
@@ -931,6 +931,9 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         this.facturaElectronica.setOwner(subject);
         this.facturaElectronica.setOrganization(this.organizationData.getOrganization());
 
+        //Almacenar el tipo de factura
+        this.facturaElectronica.setFacturaType(FacturaType.GASTO);
+
         //Establecer un codigo por defecto
         if (Strings.isNullOrEmpty(facturaElectronica.getCode())) {
             facturaElectronica.setCode(UUID.randomUUID().toString());
@@ -946,12 +949,11 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
             }
         }
         facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);
-        //registerDetailInKardex();
         registerDetalleFacturaElectronicaInKardex(facturaElectronica.getFacturaElectronicaDetails()); //Procesa y guarda la factura electrónica en el medio persistente
 
         //Registrar asiento contable de la compra
         registerRecordInJournal();
-        setOutcome("fede-inbox");
+        setOutcome("gastos");
     }
 
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
@@ -1039,7 +1041,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         }
 
         lazyDataModel.setFacturaType(FacturaType.GASTO);
-        
+
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
 
         if (!Strings.isNullOrEmpty(_keyword) && _keyword.startsWith("table:")) {
@@ -1104,7 +1106,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 FacturaElectronica fe = (FacturaElectronica) event.getObject();
-                redirectTo("/pages/fede/factura.jsf?facturaElectronicaId=" + fe.getId());
+                redirectTo("/pages/fede/compras/gasto.jsf?facturaElectronicaId=" + fe.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
@@ -1353,15 +1355,15 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
     public void registerRecordInJournal() {
 
-        boolean registradoEnContabilidad = false;
         setAccountingEnabled(true);
+        
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (EmissionType.PURCHASE_CASH.equals(facturaElectronica.getEmissionType())) {
-                setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprasefectivo", "REGISTRO_COMPRAS_EFECTIVO"));
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registrogastosefectivo", "REGISTRO_GASTOS_EFECTIVO"));
             } else if (EmissionType.PURCHASE_CREDIT.equals(facturaElectronica.getEmissionType())) {
-                setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprascredito", "REGISTRO_COMPRAS_CREDITO"));
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registrogastoscredito", "REGISTRO_GASTOS_CREDITO"));
             }
 
             List<Record> records = new ArrayList<>();
