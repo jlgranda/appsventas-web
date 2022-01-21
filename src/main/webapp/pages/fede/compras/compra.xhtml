@@ -266,7 +266,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:toolbar class="Container100" rendered="#{true}">
                         <f:facet name="left">
                             <p:commandButton id="btn-save" value="#{i18n['common.save']}" ajax="true"
-                                             actionListener="#{facturaElectronicaCompraHome.save()}" 
+                                             actionListener="#{facturaElectronicaCompraHome.save()}" action="#{facturaElectronicaCompraHome.getOutcome()}" 
                                              disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.payments or empty facturaElectronicaCompraHome.facturaElectronica.facturaElectronicaDetails}"
                                              style="width: auto !important;" styleClass="danger-btn"
                                              type="submit"/>
