@@ -98,6 +98,7 @@ import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
 import org.jpapi.util.Strings;
 import org.kie.internal.builder.KnowledgeBuilderErrors;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.file.UploadedFile;
 
@@ -260,6 +261,8 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
     private BigDecimal amoutPending;
 
+    private boolean recordCompleto;
+
     public FacturaElectronicaGastoHome() {
     }
 
@@ -268,19 +271,18 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         int amount = 0;
         amount = 30;
         try {
-//            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
+            amount = Integer.valueOf(settingHome.getValue(SettingNames.DASHBOARD_RANGE, "360"));
         } catch (java.lang.NumberFormatException nfe) {
-//            amount = 30;
+            amount = 30;
         }
         setEnd(Dates.now());
-//        setStart(Dates.addDays(getEnd(), -1 * amount));
+        setStart(Dates.addDays(getEnd(), -1 * amount));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * amount)));
 
         setFacturaElectronica(facturaElectronicaService.createInstance());
         setUseDefaultSupplier(false); //TODO desde configuraciones
 
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
-        setOutcome("gastos");
 
         setFacturaElectronicaDetail(facturaElectronicaDetailService.createInstance());
         if (this.organizationData.getOrganization() != null) {
@@ -289,14 +291,16 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         getProductsByType();
         setActivePanelProduct(false);
 
-        //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
-
+//        //Establecer variable de sistema que habilita o no el registro contable
+//        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
         getPayment().setAmount(BigDecimal.ZERO);
         getPayment().setDiscount(BigDecimal.ZERO);
         getPayment().setCash(BigDecimal.ZERO);
         getPayment().setChange(BigDecimal.ZERO);
         setAmoutPending(BigDecimal.ZERO);
+        setRecordCompleto(Boolean.TRUE);
+
+        setOutcome("gastos");
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -432,7 +436,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     /**
      * Obtener todas las facturas disponibles en el sistema para el usuario
      * actual dados los ids de la instancia actual
-     * <tt>FacturaElectronicaHome</tt>
+     * <tt>FacturaElectronicaGastoHome</tt>
      * Se usa para mostrar los RIDE
      *
      * @return lista de facturas electrónicas
@@ -561,6 +565,14 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
     public void setAmoutPending(BigDecimal amoutPending) {
         this.amoutPending = amoutPending;
+    }
+
+    public boolean isRecordCompleto() {
+        return recordCompleto;
+    }
+
+    public void setRecordCompleto(boolean recordCompleto) {
+        this.recordCompleto = recordCompleto;
     }
 
     /**
@@ -953,7 +965,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
         //Registrar asiento contable de la compra
         registerRecordInJournal();
-        setOutcome("gastos");
+//        setOutcome("gastos");
     }
 
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
@@ -1355,8 +1367,6 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
     public void registerRecordInJournal() {
 
-        setAccountingEnabled(true);
-        
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro del cierre de cada
@@ -1380,7 +1390,11 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                 GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
                 //Anular registros anteriores
-                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId(), this.facturaElectronica.hashCode());
+//                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId(), this.facturaElectronica.hashCode());
+                if (this.facturaElectronica.getRecordId() != null) {
+                    recordService.deleteRecord(this.facturaElectronica.getRecordId());
+                    this.facturaElectronica.setRecordId(null);
+                }
 
                 //El General Journal del día
                 if (generalJournal != null) {
@@ -1397,34 +1411,48 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                         record.getRecordDetails().forEach(rd -> {
                             rd.setLastUpdate(Dates.now());
                             if (rd.getAccountName().contains("$CEDULA")) {
-                                Account cuentaPadre = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
-                                String nombreCuenta = rd.getAccountName().substring(0, rd.getAccountName().length() - 7).concat(this.facturaElectronica.getAuthor().getCode());
-                                Account cuentaXCobrarOwner = accountCache.lookupByName(nombreCuenta, this.organizationData.getOrganization());
-                                if (cuentaXCobrarOwner == null) {
-                                    cuentaXCobrarOwner = accountService.createInstance();//crear la cuenta
-                                    cuentaXCobrarOwner.setCode(this.accountCache.genereNextCode(cuentaPadre.getId()));
-                                    cuentaXCobrarOwner.setCodeType(CodeType.SYSTEM);
-                                    cuentaXCobrarOwner.setUuid(UUID.randomUUID().toString());
-                                    cuentaXCobrarOwner.setName(nombreCuenta.toUpperCase());
-                                    cuentaXCobrarOwner.setDescription(cuentaXCobrarOwner.getName());
-                                    cuentaXCobrarOwner.setParentAccountId(cuentaPadre.getId());
-                                    cuentaXCobrarOwner.setOrganization(this.organizationData.getOrganization());
-                                    cuentaXCobrarOwner.setAuthor(this.subject);
-                                    cuentaXCobrarOwner.setOwner(this.subject);
-                                    cuentaXCobrarOwner.setOrden(Short.MIN_VALUE);
-                                    cuentaXCobrarOwner.setPriority(0);
-                                    accountService.save(cuentaXCobrarOwner.getId(), cuentaXCobrarOwner);
-                                    this.accountCache.load(); //recargar todas las cuentas
+                                Account cuentaPadreDetectada = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
+                                if (cuentaPadreDetectada != null && cuentaPadreDetectada.getId() != null) {
+                                    String nombreCuentaHija = cuentaPadreDetectada.getName().concat(" ").concat(this.facturaElectronica.getAuthor().getFullName());
+                                    Account cuentaHija = accountCache.lookupByName(nombreCuentaHija, this.organizationData.getOrganization());
+                                    if (cuentaHija == null) {
+                                        cuentaHija = accountService.createInstance();//crear la cuenta
+                                        cuentaHija.setCode(this.accountCache.genereNextCode(cuentaPadreDetectada.getId()));
+                                        cuentaHija.setCodeType(CodeType.SYSTEM);
+                                        cuentaHija.setUuid(UUID.randomUUID().toString());
+                                        cuentaHija.setName(nombreCuentaHija.toUpperCase());
+                                        cuentaHija.setDescription(cuentaHija.getName());
+                                        cuentaHija.setParentAccountId(cuentaPadreDetectada.getId());
+                                        cuentaHija.setOrganization(this.organizationData.getOrganization());
+                                        cuentaHija.setAuthor(this.subject);
+                                        cuentaHija.setOwner(this.subject);
+                                        cuentaHija.setOrden(Short.MIN_VALUE);
+                                        cuentaHija.setPriority(0);
+                                        accountService.save(cuentaHija.getId(), cuentaHija);
+                                        this.accountCache.load(); //recargar todas las cuentas
+                                    }
+                                    rd.setAccount(cuentaHija);
+                                    rd.setAccountName(rd.getAccount().getName());
                                 }
-                                rd.setAccount(cuentaXCobrarOwner);
-                                rd.setAccountName(rd.getAccount().getName());
                             } else {
                                 rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
                             }
+                            if (rd.getAccount() == null) {
+                                this.recordCompleto = Boolean.FALSE;
+                            }
                         });
-
-                        //Persistencia
-                        recordService.save(record);
+                        if (Boolean.TRUE.equals(this.recordCompleto)) {
+                            //Persistencia
+                            recordService.save(record);
+                            if (record.getId() != null) {
+                                this.facturaElectronica.setRecordId(record.getId());
+                                facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica);
+                                setOutcome("compras");
+                            }
+                        } else {
+                            PrimeFaces current = PrimeFaces.current();
+                            current.executeScript("PF('myDialogVar').show();");
+                        }
                     }
                 }
             }
@@ -1433,20 +1461,18 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
     public void registerRecordInJournalPaymentCredit() {
 
-        boolean registradoEnContabilidad = false;
-        setAccountingEnabled(true);
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (getPayment().getMethod().equals("EFECTIVO")) {
-                setReglas(settingHome.getValue("app.fede.accounting.rule.registropagocomprascreditoefectivo", "REGISTRO_PAGO_COMPRAS_CREDITO_EFECTIVO"));
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registropagogastoscreditoefectivo", "REGISTRO_PAGO_GASTOS_CREDITO_EFECTIVO"));
             } else if (getPayment().getMethod().equals("TARJETA CREDITO") || getPayment().getMethod().equals("TARJETA DEBITO")) {
-                setReglas(settingHome.getValue("app.fede.accounting.rule.registropagocomprascreditotransferencia", "REGISTRO_PAGO_COMPRAS_CREDITO_TRANSFERENCIA"));
+                setReglas(settingHome.getValue("app.fede.accounting.rule.registropagogastoscreditotransferencia", "REGISTRO_PAGO_GASTOS_CREDITO_TRANSFERENCIA"));
             }
 
             List<Record> records = new ArrayList<>();
             getReglas().forEach(regla -> {
-                Record r = aplicarReglaNegocio(regla, this.facturaElectronica);
+                Record r = aplicarReglaNegocio(regla, getPayment());
                 if (r != null) {
                     records.add(r);
                 }
@@ -1459,7 +1485,11 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                 GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
                 //Anular registros anteriores
-                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId(), this.facturaElectronica.hashCode());
+//                recordService.deleteLastRecords(generalJournal.getId(), getPayment().getClass().getSimpleName(), getPayment().getId(), getPayment().hashCode());
+                if (getPayment().getRecordId() != null) {
+                    recordService.deleteRecord(getPayment().getRecordId());
+                    getPayment().setRecordId(null);
+                }
 
                 //El General Journal del día
                 if (generalJournal != null) {
@@ -1476,34 +1506,48 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                         record.getRecordDetails().forEach(rd -> {
                             rd.setLastUpdate(Dates.now());
                             if (rd.getAccountName().contains("$CEDULA")) {
-                                Account cuentaPadre = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
-                                String nombreCuenta = rd.getAccountName().substring(0, rd.getAccountName().length() - 7).concat(this.facturaElectronica.getAuthor().getCode());
-                                Account cuentaXCobrarOwner = accountCache.lookupByName(nombreCuenta, this.organizationData.getOrganization());
-                                if (cuentaXCobrarOwner == null) {
-                                    cuentaXCobrarOwner = accountService.createInstance();//crear la cuenta
-                                    cuentaXCobrarOwner.setCode(this.accountCache.genereNextCode(cuentaPadre.getId()));
-                                    cuentaXCobrarOwner.setCodeType(CodeType.SYSTEM);
-                                    cuentaXCobrarOwner.setUuid(UUID.randomUUID().toString());
-                                    cuentaXCobrarOwner.setName(nombreCuenta.toUpperCase());
-                                    cuentaXCobrarOwner.setDescription(cuentaXCobrarOwner.getName());
-                                    cuentaXCobrarOwner.setParentAccountId(cuentaPadre.getId());
-                                    cuentaXCobrarOwner.setOrganization(this.organizationData.getOrganization());
-                                    cuentaXCobrarOwner.setAuthor(this.subject);
-                                    cuentaXCobrarOwner.setOwner(this.subject);
-                                    cuentaXCobrarOwner.setOrden(Short.MIN_VALUE);
-                                    cuentaXCobrarOwner.setPriority(0);
-                                    accountService.save(cuentaXCobrarOwner.getId(), cuentaXCobrarOwner);
-                                    this.accountCache.load(); //recargar todas las cuentas
+                                Account cuentaPadreDetectada = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
+                                if (cuentaPadreDetectada != null && cuentaPadreDetectada.getId() != null) {
+                                    String nombreCuentaHija = cuentaPadreDetectada.getName().concat(" ").concat(getPayment().getAuthor().getFullName());
+                                    Account cuentaHija = accountCache.lookupByName(nombreCuentaHija, this.organizationData.getOrganization());
+                                    if (cuentaHija == null) {
+                                        cuentaHija = accountService.createInstance();//crear la cuenta
+                                        cuentaHija.setCode(this.accountCache.genereNextCode(cuentaPadreDetectada.getId()));
+                                        cuentaHija.setCodeType(CodeType.SYSTEM);
+                                        cuentaHija.setUuid(UUID.randomUUID().toString());
+                                        cuentaHija.setName(nombreCuentaHija.toUpperCase());
+                                        cuentaHija.setDescription(cuentaHija.getName());
+                                        cuentaHija.setParentAccountId(cuentaPadreDetectada.getId());
+                                        cuentaHija.setOrganization(this.organizationData.getOrganization());
+                                        cuentaHija.setAuthor(this.subject);
+                                        cuentaHija.setOwner(this.subject);
+                                        cuentaHija.setOrden(Short.MIN_VALUE);
+                                        cuentaHija.setPriority(0);
+                                        accountService.save(cuentaHija.getId(), cuentaHija);
+                                        this.accountCache.load(); //recargar todas las cuentas
+                                    }
+                                    rd.setAccount(cuentaHija);
+                                    rd.setAccountName(rd.getAccount().getName());
                                 }
-                                rd.setAccount(cuentaXCobrarOwner);
-                                rd.setAccountName(rd.getAccount().getName());
                             } else {
+                                rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
                             }
-                            rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
+                            if (rd.getAccount() == null) {
+                                this.recordCompleto = Boolean.FALSE;
+                            }
                         });
-
-                        //Persistencia
-                        recordService.save(record);
+                        if (Boolean.TRUE.equals(this.recordCompleto)) {
+                            //Persistencia
+                            recordService.save(record);
+                            if (record.getId() != null) {
+                                getPayment().setRecordId(record.getId());
+                                paymentService.save(getPayment().getId(), getPayment());
+                                setOutcome("gastos");
+                            }
+                        } else {
+                            PrimeFaces current = PrimeFaces.current();
+                            current.executeScript("PF('myDialogVar').show();");
+                        }
                     }
                 }
             }
