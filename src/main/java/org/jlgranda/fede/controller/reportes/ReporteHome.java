@@ -16,7 +16,10 @@
  */
 package org.jlgranda.fede.controller.reportes;
 
+import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.reportes.ReporteService;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -26,10 +29,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
+import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.reportes.Reporte;
+import org.jlgranda.fede.ui.model.LazyReportDataModel;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
+import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
@@ -49,37 +57,96 @@ public class ReporteHome extends FedeController implements Serializable {
     private Subject subject;
     @Inject
     private OrganizationData organizationData;
-    
+    @Inject
+    private SettingHome settingHome;
+
+    @EJB
+    private GroupService groupService;
     @EJB
     private ReporteService reporteService;
-    
-    private LazyDataModel reportes;
-    
-    private Reporte reporte;
-    
+
+    private LazyReportDataModel lazyDataModel;
+
+    private Reporte report;
+
     @PostConstruct
-    private void init(){
-        
+    private void init() {
+        int range = 0; //Rango de fechas para visualiar lista de entidades
+        try {
+            range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "7"));
+        } catch (java.lang.NumberFormatException nfe) {
+            nfe.printStackTrace();
+            range = 7;
+        }
+        setEnd(Dates.maximumDate(Dates.now()));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+
+        setReport(reporteService.createInstance());
+        setOutcome("reportes");
     }
 
-    public LazyDataModel getReportes() {
-        return reportes;
+    public LazyReportDataModel getLazyDataModel() {
+         filter();
+        return lazyDataModel;
     }
 
-    public void setReportes(LazyDataModel reportes) {
-        this.reportes = reportes;
+    public void setLazyDataModel(LazyReportDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
     }
 
-    public Reporte getReporte() {
-        return reporte;
+    public Reporte getReport() {
+        return report;
     }
 
-    public void setReporte(Reporte reporte) {
-        this.reporte = reporte;
+    public void setReport(Reporte report) {
+        this.report = report;
     }
-    
-    
-    
+
+    public void clear() {
+        filter();
+    }
+
+    public void filter() {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyReportDataModel(reporteService);
+        }
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+        lazyDataModel.setStart(getStart());
+        lazyDataModel.setEnd(getEnd());
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyDataModel.setTags(parts[1]);
+            }
+            lazyDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyDataModel.setTags(getTags());
+            lazyDataModel.setFilterValue(getKeyword());
+        }
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        try {
+            if (event != null && event.getObject() != null) {
+                Reporte r = (Reporte) event.getObject();
+                redirectTo("/pages/management/reports/report.jsf?reporteId=" + r.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+        }
+    }
+
+    public void saveReport() {
+        if (report.isPersistent()) {
+            report.setLastUpdate(Dates.now());
+        } else {
+            report.setAuthor(subject);
+            report.setOwner(subject);
+            report.setOrganization(this.organizationData.getOrganization());
+        }
+        reporteService.save(report.getId(), report);
+    }
+
     @Override
     public void handleReturn(SelectEvent event) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -92,7 +159,8 @@ public class ReporteHome extends FedeController implements Serializable {
 
     @Override
     public Group getDefaultGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.defaultGroup;
     }
 
     @Override
@@ -102,7 +170,13 @@ public class ReporteHome extends FedeController implements Serializable {
 
     @Override
     public List<Group> getGroups() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.groups.isEmpty()) {
+            //Todos los grupos para el modulo actual
+            setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "administration", "administration"), Group.Type.LABEL));
+        }
+
+        return this.groups;
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -216,6 +216,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>report</from-outcome>
+            <to-view-id>/pages/management/reports/report.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>admin-dashboard</from-outcome>
             <to-view-id>/pages/admin/dashboard.jsf</to-view-id>
             <redirect />

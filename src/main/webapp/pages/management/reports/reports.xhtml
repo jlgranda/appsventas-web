@@ -37,16 +37,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="content">
             <div  class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <p:dataTable var="reporte" value="#{reporteHome.reportes}" paginator="true" rows="10"
-                                 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                                 rowsPerPageTemplate="5,10,15" selectionMode="single"
-                                 selection="#{reporteHome.reporte}"
-                                 id="customerTable">
-                        <p:column headerText="#{i18n['common.name']}" sortBy="#{reporte.name}" filterBy="#{reporte.name}">
-                            <h:outputText value="#{reporte.name}"/>
+                    <div class="card">
+                        <p:inputText value="#{reporteHome.keyword}" class="input-sm"></p:inputText>
+                        <p:commandButton value="#{i18n['common.find']}" 
+                                         actionListener="#{reporteHome.clear()}"
+                                         styleClass="raised-btn">
+                        </p:commandButton>
+                    </div>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:dataTable id="reportsTable"
+                                 value="#{reporteHome.lazyDataModel}" var="report" 
+                                 paginator="true" rows="10" rowsPerPageTemplate="5,10,15" 
+                                 selectionMode="single" selection="#{reporteHome.selectedBussinesEntities}">
+                        <p:ajax event="rowSelect" listener="#{reporteHome.onRowSelect}"/>
+                        <f:facet name="header">
+                            <p:button value="#{i18n['common.new']} #{i18n['common.report']}"
+                                      styleClass="danger-btn" style="display: block;"
+                                      outcome="report"/>
+                        </f:facet>
+                        <p:column headerText="#{i18n['common.name']}" sortBy="#{report.name}">
+                            <h:outputText value="#{report.name}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.description']}" sortBy="#{reporte.description}" filterBy="#{reporte.description}">
-                            <h:outputText value="#{reporte.description}"/>
+                        <p:column headerText="#{i18n['common.description']}" sortBy="#{report.description}">
+                            <h:outputText value="#{report.description}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.type']}" sortBy="#{report.tipo}">
+                            <h:outputText value="#{report.tipo}"/>
                         </p:column>
                     </p:dataTable>
                 </div>

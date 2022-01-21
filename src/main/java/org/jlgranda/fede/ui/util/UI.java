@@ -396,6 +396,19 @@ public class UI {
 
         return items;
     }
+    
+    public List<SelectItem> getReportTypeAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+//        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+//        items.add(item);
+        item = new SelectItem("LISTA", "LISTA");
+        items.add(item);
+        item = new SelectItem("INDIVIDUAL", "INDIVIDUAL");
+        items.add(item);
+
+        return items;
+    }
 
     /**
      * Calcula el tamaño de contenedor para el tamaño de elementos identificado

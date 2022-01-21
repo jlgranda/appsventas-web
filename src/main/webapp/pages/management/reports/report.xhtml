@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <!--<f:viewParam name="" value="" />-->
+            <!--<f:viewAction action="" />-->
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['common.management']}</li>
+        <li>/</li>
+        <li><p:link outcome="reports">#{i18n['common.reports']}</p:link></li>
+        <li>/</li>
+        <li><p:link outcome="report">#{i18n['common.register']} #{i18n['common.report']}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.reportes.Reporte"/>
+        <div  class="ui-g ui-fluid">
+            <h1 class="BigTopic">#{reporteHome.report.name}</h1>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <jlgranda:input id="name" name="name" type="text" label="#{i18n['common.name']}" 
+                                value="#{reporteHome.report.name}" 
+                                render="name" execute="@this save"
+                                inlinehelp="#{messages['common.name.inlinehelp']}"
+                                required="true"/>
+                <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
+                                value="#{reporteHome.report.description}" 
+                                render="descrpn" execute="@this save" 
+                                inlinehelp="#{messages['common.description.inlinehelp']}" 
+                                required="true"/>
+                <jlgranda:input id="modulo" name="modulo" type="text" label="#{i18n['common.module']}" 
+                                value="#{reporteHome.report.modulo}" 
+                                render="modulo" execute="@this save"
+                                inlinehelp="#{messages['common.name.inlinehelp']}"
+                                required="true"/>
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0 0.8rem 0 0.8rem;">
+                <p:outputLabel for="@next" value="#{i18n['common.type']}"/>
+                <p:selectOneMenu id="tipo"
+                                 value="#{reporteHome.report.tipo}"
+                                 required="true" immediate="true">
+                    <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = " " /> 
+                    <f:selectItems value="#{ui.reportTypeAsSelectItem}" var="tipo" itemLabel="#{tipo.label}"  itemValue="#{tipo.label}"/>
+                </p:selectOneMenu>
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 1rem 0.8rem 0 0.8rem;">
+                <p:fileUpload label="#{i18n['common.choose']}" mode="advanced" dragDropSupport="true" auto="true"
+                              sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
+                              fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
+                              allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(jasper)$/')}"
+                              process="@form"
+                              required="true"/>   
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:commandButton id="btnReportSave"
+                                         icon="fa fa-save" styleClass="danger-btn"
+                                         value="#{i18n['common.save']}"
+                                         actionListener="#{reporteHome.saveReport}"  action="#{reporteHome.getOutcome()}"
+                                         ajax="true" type="submit"/>
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton id="btnRecordCancel"
+                                         icon="pi pi-home"  styleClass="primary-button p-mr-2"
+                                         value="Principal"
+                                         action="#{reporteHome.getOutcome()}" 
+                                         type="button"/>
+                    </f:facet>
+                </p:toolbar>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+        </style>
+    </ui:define>
+</ui:composition>
