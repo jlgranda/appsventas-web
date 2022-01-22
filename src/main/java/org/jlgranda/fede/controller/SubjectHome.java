@@ -35,7 +35,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.UserTransaction;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.admin.TemplateHome;

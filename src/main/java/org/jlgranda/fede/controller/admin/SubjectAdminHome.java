@@ -80,6 +80,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     private SettingHome settingHome;
     @Inject
     GroupHome groupHome;
+    
     @Inject
     private OrganizationData organizationData;
 
@@ -426,9 +427,11 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     public void onTransfer(TransferEvent event) {
         StringBuilder builder = new StringBuilder();
 //        System.out.println("event.getItems(): " + event.getItems());
-        for (Object item : event.getItems()) {
-//            System.out.println("item " + item);
+        event.getItems().stream().map(item -> {
+            //            System.out.println("item " + item);
             builder.append(((Roles) item).getName());
+            return item;
+        }).map(item -> {
             UsersRoles shiroUsersRoles = new UsersRoles();
             UsersRolesPK usersRolesPK = new UsersRolesPK(subjectEdit.getUsername(), ((Roles) item).getName());
             shiroUsersRoles.setUsersRolesPK(usersRolesPK);
@@ -441,9 +444,13 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 usersRolesFacade.remove(shiroUsersRoles);
                 msg.setSummary("Rol desasignado correctamente!");
             }
+            return msg;
+        }).map(msg -> {
             msg.setDetail(builder.toString());
+            return msg;
+        }).forEachOrdered(msg -> {
             FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
+        });
     }
 
     public void setSubjectEdit(Subject subjectEdit) {
