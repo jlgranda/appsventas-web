@@ -135,8 +135,13 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>production-aggregation</from-outcome>
+            <from-outcome>aggregations</from-outcome>
             <to-view-id>/pages/production/aggregation_items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>aggregation</from-outcome>
+            <to-view-id>/pages/production/aggregation.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

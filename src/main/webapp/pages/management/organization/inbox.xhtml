@@ -183,7 +183,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="rowSelect" listener="#{organizationHome.onRowSelect}"/>
                             <p:ajax event="rowSelectCheckbox" 
                                     process="dataTable-organizations" update="dataTable-organizations"/>
-                            <p:column selectionMode="multiple"  style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column headerText="#{i18n['common.ruc']}" sortBy="#{organization.ruc}">
                                 <h:outputText value="#{organization.ruc}" />
                             </p:column>

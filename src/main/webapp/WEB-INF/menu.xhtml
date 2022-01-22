@@ -61,7 +61,7 @@
                             <p:menuitem id="rm_payments_suppliers" value="#{i18n['common.suppliers']}" icon="fa fa-fw fa-handshake-o" outcome="/pages/fede/pagos/proveedores.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
                         </p:submenu>
                         <p:submenu id="production" label="#{i18n['app.fede.production']}" icon="pi pi-fw pi-shopping-bag" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
-                            <p:menuitem id="om_grouping" value="#{i18n['app.fede.production.aggregation']}" icon="pi pi-fw pi-plus-circle" outcome="production-aggregation" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
+                            <p:menuitem id="om_grouping" value="#{i18n['app.fede.production.aggregation']}" icon="pi pi-fw pi-plus-circle" outcome="aggregations" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                         </p:submenu>
                         <p:submenu id="om_admin_accounting" label="#{i18n['app.fede.accounting']}" icon="fa fa-fw fa-pencil-square-o" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
                             <p:menuitem id="om_account_items" value="#{i18n['app.fede.accounting.accounts.plan']}" icon="fa fa-fw fa-book" outcome="/pages/accounting/account_items.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>

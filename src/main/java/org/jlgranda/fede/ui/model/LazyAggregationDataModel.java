@@ -16,7 +16,7 @@
  */
 package org.jlgranda.fede.ui.model;
 
-import com.jlgranda.fede.ejb.reportes.ReporteService;
+import com.jlgranda.fede.ejb.production.AggregationService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jlgranda.fede.model.reportes.Reporte;
-import org.jlgranda.fede.model.reportes.Reporte_;
+import org.jlgranda.fede.model.production.Aggregation;
+import org.jlgranda.fede.model.production.Aggregation_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
@@ -43,19 +43,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author usuario
  */
-public class LazyReportDataModel extends LazyDataModel<Reporte> implements Serializable {
+public class LazyAggregationDataModel extends LazyDataModel<Aggregation> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
     private static final long serialVersionUID = -3989947588787365293L;
 
-    Logger logger = LoggerFactory.getLogger(LazyReportDataModel.class);
+    Logger logger = LoggerFactory.getLogger(LazyAggregationDataModel.class);
 
-    private ReporteService reporteService;
+    private AggregationService aggregationService;
 
     private Subject owner;
     private Organization organization;
 
-    private List<Reporte> resultList;
+    private List<Aggregation> resultList;
 
     private int firstResult = 0;
     private String filterValue;
@@ -66,10 +66,10 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
     private BussinesEntity[] selectedBussinesEntities;
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
 
-    public LazyReportDataModel(ReporteService reporteService) {
+    public LazyAggregationDataModel(AggregationService aggregationService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
-        this.reporteService = reporteService;
+        this.aggregationService = aggregationService;
     }
 
     @PostConstruct
@@ -87,10 +87,10 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
         this.resultList = null;
     }
 
-    public List<Reporte> getResultList() {
+    public List<Aggregation> getResultList() {
         logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
-            resultList = reporteService.find(this.getPageSize(), this.getFirstResult());
+            resultList = aggregationService.find(this.getPageSize(), this.getFirstResult());
         }
         return resultList;
     }
@@ -108,7 +108,7 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
     }
 
     public boolean isNextExists() {
-        return reporteService.count() > this.getPageSize() + firstResult;
+        return aggregationService.count() > this.getPageSize() + firstResult;
     }
 
     public String getFilterValue() {
@@ -120,12 +120,12 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
     }
 
     @Override
-    public Reporte getRowData(String rowKey) {
-        return reporteService.find(Long.valueOf(rowKey));
+    public Aggregation getRowData(String rowKey) {
+        return aggregationService.find(Long.valueOf(rowKey));
     }
 
     @Override
-    public String getRowKey(Reporte entity) {
+    public String getRowKey(Aggregation entity) {
         return "" + entity.getId();
     }
 
@@ -186,7 +186,7 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
     }
 
     @Override
-    public List<Reporte> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
+    public List<Aggregation> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
         int _end = first + pageSize;
         String sortField = null;
@@ -210,13 +210,13 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
             }
         }
         if (!range.isEmpty()) {
-            _filters.put(Reporte_.createdOn.getName(), range); //Filtro de fecha inicial
+            _filters.put(Aggregation_.createdOn.getName(), range); //Filtro de fecha inicial
         }
         if (getOwner() != null) {
-            _filters.put(Reporte_.owner.getName(), getOwner());
+            _filters.put(Aggregation_.owner.getName(), getOwner());
         }
         if (getOrganization() != null) {
-            _filters.put(Reporte_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
@@ -227,10 +227,10 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
         _filters.putAll(filters);
 
         if (sortField == null) {
-            sortField = Reporte_.createdOn.getName();
+            sortField = Aggregation_.createdOn.getName();
         }
 
-        QueryData<Reporte> qData = reporteService.find(first, _end, sortField, order, _filters);
+        QueryData<Aggregation> qData = aggregationService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
@@ -248,15 +248,15 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
             }
         }
         if (!range.isEmpty()) {
-            _filters.put(Reporte_.createdOn.getName(), range); //Filtro de fecha inicial
+            _filters.put(Aggregation_.createdOn.getName(), range); //Filtro de fecha inicial
         }
 
         if (getOwner() != null) {
-            _filters.put(Reporte_.owner.getName(), getOwner());
+            _filters.put(Aggregation_.owner.getName(), getOwner());
         }
 
         if (getOrganization() != null) {
-            _filters.put(Reporte_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
 
         if (getTags() != null && !getTags().isEmpty()) {
@@ -269,7 +269,7 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
 
         _filters.putAll(filters);
 
-        QueryData<Reporte> qData = reporteService.find(_filters);
+        QueryData<Aggregation> qData = aggregationService.find(_filters);
         return qData.getTotalResultCount().intValue();
     }
 

@@ -68,6 +68,7 @@ public class ReporteHome extends FedeController implements Serializable {
     private LazyReportDataModel lazyDataModel;
 
     private Reporte report;
+    private Long reportId;
 
     @PostConstruct
     private void init() {
@@ -86,7 +87,7 @@ public class ReporteHome extends FedeController implements Serializable {
     }
 
     public LazyReportDataModel getLazyDataModel() {
-         filter();
+        filter();
         return lazyDataModel;
     }
 
@@ -95,11 +96,22 @@ public class ReporteHome extends FedeController implements Serializable {
     }
 
     public Reporte getReport() {
-        return report;
+        if (this.reportId != null && this.report != null && !this.report.isPersistent()) {
+            this.report = reporteService.find(reportId);
+        }
+        return this.report;
     }
 
     public void setReport(Reporte report) {
         this.report = report;
+    }
+
+    public Long getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(Long reportId) {
+        this.reportId = reportId;
     }
 
     public void clear() {
@@ -129,7 +141,7 @@ public class ReporteHome extends FedeController implements Serializable {
         try {
             if (event != null && event.getObject() != null) {
                 Reporte r = (Reporte) event.getObject();
-                redirectTo("/pages/management/reports/report.jsf?reporteId=" + r.getId());
+                redirectTo("/pages/management/reports/report.jsf?reportId=" + r.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());

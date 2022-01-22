@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      value="#{accountHome.treeDataModel}" var="account"
                                      selection="#{accountHome.singleSelectedNode}" sortBy="#{account.code}"
                                      selectionMode="single"><!--filteredNode="#{accountHome.singleSelectedNode}" -->
-                            <p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>
+                            <!--<p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>-->
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{account.code}" filterable="false">
                                 <h:outputText value="#{account.code}" />
                             </p:column>
@@ -62,7 +62,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </h:outputText>
                             </p:column>
                             <p:column>
-                                <p:button icon="fa fa-plus-square-o"
+                                <p:button icon="fa fa-pencil" title="Editar"
+                                          styleClass="secondary-button" outcome="/pages/accounting/account.jsf?accountId=#{account.id}" />
+                                <p:button icon="fa fa-plus-square-o" title="Añadir Subcuenta"
                                           styleClass="danger-btn" outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />
                             </p:column>
                         </p:treeTable>

@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.production']}</li>
             <li>/</li>
-            <li><p:link outcome="production-aggregation">#{i18n['app.fede.production.aggregation']}</p:link></li>
+            <li><p:link outcome="aggregations">#{i18n['app.fede.production.aggregations']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="card product">
@@ -40,6 +40,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:dataView var="prodAgg" value="#{aggregationHome.productosAgregaciones}"
                                 rows="10" rowsPerPageTemplate="5,10,20" paginator="true"
                                 gridIcon="fa fa-th-large" listIcon="fa fa-bars">
+                        <f:facet name="header">
+                            <p:button value="#{i18n['common.newa']} #{i18n['app.fede.production.aggregation']}"
+                                      icon="pi pi-clone" styleClass="danger-btn"
+                                      outcome="aggregation"/>
+                        </f:facet>
                         <p:dataViewGridItem>
                             <div class="product-grid-item card border-1">
                                 <div class="product-grid-item-top">

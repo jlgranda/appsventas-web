@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
                             <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             
                             <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
                                 <h:outputText value="#{recordTemplate.code}" />

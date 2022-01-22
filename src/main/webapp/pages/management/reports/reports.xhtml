@@ -46,11 +46,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <p:dataTable id="reportsTable"
-                                 value="#{reporteHome.lazyDataModel}" var="report" 
-                                 paginator="true" rows="10" rowsPerPageTemplate="5,10,15" 
-                                 selectionMode="single" selection="#{reporteHome.selectedBussinesEntities}">
+                    <p:dataTable id="reportsTable" draggableColumns="true" lazy="true" liveResize="true"
+                                 paginator="true" paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{report.id}"
+                                 rows="25" scrollRows="25"
+                                 value="#{reporteHome.lazyDataModel}" var="report"
+                                 selection="#{reporteHome.selectedBussinesEntities}">
                         <p:ajax event="rowSelect" listener="#{reporteHome.onRowSelect}"/>
+                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                         <f:facet name="header">
                             <p:button value="#{i18n['common.new']} #{i18n['common.report']}"
                                       styleClass="danger-btn" style="display: block;"

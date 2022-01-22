@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      selection="#{kardexInventoryHome.selectedBussinesEntities}"
                                      sortBy="#{kardex.lastUpdate}">
                             <p:ajax event="rowSelect" listener="#{kardexInventoryHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{kardex.code}">
                                 <h:outputText value="#{kardex.code}"/>
                             </p:column>

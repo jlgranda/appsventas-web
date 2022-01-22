@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
-            <!--<f:viewParam name="" value="" />-->
+            <f:viewParam name="reportId" value="#{reporteHome.reportId}"/>
             <!--<f:viewAction action="" />-->
         </f:metadata>
     </ui:define>
@@ -88,7 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton id="btnRecordCancel"
-                                         icon="pi pi-home"  styleClass="primary-button p-mr-2"
+                                         icon="pi pi-home" styleClass="primary-button p-mr-2"
                                          value="Principal"
                                          action="#{reporteHome.getOutcome()}" 
                                          type="button"/>
