@@ -62,6 +62,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import static org.jlgranda.fede.controller.FedeController.KEY_SEPARATOR;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
@@ -931,6 +932,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     /**
      * Guarda los datos
      */
+    @javax.transaction.Transactional
     public void save() {
         this.facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
         this.facturaElectronica.setFilename(null);
@@ -964,20 +966,24 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 }
             }
         }
-        if (this.facturaElectronica.isPersistent()){
-            facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica);
-        } else {
-            
-            this.facturaElectronica = facturaElectronicaService.save(this.facturaElectronica);
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
-            System.out.println("FacturaElectronica::id > " + this.facturaElectronica.getId());
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        
+        if (!facturaElectronica.isPersistent()) {
+//            facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica);
+            facturaElectronicaService.save(this.facturaElectronica); //Se crea el registro
         }
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        System.out.println("FacturaElectronica::id > " + this.facturaElectronica.getId());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        
         registerDetalleFacturaElectronicaInKardex(this.facturaElectronica.getFacturaElectronicaDetails()); //Procesa y guarda la factura electrónica en el medio persistente
 
         //Registrar asiento contable de la compra
-        registerRecordInJournal();
-//        setOutcome("compras");
+        setOutcome(registerRecordInJournal());
+        
+        if (Strings.isNullOrEmpty(getOutcome())){
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+        }
+
     }
 
     private FacturaElectronica procesarFactura(FacturaReader fr, SourceType sourceType) throws FacturaXMLReadException {
@@ -1397,7 +1403,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         this.facturaElectronica.setImporteTotal((this.facturaElectronica.getSubtotalIVA0().add(this.facturaElectronica.getSubtotalIVA12())).subtract(this.facturaElectronica.getTotalDescuento()));
     }
 
-    public void registerRecordInJournal() {
+    public String registerRecordInJournal() {
+        
+        String outcome_ = ""; //Regresar a la lista.
 
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<");
         System.out.println("Contabilidad habilitada: " + isAccountingEnabled());
@@ -1424,20 +1432,14 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
                 GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
-                //Anular registros anteriores
-//                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId(), this.facturaElectronica.hashCode());
-                if (this.facturaElectronica.getRecordId() != null) {
-                    recordService.deleteRecord(this.facturaElectronica.getRecordId());
-                    this.facturaElectronica.setRecordId(null);
-                }
-                System.out.println(">>>>>>>>>>>>>>>>>");
-                System.out.println(">>>>>>>>>>>>>>>>>");
-                System.out.println("generalJournal.getId(): " + generalJournal.getId());
-                System.out.println("this.facturaElectronica.getClass().getSimpleName(): " + this.facturaElectronica.getClass().getSimpleName());
-                System.out.println("this.facturaElectronica.getId(): " + this.facturaElectronica.getId());
-                System.out.println("this.facturaElectronica.getAuthor().getFullName(): " + this.facturaElectronica.getAuthor().getFullName());
-                System.out.println(">>>>>>>>>>>>>>>>>");
-                System.out.println(">>>>>>>>>>>>>>>>>");
+//                System.out.println(">>>>>>>>>>>>>>>>>");
+//                System.out.println(">>>>>>>>>>>>>>>>>");
+//                System.out.println("generalJournal.getId(): " + generalJournal.getId());
+//                System.out.println("this.facturaElectronica.getClass().getSimpleName(): " + this.facturaElectronica.getClass().getSimpleName());
+//                System.out.println("this.facturaElectronica.getId(): " + this.facturaElectronica.getId());
+//                System.out.println("this.facturaElectronica.getAuthor().getFullName(): " + this.facturaElectronica.getAuthor().getFullName());
+//                System.out.println(">>>>>>>>>>>>>>>>>");
+//                System.out.println(">>>>>>>>>>>>>>>>>");
                 //El General Journal del día
                 if (generalJournal != null) {
                     for (Record rcd : records) {
@@ -1453,14 +1455,14 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                         rcd.getRecordDetails().forEach(rd -> {
                             rd.setLastUpdate(Dates.now());
                             if (rd.getAccountName().contains("$CEDULA")) {
-                                System.out.println("::::::::::rd.getAccountName().substring(0, rd.getAccountName().length() - 8::::::" + (rd.getAccountName().substring(0, rd.getAccountName().length() - 8)));
+//                                System.out.println("::::::::::rd.getAccountName().substring(0, rd.getAccountName().length() - 8::::::" + (rd.getAccountName().substring(0, rd.getAccountName().length() - 8)));
                                 Account cuentaPadreDetectada = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
-                                System.out.println("::::::::::cuentaPadreDetectada::::::" + cuentaPadreDetectada);
+//                                System.out.println("::::::::::cuentaPadreDetectada::::::" + cuentaPadreDetectada);
                                 if (cuentaPadreDetectada != null && cuentaPadreDetectada.getId() != null) {
-                                    System.out.println(":::cuentaPadreDetectada.getName():::" + cuentaPadreDetectada.getName());
-                                    System.out.println(":::this.facturaElectronica.getAuthor().getFullName()::::" + this.facturaElectronica.getAuthor().getFullName());
+//                                    System.out.println(":::cuentaPadreDetectada.getName():::" + cuentaPadreDetectada.getName());
+//                                    System.out.println(":::this.facturaElectronica.getAuthor().getFullName()::::" + this.facturaElectronica.getAuthor().getFullName());
                                     String nombreCuentaHija = cuentaPadreDetectada.getName().concat(" ").concat(this.facturaElectronica.getAuthor().getFullName());
-                                    System.out.println("::::nombreCuentaHija::::" + nombreCuentaHija);
+//                                    System.out.println("::::nombreCuentaHija::::" + nombreCuentaHija);
                                     Account cuentaHija = accountCache.lookupByName(nombreCuentaHija, this.organizationData.getOrganization());
                                     if (cuentaHija == null) {
                                         cuentaHija = accountService.createInstance();//crear la cuenta
@@ -1490,28 +1492,39 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                         });
 
                         //Persistencia
-                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                        System.out.println("this.recordCompleto: " + this.recordCompleto);
-                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//                        System.out.println("this.recordCompleto: " + this.recordCompleto);
+//                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                         if (Boolean.TRUE.equals(this.recordCompleto)) {
                             
                             rcd = recordService.save(rcd);
                             
-                            System.out.println("::::facturaElectronica: " + this.facturaElectronica);
-                            System.out.println("::::record: " + rcd.getId());
+//                            System.out.println("::::facturaElectronica: " + this.facturaElectronica);
+//                            System.out.println("::::record: " + rcd.getId());
+//                            System.out.println("::::record code: " + rcd.getCode());
                             if (rcd.getId() != null) {
+                                
+                                //Anular registros anteriores
+                //                recordService.deleteLastRecords(generalJournal.getId(), this.facturaElectronica.getClass().getSimpleName(), this.facturaElectronica.getId(), this.facturaElectronica.hashCode());
+                                if (this.facturaElectronica.getRecordId() != null) {
+                                    recordService.deleteRecord(this.facturaElectronica.getRecordId());
+                                    this.facturaElectronica.setRecordId(null);
+                                }
+                                
                                 this.facturaElectronica.setRecordId(rcd.getId());
-                                facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica);
-                                setOutcome("compras");
+                                facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica); //Se guardan todos los cambios
+                                outcome_ = "compras"; //regresa al listado
                             }
                         } else {
                             PrimeFaces current = PrimeFaces.current();
                             current.executeScript("PF('myDialogVar').show();");
                         }
                     }
-                }
+                } 
             }
         }
+        
+        return outcome_;
     }
 
     public void registerRecordInJournalPaymentCredit() {
