@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 kellypaulinc
+ * Copyright (C) 2022 usuario
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  */
 package org.jlgranda.fede.ui.model;
 
-import com.jlgranda.fede.ejb.GeneralJournalService;
+import com.jlgranda.fede.ejb.production.AggregationService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jlgranda.fede.model.accounting.GeneralJournal;
-import org.jlgranda.fede.model.accounting.GeneralJournal_;
+import org.jlgranda.fede.model.production.Aggregation;
+import org.jlgranda.fede.model.production.Aggregation_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
@@ -41,64 +41,42 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author kellypaulinc
+ * @author usuario
  */
-public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> implements Serializable {
+public class LazyAggregationDataModel extends LazyDataModel<Aggregation> implements Serializable {
 
     private static final int MAX_RESULTS = 5;
     private static final long serialVersionUID = -3989947588787365293L;
 
-    Logger logger = LoggerFactory.getLogger(LazyGeneralJournalDataModel.class);
+    Logger logger = LoggerFactory.getLogger(LazyAggregationDataModel.class);
 
-    private List<GeneralJournal> resultList;
+    private AggregationService aggregationService;
+
+    private Subject owner;
+    private Organization organization;
+
+    private List<Aggregation> resultList;
 
     private int firstResult = 0;
-
-    private GeneralJournalService bussinesEntityService;
-    
     private String filterValue;
-    
-    private Subject owner;
-    
-    private Organization organization;
-    /**
-     * Lista de etiquetas para filtrar facturas
-     */
     private String tags;
-    
-    /**
-     * Inicio del rango de fecha
-     */
     private Date start;
-
-    /**
-     * Fin del rango de fecha
-     */
     private Date end;
-    
+
     private BussinesEntity[] selectedBussinesEntities;
-    
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
-    
-    
-    public LazyGeneralJournalDataModel(GeneralJournalService bussinesEntityService) {
+
+    public LazyAggregationDataModel(AggregationService aggregationService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
-        this.bussinesEntityService = bussinesEntityService;
+        this.aggregationService = aggregationService;
     }
 
     @PostConstruct
     public void init() {
+
     }
-    
-    public List<GeneralJournal> getResultList() {
-        logger.info("load BussinesEntitys");
-        if (resultList.isEmpty()) {
-            resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
-        }
-        return resultList;
-    }
-    
+
     public int getFirstResult() {
         return firstResult;
     }
@@ -109,6 +87,14 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
         this.resultList = null;
     }
 
+    public List<Aggregation> getResultList() {
+        logger.info("load BussinesEntitys");
+        if (resultList.isEmpty()) {
+            resultList = aggregationService.find(this.getPageSize(), this.getFirstResult());
+        }
+        return resultList;
+    }
+
     public int getNextFirstResult() {
         return firstResult + this.getPageSize();
     }
@@ -116,13 +102,13 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     public int getPreviousFirstResult() {
         return this.getPageSize() >= firstResult ? 0 : firstResult - this.getPageSize();
     }
-    
-    public boolean isPreviousExists(){
-        return firstResult>0;
+
+    public boolean isPreviousExists() {
+        return firstResult > 0;
     }
-    
-    public boolean isNextExists(){
-        return bussinesEntityService.count() > this.getPageSize() + firstResult;
+
+    public boolean isNextExists() {
+        return aggregationService.count() > this.getPageSize() + firstResult;
     }
 
     public String getFilterValue() {
@@ -132,68 +118,31 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     public void setFilterValue(String filterValue) {
         this.filterValue = filterValue;
     }
-      
+
     @Override
-    public GeneralJournal getRowData(String rowKey) {
-        return bussinesEntityService.find(Long.valueOf(rowKey));
+    public Aggregation getRowData(String rowKey) {
+        return aggregationService.find(Long.valueOf(rowKey));
     }
 
     @Override
-    public String getRowKey(GeneralJournal entity) {
+    public String getRowKey(Aggregation entity) {
         return "" + entity.getId();
     }
-    
-    @Override
-    public List<GeneralJournal> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
-        int _end = first + pageSize;
-        String sortField = null;
-        QuerySortOrder order = QuerySortOrder.DESC;
-        if (!sortBy.isEmpty()){
-            for (SortMeta sm : sortBy.values()){
-                if ( sm.getOrder() == SortOrder.ASCENDING) {
-                    order = QuerySortOrder.ASC;
-                }
-                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
-            }
-        }
-        Map<String, Object> _filters = new HashMap<>();
-        Map<String, Date> range = new HashMap<>();
-        if (getStart() != null) {
-            range.put("start", getStart());
-            if (getEnd() != null) {
-                range.put("end", getEnd());
-            } else {
-                range.put("end", Dates.now());
-            }
-        }
-        if (!range.isEmpty()){
-            _filters.put(GeneralJournal_.createdOn.getName(), range); //Filtro de fecha inicial
-        }
-        
-        if(getOwner()!=null){
-        _filters.put(GeneralJournal_.owner.getName(), getOwner());
-        }
-        
-        if (getOrganization() != null) {
-            _filters.put(GeneralJournal_.organization.getName(), getOrganization()); //Filtro por  defecto organization
-        }
-        
-        if (getTags() != null && !getTags().isEmpty()) {
-            _filters.put("tag", getTags()); //Filtro de etiquetas
-        }
 
-        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
-            _filters.put("keyword", getFilterValue()); //Filtro general
-        }
+    public Organization getOrganization() {
+        return organization;
+    }
 
-        _filters.putAll(filters);
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 
-        if (sortField == null){
-            sortField = GeneralJournal_.createdOn.getName();
-        }
-        QueryData<GeneralJournal> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
-        this.setRowCount(qData.getTotalResultCount().intValue());
-        return qData.getResult();
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
     public Date getStart() {
@@ -211,7 +160,7 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     public void setEnd(Date end) {
         this.end = end;
     }
-    
+
     public Subject getOwner() {
         return owner;
     }
@@ -220,22 +169,6 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
         this.owner = owner;
     }
 
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-    
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-    
     public BussinesEntity[] getSelectedBussinesEntities() {
         return selectedBussinesEntities;
     }
@@ -253,6 +186,56 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     }
 
     @Override
+    public List<Aggregation> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
+
+        int _end = first + pageSize;
+        String sortField = null;
+        QuerySortOrder order = QuerySortOrder.DESC;
+        if (!sortBy.isEmpty()) {
+            for (SortMeta sm : sortBy.values()) {
+                if (sm.getOrder() == SortOrder.ASCENDING) {
+                    order = QuerySortOrder.ASC;
+                }
+                sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
+            }
+        }
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()) {
+            _filters.put(Aggregation_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        if (getOwner() != null) {
+            _filters.put(Aggregation_.owner.getName(), getOwner());
+        }
+        if (getOrganization() != null) {
+            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        _filters.putAll(filters);
+
+        if (sortField == null) {
+            sortField = Aggregation_.createdOn.getName();
+        }
+
+        QueryData<Aggregation> qData = aggregationService.find(first, _end, sortField, order, _filters);
+        this.setRowCount(qData.getTotalResultCount().intValue());
+        return qData.getResult();
+    }
+
+    @Override
     public int count(Map<String, FilterMeta> filters) {
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
@@ -264,24 +247,30 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()){
-            _filters.put(GeneralJournal_.createdOn.getName(), range); //Filtro de fecha inicial
+        if (!range.isEmpty()) {
+            _filters.put(Aggregation_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        if(getOwner()!=null){
-        _filters.put(GeneralJournal_.owner.getName(), getOwner());
+
+        if (getOwner() != null) {
+            _filters.put(Aggregation_.owner.getName(), getOwner());
         }
+
         if (getOrganization() != null) {
-            _filters.put(GeneralJournal_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
+
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
+
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
+
         _filters.putAll(filters);
-        QueryData<GeneralJournal> qData = bussinesEntityService.find(_filters);
+
+        QueryData<Aggregation> qData = aggregationService.find(_filters);
         return qData.getTotalResultCount().intValue();
     }
-    
+
 }

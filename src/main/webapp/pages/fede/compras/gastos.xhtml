@@ -38,10 +38,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+<!--                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
                         <p:inputText value="#{facturaElectronicaGastoHome.keyword}" class="input-sm">
                             <p:ajax listener="#{facturaElectronicaGastoHome.clear()}" />
-                        </p:inputText>  
+                        </p:inputText>  -->
+                        <label style="padding-top: 5px"><b>#{i18n['common.supplier']}: </b></label>
+                        <p:autoComplete id="supplier" value="#{facturaElectronicaGastoHome.facturaElectronica.author}" effect="blind" 
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                        var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                        forceSelection="true" required="#{true}" disabled="#{facturaElectronicaGastoHome.useDefaultSupplier}">
+                            <p:column>
+                                <h:outputText value="#{entidad.fullName}"/>
+                            </p:column>
+                            <p:ajax update="btn-buscar" partialSubmit="true"></p:ajax>
+                        </p:autoComplete>
                         <h:panelGroup id="controles-busqueda-avanzada" >
                             <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
                                 <label class="Gray">#{i18n['common.from']}&nbsp;</label>
@@ -56,8 +68,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:calendar>                        
                             </h:panelGroup>
                         </h:panelGroup>
-                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
-                                         actionListener="#{facturaElectronicaGastoHome.clear()}" ajax="false" immediate="true">
+                        <p:commandButton id="btn-buscar" value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
+                                         actionListener="#{facturaElectronicaCompraHome.clear()}" ajax="false" immediate="true">
                         </p:commandButton>
                         <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="gasto"/>
                         <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
@@ -84,7 +96,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      selection="#{facturaElectronicaGastoHome.selectedBussinesEntities}"
                                      sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaGastoHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column id="code" headerText="#{i18n['common.code']}"
                                       style="width:96px;text-align:left">
                                 <h:outputText value="#{facturaElectronica.code}" />

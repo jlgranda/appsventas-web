@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.production']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="aggregationId" value="#{aggregationHome.aggregationId}"/>
+            <!--<f:viewAction action="" />-->
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.production']}</li>
+        <li>/</li>
+        <li><p:link outcome="aggregations">#{i18n['app.fede.production.aggregations']}</p:link></li>
+        <li>/</li>
+        <li><p:link outcome="aggregation">#{i18n['common.register']} #{i18n['app.fede.production.aggregation']}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.production.Aggregation"/>
+        <div  class="ui-g ui-fluid">
+            <h1 class="BigTopic">#{aggregationHome.aggregation.name}</h1>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0 0.8rem 0 0.8rem;">
+                <p:outputLabel class="Fs18 BigTopic" value="#{i18n['common.product']} Principal" for="@next"/>
+                <p:autoComplete id="product" 
+                                value="#{aggregationHome.aggregation.product}" var="product"
+                                itemLabel="#{product.name.toUpperCase()}" itemValue="#{product}"
+                                completeMethod="#{aggregationHome.filterProducts}"
+                                converter="org.jlgranda.fede.ui.converter.ProductConverter"
+                                converterMessage="El convertidor no responde."
+                                minQueryLength="3" maxResults="100" effect="fade"
+                                placeholder="#{i18n['common.find']}"
+                                forceSelection="true" emptyMessage="No se encontraron resultados."
+                                cache="true" queryDelay="1000" scrollHeight="1000"
+                                required="true">
+                    <p:column>
+                        <span style="text-transform: uppercase"><strong> #{product.code} </strong> - #{product.name}</span>
+                    </p:column>
+                </p:autoComplete>
+            </div>
+            <!--            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <jlgranda:input id="name" name="name" type="text" label="#{i18n['common.product']}" 
+                                            value="#{aggregationHome.aggregation.name}" 
+                                            render="name" execute="@this save"
+                                            inlinehelp="#{messages['common.name.inlinehelp']}"
+                                            required="true"/>
+                        </div>-->
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"  style="padding: 1rem 0.8rem 0rem 0.8rem;">
+                <div class="card">
+                    <p:outputLabel class="Gray" value="Elementos del Producto:" for="@next"/>
+                    <p:dataTable id="aggregationsTable" draggableColumns="true" lazy="true" liveResize="true"
+                                 paginator="true" paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{aggregation.id}"
+                                 rows="25" scrollRows="25"
+                                 value="#{aggregationHome.lazyDataModel}" var="aggregation"
+                                 selection="#{aggregationHome.selectedBussinesEntities}">
+                        <!--<p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelect}"/>-->
+                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                        <p:column headerText="#{i18n['common.element']}" sortBy="#{aggregation.name}">
+                            <h:outputText value="#{aggregation.name}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.cost']}">
+                            <h:outputText value="#{aggregation.description}"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
+                <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.observation']} de la Agregación" 
+                                value="#{aggregationHome.aggregation.description}" 
+                                render="descrpn" execute="@this save" 
+                                inlinehelp="#{messages['common.description.inlinehelp']}" 
+                                required="true"/>
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:commandButton id="btnAggregationSave"
+                                         icon="fa fa-save" styleClass="danger-btn"
+                                         value="#{i18n['common.save']}"
+                                         actionListener="#{aggregationHome.saveAggregation}"  action="#{aggregationHome.getOutcome()}"
+                                         ajax="true" type="submit"/>
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton id="btnRecordCancel"
+                                         icon="pi pi-home" styleClass="primary-button p-mr-2"
+                                         value="Principal"
+                                         action="#{aggregationHome.getOutcome()}" 
+                                         type="button"/>
+                    </f:facet>
+                </p:toolbar>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+        </style>
+    </ui:define>
+</ui:composition>

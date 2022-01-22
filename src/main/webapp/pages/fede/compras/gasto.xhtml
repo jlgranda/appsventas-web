@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li><p:link outcome="gastos">#{i18n['common.gastos']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="gasto">#{facturaElectronicaGastoHome.facturaElectronicaId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['common.purchase']}</p:link></li>
+        <li><p:link outcome="gasto">#{facturaElectronicaGastoHome.facturaElectronicaId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['common.gasto']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
@@ -266,7 +266,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:toolbar class="Container100" rendered="#{true}">
                         <f:facet name="left">
                             <p:commandButton id="btn-save" value="#{i18n['common.save']}" ajax="true"
-                                             actionListener="#{facturaElectronicaGastoHome.save()}" action="#{facturaElectronicaGastoHome.redirect()}"
+                                             actionListener="#{facturaElectronicaGastoHome.save()}"
                                              disabled="#{not empty facturaElectronicaGastoHome.facturaElectronica.payments or empty facturaElectronicaGastoHome.facturaElectronica.facturaElectronicaDetails}"
                                              style="width: auto !important;" styleClass="danger-btn"
                                              type="submit"/>
@@ -552,6 +552,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </p:panel>
             </div>
         </div>
+    </ui:define>
+    <ui:define name="popups">
+        <p:dialog id="myDialogID" widgetVar="myDialogVar" modal="true" closable="false" width="400px" style="text-align: -webkit-center;">
+            <span> El asiento contable no se registró debido a que las cuentas intervinientes no coinciden o no se encuentran dentro del Plan de Cuentas.! 
+            </span>
+            <h4 style="text-align: center"> ¡Por favor verífique e inténte el registro de asiento manualmente.!</h4>
+            <p:button icon="fa fa-check-square" styleClass="warning-btn"
+                      value="#{i18n['common.continue']}" 
+                      outcome="compras" 
+                      style="width: -webkit-fill-available;"/>
+        </p:dialog>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">

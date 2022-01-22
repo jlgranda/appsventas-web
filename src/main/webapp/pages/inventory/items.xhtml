@@ -75,8 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-                            
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{product.name}" style="width: 30%">
                                 <h:outputText value="#{product.name}" />
                             </p:column>

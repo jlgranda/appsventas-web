@@ -291,15 +291,14 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         getProductsByType();
         setActivePanelProduct(false);
 
-        //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
+//        //Establecer variable de sistema que habilita o no el registro contable
+//        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
 
         getPayment().setAmount(BigDecimal.ZERO);
         getPayment().setDiscount(BigDecimal.ZERO);
         getPayment().setCash(BigDecimal.ZERO);
         getPayment().setChange(BigDecimal.ZERO);
         setAmoutPending(BigDecimal.ZERO);
-
         setRecordCompleto(Boolean.TRUE);
 
         setOutcome("compras");

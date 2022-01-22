@@ -135,8 +135,13 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>production-aggregation</from-outcome>
+            <from-outcome>aggregations</from-outcome>
             <to-view-id>/pages/production/aggregation_items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>aggregation</from-outcome>
+            <to-view-id>/pages/production/aggregation.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
@@ -208,6 +213,16 @@
         <navigation-case>
             <from-outcome>tareas</from-outcome>
             <to-view-id>/pages/management/tarea/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reports</from-outcome>
+            <to-view-id>/pages/management/reports/reports.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>report</from-outcome>
+            <to-view-id>/pages/management/reports/report.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

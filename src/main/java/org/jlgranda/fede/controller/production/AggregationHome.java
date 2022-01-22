@@ -16,7 +16,9 @@
  */
 package org.jlgranda.fede.controller.production;
 
+import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.production.AggregationService;
+import com.jlgranda.fede.ejb.sales.ProductCache;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -31,6 +33,14 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.primefaces.event.SelectEvent;
 import org.jlgranda.appsventas.data.ProductAggregations;
+import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.production.Aggregation;
+import org.jlgranda.fede.model.sales.Product;
+import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.ui.model.LazyAggregationDataModel;
+import org.jpapi.util.Dates;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -40,21 +50,33 @@ import org.jlgranda.appsventas.data.ProductAggregations;
 @ViewScoped
 public class AggregationHome extends FedeController implements Serializable {
 
+    Logger logger = LoggerFactory.getLogger(AggregationHome.class);
+
     @Inject
     private Subject subject;
     @Inject
     private OrganizationData organizationData;
+    @Inject
+    private SettingHome settingHome;
 
     @EJB
+    private GroupService groupService;
+    @EJB
     private AggregationService aggregationService;
+    @EJB
+    private ProductCache productCache;
+
+    private LazyAggregationDataModel lazyDataModel;
 
     private List<ProductAggregations> productosAgregaciones;
     private ProductAggregations productoAgregaciones;
 
+    private Aggregation aggregation;
+    private Long aggregationId;
+
     @PostConstruct
     private void init() {
         productosAgregaciones = aggregationService.findByGroupProductAndOrganization(this.organizationData.getOrganization());
-        System.out.println(">>>>>>>>>>>><productosAgregaciones: " + productosAgregaciones.get(0).costoTotal);
     }
 
     public List<ProductAggregations> getProductosAgregaciones() {
@@ -71,6 +93,48 @@ public class AggregationHome extends FedeController implements Serializable {
 
     public void setProductoAgregaciones(ProductAggregations productoAgregaciones) {
         this.productoAgregaciones = productoAgregaciones;
+    }
+
+    public LazyAggregationDataModel getLazyDataModel() {
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyAggregationDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+
+    public Aggregation getAggregation() {
+        if (this.aggregationId != null && this.aggregation != null && !this.aggregation.isPersistent()) {
+            this.aggregation = aggregationService.find(aggregationId);
+        }
+        return this.aggregation;
+    }
+
+    public void setAggregation(Aggregation aggregation) {
+        this.aggregation = aggregation;
+    }
+
+    public Long getAggregationId() {
+        return aggregationId;
+    }
+
+    public void setAggregationId(Long aggregationId) {
+        this.aggregationId = aggregationId;
+    }
+
+    public List<Product> filterProducts(String query) {
+        return productCache.lookup(query, ProductType.PRODUCT, this.organizationData.getOrganization()); //sólo productos
+    }
+
+    public void saveAggregation() {
+        if (aggregation.isPersistent()) {
+            aggregation.setLastUpdate(Dates.now());
+        } else {
+            aggregation.setAuthor(subject);
+            aggregation.setOwner(subject);
+            aggregation.setOrganization(this.organizationData.getOrganization());
+        }
+        aggregationService.save(aggregation.getId(), aggregation);
     }
 
     @Override

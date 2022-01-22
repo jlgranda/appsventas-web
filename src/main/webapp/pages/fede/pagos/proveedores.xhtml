@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['common.management']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/pagos/proveedores.jsf">#{i18n['common.payments']} #{i18n['common.suppliers']}</p:link></li>
+            <li><p:link outcome="/pages/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <!-- /.row -->
@@ -60,7 +60,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="rowSelect" listener="#{subjectAdminHome.onRowSelect}"/>
                             <p:ajax event="rowSelectCheckbox" 
                                     process="dataTable-persons" update="dataTable-persons"/>
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column headerText="#{i18n['common.lastnames']}" sortBy="#{_subject.surname}">
                                 <h:outputText value="#{_subject.surname}" />
                             </p:column>
