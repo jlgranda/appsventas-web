@@ -19,6 +19,7 @@ package org.jlgranda.fede.controller.compras;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.compras.ProveedorService;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,32 +50,32 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @ViewScoped
-public class ProveedorHome  extends FedeController implements Serializable {
+public class ProveedorHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -3433960827306269659L;
-    
+
     Logger logger = LoggerFactory.getLogger(ProveedorHome.class);
-    
+
     private Long proveedorId;
-    
+
     private Proveedor proveedor;
-    
+
     @Inject
     private SettingHome settingHome;
-    
+
     protected List<Proveedor> selectedProveedores;
-    
+
     private LazyProveedorDataModel lazyDataModel;
-    
+
     @EJB
     private ProveedorService proveedorService;
-    
+
     @Inject
     private Subject subject;
-    
+
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar clientes en factura
-    
+
     @Inject
     private OrganizationData organizationData;
 
@@ -89,7 +90,7 @@ public class ProveedorHome  extends FedeController implements Serializable {
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        
+
         setProveedor(proveedorService.createInstance());
         setOutcome("proveedores");
     }
@@ -103,7 +104,7 @@ public class ProveedorHome  extends FedeController implements Serializable {
     }
 
     public Proveedor getProveedor() {
-         if (this.proveedorId != null && !this.proveedor.isPersistent()) {
+        if (this.proveedorId != null && !this.proveedor.isPersistent()) {
             this.proveedor = proveedorService.find(proveedorId);
         }
         return proveedor;
@@ -137,8 +138,8 @@ public class ProveedorHome  extends FedeController implements Serializable {
     public void setSubjectAdminHome(SubjectAdminHome subjectAdminHome) {
         this.subjectAdminHome = subjectAdminHome;
     }
-    
-    public void clear(){
+
+    public void clear() {
         this.filter();
     }
 
@@ -163,12 +164,12 @@ public class ProveedorHome  extends FedeController implements Serializable {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
         }
-        
+
     }
-    
-    public void save(){
-        if (proveedor.isPersistent()){
-            if (proveedor.getOrganization() == null){
+
+    public void save() {
+        if (proveedor.isPersistent()) {
+            if (proveedor.getOrganization() == null) {
                 proveedor.setOrganization(organizationData.getOrganization());
             }
             proveedor.setLastUpdate(Dates.now());
@@ -179,15 +180,16 @@ public class ProveedorHome  extends FedeController implements Serializable {
         proveedorService.save(proveedor.getId(), proveedor);
         setOutcome("proveedores");
     }
-    
-    public void saveProveedor(){
+
+    public void saveProveedor() {
         getSubjectAdminHome().save("PROVEEDOR"); //Guardar profile
     }
-    
+
     /**
      * Mostrar el formulario para edición de clientes
+     *
      * @param params
-     * @return 
+     * @return
      */
     public boolean mostrarFormularioProfile(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
@@ -197,11 +199,11 @@ public class ProveedorHome  extends FedeController implements Serializable {
         super.openDialog("subject", width, height, left, top, true, params);
         return true;
     }
-    
+
     public boolean mostrarFormularioProfile() {
         return mostrarFormularioProfile(null);
     }
-    
+
     @Override
     public void handleReturn(SelectEvent event) {
         getProveedor().setOwner((Subject) event.getObject()); //Asocia el subject actual al proveedor
@@ -221,21 +223,32 @@ public class ProveedorHome  extends FedeController implements Serializable {
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     /**
      * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
      * usernae, firstname, surname
+     *
      * @param keyword
-     * @return una lista de objetos <tt>Subject</tt> que coinciden con la palabra clave dada.
+     * @return una lista de objetos <tt>Subject</tt> que coinciden con la
+     * palabra clave dada.
      */
-    public List<Proveedor> find(String keyword) {
+    public List<Subject> find(String keyword) {
         keyword = "%" + keyword.trim() + "%";
         Map<String, Object> filters = new HashMap<>();
         filters.put("code", keyword);
         filters.put("firstname", keyword);
         filters.put("surname", keyword);
         QueryData<Proveedor> queryData = proveedorService.find("Proveedor.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
-        return queryData.getResult();
+//        QueryData<Proveedor> queryData = proveedorService.find("Proveedor.OwnerFindByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
+        List<Subject> subjects = new ArrayList<>();
+        if (queryData.getResult() != null && !queryData.getResult().isEmpty()) {
+            for (Proveedor pr : queryData.getResult()) {
+                System.out.println("pr::::::" + pr);
+                subjects.add(pr.getOwner());
+            }
+        }
+//        return queryData.getResult();
+        return subjects;
     }
 
     @Override

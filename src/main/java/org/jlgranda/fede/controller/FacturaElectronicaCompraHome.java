@@ -280,6 +280,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * amount)));
 
         setFacturaElectronica(facturaElectronicaService.createInstance());
+        getFacturaElectronica().setCode("000 000 000");
         setUseDefaultSupplier(false); //TODO desde configuraciones
 
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));

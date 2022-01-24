@@ -1287,7 +1287,7 @@ body .ui-panel .ui-panel-content {
     border: 0px solid #dedede !important;
     background-color: #ffffff;
     color: #333333;
-    padding: 0.571em 1em;
+    /*padding: 0.571em 1em;*/
     border-top: 0 none;
     line-height: 1.5; 
 }
