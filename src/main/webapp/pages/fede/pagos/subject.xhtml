@@ -28,15 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <ui:define name="params">
         <f:metadata>
-            <f:viewParam name="subjectId" value="#{employeeHome.subjectAdminHome.subjectId}" />  
+            <f:viewParam name="subjectId" value="#{proveedorHome.subjectAdminHome.subjectId}" />  
         </f:metadata>
     </ui:define>
 
     <ui:define name="title">#{i18n['app.fede.talentohumano.employee']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.talentohumano.employees']}</li>
+        <li>#{i18n['common.supplieries']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/talentohumano/subject.jsf">#{employeeHome.subjectAdminHome.subjectId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.talentohumano.employee']}</p:link></li>
+        <li><p:link outcome="/pages/fede/pagos/proveedores.jsf">#{proveedorHome.subjectAdminHome.subjectId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.supplier']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -46,30 +46,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g ui-fluid">
                     <div class="ui-g ui-lg-12">
                         <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="true"
-                                        value="#{employeeHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
-                                        required="#{!employeeHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
                         <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstname']}" 
-                                        value="#{employeeHome.subjectAdminHome.subjectEdit.firstname}" required="#{!employeeHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.firstname}" required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
                         <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastname']}" 
-                                        value="#{employeeHome.subjectAdminHome.subjectEdit.surname}" required="#{!employeeHome.subjectAdminHome.subjectEdit.persistent}"
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.surname}" required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}"
                                         inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
                         <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
-                                        value="#{employeeHome.subjectAdminHome.subjectEdit.mobileNumber}"
-                                        required="#{!employeeHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.mobileNumber}"
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                         execute="@this save" render="phone"/>
                         <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
-                                        value="#{employeeHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                        required="#{!employeeHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                         execute="@this save" render="email"/>
                         <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                        value="#{employeeHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.description}" required="false" 
                                         inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
                         <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio']}" 
-                                        value="#{employeeHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
                                         execute="@this save" render="bio"/>
                         <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
                             <p:outputLabel for="contactable" value="¿Quiere participar de mejores promociones y descuentos?:" />
-                            <p:selectBooleanCheckbox id="contactable" value="#{employeeHome.subjectAdminHome.subjectEdit.contactable}" />
+                            <p:selectBooleanCheckbox id="contactable" value="#{proveedorHome.subjectAdminHome.subjectEdit.contactable}" />
                         </h:panelGrid>
                     </div>
                 </div>
@@ -78,15 +78,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <f:facet name="left">
                         <p:commandButton id="save" value="#{i18n['common.save']}" 
                                          ajax="false" 
-                                         actionListener="#{employeeHome.saveEmployee()}" 
-                                         action="#{employeeHome.getOutcome()}"
+                                         actionListener="#{proveedorHome.saveProveedor()}" 
+                                         action="#{proveedorHome.getOutcome()}"
                                          style="width: auto !important;"
                                          type="submit"/>
                     </f:facet>
                     <f:facet name="right">
 
                         <p:commandButton ajax="true" disabled="false" immediate="true"
-                                         actionListener="#{employeeHome.closeDialog(null)}" 
+                                         actionListener="#{proveedorHome.closeDialog(null)}" 
                                          action="home"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                          />

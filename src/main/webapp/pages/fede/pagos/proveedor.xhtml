@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="proveedorId" value="#{proveedorHome.proveedorId}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">#{i18n['common.supplier']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['common.suppliers']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/pagos/proveedor.jsf">#{proveedorHome.proveedorId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.suppliers']}</p:link></li>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <h1 class="BigTopic">#{i18n['common.supplier']} </h1>
+                <p:autoComplete id="customer" value="#{proveedorHome.proveedor.owner}" effect="fade" 
+                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                completeMethod="#{subjectHome.find}"
+                                var="entidad" itemValue="#{entidad}" 
+                                itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
+                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                forceSelection="true" required="true"
+                                placeholder="#{i18n['app.fede.sales.invoice.header']}">
+                    <p:column>
+                        <h:outputText value="#{ui.renderer('', entidad)}"/>
+                    </p:column>
+                    <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
+                </p:autoComplete>
+                <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
+                                 actionListener="#{proveedorHome.mostrarFormularioProfile()}" ajax="true"
+                                 immediate="true"
+                                 styleClass="RedButton" style="width:30px">
+                    <p:ajax event="dialogReturn" update="@form"
+                            listener="#{proveedorHome.handleReturn}">
+                    </p:ajax>
+                </p:commandButton>
+            </div>
+        </div>
+        <div class="ui-g ui-fluid">
+            <div class="ui-g ui-lg-12">
+                <h1 class="BigTopic">#{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</h1>
+                <div class="ui-g ui-lg-12">
+                    <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.preferedDate']}" 
+                                    value="#{proveedorHome.proveedor.fechaPreferidaPago}"
+                                    required="#{true}" placeholder="false" 
+                                    render="fecha-preferida-pago"/>
+                </div>
+            </div>
+        </div>
+        <p:toolbar rendered="#{true}">
+            <f:facet name="left">
+                <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                                 actionListener="#{proveedorHome.save()}" action="#{proveedorHome.redirect()}" 
+                                 disabled="#{false}" 
+                                 style="width: auto !important;"
+                                 type="submit"/>
+                <span class="ui-separator">
+                    <span class="fa fa-ellipsis-v SoftGray" />
+                </span>
+            </f:facet>
+
+            <f:facet name="right">
+
+                <p:commandButton ajax="true" disabled="false" immediate="true"
+                                 actionListener="#{proveedorHome.closeDialog(null)}" 
+                                 action="home"
+                                 icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                 />
+            </f:facet>
+
+        </p:toolbar>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

@@ -76,7 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      rowKey="#{role.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                            <p:column selectionMode="single" style="width:32px;text-align:center"/>
+                            <p:column selectionMode="single" style="width:64px;text-align:center"/>
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.name}" />
                             </p:column>
@@ -95,19 +95,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:dataTable>
                     </div>
                 </div>
-                <h1 class="BigTopic">#{i18n['app.management.organization']} </h1>
-                <div class="ui-g">
-                    <div class="ui-g-12">
-                        <p:selectOneMenu id="organization" value="#{employeeHome.employee.organization}" effect="fade"
-                                             required="true" immediate="false"> 
-                                <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
-                                <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
-                                <f:selectItems value="#{organizationHome.findOrganizations()}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
-                            </p:selectOneMenu>
-                    </div>
-                </div>
-                <div class="EmptyBox10"></div>
-                
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
                         <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 

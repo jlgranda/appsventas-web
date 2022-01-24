@@ -126,9 +126,11 @@ public class JobRoleHome extends FedeController implements Serializable {
      * Filtro que llena el Lazy Datamodel
      */
     private void filter() {
+        
         if (lazyDataModel == null) {
             lazyDataModel = new LazyJobRoleDataModel(jobRoleService);
         }
+        
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
 //        lazyDataModel.setOwner(subject);
 

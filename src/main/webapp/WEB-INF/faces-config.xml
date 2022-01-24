@@ -120,6 +120,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>proveedores</from-outcome>
+            <to-view-id>/pages/fede/pagos/proveedores.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>inventory-inbox</from-outcome>
             <to-view-id>/pages/inventory/items.jsf</to-view-id>
             <redirect />

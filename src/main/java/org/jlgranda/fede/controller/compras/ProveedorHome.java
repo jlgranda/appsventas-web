@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 jlgranda
+ * Copyright (C) 2022 jlgranda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jlgranda.fede.controller.talentohumano;
+package org.jlgranda.fede.controller.compras;
 
 import com.jlgranda.fede.SettingNames;
-import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
+import com.jlgranda.fede.ejb.compras.ProveedorService;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +32,8 @@ import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.model.accounting.Record;
-import org.jlgranda.fede.model.talentohumano.Employee;
-import org.jlgranda.fede.ui.model.LazyEmployeeDataModel;
+import org.jlgranda.fede.model.compras.Proveedor;
+import org.jlgranda.fede.ui.model.LazyProveedorDataModel;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -49,25 +49,25 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @ViewScoped
-public class EmployeeHome extends FedeController implements Serializable {
+public class ProveedorHome  extends FedeController implements Serializable {
 
-    private static final long serialVersionUID = -3433906827306269659L;
+    private static final long serialVersionUID = -3433960827306269659L;
     
-    Logger logger = LoggerFactory.getLogger(EmployeeHome.class);
+    Logger logger = LoggerFactory.getLogger(ProveedorHome.class);
     
-    private Long employeeId;
+    private Long proveedorId;
     
-    private Employee employee;
+    private Proveedor proveedor;
     
     @Inject
     private SettingHome settingHome;
     
-    protected List<Employee> selectedEmployees;
+    protected List<Proveedor> selectedProveedores;
     
-    private LazyEmployeeDataModel lazyDataModel;
+    private LazyProveedorDataModel lazyDataModel;
     
     @EJB
-    private EmployeeService employeeService;
+    private ProveedorService proveedorService;
     
     @Inject
     private Subject subject;
@@ -90,43 +90,43 @@ public class EmployeeHome extends FedeController implements Serializable {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         
-        setEmployee(employeeService.createInstance());
-        setOutcome("employees");
+        setProveedor(proveedorService.createInstance());
+        setOutcome("proveedores");
     }
 
-    public Long getEmployeeId() {
-        return employeeId;
+    public Long getProveedorId() {
+        return proveedorId;
     }
 
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
+    public void setProveedorId(Long proveedorId) {
+        this.proveedorId = proveedorId;
     }
 
-    public Employee getEmployee() {
-         if (this.employeeId != null && !this.employee.isPersistent()) {
-            this.employee = employeeService.find(employeeId);
+    public Proveedor getProveedor() {
+         if (this.proveedorId != null && !this.proveedor.isPersistent()) {
+            this.proveedor = proveedorService.find(proveedorId);
         }
-        return employee;
+        return proveedor;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
     }
 
-    public List<Employee> getSelectedEmployees() {
-        return selectedEmployees;
+    public List<Proveedor> getSelectedProveedores() {
+        return selectedProveedores;
     }
 
-    public void setSelectedEmployees(List<Employee> selectedEmployees) {
-        this.selectedEmployees = selectedEmployees;
+    public void setSelectedEmployees(List<Proveedor> selectedProveedores) {
+        this.selectedProveedores = selectedProveedores;
     }
 
-    public LazyEmployeeDataModel getLazyDataModel() {
+    public LazyProveedorDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
     }
 
-    public void setLazyDataModel(LazyEmployeeDataModel lazyDataModel) {
+    public void setLazyDataModel(LazyProveedorDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
 
@@ -147,7 +147,7 @@ public class EmployeeHome extends FedeController implements Serializable {
      */
     private void filter() {
         if (lazyDataModel == null) {
-            lazyDataModel = new LazyEmployeeDataModel(employeeService);
+            lazyDataModel = new LazyProveedorDataModel(proveedorService);
         }
 //        lazyDataModel.setOwner(null); //listar todos
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
@@ -167,16 +167,21 @@ public class EmployeeHome extends FedeController implements Serializable {
     }
     
     public void save(){
-        if (employee.isPersistent()){
-            employee.setLastUpdate(Dates.now());
+        if (proveedor.isPersistent()){
+            if (proveedor.getOrganization() == null){
+                proveedor.setOrganization(organizationData.getOrganization());
+            }
+            proveedor.setLastUpdate(Dates.now());
         } else {
-            employee.setAuthor(this.subject);
+            proveedor.setOrganization(organizationData.getOrganization());
+            proveedor.setAuthor(this.subject);
         }
-        employeeService.save(employee.getId(), employee);
+        proveedorService.save(proveedor.getId(), proveedor);
+        setOutcome("proveedores");
     }
     
-    public void saveEmployee(){
-        getSubjectAdminHome().save("EMPLOYEE"); //Guardar profile
+    public void saveProveedor(){
+        getSubjectAdminHome().save("PROVEEDOR"); //Guardar profile
     }
     
     /**
@@ -199,7 +204,7 @@ public class EmployeeHome extends FedeController implements Serializable {
     
     @Override
     public void handleReturn(SelectEvent event) {
-        getEmployee().setOwner((Subject) event.getObject());
+        getProveedor().setOwner((Subject) event.getObject()); //Asocia el subject actual al proveedor
     }
 
     @Override
@@ -223,13 +228,13 @@ public class EmployeeHome extends FedeController implements Serializable {
      * @param keyword
      * @return una lista de objetos <tt>Subject</tt> que coinciden con la palabra clave dada.
      */
-    public List<Employee> find(String keyword) {
+    public List<Proveedor> find(String keyword) {
         keyword = "%" + keyword.trim() + "%";
         Map<String, Object> filters = new HashMap<>();
         filters.put("code", keyword);
         filters.put("firstname", keyword);
         filters.put("surname", keyword);
-        QueryData<Employee> queryData = employeeService.find("Employee.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
+        QueryData<Proveedor> queryData = proveedorService.find("Proveedor.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
 

@@ -16,7 +16,7 @@
  */
 package org.jlgranda.fede.ui.model;
 
-import com.jlgranda.fede.ejb.talentohumano.JobRoleService;
+import com.jlgranda.fede.ejb.compras.ProveedorService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,8 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.jlgranda.fede.model.talentohumano.JobRole;
-import org.jlgranda.fede.model.talentohumano.JobRole_;
+import org.jlgranda.fede.model.compras.Proveedor;
+import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.model.talentohumano.Employee;
+import org.jlgranda.fede.model.talentohumano.Employee_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.Organization;
@@ -44,45 +46,51 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Serializable {
-
+public class LazyProveedorDataModel  extends LazyDataModel<Proveedor> implements Serializable {
+    
     private static final int MAX_RESULTS = 5;
-    private static final long serialVersionUID = 8328933833912504890L;
+    private static final long serialVersionUID = 4204366822715059908L;
+    
+    Logger  logger = LoggerFactory.getLogger(LazyProveedorDataModel.class);
 
-    Logger logger = LoggerFactory.getLogger(LazyJobRoleDataModel.class);
-
-    private JobRoleService bussinesEntityService;
-
-    private List<JobRole> resultList;
+    private ProveedorService bussinesEntityService; 
+    
+    private List<Proveedor> resultList;
     private int firstResult = 0;
-
+    
     private BussinesEntityType type;
-
+    
     private Subject owner;
-
+    
+    private Subject author;
+    
     private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
     private String tags;
-
+    
     /**
      * Inicio del rango de fecha
      */
     private Date start;
-
+    
     /**
      * Fin del rango de fecha
      */
     private Date end;
-
+    
+    /**
+     */
+    private ProductType productType;
+    
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
-
+    
     private String filterValue;
 
-    public LazyJobRoleDataModel(JobRoleService bussinesEntityService) {
+    public LazyProveedorDataModel(ProveedorService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
         resultList = new ArrayList<>();
         this.bussinesEntityService = bussinesEntityService;
@@ -92,7 +100,8 @@ public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Seri
     public void init() {
     }
 
-    public List<JobRole> getResultList() {
+    public List<Proveedor> getResultList() {
+        logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
@@ -116,6 +125,14 @@ public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Seri
         return owner;
     }
 
+    public Subject getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Subject author) {
+        this.author = author;
+    }
+
     public void setOwner(Subject owner) {
         this.owner = owner;
     }
@@ -127,7 +144,7 @@ public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Seri
     public void setOrganization(Organization organization) {
         this.organization = organization;
     }
-
+    
     public String getTags() {
         return tags;
     }
@@ -150,6 +167,14 @@ public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Seri
 
     public void setEnd(Date end) {
         this.end = end;
+    }
+
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
     }
 
     public String getFilterValue() {
@@ -194,24 +219,24 @@ public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Seri
     }
 
     @Override
-    public JobRole getRowData(String rowKey) {
+    public Proveedor getRowData(String rowKey) {
         return bussinesEntityService.find(Long.valueOf(rowKey));
     }
 
     @Override
-    public String getRowKey(JobRole entity) {
+    public String getRowKey(Proveedor entity) {
         return "" + entity.getId();
     }
 
     @Override
-    public List<JobRole> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
+    public List<Proveedor> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
 
         int _end = first + pageSize;
         String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (!sortBy.isEmpty()) {
-            for (SortMeta sm : sortBy.values()) {
-                if (sm.getOrder() == SortOrder.ASCENDING) {
+        if (!sortBy.isEmpty()){
+            for (SortMeta sm : sortBy.values()){
+                if ( sm.getOrder() == SortOrder.ASCENDING) {
                     order = QuerySortOrder.ASC;
                 }
                 sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
@@ -219,36 +244,40 @@ public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Seri
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
-        if (getStart() != null) {
+        if (getStart() != null){
             range.put("start", getStart());
-            if (getEnd() != null) {
+            if (getEnd() != null){
                 range.put("end", getEnd());
             } else {
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()) {
-            _filters.put(JobRole_.createdOn.getName(), range); //Filtro de fecha inicial
+        if (!range.isEmpty()){
+            _filters.put(Employee_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        if (getOwner() != null) {
-            _filters.put(JobRole_.owner.getName(), getOwner()); //Filtro por defecto
+        if (getOwner() != null){
+            _filters.put(Employee_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getAuthor()!= null){
+            _filters.put(Employee_.author.getName(), getAuthor()); //Filtro por defecto
         }
         if (getOrganization() != null) {
-            _filters.put(JobRole_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+            _filters.put(Employee_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
-        if (getTags() != null && !getTags().isEmpty()) {
+        if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+        if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
+        
         _filters.putAll(filters);
-
-        if (sortField == null) {
-            sortField = JobRole_.createdOn.getName();
+        
+        if (sortField == null){
+            sortField = Employee_.createdOn.getName();
         }
 
-        QueryData<JobRole> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
+        QueryData<Proveedor> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
@@ -273,32 +302,36 @@ public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Seri
     public int count(Map<String, FilterMeta> filters) {
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
-        if (getStart() != null) {
+        if (getStart() != null){
             range.put("start", getStart());
-            if (getEnd() != null) {
+            if (getEnd() != null){
                 range.put("end", getEnd());
             } else {
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()) {
-            _filters.put(JobRole_.createdOn.getName(), range); //Filtro de fecha inicial
+        if (!range.isEmpty()){
+            _filters.put(Employee_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        if (getOwner() != null) {
-            _filters.put(JobRole_.owner.getName(), getOwner()); //Filtro por defecto
+        if (getOwner() != null){
+            _filters.put(Employee_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getAuthor()!= null){
+            _filters.put(Employee_.author.getName(), getAuthor()); //Filtro por defecto
         }
         if (getOrganization() != null) {
-            _filters.put(JobRole_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+            _filters.put(Employee_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
-        if (getTags() != null && !getTags().isEmpty()) {
+        if (getTags() != null && !getTags().isEmpty()){
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+        if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
+        
         _filters.putAll(filters);
-
-        QueryData<JobRole> qData = bussinesEntityService.find(_filters);
+        
+        QueryData<Proveedor> qData = bussinesEntityService.find(_filters);
         return qData.getTotalResultCount().intValue();
     }
 }
