@@ -17,7 +17,9 @@
 package org.jlgranda.fede.controller.compras;
 
 import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.FacturaElectronicaService;
 import com.jlgranda.fede.ejb.compras.ProveedorService;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +35,14 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.compras.Proveedor;
+import org.jlgranda.fede.model.sales.Product;
+import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jlgranda.fede.ui.model.LazyProveedorDataModel;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
@@ -62,12 +68,19 @@ public class ProveedorHome  extends FedeController implements Serializable {
     @Inject
     private SettingHome settingHome;
     
+    protected Proveedor selectedProveedor;
+    
     protected List<Proveedor> selectedProveedores;
     
     private LazyProveedorDataModel lazyDataModel;
     
+    private LazyFacturaElectronicaDataModel lazyFacturaElectronicaDataModel;
+    
     @EJB
     private ProveedorService proveedorService;
+    
+    @EJB
+    private FacturaElectronicaService facturaElectronicaService;
     
     @Inject
     private Subject subject;
@@ -117,10 +130,18 @@ public class ProveedorHome  extends FedeController implements Serializable {
         return selectedProveedores;
     }
 
-    public void setSelectedEmployees(List<Proveedor> selectedProveedores) {
+    public void setSelectedProveedores(List<Proveedor> selectedProveedores) {
         this.selectedProveedores = selectedProveedores;
     }
 
+    public Proveedor getSelectedProveedor() {
+        return selectedProveedor;
+    }
+
+    public void setSelectedProveedor(Proveedor selectedProveedor) {
+        this.selectedProveedor = selectedProveedor;
+    }
+    
     public LazyProveedorDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
@@ -128,6 +149,15 @@ public class ProveedorHome  extends FedeController implements Serializable {
 
     public void setLazyDataModel(LazyProveedorDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
+    }
+
+    public LazyFacturaElectronicaDataModel getLazyFacturaElectronicaDataModel() {
+        this.filterFacturaElectronica();
+        return lazyFacturaElectronicaDataModel;
+    }
+
+    public void setLazyFacturaElectronicaDataModel(LazyFacturaElectronicaDataModel lazyFacturaElectronicaDataModel) {
+        this.lazyFacturaElectronicaDataModel = lazyFacturaElectronicaDataModel;
     }
 
     public SubjectAdminHome getSubjectAdminHome() {
@@ -162,6 +192,29 @@ public class ProveedorHome  extends FedeController implements Serializable {
         } else {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
+        }
+        
+    }
+    /**
+     * Filtro que llena el Lazy Datamodel
+     */
+    private void filterFacturaElectronica() {
+        if (lazyFacturaElectronicaDataModel == null) {
+            lazyFacturaElectronicaDataModel = new LazyFacturaElectronicaDataModel(facturaElectronicaService);
+        }
+        lazyFacturaElectronicaDataModel.setOwner(getProveedor().getOwner()); //listar todas las facturas del proveedor
+        lazyFacturaElectronicaDataModel.setOrganization(this.organizationData.getOrganization());
+        //lazyDataModel.setAuthor(subject);
+
+        if (getKeyword() != null && getKeyword().startsWith("label:")) {
+            String parts[] = getKeyword().split(":");
+            if (parts.length > 1) {
+                lazyFacturaElectronicaDataModel.setTags(parts[1]);
+            }
+            lazyFacturaElectronicaDataModel.setFilterValue(null);//No buscar por keyword
+        } else {
+            lazyFacturaElectronicaDataModel.setTags(getTags());
+            lazyFacturaElectronicaDataModel.setFilterValue(getKeyword());
         }
         
     }
@@ -241,5 +294,21 @@ public class ProveedorHome  extends FedeController implements Serializable {
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /**
+     * Evento para redirigir en el caso de seleccionar un proveedor
+     * @param event 
+     */
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                Proveedor p = (Proveedor) event.getObject();
+                redirectTo("/pages/fede/pagos/proveedor_facturas.jsf?proveedorId=" + p.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+        }
     }
 }

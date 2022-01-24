@@ -16,31 +16,23 @@
  */
 package org.jlgranda.fede.controller.talentohumano;
 
-import com.google.common.base.Strings;
 import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import com.jlgranda.fede.ejb.talentohumano.JournalService;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.FedeController;
+import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.talentohumano.Employee;
@@ -123,6 +115,9 @@ public class JournalHome extends FedeController implements Serializable {
     private Date monthSelected;
     
     private JournalSummary journalSummary;
+    
+    @Inject
+    private OrganizationData organizationData;
 
     @PostConstruct
     private void init() {
@@ -149,8 +144,8 @@ public class JournalHome extends FedeController implements Serializable {
         } else if (this.employee == null
                 && this.subject != null
                 && this.subject.isPersistent()
-                && !"admin".equalsIgnoreCase(this.subject.getUsername())) {//Sino el empleado logeado en la sessión
-            this.employee = employeeService.findUniqueByNamedQuery("Employee.findByOwner", this.subject);
+                && !"admin".equalsIgnoreCase(this.subject.getUsername())) {//Sino el empleado logeado en la sessión y organización seleccionada
+            this.employee = employeeService.findUniqueByNamedQuery("Employee.findByOwnerAndOrganizacion", this.subject, this.organizationData.getOrganization());
         }
         return employee;
     }
