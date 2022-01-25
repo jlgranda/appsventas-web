@@ -974,8 +974,8 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         }
 
         if (!facturaElectronica.isPersistent()) {
-//            facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica);
-            facturaElectronicaService.save(this.facturaElectronica); //Se crea el registro
+            facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica);
+//            facturaElectronicaService.save(facturaElectronica); //Se crea el registro
         }
 
         registerDetalleFacturaElectronicaInKardex(this.facturaElectronica.getFacturaElectronicaDetails()); //Procesa y guarda la factura electrónica en el medio persistente
@@ -983,10 +983,14 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         //Registrar asiento contable de la compra
         if (this.facturaElectronica.getId() != null) {
             setOutcome(registerRecordInJournal());
+        } else {
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
         }
 
         if (Strings.isNullOrEmpty(getOutcome())) {
             addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+        } else {
+            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.purchases.accounting.success"));
         }
 
     }
@@ -1245,6 +1249,8 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             //Registrar asiento contable del pago de la compra
             if (getPayment().getId() != null && getPayment().getMethod() != null) {
                 setOutcome(registerRecordInJournalPaymentCredit());
+            } else {
+                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
             }
 
             if (Strings.isNullOrEmpty(getOutcome())) {
@@ -1252,7 +1258,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             } else {
                 addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.payments.accounting.success"));
             }
-
         } else {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.required"));
         }
@@ -1428,6 +1433,8 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         String outcome_ = ""; //Regresar a la lista.
         setAccountingEnabled(Boolean.TRUE);
 
+        System.out.println(":::registerRecordInJournal:::");
+
         if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (EmissionType.PURCHASE_CASH.equals(facturaElectronica.getEmissionType())) {
@@ -1500,6 +1507,11 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
                         //Persistencia
                         if (Boolean.TRUE.equals(this.recordCompleto)) {
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                            System.out.println("this.recordCompleto::" + this.recordCompleto);
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                             rcr = recordService.save(rcr);
                             if (rcr.getId() != null) {
                                 //Anular registros anteriores
@@ -1510,6 +1522,11 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                                 }
                                 this.facturaElectronica.setRecordId(rcr.getId());
                                 facturaElectronicaService.save(this.facturaElectronica.getId(), this.facturaElectronica); //Se guardan todos los cambios
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                                System.out.println("facturaElectronica.getRecordId()::" + facturaElectronica.getRecordId());
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                                 if (facturaElectronica.getRecordId() != null) {
                                     outcome_ = "compras"; //regresa al listado
                                 } else {

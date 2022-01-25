@@ -591,11 +591,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="#{i18n['app.fede.sales.payment.change']}" styleClass="text-right">
+                                    <p:column headerText="#{i18n['app.fede.sales.payment.method']}" styleClass="text-right">
+                                        <h:outputText value="#{payment.method}"></h:outputText>
+                                    </p:column>
+<!--                                    <p:column headerText="#{i18n['app.fede.sales.payment.change']}" styleClass="text-right">
                                         <h:outputText value="#{payment.change}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                         </h:outputText>
-                                    </p:column>
+                                    </p:column>-->
                                     <p:column style="width: 8%" rendered="#{false}">
                                         <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.payment']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.changes']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                     </p:column>
