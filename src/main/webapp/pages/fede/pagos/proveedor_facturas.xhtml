@@ -34,9 +34,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <ui:define name="title">#{i18n['common.supplier']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['common.suppliers']}</li>
+        <li>#{i18n['common.payments']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/pagos/proveedor.jsf">#{proveedorHome.proveedorId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.suppliers']}</p:link></li>
+        <li><p:link outcome="proveedores">#{i18n['common.suppliers']}</p:link></li>
+        <li>/</li>
+        <li><p:link outcome="proveedor">#{proveedorHome.proveedorId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.supplier']}</p:link></li>
     </ui:define>
 
     <ui:define name="content">
@@ -53,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  value="#{proveedorHome.lazyFacturaElectronicaDataModel}" var="facturaElectronica"
                                  selection="#{proveedorHome.selectedBussinesEntities}"
                                  sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
-                        <p:ajax event="rowSelect" listener="#{facturaElectronicaCompraHome.onRowSelect}"/>
+                        <p:ajax event="rowSelect" listener="#{proveedorHome.onRowSelectFactura}"/>
                         <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                         <p:column id="code" headerText="#{i18n['common.code']}"
                                   style="width:96px;text-align:left">
@@ -79,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:column>
                         <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}">
                             <h:outputText class="capital" value="#{facturaElectronica.emissionType == 'PURCHASE_CREDIT' ? i18n['OVERDUE']: facturaElectronica.emissionType == 'PURCHASE_CASH' ? i18n['PURCHASE_CASH_LIT']:
-                                                                       facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
+                                                                   facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
                             </h:outputText>
                         </p:column>
                         <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">

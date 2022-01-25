@@ -36,6 +36,8 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.compras.Proveedor;
+import org.jlgranda.fede.model.document.FacturaElectronica;
+import org.jlgranda.fede.model.document.FacturaType;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jlgranda.fede.ui.model.LazyProveedorDataModel;
@@ -68,21 +70,21 @@ public class ProveedorHome extends FedeController implements Serializable {
 
     @Inject
     private SettingHome settingHome;
-    
+
     protected Proveedor selectedProveedor;
-    
+
     protected List<Proveedor> selectedProveedores;
 
     private LazyProveedorDataModel lazyDataModel;
 
     @EJB
     private ProveedorService proveedorService;
-    
+
     private LazyFacturaElectronicaDataModel lazyFacturaElectronicaDataModel;
-    
+
     @EJB
     private FacturaElectronicaService facturaElectronicaService;
-    
+
     @Inject
     private Subject subject;
 
@@ -142,7 +144,7 @@ public class ProveedorHome extends FedeController implements Serializable {
     public void setSelectedProveedor(Proveedor selectedProveedor) {
         this.selectedProveedor = selectedProveedor;
     }
-    
+
     public LazyProveedorDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
@@ -196,7 +198,7 @@ public class ProveedorHome extends FedeController implements Serializable {
         }
 
     }
-    
+
     /**
      * Filtro que llena el Lazy Datamodel
      */
@@ -219,12 +221,12 @@ public class ProveedorHome extends FedeController implements Serializable {
             lazyFacturaElectronicaDataModel.setTags(getTags());
             lazyFacturaElectronicaDataModel.setFilterValue(getKeyword());
         }
-        
+
     }
-    
-    public void save(){
-        if (proveedor.isPersistent()){
-            if (proveedor.getOrganization() == null){
+
+    public void save() {
+        if (proveedor.isPersistent()) {
+            if (proveedor.getOrganization() == null) {
                 proveedor.setOrganization(organizationData.getOrganization());
             }
             proveedor.setLastUpdate(Dates.now());
@@ -312,7 +314,8 @@ public class ProveedorHome extends FedeController implements Serializable {
 
     /**
      * Evento para redirigir en el caso de seleccionar un proveedor
-     * @param event 
+     *
+     * @param event
      */
     public void onRowSelect(SelectEvent event) {
         try {
@@ -325,11 +328,32 @@ public class ProveedorHome extends FedeController implements Serializable {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
         }
     }
-    
+
+    /**
+     * Evento para redirigir en el caso de seleccionar un proveedor
+     *
+     * @param event
+     */
+    public void onRowSelectFactura(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                FacturaElectronica fe = (FacturaElectronica) event.getObject();
+                if (FacturaType.COMPRA.equals(fe.getFacturaType())) {
+                    redirectTo("/pages/fede/pagos/proveedor_factura_compra.jsf?facturaElectronicaId=" + fe.getId());
+                } else if (FacturaType.GASTO.equals(fe.getFacturaType())) {
+                    redirectTo("/pages/fede/pagos/proveedor_factura_gasto.jsf?facturaElectronicaId=" + fe.getId());
+                }
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+        }
+    }
+
     /**
      * Listado de proveedores a los que debe pagarse de forma urgente
      */
-    public void filtrarUrgentes(){
+    public void filtrarUrgentes() {
         //TODO
     }
 }
