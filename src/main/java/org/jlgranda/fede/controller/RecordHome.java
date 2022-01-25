@@ -144,22 +144,25 @@ public class RecordHome extends FedeController implements Serializable {
     public void setRecordDetailSelected(RecordDetail recordDetailSelected) {
         this.recordDetailSelected = recordDetailSelected;
     }
-    
+
     public List<Account> filterAccounts(String query) {
         return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
     }
 
+    public List<Account> filterAccountsChildrens(String query) {
+        return accountCache.filterByNameOrCodeChildrens(query, this.organizationData.getOrganization());
+    }
+
     public void recordDetailAdd(ActionEvent e) {
-        
-        
+
         this.recordDetail.setOwner(this.subject);
         this.record.addRecordDetail(this.recordDetail);
-        
+
         this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
-        
+
         //Encerar el registro
         this.recordDetail = recordDetailService.createInstance();
-        
+
         //Calcular valor sugerido, que sería el faltanta para cuadrar el registro
         double debe;
         debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
@@ -169,54 +172,54 @@ public class RecordHome extends FedeController implements Serializable {
                 .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 
         BigDecimal suggestedAmount = BigDecimal.ZERO;
-        if (debe > haber){
+        if (debe > haber) {
             suggestedAmount = BigDecimal.valueOf(debe - haber);
         } else {
             suggestedAmount = BigDecimal.valueOf(haber - debe);
         }
         this.recordDetail.setAmount(suggestedAmount); //Por si el valor es el mismo
-        
+
         this.recordDetailSelected = null;
     }
-    
+
     public void onItemAccountSelect(SelectEvent<Account> event) {
-        Account account =  event.getObject();
+        Account account = event.getObject();
         Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().equals(account)).findFirst();
-        if (find.isPresent()){
+        if (find.isPresent()) {
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> cuenta ya existente!!! ");
             this.setRecordDetail(find.get());
         }
     }
-    
+
     public void onRowSelect(SelectEvent<RecordDetail> event) {
         this.recordDetail = event.getObject();
         addInfoMessage(I18nUtil.getMessages("action.info"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
-        
+
     }
 
     public void onRowUnselect(UnselectEvent<RecordDetail> event) {
-        
+
         this.setRecordDetail(recordDetailService.createInstance()); //Encerar formulario de edición
     }
 
     public void recordSave() {
         boolean valido = true;
-        if ( this.record.getRecordDetails().isEmpty() ){
+        if (this.record.getRecordDetails().isEmpty()) {
             valido = false;
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
         }
-        if ( org.jpapi.util.Strings.isNullOrEmpty(this.record.getDescription()) ){
+        if (org.jpapi.util.Strings.isNullOrEmpty(this.record.getDescription())) {
             valido = false;
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.required"));
         }
-        
-        if (this.record.getEmissionDate() == null){
+
+        if (this.record.getEmissionDate() == null) {
             valido = false;
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.emision.required"));
         }
-        
-        if ( valido ) {
-            
+
+        if (valido) {
+
             Date lastEmissionDate = this.record.getEmissionDate();
             double debe;
             debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
@@ -232,20 +235,20 @@ public class RecordHome extends FedeController implements Serializable {
                 if (this.generalJournal != null && this.generalJournal.getId() != null) {
                     this.record.setGeneralJournalId(this.generalJournal.getId());
                     recordService.save(record.getId(), record);
-                    
+
                     //Encerar objetos de pantalla
                     this.recordDetail = recordDetailService.createInstance();
                     this.record = recordService.createInstance();
                     this.record.setEmissionDate(lastEmissionDate);
-                    
+
                     this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.manual.sucessfully"));
                     //this.generalJournal = generalJournalService.createInstance();
                 }
             } else {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
             }
-           
-        } 
+
+        }
     }
 
     private GeneralJournal buildJournal(Date emissionDate) {

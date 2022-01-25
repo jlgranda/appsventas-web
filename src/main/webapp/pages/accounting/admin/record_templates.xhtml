@@ -53,10 +53,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
                             <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            
-                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
                                 <h:outputText value="#{recordTemplate.code}" />
-                            </p:column>
+                            </p:column>-->
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                 <h:outputText value="#{recordTemplate.name}" />
                             </p:column>

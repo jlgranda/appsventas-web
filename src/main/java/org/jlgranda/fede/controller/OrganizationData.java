@@ -33,7 +33,8 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
  *
  * @author jlgranda
  */
-@Named @SessionScoped
+@Named 
+@SessionScoped
 public class OrganizationData implements Serializable {
     
     private Organization organization;
@@ -63,7 +64,10 @@ public class OrganizationData implements Serializable {
     public void organizationValueChange(javax.faces.event.AjaxBehaviorEvent event) throws IOException {
         
         SelectOneMenu x = (SelectOneMenu) event.getSource();
-        Organization newOrganization = ((Organization) x.getValue());
+        activateOrganizacion(((Organization) x.getValue()));
+    }
+    
+    public void activateOrganizacion(Organization newOrganization) throws IOException {
         setOrganization(newOrganization);
         redirectTo();
     }

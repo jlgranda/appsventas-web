@@ -49,14 +49,38 @@
                                 <h1 class="BigTopic">#{i18n['app.management.organization']} </h1>
                                 <div class="ui-g ui-fluid">
                                     <div class="ui-g-12 ui-lg-12 ui-md-12">
-                                        <p:selectOneMenu id="organization" value="#{organizationData.organization}"
+                                        <p:repeat value="#{organizationHome.findOrganizations(subject)}" var="organization">
+                                            <div class="ui-g-3 ui-lg-3 ui-md-3">
+                                                <div class="organization-list-item border-1 p-p-5">
+                                                    <!--<p:graphicImage name="demo/images/product/#{product.image}"/>-->
+                                                    <div class="organization-list-detail">
+                                                        <h1 class="BigTopic">
+                                                            <i class="fa fa-fw fa-building"/><span
+                                                            class="organization-category">#{organization.initials}</span>
+                                                        </h1>
+                                                        <div class="organization-description">#{organization.name}</div>
+<!--                                                        <p:rating readonly="true" value="#{organization.rating}"/>-->
+                                                    </div>
+                                                    <div class="product-list-action">
+                                                        <p:commandButton type="submit" ajax="false" process="@this"
+                                                                         value="#{i18n['common.activate']}"
+                                                                         actionListener="#{organizationData.activateOrganizacion(organization)}"
+                                                                         icon="pi pi-check"
+                                                                         styleClass="ui-button-raised ui-button-secondary"
+                                                                         disabled="#{false}">
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </p:repeat>
+<!--                                        <p:selectOneMenu id="organization" value="#{organizationData.organization}"
                                                          required="true" immediate="true"
                                                          onchange="submit()"> 
                                             <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
                                             <p:ajax event="change" listener="#{organizationData.organizationValueChange}" partialSubmit="true"/>
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
                                             <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
-                                        </p:selectOneMenu>
+                                        </p:selectOneMenu>-->
                                     </div>
                                 </div>
                                 <div class="EmptyBox10"></div>

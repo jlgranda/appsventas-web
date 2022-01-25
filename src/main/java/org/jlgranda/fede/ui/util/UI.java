@@ -396,6 +396,20 @@ public class UI {
 
         return items;
     }
+
+    public List<SelectItem> getAccountsAsSelectItem(List<Account> accounts) {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        System.out.println(":::accounts::::"+accounts);
+        for (Account o : accounts) {
+            item = new SelectItem(cleanValue(o), o.getName());
+            items.add(item);
+        }
+
+        return items;
+    }
     
     public List<SelectItem> getReportTypeAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
