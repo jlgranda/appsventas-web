@@ -125,6 +125,26 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>proveedor</from-outcome>
+            <to-view-id>/pages/fede/pagos/proveedor.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>proveedor-facturas</from-outcome>
+            <to-view-id>/pages/fede/pagos/proveedor_facturas.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>proveedor-factura-compra</from-outcome>
+            <to-view-id>/pages/fede/pagos/proveedor_factura_compra.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>proveedor-factura-gasto</from-outcome>
+            <to-view-id>/pages/fede/pagos/proveedor_factura_gasto.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>inventory-inbox</from-outcome>
             <to-view-id>/pages/inventory/items.jsf</to-view-id>
             <redirect />
