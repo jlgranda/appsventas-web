@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -37,7 +36,6 @@ import org.jpapi.model.Organization;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.model.FilterMeta;
@@ -314,9 +312,12 @@ public class LazyFacturaElectronicaDataModel extends LazyDataModel<FacturaElectr
 
     private Map<String, Object> buildFilters(boolean loadByAuthor) {
         Map<String, Object> _filters = new HashMap<>();
+        
         Map<String, Date> range = new HashMap<>();
-        range.put("start", getStart());
-        range.put("end", getEnd());
+        if (this.getStart() != null && this.getEnd() != null){
+                range.put("start", getStart());
+                range.put("end", getEnd());
+        }
         //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
         
         if (!Strings.isNullOrEmpty(getCode())) {

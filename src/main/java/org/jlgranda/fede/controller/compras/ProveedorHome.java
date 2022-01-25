@@ -196,6 +196,7 @@ public class ProveedorHome extends FedeController implements Serializable {
         }
 
     }
+    
     /**
      * Filtro que llena el Lazy Datamodel
      */
@@ -203,7 +204,8 @@ public class ProveedorHome extends FedeController implements Serializable {
         if (lazyFacturaElectronicaDataModel == null) {
             lazyFacturaElectronicaDataModel = new LazyFacturaElectronicaDataModel(facturaElectronicaService);
         }
-        lazyFacturaElectronicaDataModel.setOwner(getProveedor().getOwner()); //listar todas las facturas del proveedor
+        //lazyFacturaElectronicaDataModel.setOwner(getProveedor().getOwner()); //listar todas las facturas del proveedor
+        lazyFacturaElectronicaDataModel.setAuthor(getProveedor().getOwner()); //listar todas las facturas del proveedor
         lazyFacturaElectronicaDataModel.setOrganization(this.organizationData.getOrganization());
         //lazyDataModel.setAuthor(subject);
 
@@ -296,7 +298,6 @@ public class ProveedorHome extends FedeController implements Serializable {
         List<Subject> subjects = new ArrayList<>();
         if (queryData.getResult() != null && !queryData.getResult().isEmpty()) {
             for (Proveedor pr : queryData.getResult()) {
-                System.out.println("pr::::::" + pr);
                 subjects.add(pr.getOwner());
             }
         }
@@ -323,5 +324,12 @@ public class ProveedorHome extends FedeController implements Serializable {
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
         }
+    }
+    
+    /**
+     * Listado de proveedores a los que debe pagarse de forma urgente
+     */
+    public void filtrarUrgentes(){
+        //TODO
     }
 }

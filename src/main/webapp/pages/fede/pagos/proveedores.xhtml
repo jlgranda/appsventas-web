@@ -43,20 +43,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12">
                 <div class="card">
-                    <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                    <p:inputText value="#{proveedorHome.keyword}" class="input-sm">
-                    </p:inputText>
-                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{proveedorHome.clear()}" ajax="false">
-                    </p:commandButton>
-                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/pagos/proveedor.jsf"/>
+                    <p:toolbar id="selectedToolBar" rendered="#{true}">
+                        <f:facet name="left">
+                            <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                            <p:inputText value="#{proveedorHome.keyword}" class="input-sm">
+                            </p:inputText>
+                            <p:commandButton value="#{i18n['common.find']}" 
+                                             styleClass="raised-btn" 
+                                             actionListener="#{proveedorHome.clear()}" ajax="false">
+                            </p:commandButton>
+                            <p:commandButton value="#{i18n['app.fede.payments.immediate']}" 
+                                             styleClass="success-btn raised-btn" 
+                                             actionListener="#{proveedorHome.filtrarUrgentes()}" 
+                                             ajax="false">
+                            </p:commandButton>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/pagos/proveedor.jsf"/>
+                        </f:facet>
+                    </p:toolbar>
                 </div>
+                
                 <div class="card">
                     <p:dataTable var="proveedor" 
                                  value="#{proveedorHome.lazyDataModel}" 
                                  paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                  sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
                                  reflow="true" selection="#{proveedorHome.selectedProveedor}" 
-                                 rowKey="#{proveedor.id}" 
+                                 rowKey="#{proveedor.id}"
                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                  id="dataTable" widgetVar="dataTable_wv" lazy="true">
                         <p:ajax event="rowSelect" listener="#{proveedorHome.onRowSelect}"/>
