@@ -66,7 +66,7 @@
                                                                          value="#{i18n['common.activate']}"
                                                                          actionListener="#{organizationData.activateOrganizacion(organization)}"
                                                                          icon="pi pi-check"
-                                                                         styleClass="ui-button-raised ui-button-secondary"
+                                                                         styleClass="warning-btn rounded-btn" 
                                                                          disabled="#{false}">
                                                         </p:commandButton>
                                                     </div>
@@ -121,5 +121,6 @@
         <h:outputStylesheet name="css/nanoscroller.css" library="ecuador-layout" />
         <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="ecuador-layout" />
         <h:outputStylesheet name="css/appsventas.css" library="appsventas" />
+        <!--<h:outputStylesheet library="webjars" name="primeflex/2.0.0/primeflex.min.css" />-->
     </h:body>
 </html>
