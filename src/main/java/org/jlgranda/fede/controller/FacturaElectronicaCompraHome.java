@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -302,7 +303,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         getPayment().setChange(BigDecimal.ZERO);
         setAmoutPending(BigDecimal.ZERO);
         setRecordCompleto(Boolean.TRUE);
-
         setOutcome("compras");
     }
 
@@ -1313,7 +1313,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             } else {
                 p = listPayment.get(0);
             }
-            p.setAmount(facturaElectronica.getTotalIVA0().add(facturaElectronica.getTotalIVA12()));
+            p.setAmount(facturaElectronica.getSubtotalIVA0().add(facturaElectronica.getSubtotalIVA12()));
             p.setDiscount(facturaElectronica.getTotalDescuento());
             p.setCash(facturaElectronica.getImporteTotal());
             p.setChange(BigDecimal.ZERO);

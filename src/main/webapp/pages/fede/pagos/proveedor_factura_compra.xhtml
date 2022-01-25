@@ -434,7 +434,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </h:outputLabel>
                 </f:facet>
                 <p:panel id="payment-tracking"
-                         rendered="#{facturaElectronicaCompraHome.facturaElectronica.emissionType == EmissionType.PURCHASE_CREDIT and not empty facturaElectronicaCompraHome.facturaElectronica.id}"><!-- Lista de pagos para facturas a crédito -->
+                         rendered="#{not empty facturaElectronicaCompraHome.facturaElectronica.id}"><!-- Lista de pagos para facturas a crédito -->
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <h:outputText class="Fs18 bold-capital" value="#{i18n['app.fede.sales.payments.tracking']}"></h:outputText>
                         <div class="EmptyBox10"/>
