@@ -27,8 +27,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
@@ -66,6 +66,9 @@ public class SettingHome extends FedeController implements Serializable {
     private List<Setting> overwritableSettings = new ArrayList<>();
 
     private Map<String, String> cache = new HashMap<>();
+    
+    @Inject
+    private OrganizationData organizationData;
 
     @PostConstruct
     public void init() {
@@ -89,7 +92,7 @@ public class SettingHome extends FedeController implements Serializable {
             return cache.get(name);
         }
 
-        Setting s = settingService.findByName(name, subject);
+        Setting s = settingService.findByNameAndOrganization(name, subject, this.organizationData.getOrganization().getId());
         if (s == null) { //No existe configuración de usuario, tomar la configuración global, sino el valor por defecto
             String value = getGlobalValue(name, defaultValue);
             cache.put(name, value);
@@ -174,8 +177,14 @@ public class SettingHome extends FedeController implements Serializable {
         }
     }
 
+    /**
+     * Retorna la configuración global para la organización
+     * @param name
+     * @param defaultValue
+     * @return 
+     */
     public String getGlobalValue(String name, String defaultValue) {
-        Setting s = settingService.findByName(name, null);
+        Setting s = settingService.findByNameAndOrganization(name, subject, this.organizationData.getOrganization().getId());
         if (s == null) {
             logger.info("SettingHome: La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
             return defaultValue;
@@ -202,12 +211,20 @@ public class SettingHome extends FedeController implements Serializable {
     public Setting getSetting() {
         if (!Strings.isNullOrEmpty(settingName) && this.setting == null) {
             //Cargar objeto setting por nombre
-            Setting settingsByNameAndOwner = settingService.findByName(settingName, subject);
-            if (settingsByNameAndOwner != null) {
+            Setting test = settingService.findByNameAndOrganization(settingName, subject, this.organizationData.getOrganization().getId());
+            if (test != null) {
                 //El objeto configuración de usuario
-                this.setting = settingsByNameAndOwner;
+                this.setting = test;
             } else {
-                this.setting = buildSettingFrom(settingService.findByName(settingName));
+                //La configuración de la organización
+                test = settingService.findByNameAndOrganization(settingName, null, this.organizationData.getOrganization().getId());
+                if (test != null) {
+                    //El objeto configuración de usuario
+                    this.setting = buildSettingFrom(test);
+                } else {
+                    //Se toma la configuración de referencia del sistema
+                    this.setting = buildSettingFrom(settingService.findByNameAndOrganization(settingName, null, null));
+                }
             }
         } else if (settingId != null && this.setting == null) {
             //Cargar objeto setting por id, carga el objeto directamente.
