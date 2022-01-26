@@ -116,6 +116,18 @@ public class UI {
         return items;
     }
 
+    public List<SelectItem> getProductTypesEspecificsAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (ProductType t : getProductTypes()) {
+            if (ProductType.RAW_MATERIAL.equals(t) || ProductType.SERVICE.equals(t)) {
+                item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
     public SelectItem[] getProductTypesAsSelectItem(List<Product> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
@@ -362,10 +374,12 @@ public class UI {
         SelectItem item = null;
         item = new SelectItem("EFECTIVO", "EFECTIVO");
         items.add(item);
-        item = new SelectItem("TARJETA CREDITO", "TARJETA CREDITO");
+        item = new SelectItem("TRANSFERENCIA", "TRANSFERENCIA");
         items.add(item);
-        item = new SelectItem("TARJETA DEBITO", "TARJETA DEBITO");
-        items.add(item);
+//        item = new SelectItem("TARJETA CREDITO", "TARJETA CREDITO");
+//        items.add(item);
+//        item = new SelectItem("TARJETA DEBITO", "TARJETA DEBITO");
+//        items.add(item);
 
         return items;
     }
@@ -402,15 +416,14 @@ public class UI {
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         items.add(item);
-        System.out.println(":::accounts::::"+accounts);
         for (Account o : accounts) {
             item = new SelectItem(cleanValue(o), o.getName());
             items.add(item);
         }
-
+        
         return items;
     }
-    
+
     public List<SelectItem> getReportTypeAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;

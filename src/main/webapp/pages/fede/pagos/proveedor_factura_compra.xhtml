@@ -123,7 +123,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             disabled="#{true}"
                                             immediate="false" 
                                             required="true">
-                                    <p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.calculateDaysExpired()}" oncomplete="form.submit()" update="days-expired"/>
+                                    <!--<p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.calculateDaysExpired()}" oncomplete="form.submit()" update="days-expired"/>-->
                                 </p:calendar>
                             </div>
                         </div>
@@ -470,7 +470,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                  converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                                  immediate="true"
                                                                  required="true" style="width: 100%"> 
-                                                    <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                     <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                     <p:ajax update="@this"/>
                                                 </p:selectOneMenu>
@@ -533,7 +532,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                              value="#{i18n['common.add']} #{i18n['common.payment']}"
                                                              actionListener="#{facturaElectronicaCompraHome.addPayment()}"
                                                              disabled="#{facturaElectronicaCompraHome.payableTotal}"
-                                                             update="dataTable-payments-credit fund-request add-payment total discount cash change btn-save">
+                                                             update="dataTable-payments-credit fund-request add-payment method transferencia total discount cash change btn-save">
                                                 <p:confirm header="#{i18n['common.confirmation']}" message="¿Está seguro de registrar el valor de este pago?" icon="pi pi-exclamation-triangle"/>
                                             </p:commandButton>
                                         </div>

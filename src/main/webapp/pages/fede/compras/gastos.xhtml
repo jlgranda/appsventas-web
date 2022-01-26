@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.gastos']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -32,62 +32,79 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
+            <li>#{i18n['app.fede.inventory']}</li>
+            <li>/</li>
             <li><p:link outcome="gastos">#{i18n['common.gastos']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12">
-                    <div class="card">
-<!--                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                        <p:inputText value="#{facturaElectronicaGastoHome.keyword}" class="input-sm">
-                            <p:ajax listener="#{facturaElectronicaGastoHome.clear()}" />
-                        </p:inputText>  -->
-                        <label style="padding-top: 5px"><b>#{i18n['common.supplier']}: </b></label>
-                        <p:autoComplete id="supplier" value="#{facturaElectronicaGastoHome.facturaElectronica.author}" effect="blind" 
-                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                        var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
-                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                        forceSelection="true" required="#{true}" disabled="#{facturaElectronicaGastoHome.useDefaultSupplier}">
-                            <p:column>
-                                <h:outputText value="#{entidad.fullName}"/>
-                            </p:column>
-                            <p:ajax update="btn-buscar" partialSubmit="true"></p:ajax>
-                        </p:autoComplete>
-                        <h:panelGroup id="controles-busqueda-avanzada" >
-                            <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                                <label class="Gray">#{i18n['common.from']}&nbsp;</label>
-                                <p:calendar value="#{facturaElectronicaGastoHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{facturaElectronicaGastoHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
-                                </p:calendar>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar>
+                        <p:toolbarGroup style="display: contents; padding: 0 0 0.5rem 0;">
+<!--                            <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                            <p:inputText value="#{facturaElectronicaGastoHome.keyword}" class="input-sm">
+                                <p:ajax listener="#{facturaElectronicaGastoHome.clear()}" />
+                            </p:inputText>  -->
+                            <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
+                            <p:autoComplete id="supplier" value="#{facturaElectronicaGastoHome.facturaElectronica.author}" effect="blind" 
+                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                            var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
+                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                            converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                            forceSelection="true" required="#{false}" disabled="#{facturaElectronicaGastoHome.useDefaultSupplier}">
+                                <p:column>
+                                    <h:outputText value="#{entidad.fullName}"/>
+                                </p:column>
+                                <p:ajax update="btn-buscar" partialSubmit="true"></p:ajax>
+                            </p:autoComplete>
+                            <h:panelGroup id="controles-busqueda-avanzada"  style="padding-right: 0.2rem">
+                                <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                    <label class="Gray">#{i18n['common.from']}:&nbsp;</label>
+                                    <p:calendar value="#{facturaElectronicaGastoHome.start}" class="input-sm">
+                                        <p:ajax event="dateSelect" listener="#{facturaElectronicaGastoHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
+                                    </p:calendar>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                    <label class="Gray">#{i18n['common.to']}:&nbsp;</label>
+                                    <p:calendar value="#{facturaElectronicaGastoHome.end}" class="input-sm">
+                                        <p:ajax event="dateSelect" listener="#{facturaElectronicaGastoHome.clear()}" /> 
+                                    </p:calendar>                        
+                                </h:panelGroup>
                             </h:panelGroup>
-                            <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                                <label class="Gray">#{i18n['common.to']}&nbsp;</label>
-                                <p:calendar value="#{facturaElectronicaGastoHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{facturaElectronicaGastoHome.clear()}" /> 
-                                </p:calendar>                        
-                            </h:panelGroup>
-                        </h:panelGroup>
-                        <p:commandButton id="btn-buscar" value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
-                                         actionListener="#{facturaElectronicaCompraHome.clear()}" ajax="false" immediate="true">
-                        </p:commandButton>
-                        <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="gasto"/>
-                        <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
-                                         styleClass="secondary-button" style="margin-bottom:10px;"
-                                         actionListener="#{facturaElectronicaGastoHome.mostrarFormularioCargaFacturaElectronica()}">
-                            <p:ajax event="dialogReturn" update="@form"
-                                    listener="#{facturaElectronicaGastoHome.handleReturn}">
-                            </p:ajax>
-                        </p:commandButton>
-                        <p:commandButton id="commandAddFromURL" value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
-                                         styleClass="secondary-button" style="margin-bottom:10px;"
-                                         actionListener="#{facturaElectronicaGastoHome.mostrarFormularioDescargaFacturaElectronica()}">
-                            <p:ajax event="dialogReturn" update="@form"
-                                    listener="#{facturaElectronicaGastoHome.handleReturn}">
-                            </p:ajax>
-                        </p:commandButton>
-                    </div>
+                            <i class="pi pi-bars p-px-2"/>
+                            <p:commandButton id="btn-buscar" 
+                                             value="#{i18n['common.find']}"
+                                             icon="pi pi-search" styleClass="help-btn" 
+                                             actionListener="#{facturaElectronicaGastoHome.clear()}"
+                                             ajax="false" immediate="true">
+                            </p:commandButton>
+                        </p:toolbarGroup>
+                        <p:toolbarGroup align="right"  style="display: inline-table; padding: 0.5rem 0 0 0">
+                            <p:button value="#{i18n['common.new']}"
+                                      icon="pi pi-plus-circle" styleClass="danger-btn"
+                                      outcome="gasto"/>
+                            <p:commandButton id="commandAddFromFile"
+                                             value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
+                                             icon="pi pi-file" styleClass="secondary-button"
+                                             actionListener="#{facturaElectronicaGastoHome.mostrarFormularioCargaFacturaElectronica()}">
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{facturaElectronicaGastoHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                            <p:commandButton id="commandAddFromURL" 
+                                             value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
+                                             icon="pi pi-link" styleClass="secondary-button" 
+                                             actionListener="#{facturaElectronicaGastoHome.mostrarFormularioDescargaFacturaElectronica()}">
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{facturaElectronicaGastoHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
+
                         <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{facturaElectronica.id}"
@@ -97,8 +114,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaGastoHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            <p:column id="code" headerText="#{i18n['common.code']}"
-                                      style="width:96px;text-align:left">
+                            <p:column id="code" headerText="#{i18n['common.code']}">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
                             <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">

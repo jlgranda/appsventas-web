@@ -34,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
+        <li>#{i18n['app.fede.inventory']}</li>
+        <li>/</li>
         <li><p:link outcome="compras">#{i18n['common.purchases']}</p:link></li>
         <li>/</li>
         <li><p:link outcome="compra">#{facturaElectronicaCompraHome.facturaElectronicaId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['common.purchase']}</p:link></li>
@@ -74,7 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax update="supplier btn-facturaElectronicaDetail-new" listener="#{facturaElectronicaCompraHome.updateDefaultSupplier}" />
                                 </p:selectBooleanCheckbox>
                                 <p:commandButton id="button-change-customer"
-                                                 icon="fa fa-user-plus" styleClass="success-btn"
+                                                 icon="fa fa-user-plus" styleClass="help-btn"
                                                  actionListener="#{facturaElectronicaCompraHome.mostrarFormularioProfile()}" ajax="true"
                                                  disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.id}"
                                                  immediate="true"
@@ -137,7 +139,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:outputLabel value="#{i18n['common.date.emission']}" for="@next"/>
                             <p:calendar id="femss" 
-                                        value="#{facturaElectronicaCompraHome.facturaElectronica.fechaEmision}" 
+                                        value="#{facturaElectronicaCompraHome.facturaElectronica.fechaEmision}"
+                                        disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.payments}"
                                         immediate="true"
                                         required="true">
                             </p:calendar>
@@ -208,7 +211,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.discount']}</div>
                                     <div class="invoice-value ui-g-4">
                                         <p:inputNumber id="descuento" value="#{facturaElectronicaCompraHome.facturaElectronica.totalDescuento}" required="#{true}"
-                                                       styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{false}"
+                                                       styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.payments}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.purchases.decimalPlaces', '4')}">
@@ -238,7 +241,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="invoice-value ui-g-4">
                                         <div class="EmptyBox10"></div>
                                         <p:inputNumber id="impt" value="#{facturaElectronicaCompraHome.facturaElectronica.importeTotal}" required="#{true}"
-                                                       styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{false}"
+                                                       styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.payments}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
@@ -384,7 +387,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:ajax update="@this" />
                                         <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
                                     </p:selectOneMenu>
-                                    <p:outputLabel value="#{i18n['common.type']}" for="@next"/>
+<!--                                    <p:outputLabel value="#{i18n['common.type']}" for="@next"/>
                                     <p:selectOneMenu id="productType"
                                                      value="#{facturaElectronicaCompraHome.productNew.productType}"
                                                      immediate="true"
@@ -392,7 +395,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this" />
-                                    </p:selectOneMenu>
+                                    </p:selectOneMenu>-->
                                     <div class="ui-g-12" style="display: inline-flex; padding: 0.5rem 0 0 0">
                                         <p:commandButton id="btn-save-product-new" 
                                                          icon="pi pi-save" styleClass="primary-button" 
@@ -450,7 +453,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                              converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                              immediate="true"
                                                              required="true" style="width: 100%"> 
-                                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                 <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <p:ajax update="@this"/>
                                             </p:selectOneMenu>
@@ -513,7 +515,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          value="#{i18n['common.add']} #{i18n['common.payment']}"
                                                          actionListener="#{facturaElectronicaCompraHome.addPayment()}"
                                                          disabled="#{facturaElectronicaCompraHome.payableTotal}"
-                                                         update="dataTable-payments-credit fund-request add-payment total discount cash change btn-save">
+                                                         update="dataTable-payments-credit fund-request add-payment method transferencia total discount cash change btn-save">
                                             <p:confirm header="#{i18n['common.confirmation']}" message="¿Está seguro de registrar el valor de este pago?" icon="pi pi-exclamation-triangle"/>
                                         </p:commandButton>
                                     </div>
@@ -572,13 +574,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:cellEditor>
                                 </p:column>
                                 <p:column headerText="#{i18n['app.fede.sales.payment.method']}" styleClass="text-right">
-                                        <h:outputText value="#{payment.method}"></h:outputText>
-                                    </p:column>
+                                    <h:outputText value="#{payment.method}"></h:outputText>
+                                </p:column>
 <!--                                    <p:column headerText="#{i18n['app.fede.sales.payment.change']}" styleClass="text-right">
-                                        <h:outputText value="#{payment.change}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </p:column>-->
+                                    <h:outputText value="#{payment.change}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                </p:column>-->
                                 <p:column style="width: 8%" rendered="#{false}">
                                     <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.payment']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.changes']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                 </p:column>
