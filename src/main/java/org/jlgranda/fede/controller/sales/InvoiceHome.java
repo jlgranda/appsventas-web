@@ -56,7 +56,6 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
-import org.jlgranda.fede.controller.CashBoxHome;
 
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
@@ -69,7 +68,6 @@ import org.jlgranda.fede.controller.inventory.InventoryHome;
 import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
 import org.jlgranda.fede.model.Detailable;
 import org.jlgranda.fede.model.accounting.Account;
-import org.jlgranda.fede.model.accounting.CashBoxPartial;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
@@ -238,6 +236,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     private RecordTemplateService recordTemplateService;
 
     private List<FilterMeta> filterBy;
+    
+    protected List<Invoice> selectedInvoices;
 
     @PostConstruct
     private void init() {
@@ -1200,6 +1200,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         return this.groups;
     }
 
+    public List<Invoice> getSelectedInvoices() {
+        return selectedInvoices;
+    }
+
+    public void setSelectedInvoices(List<Invoice> selectedInvoices) {
+        this.selectedInvoices = selectedInvoices;
+    }
+    
     /**
      * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
      * usernae, firstname, surname
@@ -1546,8 +1554,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         Invoice p = null;
         if (this.isActionExecutable()) {
             if ("collect".equalsIgnoreCase(this.selectedAction)) {
-                for (BussinesEntity be : this.getSelectedBussinesEntities()) {
-                    this.invoice = (Invoice) be;
+                for (Invoice inv : this.getSelectedInvoices()) {
+                    this.invoice = inv;
                     List<Payment> payments = paymentService.findByNamedQuery("Payment.findByInvoice", this.invoice);
                     if (!payments.isEmpty()) {
                         setPayment(payments.get(0));
@@ -1566,8 +1574,8 @@ public class InvoiceHome extends FedeController implements Serializable {
 //                    java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
 //                }
                 this.totalOverdues = BigDecimal.ZERO;
-                this.selectedBussinesEntities.removeAll(this.getSelectedBussinesEntities());
-                this.selectedBussinesEntities.clear();
+                this.selectedInvoices.removeAll(this.getSelectedInvoices());
+                this.selectedInvoices.clear();
             }
             /*else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
                 for (BussinesEntity be : this.getSelectedBussinesEntities()){
@@ -1652,9 +1660,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void calculateTotalOverdue() {
         this.totalOverdues = BigDecimal.ZERO;
-        Invoice p = null;
-        for (BussinesEntity be : this.getSelectedBussinesEntities()) {
-            p = (Invoice) be;
+        for (Invoice p : this.getSelectedInvoices()) {
             this.totalOverdues = this.totalOverdues.add(p.getTotal().subtract(p.getPaymentsDiscount()));
         }
     }

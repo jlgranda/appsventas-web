@@ -1075,41 +1075,41 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     }
 
     public void applySelectedGroups() {
-        String status = "";
-        Group group = null;
-        Set<String> addedGroups = new LinkedHashSet<>();
-        Set<String> removedGroups = new LinkedHashSet<>();
-        for (BussinesEntity fe : getSelectedBussinesEntities()) {
-            for (String key : selectedTriStateGroups.keySet()) {
-                group = findGroup(key);
-                status = selectedTriStateGroups.get(key);
-                if ("0".equalsIgnoreCase(status)) {
-                    if (fe.containsGroup(key)) {
-                        fe.remove(group);
-                        removedGroups.add(group.getName());
-                    }
-                } else if ("1".equalsIgnoreCase(status)) {
-                    if (!fe.containsGroup(key)) {
-                        fe.add(group);
-                        addedGroups.add(group.getName());
-                    }
-                } else if ("2".equalsIgnoreCase(status)) {
-                    if (!fe.containsGroup(key)) {
-                        fe.add(group);
-                        addedGroups.add(group.getName());
-                    }
-                }
-            }
-
-            facturaElectronicaService.save(fe.getId(), (FacturaElectronica) fe);
-        }
-
-        if (!addedGroups.isEmpty()) {
-            this.addSuccessMessage("Agregar grupos", "Algunas facturas se agregaron a " + Lists.toString(addedGroups));
-        }
-        if (!removedGroups.isEmpty()) {
-            this.addSuccessMessage("Remover grupos", "Algunas facturas se removieron de " + Lists.toString(removedGroups));
-        }
+//        String status = "";
+//        Group group = null;
+//        Set<String> addedGroups = new LinkedHashSet<>();
+//        Set<String> removedGroups = new LinkedHashSet<>();
+//        for (BussinesEntity fe : getSelectedBussinesEntities()) {
+//            for (String key : selectedTriStateGroups.keySet()) {
+//                group = findGroup(key);
+//                status = selectedTriStateGroups.get(key);
+//                if ("0".equalsIgnoreCase(status)) {
+//                    if (fe.containsGroup(key)) {
+//                        fe.remove(group);
+//                        removedGroups.add(group.getName());
+//                    }
+//                } else if ("1".equalsIgnoreCase(status)) {
+//                    if (!fe.containsGroup(key)) {
+//                        fe.add(group);
+//                        addedGroups.add(group.getName());
+//                    }
+//                } else if ("2".equalsIgnoreCase(status)) {
+//                    if (!fe.containsGroup(key)) {
+//                        fe.add(group);
+//                        addedGroups.add(group.getName());
+//                    }
+//                }
+//            }
+//
+//            facturaElectronicaService.save(fe.getId(), (FacturaElectronica) fe);
+//        }
+//
+//        if (!addedGroups.isEmpty()) {
+//            this.addSuccessMessage("Agregar grupos", "Algunas facturas se agregaron a " + Lists.toString(addedGroups));
+//        }
+//        if (!removedGroups.isEmpty()) {
+//            this.addSuccessMessage("Remover grupos", "Algunas facturas se removieron de " + Lists.toString(removedGroups));
+//        }
 
     }
 
