@@ -1460,6 +1460,9 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                                     rcrd.setAccount(cuentaHija);
                                     rcrd.setAccountName(rcrd.getAccount().getName());
                                 }
+                            } else if (rcrd.getAccountName().contains("$BANCO")) {
+                                rcrd.setAccount(this.accountPaymentSelected);
+                                rcrd.setAccountName(rcrd.getAccount().getName());
                             } else {
                                 rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
                             }

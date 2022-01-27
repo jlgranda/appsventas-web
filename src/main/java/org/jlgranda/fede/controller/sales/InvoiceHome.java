@@ -56,6 +56,7 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import javax.xml.transform.Source;
 
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
@@ -92,6 +93,7 @@ import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Strings;
 import org.kie.internal.builder.KnowledgeBuilderErrors;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.chart.Axis;
@@ -236,8 +238,12 @@ public class InvoiceHome extends FedeController implements Serializable {
     private RecordTemplateService recordTemplateService;
 
     private List<FilterMeta> filterBy;
-    
+
     protected List<Invoice> selectedInvoices;
+
+    private boolean recordCompleto;
+
+    private Account accountPaymentSelected;
 
     @PostConstruct
     private void init() {
@@ -651,6 +657,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String overdue() {
         if (!isUseDefaultCustomer()) {
             getInvoice().setDocumentTypeSource(DocumentType.OVERDUE);
+            getPayment().getInvoice().setOwner(getCustomer());
             getPayment().setDatePaymentCancel(null);
             collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
             //            setOutcome("invoices");
@@ -675,6 +682,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String courtesy() {
         if (!isUseDefaultCustomer()) {
             getInvoice().setDocumentTypeSource(DocumentType.COURTESY);
+            getPayment().getInvoice().setOwner(getCustomer());
             getPayment().setDatePaymentCancel(null);
             collect(DocumentType.COURTESY, StatusType.CLOSE.toString());
             setOutcome("preinvoices");
@@ -712,7 +720,10 @@ public class InvoiceHome extends FedeController implements Serializable {
             getPayment().setDatePaymentCancel(Dates.now());
         }
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
-        if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+
+        if ((BigDecimal.ZERO.compareTo(getPayment().getCash()) == -1)
+                && (BigDecimal.ZERO.compareTo(getPayment().getDiscount()) == -1 || BigDecimal.ZERO.compareTo(getPayment().getDiscount()) == 0)
+                && (BigDecimal.ZERO.compareTo(getPayment().getChange()) == -1 || BigDecimal.ZERO.compareTo(getPayment().getChange()) == 0)) {
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             getInvoice().setDocumentType(documentType); //Se convierte en factura
             //Agregar el pago
@@ -720,114 +731,23 @@ public class InvoiceHome extends FedeController implements Serializable {
             getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
             getInvoice().setStatus(status);
 
-            if (isAccountingEnabled()) {
-                setReglas(new ArrayList<>());
-                //Ejecutar las reglas de negocio para el registro de ventas
-                if (DocumentType.INVOICE.equals(getInvoice().getDocumentType())) {
-                    if (DocumentType.OVERDUE.equals(getInvoice().getDocumentTypeSource())) {
-                        if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, getInvoice().getOwner(), this.organizationData.getOrganization()).isEmpty()) {
-                            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocobroventascreditoclientes", "REGISTRO_COBRO_VENTAS_CREDITO_CLIENTES_EFECTIVO"));
-                        } else {
-                            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocobroventascreditoempleados", "REGISTRO_COBRO_VENTAS_CREDITO_EMPLEADOS"));
-                        }
-                    } else {
-                        if (DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
-                            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocobrocortesiasauspicios", "REGISTRO_COBRO_CORTESIAS_AUSPICIOS"));
-                        } else {
-                            if (getPayment().getMethod().equals("TARJETA CREDITO") || getPayment().getMethod().equals("TARJETA DEBITO")) {
-                                setReglas(settingHome.getValue("app.fede.accounting.rule.registroventastarjetas", "REGISTRO_VENTAS_TARJETAS"));
-                            } else {
-                                setReglas(settingHome.getValue("app.fede.accounting.rule.registroventas", "REGISTRO_VENTAS"));
-                            }
-                        }
-                    }
-                } else {
-                    if (DocumentType.COURTESY.equals(getInvoice().getDocumentType())) {
-                        setReglas(settingHome.getValue("app.fede.accounting.rule.registrocortesiasauspicios", "REGISTRO_CORTESIAS_AUSPICIOS"));
-                    } else if (DocumentType.OVERDUE.equals(getInvoice().getDocumentType())) {
-                        if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, getInvoice().getOwner(), this.organizationData.getOrganization()).isEmpty()) {
-                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoclientes", "REGISTRO_VENTAS_CREDITO_CLIENTES"));
-                        } else {
-                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoempleados", "REGISTRO_VENTAS_CREDITO_EMPLEADOS"));
-                        }
-                    }
-                }
-
-                List<Record> records = new ArrayList<>();
-                getReglas().forEach(regla -> {
-                    Record r = aplicarReglaNegocio(regla, this.invoice);
-                    if (r != null) {
-                        records.add(r);
-                    }
-                });
-
-                if (!records.isEmpty()) {
-                    //La regla compiló bien
-                    String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", I18nUtil.getMessages("app.fede.accounting.journal"));
-                    String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
-                    GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
-
-                    //Anular registros anteriores
-//                    recordService.deleteLastRecords(generalJournal.getId(), this.invoice.getClass().getSimpleName(), this.invoice.getId());
-                    recordService.deleteLastRecords(generalJournal.getId(), this.invoice.getClass().getSimpleName(), this.invoice.getId(), this.invoice.hashCode());
-                    //El General Journal del día
-                    if (generalJournal != null) {
-                        for (Record record : records) {
-
-                            record.setCode(UUID.randomUUID().toString());
-
-                            record.setOwner(this.subject);
-                            record.setAuthor(this.subject);
-
-                            record.setGeneralJournalId(generalJournal.getId());
-
-                            //Corregir objetos cuenta en los detalles
-                            record.getRecordDetails().forEach(rd -> {
-                                rd.setLastUpdate(Dates.now());
-                                if (rd.getAccountName().contains("$CEDULA")) {
-                                    Account cuentaPadre = accountCache.lookupByName(rd.getAccountName().substring(0, rd.getAccountName().length() - 8), this.organizationData.getOrganization());
-                                    String nombreCuenta = rd.getAccountName().substring(0, rd.getAccountName().length() - 7).concat(this.getInvoice().getOwner().getCode());
-                                    Account cuentaXCobrarOwner = accountCache.lookupByName(nombreCuenta, this.organizationData.getOrganization());
-                                    if (cuentaXCobrarOwner == null) {
-                                        cuentaXCobrarOwner = accountService.createInstance();//crear la cuenta
-                                        cuentaXCobrarOwner.setCode(this.accountCache.genereNextCode(cuentaPadre.getId()));
-                                        cuentaXCobrarOwner.setCodeType(CodeType.SYSTEM);
-                                        cuentaXCobrarOwner.setUuid(UUID.randomUUID().toString());
-                                        cuentaXCobrarOwner.setName(nombreCuenta.toUpperCase());
-                                        cuentaXCobrarOwner.setDescription(cuentaXCobrarOwner.getName());
-                                        cuentaXCobrarOwner.setParentAccountId(cuentaPadre.getId());
-                                        cuentaXCobrarOwner.setOrganization(this.organizationData.getOrganization());
-                                        cuentaXCobrarOwner.setAuthor(this.subject);
-                                        cuentaXCobrarOwner.setOwner(this.subject);
-                                        cuentaXCobrarOwner.setOrden(Short.MIN_VALUE);
-                                        cuentaXCobrarOwner.setPriority(0);
-                                        accountService.save(cuentaXCobrarOwner.getId(), cuentaXCobrarOwner);
-                                        this.accountCache.load(); //recargar todas las cuentas
-                                    }
-                                    rd.setAccount(cuentaXCobrarOwner);
-                                    rd.setAccountName(rd.getAccount().getName());
-                                } else {
-                                    rd.setAccount(accountCache.lookupByName(rd.getAccountName(), this.organizationData.getOrganization()));
-                                }
-                            });
-
-                            //Persistencia
-                            recordService.save(record);
-                        }
-                    }
-                }
+            //Registrar asiento contable de la compra
+            if (getInvoice().getId() != null) {
+                registerRecordInJournal();
+            } else {
+                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.invoice.accounting.fail"));
             }
 
-            //Guardar cambios en la entidad invoice
-            save(true);
-
+//            //Guardar cambios en la entidad invoice
+//            save(true);
+//            
             //Guardar movimientos en el Kardex
             registerInvoiceDetailsInKardex(this.invoice.getDetails());
 
             //Enviar saludo a cliente
             sendNotification();
         } else {
-            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + this.getInvoice().getTotal()));
+            addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + getInvoice().getTotal()));
             setOutcome("");
         }
         return getOutcome();
@@ -846,11 +766,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "9"));
         settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));
 
-        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(this.getInvoice(), settings);
-        //InvoiceDesign invoiceDesign = new InvoiceDesign(this.getInvoice(), settings);
+        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(getInvoice(), settings);
+        //InvoiceDesign invoiceDesign = new InvoiceDesign(getInvoice(), settings);
         //Invocar Servlet en nueva ventana del navegador
-//            redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=odt");
-        //redirectTo("/fedeServlet/?entity=invoice&id=" + this.getInvoice().getSequencial() + "&type=pdf");
+//            redirectTo("/fedeServlet/?entity=invoice&id=" + getInvoice().getSequencial() + "&type=odt");
+        //redirectTo("/fedeServlet/?entity=invoice&id=" + getInvoice().getSequencial() + "&type=pdf");
 
         //} catch (IOException ex) {
         //    java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
@@ -867,8 +787,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String record(Long invoiceId) {
         this.setInvoiceId(invoiceId);
         //load invoice
-        this.getInvoice();
-        this.getInvoice().setDescription(settingHome.getValue("app.fede.status.pay_direct", StatusType.PAID_DIRECT.toString()));
+        getInvoice();
+        getInvoice().setDescription(settingHome.getValue("app.fede.status.pay_direct", StatusType.PAID_DIRECT.toString()));
         return this.collect(DocumentType.INVOICE, StatusType.CLOSE.toString());
     }
 
@@ -908,11 +828,13 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String save() {
         calculeChange(); //Calcular el cambio sobre el objeto payment en edición
-        if (getPayment().getDiscount().compareTo(BigDecimal.ZERO) > 0 && getInvoice().getDescription().equals("")) {
+        if (getPayment().getDiscount().compareTo(BigDecimal.ZERO) == 1 && getInvoice().getDescription().equals("")) {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.description"));
             setOutcome("");
         } else {
-            if (getPayment().getCash().compareTo(BigDecimal.ZERO) > 0 && getPayment().getChange().compareTo(BigDecimal.ZERO) >= 0) {
+            if ((BigDecimal.ZERO.compareTo(getPayment().getCash()) == -1)
+                    && (BigDecimal.ZERO.compareTo(getPayment().getDiscount()) == -1 || BigDecimal.ZERO.compareTo(getPayment().getDiscount()) == 0)
+                    && (BigDecimal.ZERO.compareTo(getPayment().getChange()) == -1 || BigDecimal.ZERO.compareTo(getPayment().getChange()) == 0)) {
                 getInvoice().setDocumentType(DocumentType.PRE_INVOICE); //Mantener como preinvoice
                 getInvoice().setDocumentTypeSource(DocumentType.PRE_INVOICE); //Mantener como preinvoice
                 getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
@@ -920,7 +842,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 setOutcome("preinvoices");
                 setOutcome(save(false));
             } else {
-                addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.incomplete.detail", "" + this.getInvoice().getTotal()));
+                addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + getInvoice().getTotal()));
                 setOutcome("");
             }
         }
@@ -1142,10 +1064,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         } else {
             this.candidateDetails.add(getCandidateDetail());
         }
+        this.getInvoice().setDetails(this.candidateDetails);
+        System.out.println("this.getInvoice().getDetails()::::" + this.getInvoice().getDetails());
         calculeChange();
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
-
         return true;
     }
 
@@ -1207,7 +1130,23 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void setSelectedInvoices(List<Invoice> selectedInvoices) {
         this.selectedInvoices = selectedInvoices;
     }
-    
+
+    public boolean isRecordCompleto() {
+        return recordCompleto;
+    }
+
+    public void setRecordCompleto(boolean recordCompleto) {
+        this.recordCompleto = recordCompleto;
+    }
+
+    public Account getAccountPaymentSelected() {
+        return accountPaymentSelected;
+    }
+
+    public void setAccountPaymentSelected(Account accountPaymentSelected) {
+        this.accountPaymentSelected = accountPaymentSelected;
+    }
+
     /**
      * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
      * usernae, firstname, surname
@@ -1400,85 +1339,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         return inventoryHome.buildLineBarChartModel(getSelectedBussinesEntities(), "skinChart");
     }
 
-//    @Override
-//    protected void initializeDateInterval() {
-//        int range = 0; //Rango de fechas para visualiar lista de entidades
-//        try {
-//            if (null == getInterval()) {
-//                range = 0; //El día de hoy
-//            }
-//
-//            switch (getInterval().intValue()) {
-//                case -1:
-//                    range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
-//                    break;
-//                default:
-//                    range = getInterval().intValue();
-//                    break;
-//            }
-//        } catch (java.lang.NumberFormatException nfe) {
-//            range = 7;
-//        }
-//        setEnd(Dates.maximumDate(Dates.now()));
-//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-//    }
-//    private void registerDetailInKardex() {
-//        for (Detail candidateDetail1 : getCandidateDetails()) {
-//            Kardex kardex = null;
-//            KardexDetail kardexDetail = null;
-//            kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
-//            if (kardex == null) {
-//                kardex = kardexService.createInstance();
-//                kardex.setOwner(this.subject);
-//                kardex.setAuthor(this.subject);
-//                kardex.setOrganization(this.organizationData.getOrganization());
-//                kardex.setProduct(candidateDetail1.getProduct());
-//                kardex.setName(candidateDetail1.getProduct().getName());
-//                kardex.setUnitMinimum(1L);
-//                kardex.setUnitMaximum(1L);
-//            } else {
-//                kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndInvoiceAndOperation", kardex, candidateDetail1.getInvoice(), KardexDetail.OperationType.VENTA);
-//            }
-//            if (kardexDetail == null) {
-//                kardexDetail = kardexDetailService.createInstance();
-//                kardexDetail.setOwner(this.subject);
-//                kardexDetail.setAuthor(this.subject);
-//                kardexDetail.setInvoice(candidateDetail1.getInvoice());
-//                kardexDetail.setOperationType(KardexDetail.OperationType.VENTA);
-//            } else {
-//                //Aumentar los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a disminuir por la venta
-//                if (kardexDetail.getQuantity() != null && kardexDetail.getTotalValue() != null) {
-//                    kardex.setQuantity(kardex.getQuantity() + kardexDetail.getQuantity());
-//                    kardex.setFund(kardex.getFund().add(kardexDetail.getTotalValue()));
-//                    kardexDetail.setCummulativeQuantity(kardex.getQuantity());
-//                    kardexDetail.setCummulativeTotalValue(kardex.getFund());
-//                }
-//                kardexDetail.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardexDetail.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
-//            }
-//            kardexDetail.setCode(candidateDetail1.getInvoice().getSequencial());
-//            kardexDetail.setUnitValue(candidateDetail1.getPrice());
-//            kardexDetail.setQuantity((long) candidateDetail1.getAmount());
-//            kardexDetail.setTotalValue(kardexDetail.getUnitValue().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
-//            if (kardex.getId() == null) {
-//                kardexDetail.setCummulativeQuantity(kardexDetail.getQuantity() * -1);
-//                kardexDetail.setCummulativeTotalValue(kardexDetail.getTotalValue().multiply(BigDecimal.valueOf(-1)));
-//            } else {
-//                if (kardex.getQuantity() != null && kardex.getFund() != null) {
-//                    kardexDetail.setCummulativeQuantity(kardex.getQuantity() - kardexDetail.getQuantity());
-//                    kardexDetail.setCummulativeTotalValue(kardex.getFund().subtract(kardexDetail.getTotalValue()));
-//                }
-//            }
-//            kardex.addKardexDetail(kardexDetail);
-//            if (kardex.getCode() == null) {
-//                kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-") + candidateDetail1.getProduct().getId());
-//            }
-//            kardex.setQuantity(kardexDetail.getCummulativeQuantity());
-//            kardex.setFund(kardexDetail.getCummulativeTotalValue());
-//            kardexService.save(kardex.getId(), kardex);
-//        }
-//    }
     /**
      * Envia al medio persistente los detalles del invoice
      *
@@ -1623,14 +1483,27 @@ public class InvoiceHome extends FedeController implements Serializable {
 //        actions.add(item);
     }
 
+    public void calculateTotalOverdue() {
+        this.totalOverdues = BigDecimal.ZERO;
+        for (Invoice p : this.getSelectedInvoices()) {
+            this.totalOverdues = this.totalOverdues.add(p.getTotal().subtract(p.getPaymentsDiscount()));
+        }
+    }
+
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-
-        Invoice _instance = (Invoice) fuenteDatos;
+        Payment _instance = (Payment) fuenteDatos;
 
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
-        if (/*isAccountingEnabled()*/ false && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+
+        System.out.println("isAccountingEnabled()::::" + isAccountingEnabled());
+        System.out.println("_recordTemplate != null:::" + (_recordTemplate != null));
+        System.out.println("!Strings.isNullOrEmpty(_recordTemplate.getRule()):::" + (!Strings.isNullOrEmpty(_recordTemplate.getRule())));
+        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+            System.out.println(">>>>>>>>>>>>>><<");
+            System.out.println("instancei:::" + _instance.getInvoice().getDocumentType());
+            System.out.println(">>>>>>>>>>>>>><<");
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
@@ -1642,26 +1515,242 @@ public class InvoiceHome extends FedeController implements Serializable {
                 record.setBussinesEntityType(_instance.getClass().getSimpleName());
                 record.setBussinesEntityId(_instance.getId());
                 record.setBussinesEntityHashCode(_instance.hashCode());
-
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
-
-                if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, _instance.getOwner().getFullName(), this.organizationData.getOrganization()).isEmpty()) {
-                    record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getOwner().getFullName(), _instance.getSummary(), Strings.format(_instance.getTotal().doubleValue(), "$ #0.##")));
+                if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, _instance.getOwner(), this.organizationData.getOrganization()).isEmpty()) {
+                    record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
                 } else {
-                    record.setDescription(String.format("Empleado: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getOwner().getFullName(), _instance.getSummary(), Strings.format(_instance.getTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Empleado: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
                 }
             }
 
         }
-
         //El registro casí listo para agregar al journal
         return record;
     }
 
-    public void calculateTotalOverdue() {
-        this.totalOverdues = BigDecimal.ZERO;
-        for (Invoice p : this.getSelectedInvoices()) {
-            this.totalOverdues = this.totalOverdues.add(p.getTotal().subtract(p.getPaymentsDiscount()));
+    public void registerRecordInJournal() {
+
+        if (isAccountingEnabled()) {
+            System.out.println(">>>>>>>>>>>>Contablidad Habilitada>>>>>>>>>>>>>>>>>>>");
+
+            //Ejecutar las reglas de negocio para el registro de ventas
+            if (DocumentType.INVOICE.equals(getInvoice().getDocumentType())) {
+                if (DocumentType.OVERDUE.equals(getInvoice().getDocumentTypeSource())) {
+                    if (getPayment().getMethod().equals("TRANSFERENCIA")) {
+                        if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, getInvoice().getOwner(), this.organizationData.getOrganization()).isEmpty()) {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoclientescobrotransferencia", "REGISTRO_VENTAS_CREDITO_CLIENTES_COBRO_TRANSFERENCIA"));
+                        } else {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoempleadoscobrotransferencia", "REGISTRO_VENTAS_CREDITO_EMPLEADOS_COBRO_TRANSFERENCIA"));
+                        }
+                    } else {
+                        if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, getInvoice().getOwner(), this.organizationData.getOrganization()).isEmpty()) {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoclientescobroefectivo", "REGISTRO_VENTAS_CREDITO_CLIENTES_COBRO_EFECTIVO"));
+                        } else {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoempleadoscobroefectivo", "REGISTRO_VENTAS_CREDITO_EMPLEADOS_COBRO_EFECTIVO"));
+                        }
+                    }
+                } else {
+                    if (DocumentType.COURTESY.equals(getInvoice().getDocumentTypeSource())) {
+                        setReglas(settingHome.getValue("app.fede.accounting.rule.registrocortesiasauspicioscobroefectivo", "REGISTRO_CORTESIAS_AUSPICIOS_COBRO_EFECTIVO"));
+                    } else {
+                        if (getPayment().getMethod().equals("TRANSFERENCIA")) {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventastransferencia", "REGISTRO_VENTAS_TRANSFERENCIA"));
+                        } else {
+                            setReglas(settingHome.getValue("app.fede.accounting.rule.registroventasefectivo", "REGISTRO_VENTAS_EFECTIVO"));
+                        }
+                    }
+                }
+            } else {
+                if (DocumentType.COURTESY.equals(getInvoice().getDocumentType())) {
+                    setReglas(settingHome.getValue("app.fede.accounting.rule.registrocortesiasauspicios", "REGISTRO_CORTESIAS_AUSPICIOS"));
+                } else if (DocumentType.OVERDUE.equals(getInvoice().getDocumentType())) {
+                    if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, getInvoice().getOwner(), this.organizationData.getOrganization()).isEmpty()) {
+                        setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoclientes", "REGISTRO_VENTAS_CREDITO_CLIENTES"));
+                    } else {
+                        setReglas(settingHome.getValue("app.fede.accounting.rule.registroventascreditoempleados", "REGISTRO_VENTAS_CREDITO_EMPLEADOS"));
+                    }
+                }
+            }
+
+            System.out.println("getReglas():::" + getReglas());
+
+            List<Record> records = new ArrayList<>();
+            getReglas().forEach(regla -> {
+                System.out.println("this.invoice::::" + this.invoice.getId());
+                System.out.println("this.invoice::::" + this.invoice.getPayments());
+                Record r = aplicarReglaNegocio(regla, getPayment());
+                System.out.println("r:::::" + r);
+                System.out.println("r:::::" + r.getRecordDetails());
+                if (r != null) {
+                    records.add(r);
+                }
+            });
+
+            if (!records.isEmpty()) {
+                //La regla compiló bien
+                String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", I18nUtil.getMessages("app.fede.accounting.journal"));
+                String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+
+                //El General Journal del día
+                if (generalJournal != null) {
+                    for (Record rcr : records) {
+                        System.out.println("record::::" + rcr);
+                        this.recordCompleto = Boolean.TRUE;
+
+                        rcr.setCode(UUID.randomUUID().toString());
+
+                        rcr.setOwner(this.subject);
+                        rcr.setAuthor(this.subject);
+
+                        rcr.setGeneralJournalId(generalJournal.getId());
+
+                        //Corregir objetos cuenta en los detalles
+                        rcr.getRecordDetails().forEach(rcrd -> {
+                            System.out.println("recordDetail::::" + rcrd);
+                            System.out.println("::::" + rcrd.getAccountName());
+                            rcrd.setLastUpdate(Dates.now());
+                            if (rcrd.getAccountName().contains("$CEDULA")) {
+                                Account cuentaPadreDetectada = accountCache.lookupByName(rcrd.getAccountName().substring(0, rcrd.getAccountName().length() - 8), this.organizationData.getOrganization());
+                                if (cuentaPadreDetectada != null && cuentaPadreDetectada.getId() != null) {
+                                    String nombreCuentaHija = cuentaPadreDetectada.getName().concat(" ").concat(getInvoice().getOwner().getFullName());
+                                    Account cuentaHija = accountCache.lookupByName(nombreCuentaHija, this.organizationData.getOrganization());
+                                    if (cuentaHija == null) {
+                                        cuentaHija = accountService.createInstance();//crear la cuenta
+                                        cuentaHija.setCode(this.accountCache.genereNextCode(cuentaPadreDetectada.getId()));
+                                        cuentaHija.setCodeType(CodeType.SYSTEM);
+                                        cuentaHija.setUuid(UUID.randomUUID().toString());
+                                        cuentaHija.setName(nombreCuentaHija.toUpperCase());
+                                        cuentaHija.setDescription(cuentaHija.getName());
+                                        cuentaHija.setParentAccountId(cuentaPadreDetectada.getId());
+                                        cuentaHija.setOrganization(this.organizationData.getOrganization());
+                                        cuentaHija.setAuthor(this.subject);
+                                        cuentaHija.setOwner(this.subject);
+                                        cuentaHija.setOrden(Short.MIN_VALUE);
+                                        cuentaHija.setPriority(0);
+                                        accountService.save(cuentaHija.getId(), cuentaHija);
+                                        this.accountCache.load(); //recargar todas las cuentas
+                                    }
+                                    rcrd.setAccount(cuentaHija);
+                                    rcrd.setAccountName(rcrd.getAccount().getName());
+                                }
+                            } else if (rcrd.getAccountName().contains("$BANCO")) {
+                                rcrd.setAccount(this.accountPaymentSelected);
+                                rcrd.setAccountName(rcrd.getAccount().getName());
+                            } else {
+                                rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
+                            }
+                            if (rcrd.getAccount() == null) {
+                                this.recordCompleto = Boolean.FALSE;
+                            }
+                        });
+
+                        //Persistencia
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                        System.out.println("this.recordCompleto:::" + this.recordCompleto);
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                        if (Boolean.TRUE.equals(this.recordCompleto)) {
+                            rcr = recordService.save(rcr);
+                            if (rcr.getId() != null) {
+                                //Anular registros anteriores
+                                //recordService.deleteLastRecords(generalJournal.getId(), getInvoice().getClass().getSimpleName(), getInvoice().getId(), getInvoice().hashCode());
+                                if (getPayment().getRecordId() != null) {
+                                    recordService.deleteRecord(getPayment().getRecordId());
+                                    getPayment().setRecordId(null);
+                                }
+                                getPayment().setRecordId(rcr.getId());
+                                paymentService.save(getPayment().getId(), getPayment()); //Se guardan todos los cambios
+                                if (getPayment().getRecordId() != null) {
+                                } else {
+                                    addWarningMessage(I18nUtil.getMessages("action.warning"), "El registro contable, no se asoció a la Venta.");
+                                }
+                            }
+                        } else {
+                            PrimeFaces current = PrimeFaces.current();
+                            current.executeScript("PF('myDialogVar').show();");
+                        }
+                    }
+                }
+            }
         }
     }
 }
+//    @Override
+//    protected void initializeDateInterval() {
+//        int range = 0; //Rango de fechas para visualiar lista de entidades
+//        try {
+//            if (null == getInterval()) {
+//                range = 0; //El día de hoy
+//            }
+//
+//            switch (getInterval().intValue()) {
+//                case -1:
+//                    range = Dates.get(Dates.now(), Calendar.DAY_OF_MONTH) - 1;
+//                    break;
+//                default:
+//                    range = getInterval().intValue();
+//                    break;
+//            }
+//        } catch (java.lang.NumberFormatException nfe) {
+//            range = 7;
+//        }
+//        setEnd(Dates.maximumDate(Dates.now()));
+//        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+//    }
+//    private void registerDetailInKardex() {
+//        for (Detail candidateDetail1 : getCandidateDetails()) {
+//            Kardex kardex = null;
+//            KardexDetail kardexDetail = null;
+//            kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", candidateDetail1.getProduct(), this.organizationData.getOrganization());
+//            if (kardex == null) {
+//                kardex = kardexService.createInstance();
+//                kardex.setOwner(this.subject);
+//                kardex.setAuthor(this.subject);
+//                kardex.setOrganization(this.organizationData.getOrganization());
+//                kardex.setProduct(candidateDetail1.getProduct());
+//                kardex.setName(candidateDetail1.getProduct().getName());
+//                kardex.setUnitMinimum(1L);
+//                kardex.setUnitMaximum(1L);
+//            } else {
+//                kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
+//                kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndInvoiceAndOperation", kardex, candidateDetail1.getInvoice(), KardexDetail.OperationType.VENTA);
+//            }
+//            if (kardexDetail == null) {
+//                kardexDetail = kardexDetailService.createInstance();
+//                kardexDetail.setOwner(this.subject);
+//                kardexDetail.setAuthor(this.subject);
+//                kardexDetail.setInvoice(candidateDetail1.getInvoice());
+//                kardexDetail.setOperationType(KardexDetail.OperationType.VENTA);
+//            } else {
+//                //Aumentar los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a disminuir por la venta
+//                if (kardexDetail.getQuantity() != null && kardexDetail.getTotalValue() != null) {
+//                    kardex.setQuantity(kardex.getQuantity() + kardexDetail.getQuantity());
+//                    kardex.setFund(kardex.getFund().add(kardexDetail.getTotalValue()));
+//                    kardexDetail.setCummulativeQuantity(kardex.getQuantity());
+//                    kardexDetail.setCummulativeTotalValue(kardex.getFund());
+//                }
+//                kardexDetail.setAuthor(this.subject); //Saber quien lo modificó por última vez
+//                kardexDetail.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
+//            }
+//            kardexDetail.setCode(candidateDetail1.getInvoice().getSequencial());
+//            kardexDetail.setUnitValue(candidateDetail1.getPrice());
+//            kardexDetail.setQuantity((long) candidateDetail1.getAmount());
+//            kardexDetail.setTotalValue(kardexDetail.getUnitValue().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
+//            if (kardex.getId() == null) {
+//                kardexDetail.setCummulativeQuantity(kardexDetail.getQuantity() * -1);
+//                kardexDetail.setCummulativeTotalValue(kardexDetail.getTotalValue().multiply(BigDecimal.valueOf(-1)));
+//            } else {
+//                if (kardex.getQuantity() != null && kardex.getFund() != null) {
+//                    kardexDetail.setCummulativeQuantity(kardex.getQuantity() - kardexDetail.getQuantity());
+//                    kardexDetail.setCummulativeTotalValue(kardex.getFund().subtract(kardexDetail.getTotalValue()));
+//                }
+//            }
+//            kardex.addKardexDetail(kardexDetail);
+//            if (kardex.getCode() == null) {
+//                kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-") + candidateDetail1.getProduct().getId());
+//            }
+//            kardex.setQuantity(kardexDetail.getCummulativeQuantity());
+//            kardex.setFund(kardexDetail.getCummulativeTotalValue());
+//            kardexService.save(kardex.getId(), kardex);
+//        }
+//    }

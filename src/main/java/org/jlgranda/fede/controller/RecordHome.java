@@ -87,7 +87,6 @@ public class RecordHome extends FedeController implements Serializable {
 
     public GeneralJournal getGeneralJournal() {
         if (this.generalJournalId != null) {
-            System.out.println(">>this.generalJournalId: " + generalJournalId);
             return generalJournalService.find(this.generalJournalId);
         }
         return generalJournal;

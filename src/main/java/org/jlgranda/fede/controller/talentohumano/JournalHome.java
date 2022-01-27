@@ -741,7 +741,6 @@ public class JournalHome extends FedeController implements Serializable {
 //                }
 //            } else {
 //                //TODO implementar tratamiento de jornadas impares
-//                //System.out.println(">>>>>>>>>>>>>> registros impares");
 //            }
 //            
 //            journalsReglamentarios.addAll(journalMap.get(key)); //Agregar correcciones

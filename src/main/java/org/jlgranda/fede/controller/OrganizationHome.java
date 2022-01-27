@@ -294,10 +294,6 @@ public class OrganizationHome extends FedeController implements Serializable {
      * Ir al inicio
      */
     public void irAInicio(){
-        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
-        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
-        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
-        System.out.println(">>>>>>>>>>>>>>>>> ir al inicio");
         setOutcome("");
         try {
             this.redirectTo(getOutcome());

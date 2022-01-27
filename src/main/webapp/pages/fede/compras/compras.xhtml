@@ -40,7 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <p:toolbar>
-                            <p:toolbarGroup style="display: contents; padding: 0 0 0.5rem 0;">
+                            <p:toolbarGroup style="display: inline-table;">
     <!--                            <label class="Gray">#{i18n['common.find']}&nbsp;</label>
                                 <p:inputText value="#{facturaElectronicaCompraHome.keyword}" class="input-sm">
                                     <p:ajax listener="#{facturaElectronicaCompraHome.clear()}" />
@@ -71,7 +71,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </p:calendar>                        
                                     </h:panelGroup>
                                 </h:panelGroup>
-                                <i class="pi pi-bars p-px-2"/>
                                 <p:commandButton id="btn-buscar" 
                                                  value="#{i18n['common.find']}"
                                                  icon="pi pi-search" styleClass="help-btn" 
@@ -79,7 +78,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  ajax="false" immediate="true">
                                 </p:commandButton>
                             </p:toolbarGroup>
-                            <p:toolbarGroup align="right"  style="display: inline-table; padding: 0.5rem 0 0 0">
+                            <p:toolbarGroup align="right" style="display: inline-table; padding-top: 0.5rem">
                                 <p:button value="#{i18n['common.newa']}"
                                           icon="pi pi-plus-circle" styleClass="danger-btn"
                                           outcome="compra"/>

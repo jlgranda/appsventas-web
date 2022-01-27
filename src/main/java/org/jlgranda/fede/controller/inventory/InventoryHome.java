@@ -257,7 +257,6 @@ public class InventoryHome extends FedeController implements Serializable {
 
         //if el producto tiene un kardex asociado y se cambia el nombre actualizar el nombre del kardex
         kardex = kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization());
-        System.out.println("kardexService.findByProductAndOrganization:: " + kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization()));
         if (this.kardex == null) {
             this.kardex = kardexService.createInstance();
             this.kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-") + (product.getId() != null ? product.getId() : ""));

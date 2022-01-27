@@ -87,10 +87,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:selectBooleanCheckbox>
                                 <p:commandButton id="button-change-customer"
                                                  icon="fa fa-user-plus" styleClass="success-btn"
-                                                 actionListener="#{facturaElectronicaGastoHome.mostrarFormularioProfile()}" ajax="true"
+                                                 actionListener="#{facturaElectronicaGastoHome.mostrarFormularioProfile()}"
                                                  disabled="#{true}"
-                                                 immediate="true"
-                                                 style="width:30px">
+                                                 ajax="true" immediate="true">
                                     <p:ajax event="dialogReturn" update="@form"
                                             listener="#{facturaElectronicaGastoHome.handleReturn}">
                                     </p:ajax>
@@ -463,7 +462,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </p:selectOneMenu>
                                         </div>
                                         <h:panelGroup id="transferencia" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
-                                            <h:panelGroup rendered="#{facturaElectronicaGastoHome.payment.method != 'EFECTIVO'}" style="padding-top: 0rem">
+                                            <h:panelGroup rendered="#{facturaElectronicaGastoHome.payment.method == 'TRANSFERENCIA'}" style="padding-top: 0rem">
                                                 <h:outputText value="Entidad Bancaria:"></h:outputText>
                                                 <p:selectOneMenu id="accountPaymentSelected"
                                                                  value="#{facturaElectronicaGastoHome.accountPaymentSelected}"

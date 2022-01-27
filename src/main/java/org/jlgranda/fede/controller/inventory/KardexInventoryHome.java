@@ -431,7 +431,6 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
         }
 //        boolean existTransaction = true;
-//        System.out.println(">>>><this.kardexDetail.getOperationType(): "+this.kardexDetail.getOperationType());
 //        if ((this.kardexDetail.getOperationType().equals(KardexDetail.OperationType.VENTA) || this.kardexDetail.getOperationType().equals(KardexDetail.OperationType.SALIDA_INVENTARIO))
 //                && this.kardexDetail.getQuantity() != null && this.kardexDetail.getQuantity().compareTo(this.kardex.getQuantity()) > 0) {
 //            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.sales"));

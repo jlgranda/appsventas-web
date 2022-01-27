@@ -426,9 +426,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     public void onTransfer(TransferEvent event) {
         StringBuilder builder = new StringBuilder();
-//        System.out.println("event.getItems(): " + event.getItems());
         event.getItems().stream().map(item -> {
-            //            System.out.println("item " + item);
             builder.append(((Roles) item).getName());
             return item;
         }).map(item -> {
