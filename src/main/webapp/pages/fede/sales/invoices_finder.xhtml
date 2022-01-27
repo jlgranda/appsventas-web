@@ -78,7 +78,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                  paginatorPosition="bottom" resizableColumns="true" rowKey="#{invoice.id}"
                                  rows="25" scrollRows="25"
                                  value="#{invoiceHome.lazyDataModel}" var="invoice"
-                                 selection="#{invoiceHome.selectedBussinesEntities}"
+                                 selection="#{invoiceHome.selectedInvoices}"
                                  sortBy="#{invoice.emissionOn}" sortMode="single">
                         <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
                         <p:ajax event="toggleSelect" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities" />
