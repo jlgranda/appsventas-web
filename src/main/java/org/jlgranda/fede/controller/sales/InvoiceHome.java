@@ -1065,7 +1065,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             this.candidateDetails.add(getCandidateDetail());
         }
         this.getInvoice().setDetails(this.candidateDetails);
-        System.out.println("this.getInvoice().getDetails()::::" + this.getInvoice().getDetails());
+//        System.out.println("this.getInvoice().getDetails()::::" + this.getInvoice().getDetails());
         calculeChange();
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
