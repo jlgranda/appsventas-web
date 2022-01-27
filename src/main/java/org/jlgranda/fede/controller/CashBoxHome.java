@@ -237,7 +237,6 @@ public class CashBoxHome extends FedeController implements Serializable {
 
         //Instanciar regla de negocio para registrar ventas.
         //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
     }
 
     //GETTER AND SETTER

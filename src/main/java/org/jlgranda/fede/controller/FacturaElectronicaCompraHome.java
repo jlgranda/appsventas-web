@@ -296,7 +296,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         setActivePanelProduct(false);
 
 //        //Establecer variable de sistema que habilita o no el registro contable
-//        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
         getPayment().setAmount(BigDecimal.ZERO);
         getPayment().setDiscount(BigDecimal.ZERO);
         getPayment().setCash(BigDecimal.ZERO);
@@ -1420,7 +1419,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     public String registerRecordInJournal() {
 
         String outcome_ = ""; //Regresar a la lista.
-        setAccountingEnabled(Boolean.TRUE);
 
         if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
@@ -1528,7 +1526,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     public String registerRecordInJournalPaymentCredit() {
 
         String outcome_ = ""; //Regresar a la lista.
-        setAccountingEnabled(true);
 
         if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada

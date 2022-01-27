@@ -287,7 +287,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setActivePanelProduct(false);
 
         //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
 
         getPayment().setAmount(BigDecimal.ZERO);
         getPayment().setDiscount(BigDecimal.ZERO);
@@ -1360,7 +1359,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     public void registerRecordInJournal() {
 
         boolean registradoEnContabilidad = false;
-        setAccountingEnabled(true);
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro del cierre de cada
@@ -1438,7 +1436,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
     public void registerRecordInJournalPaymentCredit() {
 
         boolean registradoEnContabilidad = false;
-        setAccountingEnabled(true);
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro del cierre de cada

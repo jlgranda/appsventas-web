@@ -293,7 +293,6 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         setActivePanelProduct(false);
 
 //        //Establecer variable de sistema que habilita o no el registro contable
-//        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
         getPayment().setAmount(BigDecimal.ZERO);
         getPayment().setDiscount(BigDecimal.ZERO);
         getPayment().setCash(BigDecimal.ZERO);
@@ -1399,7 +1398,6 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     public String registerRecordInJournal() {
 
         String outcome_ = ""; //Regresar a la lista.
-        setAccountingEnabled(Boolean.TRUE);
 
         if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
@@ -1503,7 +1501,6 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     public String registerRecordInJournalPaymentCredit() {
 
         String outcome_ = ""; //Regresar a la lista.
-        setAccountingEnabled(true);
 
         if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
