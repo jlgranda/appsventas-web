@@ -20,6 +20,7 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.production.AggregationService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -35,10 +36,12 @@ import org.primefaces.event.SelectEvent;
 import org.jlgranda.appsventas.data.ProductAggregations;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.production.Aggregation;
+import org.jlgranda.fede.model.production.AggregationDetail;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.ui.model.LazyAggregationDataModel;
 import org.jpapi.util.Dates;
+import org.jpapi.util.I18nUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,39 +71,17 @@ public class AggregationHome extends FedeController implements Serializable {
 
     private LazyAggregationDataModel lazyDataModel;
 
-    private List<ProductAggregations> productosAgregaciones;
-    private ProductAggregations productoAgregaciones;
-
+//    private List<ProductAggregations> productosAgregaciones;
+//    private ProductAggregations productoAgregaciones;
     private Aggregation aggregation;
     private Long aggregationId;
 
+    private AggregationDetail detail;
+
     @PostConstruct
     private void init() {
-        productosAgregaciones = aggregationService.findByGroupProductAndOrganization(this.organizationData.getOrganization());
-    }
+        setAggregation(aggregationService.createInstance());
 
-    public List<ProductAggregations> getProductosAgregaciones() {
-        return productosAgregaciones;
-    }
-
-    public void setProductosAgregaciones(List<ProductAggregations> productosAgregaciones) {
-        this.productosAgregaciones = productosAgregaciones;
-    }
-
-    public ProductAggregations getProductoAgregaciones() {
-        return productoAgregaciones;
-    }
-
-    public void setProductoAgregaciones(ProductAggregations productoAgregaciones) {
-        this.productoAgregaciones = productoAgregaciones;
-    }
-
-    public LazyAggregationDataModel getLazyDataModel() {
-        return lazyDataModel;
-    }
-
-    public void setLazyDataModel(LazyAggregationDataModel lazyDataModel) {
-        this.lazyDataModel = lazyDataModel;
     }
 
     public Aggregation getAggregation() {
@@ -122,8 +103,35 @@ public class AggregationHome extends FedeController implements Serializable {
         this.aggregationId = aggregationId;
     }
 
+    public AggregationDetail getAggregationDetail() {
+        return this.detail;
+    }
+
+    public void setAggregationDetail(AggregationDetail detail) {
+        this.detail = detail;
+    }
+
+    public LazyAggregationDataModel getLazyDataModel() {
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyAggregationDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+
     public List<Product> filterProducts(String query) {
         return productCache.lookup(query, ProductType.PRODUCT, this.organizationData.getOrganization()); //sólo productos
+    }
+
+    public void aggregationAdd() {
+        if (this.aggregation.getProduct() != null) {
+            if (this.detail.getElement() != null && this.detail.getQuantity() != null && this.detail.getCost() != null) {
+                this.aggregation.getDetails().add(this.detail);
+//                this.detail = aggregationService.createInstance();
+            }
+        } else {
+            addWarningMessage(I18nUtil.getMessages("action.warn"), "Se requiere seleccionar el producto principal!");
+        }
     }
 
     public void saveAggregation() {

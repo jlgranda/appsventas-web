@@ -41,59 +41,164 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.production.Aggregation"/>
-        <div  class="ui-g ui-fluid">
-            <h1 class="BigTopic">#{aggregationHome.aggregation.name}</h1>
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0 0.8rem 0 0.8rem;">
-                <p:outputLabel class="Fs18 BigTopic" value="#{i18n['common.product']} Principal" for="@next"/>
-                <p:autoComplete id="product" 
-                                value="#{aggregationHome.aggregation.product}" var="product"
-                                itemLabel="#{product.name.toUpperCase()}" itemValue="#{product}"
-                                completeMethod="#{aggregationHome.filterProducts}"
-                                converter="org.jlgranda.fede.ui.converter.ProductConverter"
-                                converterMessage="El convertidor no responde."
-                                minQueryLength="3" maxResults="100" effect="fade"
-                                placeholder="#{i18n['common.find']}"
-                                forceSelection="true" emptyMessage="No se encontraron resultados."
-                                cache="true" queryDelay="1000" scrollHeight="1000"
-                                required="true">
-                    <p:column>
-                        <span style="text-transform: uppercase"><strong> #{product.code} </strong> - #{product.name}</span>
-                    </p:column>
-                </p:autoComplete>
-            </div>
-            <!--            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <jlgranda:input id="nme" name="nme" type="text" label="#{i18n['common.product']}" 
-                                            value="#{aggregationHome.aggregation.name}" 
-                                            render="nme" execute="@this save"
-                                            inlinehelp="#{messages['common.name.inlinehelp']}"
-                                            required="true"/>
-                        </div>-->
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"  style="padding: 1rem 0.8rem 0rem 0.8rem;">
-                <div class="card">
-                    <p:outputLabel class="Gray" value="Elementos del Producto:" for="@next"/>
-                    <p:dataTable id="aggregationsTable" draggableColumns="true" lazy="true" liveResize="true"
-                                 paginator="true" paginatorAlwaysVisible="false"
-                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{aggregation.id}"
-                                 rows="25" scrollRows="25"
-                                 value="#{aggregationHome.lazyDataModel}" var="aggregation"
-                                 selection="#{aggregationHome.selectedBussinesEntities}">
-                        <!--<p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelect}"/>-->
-                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                        <p:column headerText="#{i18n['common.element']}" sortBy="#{aggregation.name}">
-                            <h:outputText value="#{aggregation.name}"/>
-                        </p:column>
-                        <p:column headerText="#{i18n['common.cost']}">
-                            <h:outputText value="#{aggregation.description}"/>
-                        </p:column>
-                    </p:dataTable>
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-12 ui-lg-12">
+                <div class="ui-fluid">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:outputLabel class="Fs18 BigTopic" value="#{i18n['common.product']} Principal" for="@next"/>
+                        <p:autoComplete id="product" 
+                                        value="#{aggregationHome.productoAgregaciones.producto}" var="product"
+                                        itemLabel="#{product.name.toUpperCase()}" itemValue="#{product}"
+                                        completeMethod="#{aggregationHome.filterProducts}"
+                                        disabled="#{not empty aggregationHome.productoAgregaciones.agregaciones}"
+                                        converter="org.jlgranda.fede.ui.converter.ProductConverter"
+                                        converterMessage="El convertidor no responde."
+                                        minQueryLength="3" maxResults="100" effect="fade"
+                                        placeholder="#{i18n['common.find']}"
+                                        forceSelection="true" emptyMessage="No se encontraron resultados."
+                                        cache="true" queryDelay="1000" scrollHeight="1000"
+                                        required="true">
+                            <p:column>
+                                <span style="text-transform: uppercase"><strong> #{product.code} </strong> - #{product.name}</span>
+                            </p:column>
+                            <p:ajax process="@this"/>
+                            <p:ajax event="itemSelect" update="@this @form:panel-aggregation"/>
+                        </p:autoComplete>
+                    </div>
+                    <h3>Agregar elementos del Producto Principal</h3>
+                    <p:panel id="panel-aggregation" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <div class="ui-fluid">
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                                <p:outputLabel value="#{i18n['common.element']}" for="@next"/>
+                                <p:autoComplete id="element" 
+                                                value="#{aggregationHome.aggregation.product}" var="product"
+                                                itemLabel="#{product.name.toUpperCase()}" itemValue="#{product}"
+                                                completeMethod="#{aggregationHome.filterProducts}"
+                                                converter="org.jlgranda.fede.ui.converter.ProductConverter"
+                                                converterMessage="El convertidor no responde."
+                                                minQueryLength="3" maxResults="100" effect="fade"
+                                                placeholder="#{i18n['common.find']}"
+                                                forceSelection="true" emptyMessage="No se encontraron resultados."
+                                                cache="true" queryDelay="1000" scrollHeight="1000"
+                                                required="true">
+                                    <p:column>
+                                        <span style="text-transform: uppercase"><strong> #{product.code} </strong> - #{product.name}</span>
+                                    </p:column>
+                                    <p:ajax process="@this"/>
+                                    <p:ajax event="itemSelect" update="@this @form:btnAggAdd"/>
+                                </p:autoComplete>
+                            </div>
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6"  style="padding: 0rem">
+                                <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}"
+                                                render="quantity" value="#{aggregationHome.aggregation.quantity}" 
+                                                required="true" requiredMessage="#{i18n['common.money.letter']}"
+                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                container="none" rendered="true"/>
+                            </div>
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6"  style="padding: 0rem">
+                                <jlgranda:input id="cost" name="cost" type="decimal" label="#{i18n['common.cost']}"
+                                                render="cost" value="#{aggregationHome.aggregation.cost}" 
+                                                required="true" requiredMessage="#{i18n['common.money.letter']}"
+                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                container="none" rendered="true"/>
+                            </div>
+                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12"  style="align-self: center; margin-top: 1rem">
+                                <p:commandButton id="btnAggAdd"
+                                                 icon="fa fa-check-square" styleClass="warning-btn"
+                                                 value="#{i18n['common.add']}"
+                                                 actionListener="#{aggregationHome.aggregationAdd}" 
+                                                 disabled="#{empty aggregationHome.productoAgregaciones.producto}"
+                                                 ajax="true" immediate="true"
+                                                 update="@form"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:dataTable id="aggregationsTable" draggableColumns="true" lazy="true" liveResize="true"
+                                         paginator="true" paginatorAlwaysVisible="false"
+                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{aggregation.id}"
+                                         rows="25" scrollRows="25"
+                                         value="#{aggregationHome.productoAgregaciones.agregaciones}" var="aggregation"
+                                         selection="#{aggregationHome.selectedBussinesEntities}"
+                                         editable="true">
+                                <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                                <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregation.name}">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{aggregation.product.name.toUpperCase()}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:autoComplete id="agg-element" 
+                                                            value="#{aggregation.product}" var="product"
+                                                            itemLabel="#{product.name.toUpperCase()}" itemValue="#{product}"
+                                                            completeMethod="#{aggregationHome.filterProducts}"
+                                                            converter="org.jlgranda.fede.ui.converter.ProductConverter"
+                                                            converterMessage="El convertidor no responde."
+                                                            minQueryLength="3" maxResults="100" effect="fade"
+                                                            placeholder="#{i18n['common.find']}"
+                                                            forceSelection="true" emptyMessage="No se encontraron resultados."
+                                                            cache="true" queryDelay="1000" scrollHeight="1000"
+                                                            required="true">
+                                                <p:column>
+                                                    <span style="text-transform: uppercase"><strong> #{product.code} </strong> - #{product.name}</span>
+                                                </p:column>
+                                            </p:autoComplete>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.quantity']}">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{aggregation.quantity}">
+                                                <f:convertNumber type="currency" currencySymbol="$"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <jlgranda:input id="agg-quantity" name="agg-quantity" type="decimal"
+                                                            render="agg-quantity" value="#{aggregation.quantity}" 
+                                                            required="true" requiredMessage="#{i18n['common.money.letter']}"
+                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                            container="none"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.cost']}">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{aggregation.cost}">
+                                                <f:convertNumber type="currency" currencySymbol="$"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <jlgranda:input id="agg-cost" name="agg-cost" type="decimal"
+                                                            render="agg-cost" value="#{aggregation.cost}" 
+                                                            required="true" requiredMessage="#{i18n['common.money.letter']}"
+                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                            container="none"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column style="width:6rem">
+                                    <p:rowEditor editTitle="Editar" cancelTitle="Cancelar" saveTitle="Guardar"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </p:panel>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
+                        <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.observation']} de la Agregación" 
+                                        value="#{aggregationHome.aggregation.description}" 
+                                        render="descrpn" execute="@this save" 
+                                        inlinehelp="#{messages['common.description.inlinehelp']}" 
+                                        required="true"/>
+                    </div>
                 </div>
-            </div>
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
-                <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.observation']} de la Agregación" 
-                                value="#{aggregationHome.aggregation.description}" 
-                                render="descrpn" execute="@this save" 
-                                inlinehelp="#{messages['common.description.inlinehelp']}" 
-                                required="true"/>
             </div>
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                 <p:toolbar>

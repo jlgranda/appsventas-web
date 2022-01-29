@@ -1009,7 +1009,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 //redirectTo("/pages/fede/ride.jsf?key=" + ((BussinesEntity) event.getObject()).getId());
-                this.reopen(((BussinesEntity) event.getObject()).getId());
+                this.reopen(((Invoice) event.getObject()).getId());
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
@@ -1065,7 +1065,6 @@ public class InvoiceHome extends FedeController implements Serializable {
             this.candidateDetails.add(getCandidateDetail());
         }
         this.getInvoice().setDetails(this.candidateDetails);
-        System.out.println("this.getInvoice().getDetails()::::" + this.getInvoice().getDetails());
         calculeChange();
         //encerar para el siguiente producto
         setCandidateDetail(detailService.createInstance(1));
@@ -1497,13 +1496,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
 
-        System.out.println("isAccountingEnabled()::::" + isAccountingEnabled());
-        System.out.println("_recordTemplate != null:::" + (_recordTemplate != null));
-        System.out.println("!Strings.isNullOrEmpty(_recordTemplate.getRule()):::" + (!Strings.isNullOrEmpty(_recordTemplate.getRule())));
         if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
-            System.out.println(">>>>>>>>>>>>>><<");
-            System.out.println("instancei:::" + _instance.getInvoice().getDocumentType());
-            System.out.println(">>>>>>>>>>>>>><<");
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
@@ -1531,7 +1524,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void registerRecordInJournal() {
 
         if (isAccountingEnabled()) {
-            System.out.println(">>>>>>>>>>>>Contablidad Habilitada>>>>>>>>>>>>>>>>>>>");
 
             //Ejecutar las reglas de negocio para el registro de ventas
             if (DocumentType.INVOICE.equals(getInvoice().getDocumentType())) {
@@ -1572,15 +1564,9 @@ public class InvoiceHome extends FedeController implements Serializable {
                 }
             }
 
-            System.out.println("getReglas():::" + getReglas());
-
             List<Record> records = new ArrayList<>();
             getReglas().forEach(regla -> {
-                System.out.println("this.invoice::::" + this.invoice.getId());
-                System.out.println("this.invoice::::" + this.invoice.getPayments());
                 Record r = aplicarReglaNegocio(regla, getPayment());
-                System.out.println("r:::::" + r);
-                System.out.println("r:::::" + r.getRecordDetails());
                 if (r != null) {
                     records.add(r);
                 }
@@ -1595,7 +1581,6 @@ public class InvoiceHome extends FedeController implements Serializable {
                 //El General Journal del día
                 if (generalJournal != null) {
                     for (Record rcr : records) {
-                        System.out.println("record::::" + rcr);
                         this.recordCompleto = Boolean.TRUE;
 
                         rcr.setCode(UUID.randomUUID().toString());
@@ -1607,8 +1592,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
                         //Corregir objetos cuenta en los detalles
                         rcr.getRecordDetails().forEach(rcrd -> {
-                            System.out.println("recordDetail::::" + rcrd);
-                            System.out.println("::::" + rcrd.getAccountName());
                             rcrd.setLastUpdate(Dates.now());
                             if (rcrd.getAccountName().contains("$CEDULA")) {
                                 Account cuentaPadreDetectada = accountCache.lookupByName(rcrd.getAccountName().substring(0, rcrd.getAccountName().length() - 8), this.organizationData.getOrganization());
