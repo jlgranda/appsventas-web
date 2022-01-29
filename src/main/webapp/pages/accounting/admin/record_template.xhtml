@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
       xmlns:o="http://omnifaces.org/ui">
@@ -74,16 +75,74 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </f:facet>
 
                         <f:facet name="right">
+                            <p:commandButton id="import-button" value="#{i18n['common.import']}" 
+                                             ajax="true" immediate="true" icon="fas fa-file-import"
+                                             update="importarReglasDialog"
+                                             onclick="PF('importarReglasDialog').show()"
+                                             disabled="#{false}"
+                                             style="width: auto !important;"
+                                             styleClass="btn raised-btn success-btn"
+                                             type="button"/>
                             <p:commandButton ajax="true" disabled="false" immediate="true"
-                                             actionListener="#{recordTemplateHome.closeDialog(null)}" 
-                                             action="items"
-                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                             action="#{recordTemplateHome.redirect()}"
+                                             icon="fas fa-undo-alt" styleClass="GrayButton" type="submit"
                                              />
                         </f:facet>
 
                     </p:toolbar>
                 </div>
             </div>
+        </ui:define>
+        <ui:define name="popups">
+            <!-- Ventanas de dialogo de edición -->
+            <p:dialog id="importarReglasDialog" header="Importa reglas desde" widgetVar="importarReglasDialog" minHeight="40" width="800" showEffect="fade" modal="true">
+                <h:form id="importarReglasForm">
+                    <div class="ui-g ui-fluid">
+                        <div class="ui-g-12 ui-lg-12 ui-md-12">
+                            <p:outputLabel for="organization" value="Organización fuente:" />
+                            <p:selectOneMenu id="organization" value="#{recordTemplateHome.organizationFuenteReglas}"
+                                             required="true" immediate="true"> 
+                                <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
+                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="true" update="dataTable, btn-importar"/>
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
+                                <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="ui-g-12 ui-lg-12 ui-md-12">
+                            <p:dataTable var="recordTemplate" 
+                                         value="#{recordTemplateHome.lazyDataModel}" 
+                                         paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                         sortMode="single"
+                                         reflow="true" selection="#{recordTemplateHome.recordTemplateSelected}" 
+                                         rowKey="#{recordTemplate.id}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                         id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                <p:column selectionMode="single" style="width:4rem;text-align:center"/>
+        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+                                    <h:outputText value="#{recordTemplate.code}" />
+                                </p:column>-->
+                                <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
+                                    <h:outputText value="#{recordTemplate.name}" />
+                                </p:column>
+                                <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}">
+                                    <h:outputText value="#{recordTemplate.createdOn}">
+                                        <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    <p:commandButton id="btn-importar"
+                                     icon="pi pi-check"  styleClass="danger-btn p-mr-2"
+                                     value="#{i18n['common.import']}"
+                                     actionListener="#{recordTemplateHome.importarRegla()}"
+                                     type="submit" ajax="false" 
+                                     update="@form"
+                                     disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
+                                     style="width: -webkit-fill-available;">
+                    </p:commandButton>
+                    </div>
+                </h:form>
+            </p:dialog>
         </ui:define>
     </ui:composition>
 </html>

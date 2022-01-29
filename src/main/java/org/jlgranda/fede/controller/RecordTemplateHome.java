@@ -33,8 +33,10 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.ui.model.LazyRecordTemplateDataModel;
 import org.jpapi.model.Group;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,15 +78,18 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     private LazyRecordTemplateDataModel lazyDataModel;
 
     private Long recordTemplateId;
+    
+    private Organization organizationFuenteReglas;
+    private List<RecordTemplate> selectedRecordTemplates;
 
     @PostConstruct
     private void init() {
         this.recordTemplate = recordTemplateService.createInstance();
+        this.clear();
         this.setOutcome("record-templates");
     }
 
     public LazyRecordTemplateDataModel getLazyDataModel() {
-        filter();
         return lazyDataModel;
     }
 
@@ -98,6 +103,14 @@ public class RecordTemplateHome extends FedeController implements Serializable {
 
     public void setRecordTemplateId(Long recordTemplateId) {
         this.recordTemplateId = recordTemplateId;
+    }
+
+    public List<RecordTemplate> getSelectedRecordTemplates() {
+        return selectedRecordTemplates;
+    }
+
+    public void setSelectedRecordTemplates(List<RecordTemplate> selectedRecordTemplates) {
+        this.selectedRecordTemplates = selectedRecordTemplates;
     }
 
     @Override
@@ -139,6 +152,14 @@ public class RecordTemplateHome extends FedeController implements Serializable {
         this.recordTemplateSelected = recordTemplateSelected;
     }
 
+    public Organization getOrganizationFuenteReglas() {
+        return organizationFuenteReglas;
+    }
+
+    public void setOrganizationFuenteReglas(Organization organizationFuenteReglas) {
+        this.organizationFuenteReglas = organizationFuenteReglas;
+    }
+
     public boolean mostrarFormularioRecordTemplateEdicionValues(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
@@ -165,6 +186,10 @@ public class RecordTemplateHome extends FedeController implements Serializable {
             redirectTo("/pages/accounting/admin/record_template.jsf?recordTemplateId=" + _recordTemplate.getId());
         }
     }
+    
+    public void clear(){
+        this.filter();
+    }
 
     public void save() {
         if (recordTemplate.isPersistent()) {
@@ -182,10 +207,15 @@ public class RecordTemplateHome extends FedeController implements Serializable {
      * Filtro que llena el Lazy Datamodel
      */
     private void filter() {
+        
+        this.filter(this.organizationData.getOrganization());
+    }
+    
+    private void filter(Organization organization) {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyRecordTemplateDataModel(recordTemplateService);
         }
-        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+        lazyDataModel.setOrganization(organization);
         lazyDataModel.setStart(this.getStart());
         lazyDataModel.setEnd(this.getEnd());
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
@@ -204,6 +234,49 @@ public class RecordTemplateHome extends FedeController implements Serializable {
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    public void organizationValueChange(javax.faces.event.AjaxBehaviorEvent event) throws IOException {
+        
+        this.recordTemplateSelected = null;
+        SelectOneMenu x = (SelectOneMenu) event.getSource();
+        this.organizationFuenteReglas = ((Organization) x.getValue());
+        this.filter(this.organizationFuenteReglas); //Actualizar lista de reglas de negocio
+    }
+    
+    public void importarRegla(){
+        
+        //simplemente copiar los valores
+        this.recordTemplate.setCode(this.recordTemplateSelected.getCode());
+        this.recordTemplate.setName(this.recordTemplateSelected.getName());
+        this.recordTemplate.setRule(this.recordTemplateSelected.getRule());
+    }
+    
+    public void importarReglas(){
+        RecordTemplate instancia = null;
+        for (RecordTemplate rt : this.getSelectedRecordTemplates()){
+            
+            instancia = recordTemplateService.createInstance();
+            instancia.setCode(rt.getCode());
+            instancia.setName(rt.getName());
+            instancia.setRule(rt.getRule());
+            instancia.setAuthor(this.subject);
+            instancia.setOwner(this.subject);
+            instancia.setOrganization(this.organizationData.getOrganization());
+            
+            recordTemplateService.save(instancia);
+        }
+        
+        //Encerar pantalla
+        this.selectedRecordTemplates.clear();
+        this.organizationFuenteReglas = null;
+        this.clear();
+    }
+    
+    public void prepararImportarReglas(){
+        this.organizationFuenteReglas = null;
+        this.selectedRecordTemplates.clear();
     }
     
 }

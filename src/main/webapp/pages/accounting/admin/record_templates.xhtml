@@ -15,7 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -38,20 +39,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <h2 class="BigTopic" style="font-weight: bolder">
-                            <p:button value="#{i18n['common.newa']} #{i18n['common.business.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
-                        </h2>
+                        <p:toolbar id="selectedToolBar" rendered="#{true}">
+                            <f:facet name="left">
+                                <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                                <p:inputText value="#{recordTemplateHome.keyword}" class="input-sm">
+                                </p:inputText>
+                                <p:commandButton value="#{i18n['common.find']}" 
+                                                 styleClass="raised-btn" 
+                                                 actionListener="#{recordTemplateHome.clear()}" ajax="false">
+                                </p:commandButton>
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:button value="#{i18n['common.newa']} #{i18n['common.business.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
+                                <p:commandButton id="import-button" value="#{i18n['common.import']}" 
+                                             ajax="true" immediate="true" icon="fas fa-file-import"
+                                             actionListener="#{recordTemplateHome.prepararImportarReglas()}"
+                                             update="importarReglasDialog" 
+                                             oncomplete="PF('importarReglasDialog').show()"
+                                             disabled="#{false}"
+                                             style="width: auto !important;"
+                                             styleClass="btn raised-btn success-btn"
+                                             />
+                            </f:facet>
+                        </p:toolbar>
                     </div>
                     <div class="card">
                         <p:dataTable var="recordTemplate" 
                                      value="#{recordTemplateHome.lazyDataModel}" 
                                      paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                      sortMode="single"
-                                     reflow="true" selection="#{recordTemplateHome.selectedBussinesEntities}" 
+                                     reflow="true" selection="#{recordTemplateHome.selectedRecordTemplates}" 
                                      rowKey="#{recordTemplate.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
                             <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
+                            <p:ajax event="toggleSelect"  listener="#{recordTemplateHome.onRowSelect}"/>
+                            
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
 <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
                                 <h:outputText value="#{recordTemplate.code}" />
@@ -68,6 +91,57 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                 </div>
             </div>
+        </ui:define>
+        <ui:define name="popups">
+            <!-- Ventanas de dialogo de edición -->
+            <p:dialog id="importarReglasDialog" header="Importa reglas desde" widgetVar="importarReglasDialog" minHeight="40" width="800" showEffect="fade" modal="true">
+                <h:form id="importarReglasForm">
+                    <div class="ui-g ui-fluid">
+                        <div class="ui-g-12 ui-lg-12 ui-md-12">
+                            <p:outputLabel for="organization" value="Organización fuente:" />
+                            <p:selectOneMenu id="organization" value="#{recordTemplateHome.organizationFuenteReglas}"
+                                             required="true" immediate="true"> 
+                                <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
+                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="true" update="dataTableImport, btn-importar"/>
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
+                                <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="ui-g-12 ui-lg-12 ui-md-12">
+                            <p:dataTable var="recordTemplate" 
+                                         value="#{recordTemplateHome.lazyDataModel}" 
+                                         paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
+                                         sortMode="single"
+                                         reflow="true" selection="#{recordTemplateHome.selectedRecordTemplates}" 
+                                         rowKey="#{recordTemplate.id}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
+                                         id="dataTableImport" widgetVar="dataTable_wvImport" lazy="true">
+                                <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+                                    <h:outputText value="#{recordTemplate.code}" />
+                                </p:column>-->
+                                <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
+                                    <h:outputText value="#{recordTemplate.name}" />
+                                </p:column>
+                                <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}">
+                                    <h:outputText value="#{recordTemplate.createdOn}">
+                                        <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    <p:commandButton id="btn-importar"
+                                     icon="pi pi-check"  styleClass="danger-btn p-mr-2"
+                                     value="#{i18n['common.import']}"
+                                     actionListener="#{recordTemplateHome.importarReglas()}"
+                                     type="submit" ajax="false" 
+                                     update="@form"
+                                     disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
+                                     style="width: -webkit-fill-available;">
+                    </p:commandButton>
+                    </div>
+                </h:form>
+            </p:dialog>
         </ui:define>
     </ui:composition>
 </html>
