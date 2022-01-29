@@ -49,6 +49,7 @@ import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,9 @@ public class ProveedorHome extends FedeController implements Serializable {
 
     @Inject
     private OrganizationData organizationData;
-
+    
+    private boolean formProveedor;
+    
     @PostConstruct
     private void init() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
@@ -171,8 +174,25 @@ public class ProveedorHome extends FedeController implements Serializable {
         this.subjectAdminHome = subjectAdminHome;
     }
 
+    public boolean isFormProveedor() {
+        return formProveedor;
+    }
+
+    public void setFormProveedor(boolean formProveedor) {
+        this.formProveedor = formProveedor;
+    }
+    
     public void clear() {
-        this.filter();
+        setFormProveedor(Boolean.FALSE);
+        if (this.proveedor.getOwner().getId() != null) {
+            if (this.findProveedor(this.proveedor.getOwner().getCode()).isEmpty()) {
+                //Crear un nuevo proveedor
+                setFormProveedor(Boolean.TRUE);
+            } else {
+                setKeyword(this.proveedor.getOwner().getCode());
+                this.filter();
+            }
+        }
     }
 
     /**
@@ -305,6 +325,25 @@ public class ProveedorHome extends FedeController implements Serializable {
         }
 //        return queryData.getResult();
         return subjects;
+    }
+
+    /**
+     * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
+     * usernae, firstname, surname
+     *
+     * @param keyword
+     * @return una lista de objetos <tt>Subject</tt> que coinciden con la
+     * palabra clave dada.
+     */
+    public List<Proveedor> findProveedor(String keyword) {
+        keyword = "%" + keyword.trim() + "%";
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("organization", this.organizationData.getOrganization());
+        filters.put("code", keyword);
+        filters.put("firstname", keyword);
+        filters.put("surname", keyword);
+        QueryData<Proveedor> queryData = proveedorService.find("Proveedor.findByOrganizationCodeOrName", -1, -1, "", QuerySortOrder.ASC, filters);
+        return queryData.getResult();
     }
 
     @Override

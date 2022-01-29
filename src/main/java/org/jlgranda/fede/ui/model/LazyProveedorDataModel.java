@@ -46,48 +46,48 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-public class LazyProveedorDataModel  extends LazyDataModel<Proveedor> implements Serializable {
-    
+public class LazyProveedorDataModel extends LazyDataModel<Proveedor> implements Serializable {
+
     private static final int MAX_RESULTS = 5;
     private static final long serialVersionUID = 4204366822715059908L;
-    
-    Logger  logger = LoggerFactory.getLogger(LazyProveedorDataModel.class);
 
-    private ProveedorService bussinesEntityService; 
-    
+    Logger logger = LoggerFactory.getLogger(LazyProveedorDataModel.class);
+
+    private ProveedorService bussinesEntityService;
+
     private List<Proveedor> resultList;
     private int firstResult = 0;
-    
+
     private BussinesEntityType type;
-    
+
     private Subject owner;
-    
+
     private Subject author;
-    
+
     private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
     private String tags;
-    
+
     /**
      * Inicio del rango de fecha
      */
     private Date start;
-    
+
     /**
      * Fin del rango de fecha
      */
     private Date end;
-    
+
     /**
      */
     private ProductType productType;
-    
+
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
-    
+
     private String filterValue;
 
     public LazyProveedorDataModel(ProveedorService bussinesEntityService) {
@@ -144,7 +144,7 @@ public class LazyProveedorDataModel  extends LazyDataModel<Proveedor> implements
     public void setOrganization(Organization organization) {
         this.organization = organization;
     }
-    
+
     public String getTags() {
         return tags;
     }
@@ -234,9 +234,9 @@ public class LazyProveedorDataModel  extends LazyDataModel<Proveedor> implements
         int _end = first + pageSize;
         String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (!sortBy.isEmpty()){
-            for (SortMeta sm : sortBy.values()){
-                if ( sm.getOrder() == SortOrder.ASCENDING) {
+        if (!sortBy.isEmpty()) {
+            for (SortMeta sm : sortBy.values()) {
+                if (sm.getOrder() == SortOrder.ASCENDING) {
                     order = QuerySortOrder.ASC;
                 }
                 sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
@@ -244,40 +244,42 @@ public class LazyProveedorDataModel  extends LazyDataModel<Proveedor> implements
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
-        if (getStart() != null){
+        if (getStart() != null) {
             range.put("start", getStart());
-            if (getEnd() != null){
+            if (getEnd() != null) {
                 range.put("end", getEnd());
             } else {
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()){
+        if (!range.isEmpty()) {
             _filters.put(Employee_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        if (getOwner() != null){
+        if (getOwner() != null) {
             _filters.put(Employee_.owner.getName(), getOwner()); //Filtro por defecto
         }
-        if (getAuthor()!= null){
+        if (getAuthor() != null) {
             _filters.put(Employee_.author.getName(), getAuthor()); //Filtro por defecto
         }
         if (getOrganization() != null) {
             _filters.put(Employee_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
-        if (getTags() != null && !getTags().isEmpty()){
+        if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-        
+
         _filters.putAll(filters);
-        
-        if (sortField == null){
+
+        if (sortField == null) {
             sortField = Employee_.createdOn.getName();
         }
 
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
         QueryData<Proveedor> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
@@ -302,35 +304,35 @@ public class LazyProveedorDataModel  extends LazyDataModel<Proveedor> implements
     public int count(Map<String, FilterMeta> filters) {
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
-        if (getStart() != null){
+        if (getStart() != null) {
             range.put("start", getStart());
-            if (getEnd() != null){
+            if (getEnd() != null) {
                 range.put("end", getEnd());
             } else {
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()){
+        if (!range.isEmpty()) {
             _filters.put(Employee_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        if (getOwner() != null){
+        if (getOwner() != null) {
             _filters.put(Employee_.owner.getName(), getOwner()); //Filtro por defecto
         }
-        if (getAuthor()!= null){
+        if (getAuthor() != null) {
             _filters.put(Employee_.author.getName(), getAuthor()); //Filtro por defecto
         }
         if (getOrganization() != null) {
             _filters.put(Employee_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
-        if (getTags() != null && !getTags().isEmpty()){
+        if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-        
+
         _filters.putAll(filters);
-        
+
         QueryData<Proveedor> qData = bussinesEntityService.find(_filters);
         return qData.getTotalResultCount().intValue();
     }

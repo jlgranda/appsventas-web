@@ -124,14 +124,14 @@ public class AggregationHome extends FedeController implements Serializable {
     }
 
     public void aggregationAdd() {
-        if (this.aggregation.getProduct() != null) {
-            if (this.detail.getElement() != null && this.detail.getQuantity() != null && this.detail.getCost() != null) {
-                this.aggregation.getDetails().add(this.detail);
-//                this.detail = aggregationService.createInstance();
-            }
-        } else {
-            addWarningMessage(I18nUtil.getMessages("action.warn"), "Se requiere seleccionar el producto principal!");
-        }
+//        if (this.aggregation.getProduct() != null) {
+//            if (this.detail.getElement() != null && this.detail.getQuantity() != null && this.detail.getCost() != null) {
+//                this.aggregation.getDetails().add(this.detail);
+////                this.detail = aggregationService.createInstance();
+//            }
+//        } else {
+//            addWarningMessage(I18nUtil.getMessages("action.warn"), "Se requiere seleccionar el producto principal!");
+//        }
     }
 
     public void saveAggregation() {
@@ -140,7 +140,7 @@ public class AggregationHome extends FedeController implements Serializable {
         } else {
             aggregation.setAuthor(subject);
             aggregation.setOwner(subject);
-            aggregation.setOrganization(this.organizationData.getOrganization());
+//            aggregation.setOrganization(this.organizationData.getOrganization());
         }
         aggregationService.save(aggregation.getId(), aggregation);
     }

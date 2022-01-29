@@ -1399,7 +1399,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
         String outcome_ = ""; //Regresar a la lista.
 
-        if (isAccountingEnabled()) {
+        if (true) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (EmissionType.PURCHASE_CASH.equals(facturaElectronica.getEmissionType())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrogastosefectivo", "REGISTRO_GASTOS_EFECTIVO"));
@@ -1502,7 +1502,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
         String outcome_ = ""; //Regresar a la lista.
 
-        if (isAccountingEnabled()) {
+        if (true) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (getPayment().getMethod().equals("EFECTIVO")) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrogastoscreditopagoefectivo", "REGISTRO_GASTOS_CREDITO_PAGO_EFECTIVO"));
@@ -1804,7 +1804,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
 
-        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+        if (true && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
@@ -1843,7 +1843,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
 
-        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+        if (true && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate

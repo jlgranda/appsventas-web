@@ -980,6 +980,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         registerDetalleFacturaElectronicaInKardex(this.facturaElectronica.getFacturaElectronicaDetails()); //Procesa y guarda la factura electrónica en el medio persistente
 
         //Registrar asiento contable de la compra
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println("this.facturaElectronica.getId():::"+this.facturaElectronica.getId());
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         if (this.facturaElectronica.getId() != null) {
             setOutcome(registerRecordInJournal());
         } else {
@@ -1419,8 +1422,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     public String registerRecordInJournal() {
 
         String outcome_ = ""; //Regresar a la lista.
-
-        if (isAccountingEnabled()) {
+        System.out.println("isAccountingEnabled:::"+isAccountingEnabled());
+//        if (isAccountingEnabled()) {
+        if (true) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (EmissionType.PURCHASE_CASH.equals(facturaElectronica.getEmissionType())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprasefectivo", "REGISTRO_COMPRAS_EFECTIVO"));
@@ -1445,6 +1449,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 //El General Journal del día
                 if (generalJournal != null) {
                     for (Record rcr : records) {
+                        System.out.println("records:::"+records);
 
                         this.recordCompleto = Boolean.TRUE;
 
@@ -1488,6 +1493,10 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                             } else {
                                 rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
                             }
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                            System.out.println("rcrd.getAccount():::"+rcrd.getAccount());
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                             if (rcrd.getAccount() == null) {
                                 this.recordCompleto = Boolean.FALSE;
                             }
@@ -1831,7 +1840,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
 
-        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+        if (true && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate

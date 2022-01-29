@@ -215,9 +215,9 @@ public class LazyAggregationDataModel extends LazyDataModel<Aggregation> impleme
         if (getOwner() != null) {
             _filters.put(Aggregation_.owner.getName(), getOwner());
         }
-        if (getOrganization() != null) {
-            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
-        }
+//        if (getOrganization() != null) {
+//            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+//        }
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
@@ -255,9 +255,9 @@ public class LazyAggregationDataModel extends LazyDataModel<Aggregation> impleme
             _filters.put(Aggregation_.owner.getName(), getOwner());
         }
 
-        if (getOrganization() != null) {
-            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
-        }
+//        if (getOrganization() != null) {
+//            _filters.put(Aggregation_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+//        }
 
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
