@@ -30,6 +30,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.model.accounting.Record;
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author jlgranda
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class OrganizationHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -7712000810185595430L;
@@ -127,8 +128,16 @@ public class OrganizationHome extends FedeController implements Serializable {
     }
     
     public void save(){
-        getOrganization().setAuthor(subject);
-        getOrganization().setOwner(subject);
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println("id: " + getOrganization().getId());
+        System.out.println("name: " + getOrganization().getName());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        
+        if (!getOrganization().isPersistent()){
+            getOrganization().setAuthor(subject);
+            getOrganization().setOwner(subject);
+        }
         organizationService.save(getOrganization().getId(), getOrganization());
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
     }

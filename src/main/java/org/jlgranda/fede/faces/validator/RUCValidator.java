@@ -33,24 +33,30 @@ import org.jpapi.util.Interpolator;
  *
  * @author jlgranda
  */
-@FacesValidator("ciValidator")
+@FacesValidator("rucValidator")
 @RequestScoped
-public class CIValidator implements Validator {
+public class RUCValidator implements Validator {
 
-    private String label;
+    private String label = "No definido";
     private String message;
 
 
     @Override
     public void validate(final FacesContext context, final UIComponent component, final Object value) throws ValidatorException {
         
-        label = component.getAttributes().get("label").toString();
+        if (component.getAttributes().containsKey("label")){
+            label = component.getAttributes().get("label").toString();
+        }
+        
         if (value != null) {
             String nid = value.toString().trim();
-            if (nid.length() <= 10) {
-                this.validateNationalIdentityDocument(nid);
-            } else {
+            if (nid.length() == 13) {
                 this.validateTaxpayerDocument(nid);
+            } else {
+                message = Interpolator.interpolate(
+                    I18nUtil.getMessages("validation.lengthIdentificationNumber"),
+                    new Object[0]);
+                throw new ValidatorException(this.buildMessage(message));
             }
         } else {
             message = Interpolator.interpolate(

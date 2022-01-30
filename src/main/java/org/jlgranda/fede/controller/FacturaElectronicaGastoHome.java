@@ -62,9 +62,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -300,6 +298,10 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         setAmoutPending(BigDecimal.ZERO);
         setRecordCompleto(Boolean.TRUE);
         setOutcome("gastos");
+        
+        //Establecer variable de sistema que habilita o no el registro contable
+        setAccountingEnabled(this.organizationData.getOrganization().isAccountingEnabled());
+        
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -367,6 +369,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     public FacturaElectronica getFacturaElectronica() {
         if (this.facturaElectronicaId != null && !this.facturaElectronica.isPersistent()) {
             this.facturaElectronica = facturaElectronicaService.find(facturaElectronicaId);
+            this.setSupplier(facturaElectronica.getAuthor()); //El proveedor
             montoPorPagar();
             calcularValoresFactura();
         }
@@ -926,6 +929,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     /**
      * Guarda los datos
      */
+    @javax.transaction.Transactional
     public void save() {
         this.facturaElectronica.setCodeType(CodeType.NUMERO_FACTURA);
         this.facturaElectronica.setFilename(null);
@@ -938,8 +942,8 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
         this.facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
 
-        //facturaElectronica.setAuthor(getSupplier());
-        this.facturaElectronica.setOwner(subject);
+        facturaElectronica.setAuthor(getSupplier());
+//        this.facturaElectronica.setOwner(subject);
         this.facturaElectronica.setOrganization(this.organizationData.getOrganization());
 
         //Almacenar el tipo de factura
@@ -1335,7 +1339,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
         String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
         String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
-        super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, left, top, true, params);
+        super.openDialog(SettingNames.POPUP_FORMULARIO_PROVEEDOR_GASTO, width, height, left, top, true, params);
         return true;
     }
 
@@ -1388,7 +1392,8 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     }
 
     public void updateDefaultSupplier() {
-        this.facturaElectronica.setAuthor(getDefaultSupplier());
+//        this.facturaElectronica.setAuthor(getDefaultSupplier());
+        this.setSupplier(getDefaultSupplier());
     }
 
     public void calcularTotalFactura() {

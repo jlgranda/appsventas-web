@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:outputLabel value="#{i18n['common.supplier']}" for="@next"/>
                             <div class="ui-g-12" style="display: inline-flex; padding: 0rem">
                                 <p:autoComplete id="supplier" 
-                                                value="#{facturaElectronicaCompraHome.facturaElectronica.author}"  var="entidad"
+                                                value="#{facturaElectronicaCompraHome.supplier}"  var="entidad"
                                                 itemLabel="#{entidad.fullName.toUpperCase()}" itemValue="#{entidad}"
                                                 completeMethod="#{proveedorHome.find}"
                                                 converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
@@ -72,7 +72,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:autoComplete>
                                 <h:outputText value="#{i18['common.supplier.invoce.none']}" />
                                 <p:selectBooleanCheckbox value="#{facturaElectronicaCompraHome.useDefaultSupplier}"
-                                                         disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.id}">
+                                                         disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.id}"
+                                                         title="#{i18['common.supplier.invoce.none']}">
                                     <p:ajax update="supplier btn-facturaElectronicaDetail-new" listener="#{facturaElectronicaCompraHome.updateDefaultSupplier}" />
                                 </p:selectBooleanCheckbox>
                                 <p:commandButton id="button-change-customer"
@@ -149,7 +150,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              icon="fa fa-plus" styleClass="info-btn"
                                              value="#{i18n['common.new']} #{i18n['common.detail']}"
                                              onclick="PF('panelDialog-facturaElectronicaDetail').show()"
-                                             disabled="#{facturaElectronicaCompraHome.facturaElectronica.author==null or not empty facturaElectronicaCompraHome.facturaElectronica.payments}"/>
+                                             disabled="#{empty facturaElectronicaGastoHome.supplier or not empty facturaElectronicaCompraHome.facturaElectronica.payments}"/>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><p:separator style="color: #EFEFEF"/></div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">

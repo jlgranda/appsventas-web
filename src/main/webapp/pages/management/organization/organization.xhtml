@@ -41,6 +41,7 @@ and open the template in the editor.
                                 <div class="ui-g ui-lg-12">
                                     <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['common.ruc']}" 
                                                     value="#{organizationHome.organization.ruc}" 
+                                                    validator="#{'rucValidator'}" maxlength="13"
                                                     required="true" 
                                                     inlinehelp="#{messages['common.ruc.inlinehelp']}"
                                                     container="none"/>
@@ -59,6 +60,11 @@ and open the template in the editor.
                                                     value="#{organizationHome.organization.initials}" required="true" 
                                                     inlinehelp="#{messages['initials.inlinehelp']}"
                                                     container="none"/>
+                                    <jlgranda:input id="accountingenable" name="accountingenable" type="checkbox" label="#{i18n['common.company.accountingenable']}" 
+                                                    value="#{organizationHome.organization.accountingEnabled}" required="true" 
+                                                    inlinehelp="#{messages['common.company.accountingenable.inlinehelp']}"
+                                                    container="none"/>
+                                    
                                     <jlgranda:input id="dsc" name="description" type="textarea" label="#{i18n['common.description']}" 
                                                     value="#{organizationHome.organization.description}" required="false" 
                                                     inlinehelp="#{messages['common.description.inlinehelp']}"

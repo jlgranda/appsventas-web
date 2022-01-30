@@ -48,6 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:inputText value="#{proveedorHome.keyword}" class="input-sm">
                         </p:inputText>-->
                         <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
+                        <!-- Lista de personas, decidir si es proveedor al seleccionar el item -->
                         <p:autoComplete id="customer" value="#{proveedorHome.proveedor.owner}" effect="fade" 
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                         completeMethod="#{subjectHome.find}"
@@ -61,6 +62,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:column>
                             <p:ajax event="itemSelect" listener="#{proveedorHome.clear()}" update="@form" partialSubmit="true"></p:ajax>
                         </p:autoComplete>
+                        <p:commandButton id="button-change-customer"
+                                         icon="fa fa-user-plus" styleClass="help-btn"
+                                         actionListener="#{proveedorHome.mostrarFormularioProfile()}"
+                                         disabled="#{not empty proveedorHome.proveedor.id}"
+                                         ajax="true" immediate="true">
+                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{proveedorHome.handleReturn}">
+                            </p:ajax>
+                        </p:commandButton>
 <!--                        <p:commandButton value="#{i18n['common.find']}" 
                                          styleClass="raised-btn" 
                                          actionListener="#{proveedorHome.clear()}" ajax="false">
@@ -80,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p:panel id="formProveedor" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{proveedorHome.formProveedor}">
                     <div class="card">
                         <div class="ui-g ui-fluid">
-                            <h1 style="text-transform: uppercase"><strong>#{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>
+                            <h1 style="text-transform: uppercase"><strong>#{i18n['common.add']} #{i18n['common.supplier']}: #{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                                 <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.preferedDate']}" 
                                                 value="#{proveedorHome.proveedor.fechaPreferidaPago}"

@@ -56,7 +56,6 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
-import javax.xml.transform.Source;
 
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
@@ -269,9 +268,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         setBusquedaAvanzada(true);
 
-        //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
-
         filterBy = new ArrayList<>();
 
 //        filterBy.add(FilterMeta.builder()
@@ -288,6 +284,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         setDocumentType(DocumentType.INVOICE); //Filtro por defecto
 
         initializeActions();
+        
+        //Establecer variable de sistema que habilita o no el registro contable
+        //setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
+        setAccountingEnabled(this.organizationData.getOrganization().isAccountingEnabled());
+        
     }
 
     public Long getInvoiceId() {

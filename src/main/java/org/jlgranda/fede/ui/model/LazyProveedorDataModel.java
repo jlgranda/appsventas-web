@@ -25,9 +25,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.compras.Proveedor;
+import org.jlgranda.fede.model.compras.Proveedor_;
 import org.jlgranda.fede.model.sales.ProductType;
-import org.jlgranda.fede.model.talentohumano.Employee;
-import org.jlgranda.fede.model.talentohumano.Employee_;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.Organization;
@@ -253,16 +252,16 @@ public class LazyProveedorDataModel extends LazyDataModel<Proveedor> implements 
             }
         }
         if (!range.isEmpty()) {
-            _filters.put(Employee_.createdOn.getName(), range); //Filtro de fecha inicial
+            _filters.put(Proveedor_.createdOn.getName(), range); //Filtro de fecha inicial
         }
         if (getOwner() != null) {
-            _filters.put(Employee_.owner.getName(), getOwner()); //Filtro por defecto
+            _filters.put(Proveedor_.owner.getName(), getOwner()); //Filtro por defecto
         }
         if (getAuthor() != null) {
-            _filters.put(Employee_.author.getName(), getAuthor()); //Filtro por defecto
+            _filters.put(Proveedor_.author.getName(), getAuthor()); //Filtro por defecto
         }
         if (getOrganization() != null) {
-            _filters.put(Employee_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+            _filters.put(Proveedor_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
@@ -274,12 +273,10 @@ public class LazyProveedorDataModel extends LazyDataModel<Proveedor> implements 
         _filters.putAll(filters);
 
         if (sortField == null) {
-            sortField = Employee_.createdOn.getName();
+            sortField = Proveedor_.createdOn.getName();
         }
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
         QueryData<Proveedor> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
@@ -313,16 +310,16 @@ public class LazyProveedorDataModel extends LazyDataModel<Proveedor> implements 
             }
         }
         if (!range.isEmpty()) {
-            _filters.put(Employee_.createdOn.getName(), range); //Filtro de fecha inicial
+            _filters.put(Proveedor_.createdOn.getName(), range); //Filtro de fecha inicial
         }
         if (getOwner() != null) {
-            _filters.put(Employee_.owner.getName(), getOwner()); //Filtro por defecto
+            _filters.put(Proveedor_.owner.getName(), getOwner()); //Filtro por defecto
         }
         if (getAuthor() != null) {
-            _filters.put(Employee_.author.getName(), getAuthor()); //Filtro por defecto
+            _filters.put(Proveedor_.author.getName(), getAuthor()); //Filtro por defecto
         }
         if (getOrganization() != null) {
-            _filters.put(Employee_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+            _filters.put(Proveedor_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
         if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas

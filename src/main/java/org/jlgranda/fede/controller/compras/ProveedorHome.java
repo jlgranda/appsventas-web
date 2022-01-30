@@ -183,12 +183,15 @@ public class ProveedorHome extends FedeController implements Serializable {
     }
     
     public void clear() {
-        setFormProveedor(Boolean.FALSE);
+        setFormProveedor(Boolean.FALSE); //Mostrar el listado
+        System.out.println("this.proveedor.getOwner().getId(): " + this.proveedor.getOwner().getId());
         if (this.proveedor.getOwner().getId() != null) {
-            if (this.findProveedor(this.proveedor.getOwner().getCode()).isEmpty()) {
+            if (this.findProveedor(this.proveedor.getOwner().getCode()).isEmpty()) { //No existe el proveedor, mostrar el formulario para agregar
                 //Crear un nuevo proveedor
                 setFormProveedor(Boolean.TRUE);
             } else {
+                System.out.println("this.proveedor.getOwner().getId(): " + this.proveedor.getOwner().getId());
+                System.out.println("this.proveedor.getOwner().getCode(): " + this.proveedor.getOwner().getCode());
                 setKeyword(this.proveedor.getOwner().getCode());
                 this.filter();
             }
@@ -202,16 +205,13 @@ public class ProveedorHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyProveedorDataModel(proveedorService);
         }
-//        lazyDataModel.setOwner(null); //listar todos
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
-        //lazyDataModel.setAuthor(subject);
-
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
                 lazyDataModel.setTags(parts[1]);
             }
-            lazyDataModel.setFilterValue(null);//No buscar por keyword
+            lazyDataModel.setFilterValue(this.getKeyword());//No buscar por keyword
         } else {
             lazyDataModel.setTags(getTags());
             lazyDataModel.setFilterValue(getKeyword());
@@ -395,4 +395,5 @@ public class ProveedorHome extends FedeController implements Serializable {
     public void filtrarUrgentes() {
         //TODO
     }
+    
 }

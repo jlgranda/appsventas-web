@@ -27,6 +27,7 @@ import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.RecordTemplateService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
+import com.jlgranda.fede.ejb.compras.ProveedorService;
 import com.jlgranda.fede.ejb.mail.reader.FacturaElectronicaMailReader;
 import com.jlgranda.fede.ejb.mail.reader.FacturaReader;
 import com.jlgranda.fede.ejb.sales.KardexDetailService;
@@ -39,17 +40,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -63,7 +61,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.MessagingException;
-import javax.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import static org.jlgranda.fede.controller.FedeController.KEY_SEPARATOR;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
@@ -73,6 +70,7 @@ import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
+import org.jlgranda.fede.model.compras.Proveedor;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaElectronicaDetail;
@@ -95,7 +93,6 @@ import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Lists;
 import org.jpapi.util.Strings;
-import org.kie.api.runtime.RequestContext;
 import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
@@ -159,6 +156,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
     @EJB
     private ProductService productService;
+    
+    @EJB
+    private ProveedorService proveedorService;
 
     @EJB
     private FacturaElectronicaDetailService facturaElectronicaDetailService;
@@ -303,6 +303,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         setAmoutPending(BigDecimal.ZERO);
         setRecordCompleto(Boolean.TRUE);
         setOutcome("compras");
+        
+        //Establecer variable de sistema que habilita o no el registro contable
+        setAccountingEnabled(this.organizationData.getOrganization().isAccountingEnabled());
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -370,6 +373,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     public FacturaElectronica getFacturaElectronica() {
         if (this.facturaElectronicaId != null && !this.facturaElectronica.isPersistent()) {
             this.facturaElectronica = facturaElectronicaService.find(facturaElectronicaId);
+            this.setSupplier(facturaElectronica.getAuthor()); //El proveedor
             montoPorPagar();
             calcularValoresFactura();
         }
@@ -950,7 +954,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
         this.facturaElectronica.setSourceType(SourceType.MANUAL); //El tipo de importación realizado
 
-        //facturaElectronica.setAuthor(getSupplier());
+        facturaElectronica.setAuthor(getSupplier());
         this.facturaElectronica.setOwner(subject);
         this.facturaElectronica.setOrganization(this.organizationData.getOrganization());
 
@@ -980,9 +984,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         registerDetalleFacturaElectronicaInKardex(this.facturaElectronica.getFacturaElectronicaDetails()); //Procesa y guarda la factura electrónica en el medio persistente
 
         //Registrar asiento contable de la compra
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            System.out.println("this.facturaElectronica.getId():::"+this.facturaElectronica.getId());
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         if (this.facturaElectronica.getId() != null) {
             setOutcome(registerRecordInJournal());
         } else {
@@ -1339,7 +1340,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar proveedores en factura de compra
-
+    
     public SubjectAdminHome getSubjectAdminHome() {
         return subjectAdminHome;
     }
@@ -1359,7 +1360,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
         String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
         String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
-        super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, left, top, true, params);
+        super.openDialog(SettingNames.POPUP_FORMULARIO_PROVEEDOR_COMPRA, width, height, left, top, true, params);
         return true;
     }
 
@@ -1405,14 +1406,25 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             success = true;
         }
         if (success) { //Guardar profile
+            
             setSupplier(getSubjectAdminHome().getSubjectEdit());
+            
+            //Crear como proveedor de la organización
+            Proveedor proveedor = proveedorService.createInstance();
+            proveedor.setOwner(getSupplier());
+            proveedor.setOrganization(organizationData.getOrganization());
+            
+            proveedorService.save(proveedor); //persistir
+            
+            //Cerrar y regresar a pantalla de factura
             closeFormularioProfile(getSupplier());
         }
 
     }
 
     public void updateDefaultSupplier() {
-        this.facturaElectronica.setAuthor(getDefaultSupplier());
+//        this.facturaElectronica.setAuthor(getDefaultSupplier());
+        this.setSupplier(getDefaultSupplier());
     }
 
     public void calcularTotalFactura() {
@@ -1422,9 +1434,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     public String registerRecordInJournal() {
 
         String outcome_ = ""; //Regresar a la lista.
-        System.out.println("isAccountingEnabled:::"+isAccountingEnabled());
-//        if (isAccountingEnabled()) {
-        if (true) {
+        if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (EmissionType.PURCHASE_CASH.equals(facturaElectronica.getEmissionType())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprasefectivo", "REGISTRO_COMPRAS_EFECTIVO"));
@@ -1538,9 +1548,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
         if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
-            if (getPayment().getMethod().equals("EFECTIVO")) {
+            if ( "EFECTIVO".equals(getPayment().getMethod()) ) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprascreditopagoefectivo", "REGISTRO_COMPRAS_CREDITO_PAGO_EFECTIVO"));
-            } else if (getPayment().getMethod().equals("TRANSFERENCIA")) {
+            } else if ( "TRANSFERENCIA".equals(getPayment().getMethod()) ) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprascreditopagotransferencia", "REGISTRO_COMPRAS_CREDITO_PAGO_TRANSFERENCIA"));
             }
 
