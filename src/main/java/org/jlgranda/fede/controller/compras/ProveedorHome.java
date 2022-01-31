@@ -18,6 +18,7 @@ package org.jlgranda.fede.controller.compras;
 
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.FacturaElectronicaService;
+import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.compras.ProveedorService;
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -86,6 +88,9 @@ public class ProveedorHome extends FedeController implements Serializable {
     @EJB
     private FacturaElectronicaService facturaElectronicaService;
 
+    @EJB
+    private SubjectService subjectService;
+
     @Inject
     private Subject subject;
 
@@ -94,9 +99,14 @@ public class ProveedorHome extends FedeController implements Serializable {
 
     @Inject
     private OrganizationData organizationData;
-    
+
     private boolean formProveedor;
-    
+
+    /**
+     * Instancia <tt>Subject</tt> para registro de proveedor
+     */
+    private Subject supplier;
+
     @PostConstruct
     private void init() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
@@ -181,17 +191,51 @@ public class ProveedorHome extends FedeController implements Serializable {
     public void setFormProveedor(boolean formProveedor) {
         this.formProveedor = formProveedor;
     }
-    
+
+    public Subject getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Subject supplier) {
+        this.supplier = supplier;
+    }
+
+    public void saveSupplier() {
+        boolean success = false;
+        if (!getSubjectAdminHome().getSubjectEdit().isPersistent()) {
+            getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
+            getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
+
+            getSubjectAdminHome().setValidated(true); //La validación se realiza en pantalla
+            success = !"failed".equalsIgnoreCase(getSubjectAdminHome().save());
+        } else {
+            getSubjectAdminHome().update();
+            success = true;
+        }
+        if (success) { //Guardar profile
+
+            setSupplier(getSubjectAdminHome().getSubjectEdit());
+
+            //Crear como proveedor de la organización
+            this.proveedor = proveedorService.createInstance();
+            this.proveedor.setOwner(getSupplier());
+            this.proveedor.setOrganization(organizationData.getOrganization());
+
+            proveedorService.save(this.proveedor); //persistir
+
+            //Cerrar y regresar a pantalla de factura
+            closeFormularioProfile(getSupplier());
+        }
+
+    }
+
     public void clear() {
         setFormProveedor(Boolean.FALSE); //Mostrar el listado
-        System.out.println("this.proveedor.getOwner().getId(): " + this.proveedor.getOwner().getId());
         if (this.proveedor.getOwner().getId() != null) {
             if (this.findProveedor(this.proveedor.getOwner().getCode()).isEmpty()) { //No existe el proveedor, mostrar el formulario para agregar
                 //Crear un nuevo proveedor
                 setFormProveedor(Boolean.TRUE);
             } else {
-                System.out.println("this.proveedor.getOwner().getId(): " + this.proveedor.getOwner().getId());
-                System.out.println("this.proveedor.getOwner().getCode(): " + this.proveedor.getOwner().getCode());
                 setKeyword(this.proveedor.getOwner().getCode());
                 this.filter();
             }
@@ -273,12 +317,28 @@ public class ProveedorHome extends FedeController implements Serializable {
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
         String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
         String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
-        super.openDialog("subject", width, height, left, top, true, params);
+        super.openDialog(SettingNames.POPUP_FORMULARIO_PROVEEDOR, width, height, left, top, true, params);
         return true;
     }
 
     public boolean mostrarFormularioProfile() {
         return mostrarFormularioProfile(null);
+    }
+
+    public void closeFormularioProfile(Object data) {
+        removeSessionParameter("KEYWORD");
+        removeSessionParameter("SUPPLIER");
+        super.closeDialog(data);
+    }
+
+    public void loadSessionParameters() {
+        if (existsSessionParameter("SUPPLIER")) {
+            this.subjectAdminHome.setSubjectEdit((Subject) getSessionParameter("SUPPLIER"));
+        } else if (existsSessionParameter("KEYWORD")) {
+            Subject _subject = subjectService.createInstance();
+            _subject.setCode((String) getSessionParameter("KEYWORD"));
+            this.subjectAdminHome.setSubjectEdit(_subject);
+        }
     }
 
     @Override
@@ -395,5 +455,5 @@ public class ProveedorHome extends FedeController implements Serializable {
     public void filtrarUrgentes() {
         //TODO
     }
-    
+
 }
