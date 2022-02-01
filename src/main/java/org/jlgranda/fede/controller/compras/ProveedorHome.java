@@ -343,7 +343,10 @@ public class ProveedorHome extends FedeController implements Serializable {
 
     @Override
     public void handleReturn(SelectEvent event) {
-        getProveedor().setOwner((Subject) event.getObject()); //Asocia el subject actual al proveedor
+//        getProveedor().setOwner((Subject) event.getObject()); //Asocia el subject actual al proveedor
+//        this.clear();
+        getProveedor().setOwner(null); //Asocia el subject actual al proveedor
+        this.clear(); //Cargar la lista
     }
 
     @Override

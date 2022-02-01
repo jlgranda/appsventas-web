@@ -74,7 +74,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton id="button-change-customer"
                                          icon="fa fa-user-plus" styleClass="help-btn"
                                          actionListener="#{proveedorHome.mostrarFormularioProfile()}"
-                                         disabled="#{not empty proveedorHome.proveedor.id}"
                                          ajax="true" immediate="true">
                             <p:ajax event="dialogReturn" update="@form"
                                     listener="#{proveedorHome.handleReturn}">
@@ -140,6 +139,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:column>
                         <p:column headerText="#{i18n['common.name']}" sortBy="#{proveedor.owner.fullName}">
                             <h:outputText value="#{proveedor.owner.fullName}" />
+                        </p:column>
+                        <p:column headerText="#{i18n['common.alias']}" sortBy="#{proveedor.owner.fullName}">
+                            <h:outputText value="#{proveedor.name}" />
                         </p:column>
                         <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}"
                                    styleClass="text-right">

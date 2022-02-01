@@ -97,6 +97,11 @@ public class SubjectHome extends FedeController implements Serializable {
     private String clave;
     private String confirmarClave;
     
+    /**
+     * Bandera para indicar si encontró sugerencias en elementos autocomplete
+     */
+    private boolean sugerenciasEncontradas = false;
+    
     @PostConstruct
     public void init() {
         setHandledPhotoUpload(false);
@@ -104,6 +109,14 @@ public class SubjectHome extends FedeController implements Serializable {
 
     public boolean isLoggedIn() {
         return this.signup != null && this.signup.getId() != null;
+    }
+
+    public boolean isSugerenciasEncontradas() {
+        return sugerenciasEncontradas;
+    }
+
+    public void setSugerenciasEncontradas(boolean sugerenciasEncontradas) {
+        this.sugerenciasEncontradas = sugerenciasEncontradas;
     }
 
     public void save(){
@@ -332,6 +345,7 @@ public class SubjectHome extends FedeController implements Serializable {
         columns.put("surname", _keyword);
         filters.put("dummy", columns);
         QueryData<Subject> queryData = subjectService.find(-1, -1, "surname, firstname", QuerySortOrder.ASC, filters);
+        setSugerenciasEncontradas(queryData.getTotalResultCount() > 0);
         return queryData.getResult();
     }
 

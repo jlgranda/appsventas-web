@@ -136,7 +136,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:selectOneMenu value="#{inventoryHome.groupSelected}"
                                                      immediate="true"
                                                      converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
-                                        <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeProduct())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                        <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <f:ajax render="selectedToolBar"></f:ajax>
                                     </p:selectOneMenu>
                                 </p:panel>

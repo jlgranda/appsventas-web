@@ -955,7 +955,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public LazyInvoiceDataModel getLazyDataModel() {
         filter();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< DocumentType: " + getDocumentType());
         return lazyDataModel;
     }
 
