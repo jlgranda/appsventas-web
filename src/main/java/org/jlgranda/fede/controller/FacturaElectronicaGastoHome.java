@@ -300,7 +300,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         setOutcome("gastos");
         
         //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(this.organizationData.getOrganization().isAccountingEnabled());
+        setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
         
     }
 

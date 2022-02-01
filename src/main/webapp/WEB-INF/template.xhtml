@@ -40,7 +40,7 @@
                         <p:growl id="growl-sticky" showDetail="true" sticky="false"  keepAlive="false">
                              <p:autoUpdate />
                         </p:growl>
-                        <c:if test="#{not empty organizationData.organization }">
+                        <c:if test="#{ not empty organizationData.organization or request.isUserInRole('ADMIN') }">
                             <ui:insert name="content"></ui:insert>
                         </c:if>
                         <c:if test="#{empty organizationData.organization }">

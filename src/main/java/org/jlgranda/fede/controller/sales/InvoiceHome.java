@@ -255,14 +255,13 @@ public class InvoiceHome extends FedeController implements Serializable {
         setPayment(paymentService.createInstance());
 
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
-        setOutcome("preinvoices");
         setUseDefaultCustomer(true); //Usar consumidor final por defecto
         setUseDefaultEmail(false); //Usar consumidor final por ahora
         setNonnative(false); //Es extrangero
         setBusquedaEjecutada(!Strings.isNullOrEmpty(getKeyword()));
         updateDefaultEmail();
 
-        getSubjectAdminHome().setOutcome("invoice");
+        getSubjectAdminHome().setOutcome(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().getVistaVenta() : "invoice");
 
         setOrderByCode(false);
 
@@ -281,13 +280,12 @@ public class InvoiceHome extends FedeController implements Serializable {
 //                .filterValue(Arrays.asList(LocalDate.now().minusDays(28), LocalDate.now().plusDays(28)))
 //                .matchMode(MatchMode.RANGE)
 //                .build());
-        setDocumentType(DocumentType.INVOICE); //Filtro por defecto
 
         initializeActions();
         
         //Establecer variable de sistema que habilita o no el registro contable
-        //setAccountingEnabled(Boolean.valueOf(settingHome.getValue("app.accounting.enabled", "true")));
-        setAccountingEnabled(this.organizationData.getOrganization().isAccountingEnabled());
+        setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
+        setOutcome(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().getVistaVentas() : "preinvoices");
         
     }
 
@@ -800,7 +798,7 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return la regla de navegación
      */
     public String attend(Long invoiceId) {
-        String outcome = "preinvoices";
+        String outcome = this.organizationData.getOrganization().getVistaVentas();
         this.setInvoiceId(invoiceId);
         //Marcar invoice como atendido, sólo si no esta
         if (getInvoice().isPersistent() && !StatusType.ATTEND.toString().equals(getInvoice().getStatus())) {
@@ -819,7 +817,8 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @throws java.io.IOException
      */
     public void reopen(Long invoiceId) throws IOException {
-        redirectTo("/pages/fede/sales/invoice.jsf?invoiceId=" + invoiceId);
+        //redirectTo("/pages/fede/sales/" + this.organizationData.getOrganization().getVistaVenta() + ".jsf?invoiceId=" + invoiceId);
+        redirectTo(this.organizationData.getOrganization().getVistaVenta() + "?invoiceId=" + invoiceId);
     }
 
     /**
@@ -956,6 +955,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public LazyInvoiceDataModel getLazyDataModel() {
         filter();
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>><< DocumentType: " + getDocumentType());
         return lazyDataModel;
     }
 

@@ -24,6 +24,7 @@ import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +39,8 @@ import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.beanutils.BeanUtils;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
@@ -685,6 +688,39 @@ public class InventoryHome extends FedeController implements Serializable {
                     break;
                 }
                 setOutcome("");
+            } else if ("duplicar".equalsIgnoreCase(this.selectedAction) && this.getProductType() != null) {
+                setOutcome("");
+                Long productId = null;
+                for (Product p : this.getSelectedProducts()) {
+                    try {
+                        Product pp = productService.createInstance();
+                        BeanUtils.copyProperties(pp, p);
+                        pp.setName(pp.getName() + Constantes.ESPACIO + Constantes.COPIA);
+                        pp.setId(null);
+                        if (pp != null && !pp.isPersistent()) {
+                            pp = productService.save(pp); //Retorn la instancia recien creada
+                            productId = pp.getId(); //Tomar el último para redireccionar
+                        } 
+                    } catch (IllegalAccessException | InvocationTargetException ex) {
+                        java.util.logging.Logger.getLogger(InventoryHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                try {
+                    if (this.selectedProducts.size() == 1 && productId != null){
+                        redirectTo("/pages/inventory/product.jsf?productId=" + productId);
+                    } else {
+                        redirectTo("/pages/inventory/items.jsf");
+                    }
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger(InventoryHome.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            } if ("borrar".equalsIgnoreCase(this.selectedAction)) {
+                for (Product p : this.getSelectedProducts()) {
+                    p.setDeleted(Boolean.TRUE);
+                    this.productService.save(p.getId(), p); //Actualizar el tipo de producto
+                }
+                setOutcome("");
             }
         }
     }
@@ -698,6 +734,10 @@ public class InventoryHome extends FedeController implements Serializable {
             return true;
         } else if ("gotokardex".equalsIgnoreCase(this.selectedAction) && !this.selectedProducts.isEmpty()) {
             return true;
+        } else if ("duplicar".equalsIgnoreCase(this.selectedAction) && !this.selectedProducts.isEmpty()) {
+            return true;
+        } else if ("borrar".equalsIgnoreCase(this.selectedAction) && !this.selectedProducts.isEmpty()) {
+            return true;
         }
         return false;
     }
@@ -708,9 +748,9 @@ public class InventoryHome extends FedeController implements Serializable {
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         actions.add(item);
 
-        item = new SelectItem("desactivar", "Desactivar");
+        item = new SelectItem("duplicar", "Duplicar");
         actions.add(item);
-
+        
         item = new SelectItem("moveto", "Mover a categoría");
         actions.add(item);
 
@@ -719,6 +759,13 @@ public class InventoryHome extends FedeController implements Serializable {
 
         item = new SelectItem("gotokardex", "Ir a kardex");
         actions.add(item);
+        
+        item = new SelectItem("desactivar", "Desactivar (Marcar como producto sin tipo)");
+        actions.add(item);
+        
+        item = new SelectItem("borrar", "Borrar");
+        actions.add(item);
+
     }
 
     @Override

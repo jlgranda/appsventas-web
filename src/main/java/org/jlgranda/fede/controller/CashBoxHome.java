@@ -235,10 +235,8 @@ public class CashBoxHome extends FedeController implements Serializable {
         calculeSummaryCash(getStart(), getEnd());
         findCashBoxs();
 
-        //Instanciar regla de negocio para registrar ventas.
         //Establecer variable de sistema que habilita o no el registro contable
-        //Establecer variable de sistema que habilita o no el registro contable
-        setAccountingEnabled(this.organizationData.getOrganization().isAccountingEnabled());
+        setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
     }
 
     //GETTER AND SETTER

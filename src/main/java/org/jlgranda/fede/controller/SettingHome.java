@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
+import org.jpapi.model.Organization;
 import org.jpapi.model.Setting;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.I18nUtil;
@@ -92,7 +93,7 @@ public class SettingHome extends FedeController implements Serializable {
             return cache.get(name);
         }
 
-        Setting s = settingService.findByNameAndOrganization(name, subject, this.organizationData.getOrganization().getId());
+        Setting s =this.getSetting(name, subject, this.organizationData.getOrganization());
         if (s == null) { //No existe configuración de usuario, tomar la configuración global, sino el valor por defecto
             String value = getGlobalValue(name, defaultValue);
             cache.put(name, value);
@@ -184,9 +185,13 @@ public class SettingHome extends FedeController implements Serializable {
      * @return 
      */
     public String getGlobalValue(String name, String defaultValue) {
-        Setting s = settingService.findByNameAndOrganization(name, subject, this.organizationData.getOrganization().getId());
+        Long organizationId = null;
+        if (this.organizationData.getOrganization() != null){
+            organizationId = this.organizationData.getOrganization().getId();
+        }
+        Setting s = settingService.findByNameAndOrganization(name, subject, organizationId);
         if (s == null) {
-            //logger.info("SettingHome: La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
+            logger.info("SettingHome: La propiedad {} no esta definido. Se usará el valor {}", name, defaultValue);
             return defaultValue;
         }
         return s.getValue();
@@ -211,26 +216,40 @@ public class SettingHome extends FedeController implements Serializable {
     public Setting getSetting() {
         if (!Strings.isNullOrEmpty(settingName) && this.setting == null) {
             //Cargar objeto setting por nombre
-            Setting test = settingService.findByNameAndOrganization(settingName, subject, this.organizationData.getOrganization().getId());
+            Setting test = this.getSetting(settingName, subject, this.organizationData.getOrganization());
             if (test != null) {
                 //El objeto configuración de usuario
                 this.setting = test;
-            } else {
-                //La configuración de la organización
-                test = settingService.findByNameAndOrganization(settingName, null, this.organizationData.getOrganization().getId());
-                if (test != null) {
-                    //El objeto configuración de usuario
-                    this.setting = buildSettingFrom(test);
-                } else {
-                    //Se toma la configuración de referencia del sistema
-                    this.setting = buildSettingFrom(settingService.findByNameAndOrganization(settingName, null, null));
-                }
-            }
+            } 
         } else if (settingId != null && this.setting == null) {
             //Cargar objeto setting por id, carga el objeto directamente.
             this.setting = settingService.find(settingId);
         }
         return this.setting;
+    }
+    
+    private Setting getSetting(String settingName, Subject subject, Organization organization) {
+        
+        Setting settingRetornar = null;
+        if (!Strings.isNullOrEmpty(settingName) && this.setting == null) {
+            //Cargar objeto setting por nombre
+            Setting test = settingService.findByNameAndOrganization(settingName, subject, organization.getId());
+            if (test != null) {
+                //El objeto configuración de usuario
+                settingRetornar = test;
+            } else {
+                //La configuración de la organización
+                test = settingService.findByNameAndOrganization(settingName, null, organization.getId());
+                if (test != null) {
+                    //El objeto configuración de usuario
+                    settingRetornar = buildSettingFrom(test);
+                } else {
+                    //Se toma la configuración de referencia del sistema
+                    settingRetornar = buildSettingFrom(settingService.findByNameAndOrganization(settingName, null, null));
+                }
+            }
+        } 
+        return settingRetornar;
     }
 
     private Setting buildSettingFrom(Setting src) {
