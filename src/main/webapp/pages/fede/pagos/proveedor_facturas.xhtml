@@ -114,8 +114,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 <p:commandButton ajax="true" disabled="false" immediate="true"
                                  actionListener="#{proveedorHome.closeDialog(null)}" 
-                                 action="home"
-                                 icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                 action="#{proveedorHome.redirect}"
+                                 icon="pi pi-undo" styleClass="GrayButton" type="submit"
                                  />
             </f:facet>
 

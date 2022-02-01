@@ -674,7 +674,10 @@ public class InventoryHome extends FedeController implements Serializable {
                         if (k != null && k.isPersistent()) {
                             redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
                         } else {
-                            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.kardex.nofount"));
+                            
+                            //this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.kardex.nofount"));
+                            k = kardexService.findOrCreateByProductAndOrganization(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-"), p, subject, this.organizationData.getOrganization());
+                            redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
                         }
                     } catch (IOException ex) {
                         java.util.logging.Logger.getLogger(InventoryHome.class.getName()).log(Level.SEVERE, null, ex);

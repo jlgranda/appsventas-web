@@ -206,45 +206,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <!-- Ventanas de dialogo de edición -->
         <p:dialog id="entradaDialog" header="Nuevo registro" widgetVar="entradaDialog" minHeight="40" width="350" showEffect="fade" modal="true">
             <h:form id="registerKardexDetailForm">
-                <p:outputLabel for="operationtype-input" value="#{i18n['app.fede.inventory.kardex.operation.type']}" />   
-                <p:selectOneMenu id="operationtype-input" value="#{kardexInventoryHome.kardexDetail.operationType}" style="width: 100%;"
-                                 required="#{true}">
-                    <f:selectItems value="#{ui.getOperationTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                    <p:ajax update="btn-agregar" partialSubmit="true"></p:ajax>
-                </p:selectOneMenu>
-                <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}" 
-                                render="quantity" value="#{kardexInventoryHome.kardexDetail.quantity}" 
-                                required="true" requiredMessage="#{i18n['common.quantity']}"
-                                placeholder="false" minValue="0"
-                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                container="none" rendered="true"
-                                update="btn-agregar"/>
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:outputLabel for="operationtype-input" value="#{i18n['app.fede.inventory.kardex.operation.type']}" />   
+                        <p:selectOneMenu id="operationtype-input" value="#{kardexInventoryHome.kardexDetail.operationType}" style="width: 100%;"
+                                         required="#{true}">
+                            <f:selectItems value="#{ui.getOperationTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            <p:ajax update="btn-agregar" partialSubmit="true"></p:ajax>
+                        </p:selectOneMenu>
+                        <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}" 
+                                        render="quantity" value="#{kardexInventoryHome.kardexDetail.quantity}" 
+                                        required="true" requiredMessage="#{i18n['common.quantity']}"
+                                        placeholder="false" minValue="0"
+                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                        container="none" rendered="true"
+                                        update="btn-agregar"/>
 
-                <jlgranda:input id="unit_value" name="unit_value" type="decimal" label="#{i18n['common.price.unit']}" 
-                                render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
-                                required="true" requiredMessage="#{i18n['common.price.unit']}"
-                                placeholder="false" minValue="0"
-                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                container="none" rendered="true"
-                                update="btn-agregar"/>
-                <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.vaucher']} #{i18n['common.nr']}" 
-                                execute="none" render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
-                                required="false" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
-                                container="none"
-                                listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-agregar"/>
-                <p:commandButton id="btn-agregar"
-                                 icon="pi pi-check"  styleClass="danger-btn p-mr-2"
-                                 value="#{i18n['common.add']}"
-                                 actionListener="#{kardexInventoryHome.addKardexDetail()}"
-                                 type="submit" ajax="false" 
-                                 update="@form"
-                                 disabled="#{not kardexInventoryHome.validatedKardexDetail()}"
-                                 style="width: -webkit-fill-available;">
-                </p:commandButton>
+                        <jlgranda:input id="unit_value" name="unit_value" type="decimal" label="#{i18n['common.price.unit']}" 
+                                        render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
+                                        required="true" requiredMessage="#{i18n['common.price.unit']}"
+                                        placeholder="false" minValue="0"
+                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                        container="none" rendered="true"
+                                        update="btn-agregar"/>
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.vaucher']} #{i18n['common.nr']}" 
+                                        execute="none" render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
+                                        required="false" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
+                                        container="none"
+                                        listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-agregar"/>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="btn-agregar"
+                                                 icon="pi pi-check"  styleClass="danger-btn p-mr-2"
+                                                 value="#{i18n['common.add']}"
+                                                 actionListener="#{kardexInventoryHome.addKardexDetail()}"
+                                                 type="submit" ajax="false" 
+                                                 update="@form"
+                                                 disabled="#{not kardexInventoryHome.validatedKardexDetail()}"
+                                                 style="width: -webkit-fill-available;">
+                                </p:commandButton>
+                            </f:facet>
+                            <f:facet name="right">
+
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+                
             </h:form>
         </p:dialog>
         <p:dialog id="editarKardexDialog" header="Editar Kardex #{kardexInventoryHome.kardex.product.name}" widgetVar="editarKardexDialog" minHeight="40" width="800" showEffect="fade" modal="true">

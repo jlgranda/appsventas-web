@@ -64,7 +64,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 forceSelection="true" emptyMessage="No se encontraron resultados."
                                                 cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
                                                 disabled="#{facturaElectronicaGastoHome.useDefaultSupplier or not empty facturaElectronicaGastoHome.facturaElectronica.id}"
-                                                required="true">
+                                                required="true"
+                                                dropdown="true">
                                     <p:column>
                                         <h:outputText value="#{entidad.fullName.toUpperCase()}"/>
                                     </p:column>

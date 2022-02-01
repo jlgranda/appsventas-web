@@ -71,7 +71,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      selection="#{inventoryHome.selectedProducts}"
                                      sortBy="#{product.createdOn}">
                             
-                            <p:ajax event="rowSelect" listener="#{inventoryHome.onRowSelect}"/>
+                            <p:ajax event="rowSelect" listener="#{inventoryHome.onRowSelect}" />
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>

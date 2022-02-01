@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,7 +41,6 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.compras.Proveedor;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaType;
-import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jlgranda.fede.ui.model.LazyProveedorDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -51,7 +51,6 @@ import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +120,7 @@ public class ProveedorHome extends FedeController implements Serializable {
 
         setProveedor(proveedorService.createInstance());
         setOutcome("proveedores");
+        initializeActions();
     }
 
     public Long getProveedorId() {
@@ -454,6 +454,37 @@ public class ProveedorHome extends FedeController implements Serializable {
      */
     public void filtrarUrgentes() {
         //TODO
+    }
+    //Acciones sobre seleccionados
+    public void execute() {
+        
+    }
+
+    public boolean isActionExecutable() {
+        if ("collect".equalsIgnoreCase(this.selectedAction)) {
+            return true;
+        }/* else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
+            return true;
+        } else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType()!= null){
+            return true;
+        }*/
+        return false;
+    }
+
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+
+//        item = new SelectItem("imprimir", I18nUtil.getMessages("common.collect"));
+//        actions.add(item);
+
+//        item = new SelectItem("moveto", "Mover a categoría");
+//        actions.add(item);
+//        
+//        item = new SelectItem("changeto", "Cambiar tipo a");
+//        actions.add(item);
     }
 
 }

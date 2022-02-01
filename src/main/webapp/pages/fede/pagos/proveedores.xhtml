@@ -42,12 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="content">
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0.8rem">
-                <p:toolbar id="selectedToolBar" rendered="#{true}" style="display: block;">
+                <p:toolbar id="topToolBar" rendered="#{true}" class="ui-g-12 ui-lg-12" style="display: block;">
                     <f:facet name="left">
-<!--                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                        <p:inputText value="#{proveedorHome.keyword}" class="input-sm">
-                        </p:inputText>-->
-                        <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
+                        <label class="Gray">#{i18n['common.find']} #{i18n['common.supplier']}:&nbsp;</label>
                         <!-- Lista de personas, decidir si es proveedor al seleccionar el item -->
                         <p:autoComplete id="customer" value="#{proveedorHome.proveedor.owner}" effect="fade" 
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
@@ -56,21 +53,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                         placeholder="Buscar.."
                                         converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                        forceSelection="true" required="true" style="width: 100%">
+                                        forceSelection="true" required="true" >
                             <p:column>
                                 <h:outputText value="#{ui.renderer('', entidad)}"/>
                             </p:column>
                             <p:ajax event="itemSelect" listener="#{proveedorHome.clear()}" update="@form" partialSubmit="true"></p:ajax>
                         </p:autoComplete>
-                        <p:commandButton id="button-change-customer"
-                                         icon="fa fa-user-plus" styleClass="help-btn"
-                                         actionListener="#{proveedorHome.mostrarFormularioProfile()}"
-                                         disabled="#{not empty proveedorHome.proveedor.id}"
-                                         ajax="true" immediate="true">
-                            <p:ajax event="dialogReturn" update="@form"
-                                    listener="#{proveedorHome.handleReturn}">
-                            </p:ajax>
-                        </p:commandButton>
+                        
 <!--                        <p:commandButton value="#{i18n['common.find']}" 
                                          styleClass="raised-btn" 
                                          actionListener="#{proveedorHome.clear()}" ajax="false">
@@ -82,7 +71,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:commandButton>-->
                     </f:facet>
                    <f:facet name="right">
-                        <!--<p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/pagos/proveedor.jsf"/>-->
+                        <p:commandButton id="button-change-customer"
+                                         icon="fa fa-user-plus" styleClass="help-btn"
+                                         actionListener="#{proveedorHome.mostrarFormularioProfile()}"
+                                         disabled="#{not empty proveedorHome.proveedor.id}"
+                                         ajax="true" immediate="true">
+                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{proveedorHome.handleReturn}">
+                            </p:ajax>
+                        </p:commandButton>
                     </f:facet>
                 </p:toolbar>
             </div>
@@ -128,12 +125,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  value="#{proveedorHome.lazyDataModel}" 
                                  paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                  sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-                                 reflow="true" selection="#{proveedorHome.selectedProveedor}" 
+                                 reflow="true" selection="#{proveedorHome.selectedProveedores}" 
                                  rowKey="#{proveedor.id}"
                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                  id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                        <p:ajax event="rowSelect" listener="#{proveedorHome.onRowSelect}"/>
-                        <p:column selectionMode="single" style="width:64px;text-align:center"/>
+                        <p:ajax event="rowSelect" listener="#{proveedorHome.onRowSelect}" update=":form:panelSelectedToolBar"/>
+                        <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                        
+                        <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
                         <p:column headerText="#{i18n['common.dni.ruc']}" sortBy="#{proveedor.owner.fullName}">
                             <h:outputText value="#{proveedor.owner.code}" />
                         </p:column>
@@ -147,6 +148,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </h:outputText>
                         </p:column>
                     </p:dataTable>
+                    <!--Herramientas con seleccionados -->
+                    <p:panel id="panelSelectedToolBar">
+                        <p:toolbar id="selectedToolBar" rendered="#{not empty proveedorHome.selectedProveedores}">
+                            <f:facet name="left">
+                                <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
+                                <p:selectOneMenu value="#{proveedorHome.selectedAction}">
+                                    <f:selectItems value="#{proveedorHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                    <f:ajax render="selectedToolBar"></f:ajax>
+                                </p:selectOneMenu>
+                                <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="false"
+                                                 actionListener="#{proveedorHome.execute()}" 
+                                                 action="#{proveedorHome.getOutcome()}"
+                                                 oncomplete="PF('dataTable').unselectAllRows()"
+                                                 disabled="#{not proveedorHome.actionExecutable}"
+                                                 style="width: auto !important;"
+                                                 type="submit"/>
+                            </f:facet>
+                        </p:toolbar>
+                    </p:panel>
                 </p:panel>
             </div>
         </div>
