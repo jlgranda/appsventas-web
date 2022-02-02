@@ -438,6 +438,7 @@ public class ProveedorHome extends FedeController implements Serializable {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 FacturaElectronica fe = (FacturaElectronica) event.getObject();
+                System.out.println("fe...."+fe.getFacturaType());
                 if (FacturaType.COMPRA.equals(fe.getFacturaType())) {
                     redirectTo("/pages/fede/pagos/proveedor_factura_compra.jsf?facturaElectronicaId=" + fe.getId());
                 } else if (FacturaType.GASTO.equals(fe.getFacturaType())) {
