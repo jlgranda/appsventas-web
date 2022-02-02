@@ -345,21 +345,27 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public void calculateTotalKardex() {
         // Ordenar la lista por el atributo getCreatedOne(), para actualizar el saldo de la Kardex
-        Collections.sort(this.kardex.getKardexDetails(), (KardexDetail kardexDetail1, KardexDetail other) -> kardexDetail1.getCreatedOn().compareTo(other.getCreatedOn()));
+        Collections.sort(this.kardex.getKardexDetails(), (KardexDetail kardexDetail1, KardexDetail other) -> kardexDetail1.getEntryOn().compareTo(other.getEntryOn()));
         this.kardex.setQuantity(BigDecimal.ZERO);
         this.kardex.setFund(BigDecimal.ZERO);
 
-        for (int i = 1; i < this.kardex.getKardexDetails().size(); i++) { //Calcular Saldo de Kardex
-            if (KardexDetail.OperationType.EXISTENCIA_INICIAL.equals(this.kardex.getKardexDetails().get(i).getOperationType())
-                    || KardexDetail.OperationType.PRODUCCION.equals(this.kardex.getKardexDetails().get(i).getOperationType())) { //Calcular el Saldo del Kardex
-                this.kardex.getKardexDetails().get(i).setCummulativeQuantity(this.kardex.getKardexDetails().get(i - 1).getCummulativeQuantity().add(this.kardex.getKardexDetails().get(i).getQuantity()));
-                this.kardex.getKardexDetails().get(i).setCummulativeTotalValue(this.kardex.getKardexDetails().get(i - 1).getCummulativeTotalValue().add(this.kardex.getKardexDetails().get(i).getTotalValue()));
-            } else if (KardexDetail.OperationType.SALIDA_INVENTARIO.equals(this.kardex.getKardexDetails().get(i).getOperationType())) {
-                this.kardex.getKardexDetails().get(i).setCummulativeQuantity(this.kardex.getKardexDetails().get(i - 1).getCummulativeQuantity().subtract(this.kardex.getKardexDetails().get(i).getQuantity()));
-                this.kardex.getKardexDetails().get(i).setCummulativeTotalValue(this.kardex.getKardexDetails().get(i - 1).getCummulativeTotalValue().subtract(this.kardex.getKardexDetails().get(i).getTotalValue()));
+        if (this.kardex.getKardexDetails().size() == 1){
+            this.kardex.setQuantity(this.kardex.getKardexDetails().get(0).getCummulativeQuantity()); //Actualizar Saldo del Kardex
+                this.kardex.setFund(this.kardex.getKardexDetails().get(0).getCummulativeTotalValue());
+        } else {
+            //Recorrer a partir del 2do registro
+            for (int i = 1; i < this.kardex.getKardexDetails().size(); i++) { //Calcular Saldo de Kardex
+                if (KardexDetail.OperationType.EXISTENCIA_INICIAL.equals(this.kardex.getKardexDetails().get(i).getOperationType())
+                        || KardexDetail.OperationType.PRODUCCION.equals(this.kardex.getKardexDetails().get(i).getOperationType())) { //Calcular el Saldo del Kardex
+                    this.kardex.getKardexDetails().get(i).setCummulativeQuantity(this.kardex.getKardexDetails().get(i - 1).getCummulativeQuantity().add(this.kardex.getKardexDetails().get(i).getQuantity()));
+                    this.kardex.getKardexDetails().get(i).setCummulativeTotalValue(this.kardex.getKardexDetails().get(i - 1).getCummulativeTotalValue().add(this.kardex.getKardexDetails().get(i).getTotalValue()));
+                } else if (KardexDetail.OperationType.SALIDA_INVENTARIO.equals(this.kardex.getKardexDetails().get(i).getOperationType())) {
+                    this.kardex.getKardexDetails().get(i).setCummulativeQuantity(this.kardex.getKardexDetails().get(i - 1).getCummulativeQuantity().subtract(this.kardex.getKardexDetails().get(i).getQuantity()));
+                    this.kardex.getKardexDetails().get(i).setCummulativeTotalValue(this.kardex.getKardexDetails().get(i - 1).getCummulativeTotalValue().subtract(this.kardex.getKardexDetails().get(i).getTotalValue()));
+                }
+                this.kardex.setQuantity(this.kardex.getKardexDetails().get(i).getCummulativeQuantity()); //Actualizar Saldo del Kardex
+                this.kardex.setFund(this.kardex.getKardexDetails().get(i).getCummulativeTotalValue());
             }
-            this.kardex.setQuantity(this.kardex.getKardexDetails().get(i).getCummulativeQuantity()); //Actualizar Saldo del Kardex
-            this.kardex.setFund(this.kardex.getKardexDetails().get(i).getCummulativeTotalValue());
         }
     }
 
@@ -422,8 +428,13 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), "No puede exceder de la cantidad existente.!");
             } else {
                 this.kardex.addKardexDetail(this.kardexDetail);
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
+                System.out.println("kardex details: " + this.kardexDetail.getOperationType());
+                System.out.println("kardex details: " + this.kardexDetail.getQuantity());
+                System.out.println("kardex details: " + this.kardexDetail.getTotalValue());
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<");
                 this.calculateTotalKardex();
-                this.save();
+                this.save(); //Guardar el estado del kardex
                 this.kardexDetail = kardexDetailService.createInstance(); //Recargar para la nueva instancia
                 this.kardex = kardexService.createInstance();
                 this.getKardex();
