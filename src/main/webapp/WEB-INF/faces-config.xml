@@ -120,6 +120,16 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>ingresos</from-outcome>
+            <to-view-id>/pages/fede/compras/ingresos.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ingreso</from-outcome>
+            <to-view-id>/pages/fede/compras/ingreso.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>proveedores</from-outcome>
             <to-view-id>/pages/fede/pagos/proveedores.jsf</to-view-id>
             <redirect />

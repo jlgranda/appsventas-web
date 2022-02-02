@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="facturaElectronicaId" value="#{facturaElectronicaIngresoHome.facturaElectronicaId}" />
+            <f:viewAction action="#{facturaElectronicaIngresoHome.messageAlert}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.inventory']}</li>
+        <li>/</li>
+        <li><p:link outcome="gastos">#{i18n['common.vouchers.from.entry']}</p:link></li>
+        <li>/</li>
+        <li><p:link outcome="gasto">#{facturaElectronicaIngresoHome.facturaElectronicaId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.entry']}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
+        <o:importConstants type="org.jlgranda.fede.model.document.EmissionType" />
+        <div class="ui-g ui-fluid">
+            <div class="card">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <h:outputText id="title" class="Fs18 bold-capital" value="#{i18n[facturaElectronicaIngresoHome.facturaElectronica.emissionType]}"></h:outputText>
+                    <div class="EmptyBox10"/>
+                    <div class="ui-g ui-fluid">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:outputLabel value="#{i18n['common.supplier']}" for="@next"/>
+                            <div class="ui-g-12" style="display: inline-flex; padding: 0rem">
+                                <p:autoComplete id="supplier" 
+                                                value="#{facturaElectronicaIngresoHome.supplier}"  var="entidad"
+                                                itemLabel="#{entidad.fullName.toUpperCase()}" itemValue="#{entidad}"
+                                                completeMethod="#{proveedorHome.find}"
+                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                                converterMessage="El convertidor no responde."
+                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                placeholder="#{i18n['common.find']}"
+                                                forceSelection="true" emptyMessage="No se encontraron resultados."
+                                                cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                disabled="#{facturaElectronicaIngresoHome.useDefaultSupplier or not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
+                                                required="true"
+                                                dropdown="true">
+                                    <p:column>
+                                        <h:outputText value="#{entidad.fullName.toUpperCase()}"/>
+                                    </p:column>
+                                    <p:ajax update="rcdd-btn-add" partialSubmit="true"></p:ajax>
+                                </p:autoComplete>
+                                <h:outputText value="#{i18['common.supplier.invoce.none']}" />
+                                <p:selectBooleanCheckbox value="#{facturaElectronicaIngresoHome.useDefaultSupplier}"
+                                                         disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}">
+                                    <p:ajax update="supplier rcdd-btn-add" listener="#{facturaElectronicaIngresoHome.updateDefaultSupplier}" />
+                                </p:selectBooleanCheckbox>
+                                <p:commandButton id="supplier-btn-chg"
+                                                 icon="fa fa-user-plus" styleClass="help-btn"
+                                                 actionListener="#{facturaElectronicaIngresoHome.mostrarFormularioProfile()}" 
+                                                 disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
+                                                 ajax="true" immediate="true">
+                                    <p:ajax event="dialogReturn" update="@form"
+                                            listener="#{facturaElectronicaIngresoHome.handleReturn}">
+                                    </p:ajax>
+                                </p:commandButton>
+                            </div>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.purchase']}" for="@next"/>
+                            <p:selectOneMenu id="emissionType"
+                                             value="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType}"
+                                             disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
+                                             immediate="true"
+                                             required="true"> 
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@this days title" />
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" > 
+                            <p:outputLabel value="Días Plazo/Fecha de Vencimiento" for="@next"/>
+                            <div class="ui-g-12" style="display: inline-flex; padding: 0rem;">
+                                <p:spinner id="days" 
+                                           value="#{facturaElectronicaIngresoHome.days}" min="1" 
+                                           disabled="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
+                                           rendered="#{empty facturaElectronicaIngresoHome.facturaElectronica.id}"
+                                           immediate="false">
+                                    <p:ajax listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="true"></p:ajax>
+                                </p:spinner>
+                                <p:calendar id="fechaVencimiento" 
+                                            value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaVencimiento}" 
+                                            disabled="true"
+                                            immediate="false" 
+                                            required="true">
+                                </p:calendar>
+                            </div>
+                        </div>
+                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.document']}" for="@next"/>
+                            <p:selectOneMenu id="documentType"
+                                             value="#{facturaElectronicaIngresoHome.facturaElectronica.documentType}"
+                                             immediate="true"
+                                             required="#{true}"> 
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.getDocumentFacturaTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@this" />
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12" style="padding: 0rem">
+                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.nr']} #{i18n['common.of']} #{i18n['common.document']}" 
+                                            value="#{facturaElectronicaIngresoHome.facturaElectronica.code}" 
+                                            render="code" execute="@this save"
+                                            inlinehelp="#{messages['common.code.inlinehelp']}"
+                                            required="true"/>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:outputLabel value="#{i18n['common.date.emission']}" for="@next"/>
+                            <p:calendar id="fechaEmision" 
+                                        value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaEmision}"
+                                        disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.payments}"
+                                        immediate="true"
+                                        required="true">
+                            </p:calendar>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><p:separator style="color: #EFEFEF"/></div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:commandButton id="rcdd-btn-add"
+                                             icon="fa fa-plus" styleClass="info-btn"
+                                             value="#{i18n['common.new']} #{i18n['common.registry']}"
+                                             onclick="PF('rcdd-dlg').show()"
+                                             disabled="#{empty facturaElectronicaIngresoHome.supplier or not empty facturaElectronicaIngresoHome.facturaElectronica.payments}"/>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:dataTable id="rcdd-dtb"
+                                         value="#{facturaElectronicaIngresoHome.record.recordDetails}" var="recordDetail" 
+                                         rowKey="#{recordDetail.account}"
+                                         selection="#{facturaElectronicaIngresoHome.recordDetailSelected}" 
+                                         selectionMode="single">
+                                <p:column headerText="#{i18n['common.account']}">
+                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.value']}" style="width: 10rem;">
+                                    <h:outputText value="#{recordDetail.amount}" style="float: right;">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:columnGroup  type="footer">
+                                    <p:row>
+                                        <p:column colspan="1" class="Fs16" style="text-align:right" footerText="#{i18n['common.total.pay']}"/>
+                                        <p:column>
+                                            <f:facet name="footer">
+                                                <h:outputText class="Fs16 BigTopic" value="#{facturaElectronicaIngresoHome.facturaElectronica.importeTotal}">
+                                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                                </h:outputText>
+                                            </f:facet>
+                                        </p:column>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:outputLabel value="Concepto" for="@next"/>
+                            <p:inputTextarea  class="BigTopic" 
+                                              value="#{facturaElectronicaIngresoHome.facturaElectronica.description}" 
+                                              rows="3" cols="30" autoResize="false">
+                                <p:ajax process="@this"/>
+                            </p:inputTextarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:commandButton id="fct-btn-save" 
+                                             value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;" 
+                                             actionListener="#{facturaElectronicaIngresoHome.save()}" action="#{facturaElectronicaIngresoHome.getOutcome()}"
+                                             disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.payments or empty facturaElectronicaIngresoHome.record.recordDetails}"
+                                             ajax="true" type="submit"/>
+                            <i class="fa fa-bars p-px-2"/>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:commandButton title="Principal" icon="pi pi-undo" styleClass="primary-button"
+                                             actionListener="#{invoiceHome.closeDialog(null)}" action="#{facturaElectronicaIngresoHome.redirect()}"
+                                             ajax ="true" type="submit"/>                   
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+            </div>
+            <p:dialog id="rcdd-dlg" widgetVar="rcdd-dlg"
+                      header="Agregar Detalle" 
+                      minHeight="50" width="400" showEffect="fade" modal="true" closable="false">
+                <p:separator style="color: #EFEFEF"/>
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12" style="padding-left: 0.5rem; padding-right: 0.5rem;">
+                        <p:outputLabel value="#{i18n['app.fede.accounting.account.catalogue']}" for="@next"/>
+                        <p:autoComplete id="rcdd-account" 
+                                        value="#{facturaElectronicaIngresoHome.recordDetail.account}" var="account"
+                                        itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                        completeMethod="#{recordHome.filterAccounts('gasto')}"
+                                        converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                        converterMessage="El convertidor no responde."
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        placeholder="#{i18n['common.account.find']}"
+                                        forceSelection="true" emptyMessage="No se encontraron resultados."
+                                        cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        dropdown="true">
+                            <p:column>
+                                <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                            </p:column>
+                            <p:ajax process="@this"/>
+                            <p:ajax event="itemSelect" listener="#{facturaElectronicaIngresoHome.onItemAccountSelect}" update="rcdd-btn-save"/>
+                        </p:autoComplete>
+                    </div>
+                    <jlgranda:input id="rcdd-amount" name="rcdd-amount" type="decimal" label="#{i18n['common.money.letter']}"
+                                    render="rcdd-amount" value="#{facturaElectronicaIngresoHome.recordDetail.amount}" 
+                                    required="true" requiredMessage="#{i18n['common.money.letter']}"
+                                    placeholder="false"
+                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                    thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                    decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                    container="none" rendered="true"/>
+                    <div class="ui-g-12" style="display: inline-flex; padding: 0.5rem 0 0 0">
+                        <p:commandButton id="rcdd-btn-save" 
+                                         value="#{i18n['common.add']}" icon="fa fa-check" styleClass="danger-btn" 
+                                         actionListener="#{facturaElectronicaIngresoHome.recordDetailAdd('save')}"
+                                         disabled="#{empty facturaElectronicaIngresoHome.recordDetail.account}"
+                                         update="rcdd-btn-save rcdd-dlg rcdd-dtb pay-pnl amountPending fct-btn-save"
+                                         ajax="true" type="submit"/>
+                        <p:commandButton title="#{i18n['common.cancel']}" icon="fa fa-times" styleClass="secondary-button"
+                                         actionListener="#{facturaElectronicaIngresoHome.recordDetailAdd('cancel')}"
+                                         onclick="PF('rcdd-dlg').hide()"
+                                         update="rcdd-dlg"
+                                         ajax="true" type="submit"/>
+                    </div>
+                </div>
+            </p:dialog>
+            <p:panel id="pay-pnl" 
+                     class="card" rendered="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType == EmissionType.PURCHASE_CREDIT and not empty facturaElectronicaIngresoHome.facturaElectronica.id}"><!-- Lista de pagos para facturas a crédito -->
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <h:outputText class="Fs18 bold-capital" value="#{i18n['app.fede.sales.payments.tracking']}"></h:outputText>
+                    <div class="EmptyBox10"/>
+                    <div class="ui-g ui-fluid">
+                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                            <div class="card">
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="text-align: center">
+                                        <h:outputText class="Fs16 capital" value="#{i18n['common.fund']} #{i18n['common.pending']}: "></h:outputText>
+                                        <h:outputText id="amountPending" class="Fs16 bold-capital" value="#{facturaElectronicaIngresoHome.amountPending}">
+                                            <f:convertNumber type="currency"/>
+                                        </h:outputText>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <h:outputText value="#{i18n['app.fede.sales.payment.method']}: "></h:outputText>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <p:selectOneMenu id="pay-method"
+                                                         value="#{facturaElectronicaIngresoHome.payment.method}"
+                                                         disabled="#{facturaElectronicaIngresoHome.payableTotal}"
+                                                         immediate="true"
+                                                         required="true" style="width: 100%"> 
+                                            <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                            <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                            <p:ajax update="@this pay-method-pnl"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <h:panelGroup id="pay-method-pnl" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
+                                        <h:panelGroup rendered="#{facturaElectronicaIngresoHome.payment.method == 'TRANSFERENCIA'}" style="padding-top: 0rem">
+                                            <h:outputText value="Entidad Bancaria:"></h:outputText>
+                                            <p:selectOneMenu id="accountPaymentSelected"
+                                                             value="#{facturaElectronicaIngresoHome.accountPaymentSelected}"
+                                                             converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                                             immediate="true"
+                                                             required="true" style="width: 100%"> 
+                                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                                <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                <p:ajax update="@this"/>
+                                            </p:selectOneMenu>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <h:outputText value="#{i18n['app.fede.sales.payment.cash.paid']}: "></h:outputText>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <p:inputNumber id="pay-amount" value="#{facturaElectronicaIngresoHome.payment.amount}" required="#{true}"
+                                                       styleClass="" inputStyle="text-align: right" symbol="$"  disabled="#{facturaElectronicaIngresoHome.payableTotal}"
+                                                       maxValue="#{facturaElectronicaIngresoHome.amountPending}"
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularMontoAbonado()}" update="pay-amount pay-cash" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-amount pay-change" partialSubmit="true"></p:ajax>
+                                        </p:inputNumber>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <h:outputText value="#{i18n['common.discount']}: "></h:outputText>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <p:inputNumber id="pay-discount" value="#{facturaElectronicaIngresoHome.payment.discount}" required="#{true}" 
+                                                       styleClass="" inputStyle="text-align: right" symbol="$"  disabled="#{facturaElectronicaIngresoHome.payableTotal}" 
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularMontoAbonado()}" update="pay-cash" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="true"></p:ajax>
+                                        </p:inputNumber>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <h:outputText value="#{i18n['app.fede.sales.payment.cash']}: "></h:outputText>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <p:inputNumber id="pay-cash" value="#{facturaElectronicaIngresoHome.payment.cash}" required="#{true}" 
+                                                       styleClass="" inputStyle="text-align: right" symbol="$"  disabled="#{facturaElectronicaIngresoHome.payableTotal}" 
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="true"></p:ajax>
+                                        </p:inputNumber>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <h:outputText value="#{i18n['app.fede.sales.payment.change']}: "></h:outputText>
+                                    </div>
+                                    <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        <p:inputNumber id="pay-change" value="#{facturaElectronicaIngresoHome.payment.change}" required="#{true}" 
+                                                       styleClass="" inputStyle="text-align: right" symbol="$"  disabled="#{true}"
+                                                       placeholder="#{i18n['app.fede.sales.payment.change']}"
+                                                       decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                       thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                       decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                        </p:inputNumber>
+                                    </div>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                        <p:commandButton id="pay-btn-save" 
+                                                         value="#{i18n['common.add']} #{i18n['common.payment']}" icon="fa fa-dollar" styleClass="warning-btn"
+                                                         actionListener="#{facturaElectronicaIngresoHome.addPayment()}"
+                                                         disabled="#{facturaElectronicaIngresoHome.payableTotal}"
+                                                         update="pay-pnl pay-dtbl amountPending pay-btn-save pay-method pay-method-pnl pay-amount pay-discount pay-cash pay-change fct-btn-save">
+                                            <p:confirm header="#{i18n['common.confirmation']}" message="¿Está seguro de registrar el valor de este pago?" icon="pi pi-exclamation-triangle"/>
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
+                            <p:dataTable id="pay-dtbl" draggableColumns="true" lazy="false" liveResize="true"
+                                         liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{payment.id}"
+                                         rows="5" scrollRows="5"
+                                         scrollable="true"
+                                         value="#{facturaElectronicaIngresoHome.facturaElectronica.payments}" var="payment"
+                                         selection="#{facturaElectronicaIngresoHome.selectedBussinesEntities}"
+                                         sortBy="#{payment.createdOn}"
+                                         editable="#{false}">
+                                <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" style="width: 15%" styleClass="text-right">
+                                    <h:outputText value="#{payment.createdOn}">
+                                        <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n['app.fede.sales.payment.cash.paid']}" styleClass="text-right">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{payment.amount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{payment.amount}"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.discount']}" styleClass="text-right">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{payment.discount}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{payment.discount}"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" styleClass="text-right">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{payment.cash}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{payment.discount}"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{i18n['app.fede.sales.payment.method']}" styleClass="text-right">
+                                    <h:outputText value="#{payment.method}"></h:outputText>
+                                </p:column>
+                                <p:column style="width: 8%" rendered="#{false}">
+                                    <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.payment']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.changes']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </div>
+            </p:panel>
+        </div>
+    </ui:define>
+    <ui:define name="popups">
+        <p:dialog id="myDialogID" widgetVar="myDialogVar" modal="true" closable="false" width="400px" style="text-align: -webkit-center;">
+            <span> El asiento contable no se registró debido a que las cuentas intervinientes no coinciden o no se encuentran dentro del Plan de Cuentas.! 
+            </span>
+            <h4 style="text-align: center"> ¡Por favor verífique e inténte el registro del asiento manualmente.!</h4>
+            <p:button icon="fa fa-check-square" styleClass="warning-btn"
+                      value="#{i18n['common.continue']}" 
+                      outcome="gastos" 
+                      style="width: -webkit-fill-available;"/>
+        </p:dialog>
+    </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+            .ui-dataTable * {
+                /*border : 0px !important;*/
+            }
+            .container-center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .bold-capital{
+                font-weight: bolder;
+                text-transform: uppercase;
+            }
+            .capital{
+                text-transform: uppercase;
+            }
+            .container-right{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .container-lefth{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            .line-separator{
+                color: #FBFCFC !important;
+                border-width: 0.5px;
+            }
+        </style>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>
