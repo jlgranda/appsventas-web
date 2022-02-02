@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.gastos']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.inventory']}</li>
             <li>/</li>
-            <li><p:link outcome="gastos">#{i18n['common.gastos']}</p:link></li>
+            <li><p:link outcome="gastos">#{i18n['common.vouchers.from.expense']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
