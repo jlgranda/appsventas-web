@@ -272,7 +272,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
-     
+
     }
 
     public List<UploadedFile> getUploadedFiles() {
@@ -340,7 +340,16 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     public FacturaElectronica getFacturaElectronica() {
         if (this.facturaElectronicaId != null && !this.facturaElectronica.isPersistent()) {
             this.facturaElectronica = facturaElectronicaService.find(facturaElectronicaId);
-            this.setSupplier(facturaElectronica.getAuthor()); //El proveedor
+            this.setSupplier(this.facturaElectronica.getAuthor()); //El proveedor
+            if (this.facturaElectronica.getRecordId() != null) { //La información del record
+                setRecord(recordService.find(this.facturaElectronica.getRecordId()));
+                if (getRecord().isPersistent()) {
+                    if (!getRecord().getRecordDetails().isEmpty()) {
+                        getRecord().setRecordDetails(getRecord().getRecordDetails().stream()
+                                .filter(val -> RecordDetail.RecordTDetailType.DEBE.equals(val.getRecordDetailType())).collect(Collectors.toList()));
+                    }
+                }
+            }
             montoPorPagar();
         }
         return facturaElectronica;
@@ -1168,17 +1177,14 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
      * Calcular valores del monto que aún hay que abonar al pago de la factura.
      */
     public void montoPorPagar() {
-        System.out.println("montoporpagar:::");
         BigDecimal total = BigDecimal.ZERO;
         this.amountPending = BigDecimal.ZERO;
         if (this.facturaElectronica.getId() != null) {
             facturaElectronica.setPayments(paymentService.findByNamedQuery("Payment.findByFacturaElectronica", this.facturaElectronica));
-            System.out.println("facturaElectronica.getPayments():::"+facturaElectronica.getPayments());
         }
         for (Payment p : facturaElectronica.getPayments()) {
             total = total.add(p.getAmount());
         }
-        System.out.println("total:::"+total);
         this.amountPending = facturaElectronica.getImporteTotal().subtract(total);
         if (this.amountPending != null) {
             this.payableTotal = this.amountPending.compareTo(BigDecimal.ZERO) == 0;
@@ -1331,8 +1337,10 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
             p.setDatePaymentCancel(Dates.now());
             this.getFacturaElectronica().addPayment(p);
             facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);///guardar el pago
-            if (p.getUuid() != null) {
-                setPayment(paymentService.findByCode(p));
+            setFacturaElectronica(facturaElectronicaService.find(facturaElectronica.getId()));
+
+            if (!facturaElectronica.getPayments().isEmpty()) {
+                setPayment(facturaElectronica.getPayments().get(facturaElectronica.getPayments().size() - 1));
             }
 
             //Registrar asiento contable del pago de la compra
