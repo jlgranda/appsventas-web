@@ -189,7 +189,7 @@ public class RecordHome extends FedeController implements Serializable {
             this.setRecordDetail(find.get());
         }
     }
-
+    
     public void onRowSelect(SelectEvent<RecordDetail> event) {
         this.recordDetail = event.getObject();
         addInfoMessage(I18nUtil.getMessages("action.info"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
