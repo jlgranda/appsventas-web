@@ -344,7 +344,7 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
                 if (getRecord().isPersistent()) {
                     if (!getRecord().getRecordDetails().isEmpty()) {
                         getRecord().setRecordDetails(getRecord().getRecordDetails().stream()
-                                .filter(val -> RecordDetail.RecordTDetailType.DEBE.equals(val.getRecordDetailType())).collect(Collectors.toList()));
+                                .filter(val -> RecordDetail.RecordTDetailType.HABER.equals(val.getRecordDetailType())).collect(Collectors.toList()));
                     }
                 }
             }
