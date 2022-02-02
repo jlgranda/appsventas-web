@@ -218,7 +218,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:autoComplete id="rcdd-account" 
                                         value="#{facturaElectronicaGastoHome.recordDetail.account}" var="account"
                                         itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                        completeMethod="#{recordHome.filterAccounts('gasto')}"
+                                        completeMethod="#{recordHome.filterAccountsChildrens('gastos')}"
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                         converterMessage="El convertidor no responde."
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
