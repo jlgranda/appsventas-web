@@ -1473,38 +1473,40 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                         //Corregir objetos cuenta en los detalles
                         rcr.getRecordDetails().forEach(rcrd -> {
                             rcrd.setLastUpdate(Dates.now());
-                            if (rcrd.getAccountName().contains("$CEDULA")) {
-                                Account cuentaPadreDetectada = accountCache.lookupByName(rcrd.getAccountName().substring(0, rcrd.getAccountName().length() - 8), this.organizationData.getOrganization());
-                                if (cuentaPadreDetectada != null && cuentaPadreDetectada.getId() != null) {
-                                    String nombreCuentaHija = cuentaPadreDetectada.getName().concat(" ").concat(this.facturaElectronica.getAuthor().getFullName());
-                                    Account cuentaHija = accountCache.lookupByName(nombreCuentaHija, this.organizationData.getOrganization());
-                                    if (cuentaHija == null) {
-                                        cuentaHija = accountService.createInstance();//crear la cuenta
-                                        cuentaHija.setCode(this.accountCache.genereNextCode(cuentaPadreDetectada.getId()));
-                                        cuentaHija.setCodeType(CodeType.SYSTEM);
-                                        cuentaHija.setUuid(UUID.randomUUID().toString());
-                                        cuentaHija.setName(nombreCuentaHija.toUpperCase());
-                                        cuentaHija.setDescription(cuentaHija.getName());
-                                        cuentaHija.setParentAccountId(cuentaPadreDetectada.getId());
-                                        cuentaHija.setOrganization(this.organizationData.getOrganization());
-                                        cuentaHija.setAuthor(this.subject);
-                                        cuentaHija.setOwner(this.subject);
-                                        cuentaHija.setOrden(Short.MIN_VALUE);
-                                        cuentaHija.setPriority(0);
-                                        accountService.save(cuentaHija.getId(), cuentaHija);
-                                        this.accountCache.load(); //recargar todas las cuentas
-                                    }
-                                    rcrd.setAccount(cuentaHija);
-                                    rcrd.setAccountName(rcrd.getAccount().getName());
-                                }
-                            } else if (rcrd.getAccountName().contains("$BANCO")) {
-                                rcrd.setAccount(this.accountPaymentSelected);
-                                rcrd.setAccountName(rcrd.getAccount().getName());
-                            } else {
-                                rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
-                            }
                             if (rcrd.getAccount() == null) {
-                                this.recordCompleto = Boolean.FALSE;
+                                if (rcrd.getAccountName().contains("$CEDULA")) {
+                                    Account cuentaPadreDetectada = accountCache.lookupByName(rcrd.getAccountName().substring(0, rcrd.getAccountName().length() - 8), this.organizationData.getOrganization());
+                                    if (cuentaPadreDetectada != null && cuentaPadreDetectada.getId() != null) {
+                                        String nombreCuentaHija = cuentaPadreDetectada.getName().concat(" ").concat(this.facturaElectronica.getAuthor().getFullName());
+                                        Account cuentaHija = accountCache.lookupByName(nombreCuentaHija, this.organizationData.getOrganization());
+                                        if (cuentaHija == null) {
+                                            cuentaHija = accountService.createInstance();//crear la cuenta
+                                            cuentaHija.setCode(this.accountCache.genereNextCode(cuentaPadreDetectada.getId()));
+                                            cuentaHija.setCodeType(CodeType.SYSTEM);
+                                            cuentaHija.setUuid(UUID.randomUUID().toString());
+                                            cuentaHija.setName(nombreCuentaHija.toUpperCase());
+                                            cuentaHija.setDescription(cuentaHija.getName());
+                                            cuentaHija.setParentAccountId(cuentaPadreDetectada.getId());
+                                            cuentaHija.setOrganization(this.organizationData.getOrganization());
+                                            cuentaHija.setAuthor(this.subject);
+                                            cuentaHija.setOwner(this.subject);
+                                            cuentaHija.setOrden(Short.MIN_VALUE);
+                                            cuentaHija.setPriority(0);
+                                            accountService.save(cuentaHija.getId(), cuentaHija);
+                                            this.accountCache.load(); //recargar todas las cuentas
+                                        }
+                                        rcrd.setAccount(cuentaHija);
+                                        rcrd.setAccountName(rcrd.getAccount().getName());
+                                    }
+                                } else if (rcrd.getAccountName().contains("$BANCO")) {
+                                    rcrd.setAccount(this.accountPaymentSelected);
+                                    rcrd.setAccountName(rcrd.getAccount().getName());
+                                } else {
+                                    rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
+                                }
+                                if (rcrd.getAccount() == null) {
+                                    this.recordCompleto = Boolean.FALSE;
+                                }
                             }
                         });
 

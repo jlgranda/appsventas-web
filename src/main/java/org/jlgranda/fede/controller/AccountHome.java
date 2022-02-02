@@ -412,7 +412,7 @@ public class AccountHome extends FedeController implements Serializable {
     public Account findParentAccount(Account x) {
         return accountCache.lookup(x.getParentAccountId());
     }
-
+    
     /**
      * Generar el código de un objeto <tt>Account</tt> según su objeto padre
      *

@@ -36,9 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="gastos">#{i18n['common.vouchers.from.entry']}</p:link></li>
+        <li><p:link outcome="ingresos">#{i18n['common.vouchers.from.entry']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="gasto">#{facturaElectronicaIngresoHome.facturaElectronicaId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.entry']}</p:link></li>
+        <li><p:link outcome="ingreso">#{facturaElectronicaIngresoHome.facturaElectronicaId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.entry']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
@@ -88,7 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.purchase']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.entry']}" for="@next"/>
                             <p:selectOneMenu id="emissionType"
                                              value="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType}"
                                              disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
@@ -98,6 +98,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this days title" />
                             </p:selectOneMenu>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:outputLabel value="#{i18n['common.date.emission']}" for="@next"/>
+                            <p:calendar id="fechaEmision" 
+                                        value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaEmision}"
+                                        disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.payments}"
+                                        immediate="true"
+                                        required="true">
+                            </p:calendar>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" > 
                             <p:outputLabel value="Días Plazo/Fecha de Vencimiento" for="@next"/>
@@ -135,15 +144,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             inlinehelp="#{messages['common.code.inlinehelp']}"
                                             required="true"/>
                         </div>
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.date.emission']}" for="@next"/>
-                            <p:calendar id="fechaEmision" 
-                                        value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaEmision}"
-                                        disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.payments}"
-                                        immediate="true"
-                                        required="true">
-                            </p:calendar>
-                        </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><p:separator style="color: #EFEFEF"/></div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:commandButton id="rcdd-btn-add"
@@ -168,10 +168,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:column>
                                 <p:columnGroup  type="footer">
                                     <p:row>
-                                        <p:column colspan="1" class="Fs16" style="text-align:right" footerText="#{i18n['common.total.pay']}"/>
+                                        <p:column colspan="1" class="Fs14" style="text-align:right" footerText="#{i18n['common.total.pay']}"/>
                                         <p:column>
                                             <f:facet name="footer">
-                                                <h:outputText class="Fs16 BigTopic" value="#{facturaElectronicaIngresoHome.facturaElectronica.importeTotal}">
+                                                <h:outputText class="Fs14 BigTopic" value="#{facturaElectronicaIngresoHome.facturaElectronica.importeTotal}">
                                                     <f:convertNumber type="currency" currencySymbol="$"/>
                                                 </h:outputText>
                                             </f:facet>
@@ -218,7 +218,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:autoComplete id="rcdd-account" 
                                         value="#{facturaElectronicaIngresoHome.recordDetail.account}" var="account"
                                         itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                        completeMethod="#{recordHome.filterAccounts('gasto')}"
+                                        completeMethod="#{accountHome.find}"
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                         converterMessage="El convertidor no responde."
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
@@ -434,7 +434,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <h4 style="text-align: center"> ¡Por favor verífique e inténte el registro del asiento manualmente.!</h4>
             <p:button icon="fa fa-check-square" styleClass="warning-btn"
                       value="#{i18n['common.continue']}" 
-                      outcome="gastos" 
+                      outcome="ingresos" 
                       style="width: -webkit-fill-available;"/>
         </p:dialog>
     </ui:define>
