@@ -48,27 +48,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}" 
                                     value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
 
-                    <div class="Container100 Responsive50">
-                        <div class="ContainerIndent">
-                            <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
-                            <p:selectOneMenu value="#{inventoryHome.product.productType}"
-                                             required="#{true}" immediate="true">
-                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@this" />
-                            </p:selectOneMenu>
-                        </div>
-                    </div>
-                    
-                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
-                                    value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
-
                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
                                     value="#{inventoryHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
 
                     <div class="ui-g-12 ui-lg-12 ui-md-12">
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
-                            <label class="BigTopic">#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}:&nbsp;</label>
+                            <label>#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}:&nbsp;</label>
                             <p:inputNumber id="priceCost" value="#{inventoryHome.product.priceCost}" required="true" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -77,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:inputNumber>
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
-                            <label class="BigTopic">#{i18n['app.fede.inventory.price.a']}:&nbsp;</label>
+                            <label>#{i18n['app.fede.inventory.price.a']}:&nbsp;</label>
                             <p:inputNumber id="price" value="#{inventoryHome.product.price}" required="true" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -86,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:inputNumber>
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
-                            <label class="BigTopic">#{i18n['app.fede.inventory.price.b']}:&nbsp;</label>
+                            <label>#{i18n['app.fede.inventory.price.b']}:&nbsp;</label>
                             <p:inputNumber id="priceB" value="#{inventoryHome.product.priceB}" required="false" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -95,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:inputNumber>
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
-                            <label class="BigTopic">#{i18n['app.fede.inventory.price.c']}:&nbsp;</label>
+                            <label>#{i18n['app.fede.inventory.price.c']}:&nbsp;</label>
                             <p:inputNumber id="priceC" value="#{inventoryHome.product.priceC}" required="false" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -107,7 +92,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
-                            <h2 class="BigTopic">#{i18n['common.tax.type']}&nbsp;</h2>
+                            <label>#{i18n['common.type']}&nbsp;</label>
+                            <p:selectOneMenu value="#{inventoryHome.product.productType}"
+                                             required="#{true}" immediate="true">
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@this" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                    
+                    <div class="Container100 Responsive50">
+                        <div class="ContainerIndent">
+                            <label>#{i18n['common.tax.type']}&nbsp;</label>
                             <p:selectOneMenu value="#{inventoryHome.product.taxType}"
                                              required="#{true}" immediate="true"> 
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
@@ -119,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     
                     <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
-                            <h4>#{i18n['app.fede.inventory.category']} (#{i18n['app.fede.inventory.categories.nochange']})&nbsp;</h4>
+                            <label>#{i18n['app.fede.inventory.category']} (#{i18n['app.fede.inventory.categories.nochange']})&nbsp;</label>
                             <p:selectOneMenu id="grupo" value="#{inventoryHome.groupSelected}"
                                              required="#{false}" immediate="true"
                                              converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
@@ -128,7 +125,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                     </div>
+                    
+                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
+                                    value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
 
+                    
                 </div>
                 <div class="EmptyBox10"></div>
                 <p:toolbar rendered="#{true}">

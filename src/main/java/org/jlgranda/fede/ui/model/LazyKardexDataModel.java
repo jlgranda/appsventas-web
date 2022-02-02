@@ -70,7 +70,6 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
     }
 
     public List<Kardex> getResultList() {
-        logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
@@ -203,6 +202,8 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
+        
+        _filters.put("deleted", false);
 
         _filters.putAll(filters);
 
