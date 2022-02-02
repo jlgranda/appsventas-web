@@ -375,11 +375,12 @@ public class ProveedorHome extends FedeController implements Serializable {
     public List<Subject> find(String keyword) {
         keyword = "%" + keyword.trim() + "%";
         Map<String, Object> filters = new HashMap<>();
+        filters.put("organization", this.organizationData.getOrganization());
         filters.put("code", keyword);
         filters.put("firstname", keyword);
         filters.put("surname", keyword);
-        QueryData<Proveedor> queryData = proveedorService.find("Proveedor.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
-//        QueryData<Proveedor> queryData = proveedorService.find("Proveedor.OwnerFindByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
+//        QueryData<Proveedor> queryData = proveedorService.find("Proveedor.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
+        QueryData<Proveedor> queryData = proveedorService.find("Proveedor.findByOrganizationCodeOrName", -1, -1, "", QuerySortOrder.ASC, filters);
         List<Subject> subjects = new ArrayList<>();
         if (queryData.getResult() != null && !queryData.getResult().isEmpty()) {
             for (Proveedor pr : queryData.getResult()) {
@@ -441,7 +442,6 @@ public class ProveedorHome extends FedeController implements Serializable {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 FacturaElectronica fe = (FacturaElectronica) event.getObject();
-                System.out.println("fe...."+fe.getFacturaType());
                 if (FacturaType.COMPRA.equals(fe.getFacturaType())) {
                     redirectTo("/pages/fede/pagos/proveedor_factura_compra.jsf?facturaElectronicaId=" + fe.getId());
                 } else if (FacturaType.GASTO.equals(fe.getFacturaType())) {
@@ -459,9 +459,10 @@ public class ProveedorHome extends FedeController implements Serializable {
     public void filtrarUrgentes() {
         //TODO
     }
+
     //Acciones sobre seleccionados
     public void execute() {
-        
+
     }
 
     public boolean isActionExecutable() {
@@ -483,7 +484,6 @@ public class ProveedorHome extends FedeController implements Serializable {
 
 //        item = new SelectItem("imprimir", I18nUtil.getMessages("common.collect"));
 //        actions.add(item);
-
 //        item = new SelectItem("moveto", "Mover a categoría");
 //        actions.add(item);
 //        
