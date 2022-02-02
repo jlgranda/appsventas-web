@@ -145,7 +145,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                   or kardexDetail.operationType=='PRODUCCION' ? 'rowPurchasesDev' : 'rowDefault'
                                                   or kardexDetail.operationType=='SALIDA_INVENTARIO' ? 'rowSalesDev' : 'rowDefault  '}">
                         <p:column headerText="#{i18n['common.date.emission']}" sortOrder="asc" sortPriority="1">
-                            <h:outputText value="#{kardexDetail.createdOn}">
+                            <h:outputText value="#{kardexDetail.entryOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="dd/MM/yyyy HH:mm:ss"/>
                             </h:outputText>
                         </p:column>
@@ -233,8 +233,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
                                         container="none" rendered="true"
                                         update="btn-agregar"/>
+                        <jlgranda:input id="entryon" name="entryon" type="calendar" label="#{i18n['module.stocklist.warehouse.entryon']}" 
+                                        render="entryon" value="#{kardexInventoryHome.kardexDetail.entryOn}" 
+                                        required="false" requiredMessage="#{i18n['module.stocklist.warehouse.entryon']}"
+                                        container="none"/>
                         <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.vaucher']} #{i18n['common.nr']}" 
-                                        execute="none" render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
+                                        render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
                                         required="false" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
                                         container="none"
                                         listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-agregar"/>
