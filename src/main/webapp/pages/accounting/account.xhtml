@@ -39,13 +39,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li>/</li>
         <li><p:link outcome="/pages/accounting/account_items.jsf">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/accounting/account.jsf">#{accountHome.accountId == null ? i18n['common.newa'].concat(' ').concat(i18n['common.account']) : i18n['common.edit'].concat(': ')} #{accountHome.account.name}</p:link></li>
+        <li><p:link outcome="/pages/accounting/account.jsf">#{accountHome.accountId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.fede.accounting.account']) : i18n['common.edit'].concat(': ')} #{accountHome.account.name}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <h1 class="BigTopic">#{i18n['common.account']}</h1> <!--Sección 1: Título-->
+                <h1 class="BigTopic">#{i18n['app.fede.accounting.account']}</h1> <!--Sección 1: Título-->
                 <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
                     <h:outputText value="#{i18n['app.fede.accounting.account.parent']}"/>
                     <p:selectOneMenu id="account" value="#{accountHome.parentAccount}" style="width: 100%"
@@ -75,7 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          disabled="#{false}"
                                          style="width: auto !important;"
                                          type="submit"/>
-                        <p:button icon="fa fa-plus-square-o" value="#{i18n['common.account.child']}"
+                        <p:button icon="fa fa-plus-square-o" value="#{i18n['app.fede.accounting.account.child']}"
                                   styleClass="danger-btn" outcome="/pages/accounting/account.jsf?parentAccountId=#{accountHome.account.id}" />
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth">

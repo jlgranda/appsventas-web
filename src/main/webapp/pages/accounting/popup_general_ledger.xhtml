@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.generalLedger']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.general']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="Card SoftGrayBack">
                                     <div class="dataTable_wrapper">
                                         <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                                            <span class="ui-g-9" style=" font-weight: bolder; text-align: right">#{i18n['app.fede.accounting.account.fund.old']}: </span>
+                                            <span class="ui-g-9" style=" font-weight: bolder; text-align: right">#{i18n['app.fede.accounting.account.fund.previous']}: </span>
                                             <span class="ui-g-2" style="font-weight: bold; text-align: center">
                                                 <h:outputText value="#{accountHome.amountDebeRdOld}" style="text-align: right">
                                                     <f:convertNumber type="currency" currencySymbol="$"/>

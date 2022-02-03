@@ -1191,7 +1191,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             getPayment().setDiscount(BigDecimal.ZERO);
             getPayment().setCash(BigDecimal.ZERO);
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.required"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.inlinehelp"));
         }
         if (!facturaElectronica.getPayments().isEmpty()) {
 //            Collections.sort(facturaElectronica.getPayments(), Collections.reverseOrder((Payment pay, Payment other) -> pay.getLastUpdate().compareTo(other.getLastUpdate())));
@@ -1254,7 +1254,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             facturaElectronica.addPayment(p);
             setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.incorrect"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.less.zero"));
         }
     }
 
@@ -1717,7 +1717,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public String messageDatePaymentExpired(Date fechaVencimiento) {
         if (fechaVencimiento != null) {
-            return I18nUtil.getMessages("app.fede.purchases.credit.payment.message.alert", " " + Dates.calculateNumberOfDaysBetween(getEnd(), fechaVencimiento));
+            return I18nUtil.getMessages("app.fede.payments.purchase.credit.alert", " " + Dates.calculateNumberOfDaysBetween(getEnd(), fechaVencimiento));
         } else {
             return "";
         }
@@ -1748,7 +1748,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         this.productNew.setOrganization(this.organizationData.getOrganization());
         this.productNew.setOwner(this.subject);
         productService.save(this.productNew.getId(), this.productNew); //Volver a guardar el producto para almacenar el ggroup
-        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.product.add", " " + this.productNew.getName()));
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.inventory.product.add.success", " " + this.productNew.getName()));
         this.activePanelProduct = false;
 
         //Cargar producto en el cache
@@ -1759,7 +1759,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
 
     public void messageAlert() {
         if (this.facturaElectronicaId == null) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.message.start"));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.start.message"));
         }
     }
 
@@ -1872,7 +1872,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
 
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {

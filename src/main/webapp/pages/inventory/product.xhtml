@@ -62,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:inputNumber>
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
-                            <label>#{i18n['app.fede.inventory.price.a']}:&nbsp;</label>
+                            <label>#{i18n['app.fede.inventory.product.price.a']}:&nbsp;</label>
                             <p:inputNumber id="price" value="#{inventoryHome.product.price}" required="true" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:inputNumber>
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
-                            <label>#{i18n['app.fede.inventory.price.b']}:&nbsp;</label>
+                            <label>#{i18n['app.fede.inventory.product.price.b']}:&nbsp;</label>
                             <p:inputNumber id="priceB" value="#{inventoryHome.product.priceB}" required="false" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:inputNumber>
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
-                            <label>#{i18n['app.fede.inventory.price.c']}:&nbsp;</label>
+                            <label>#{i18n['app.fede.inventory.product.price.c']}:&nbsp;</label>
                             <p:inputNumber id="priceC" value="#{inventoryHome.product.priceC}" required="false" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -116,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     
                     <div class="Container100 Responsive50">
                         <div class="ContainerIndent">
-                            <label>#{i18n['app.fede.inventory.category']} (#{i18n['app.fede.inventory.categories.nochange']})&nbsp;</label>
+                            <label>#{i18n['app.fede.inventory.category']} (#{i18n['app.fede.inventory.category.nochange']})&nbsp;</label>
                             <p:selectOneMenu id="grupo" value="#{inventoryHome.groupSelected}"
                                              required="#{false}" immediate="true"
                                              converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
@@ -152,7 +152,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          icon="pi pi-undo" styleClass="GrayButton" type="submit"
                                          />
 <!--                        <p:menuButton value="#{i18n['common.options']}">
-                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
+                            <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                         immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                         </p:menuButton>-->

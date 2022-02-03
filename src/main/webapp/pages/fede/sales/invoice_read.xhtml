@@ -35,9 +35,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <f:viewParam name="outcome" value="#{invoiceHome.outcome}" />
         </f:metadata>
     </ui:define>
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales']}</ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>#{i18n['app.fede.sales']}</li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/sales/invoice.jsf">#{invoiceHome.invoiceId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['org.jlgranda.fede.model.document.DocumentType.'.concat(invoiceHome.invoice.documentType)]}</p:link></li>
     </ui:define>
@@ -211,7 +211,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:selectOneMenu>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.sales.payment.cash']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.sales.payment.cash.received']}" for="@next"/>
                                 <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="#{true}"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -343,7 +343,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                           disabled="#{true}" 
                                          ajax="true" immediate="true"/>
                         <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button">
-                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
+                            <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                         icon="pi pi-check"
                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
                                          disabled="#{true}" 
@@ -628,7 +628,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </div>
                                         <div class="ui-g-3">
                                             <div class="ContainerIndent">
-                                                <h:outputText value="#{i18n['app.fede.sales.payment.cash']}" />
+                                                <h:outputText value="#{i18n['app.fede.sales.payment.cash.received']}" />
                                                 <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="true"
                                                                styleClass=""
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -697,7 +697,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                          icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
                                                          />
                                         <p:menuButton value="#{i18n['common.options']}"  styleClass="secondary-button" disabled="true">
-                                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
+                                            <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                                         immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                                         </p:menuButton>

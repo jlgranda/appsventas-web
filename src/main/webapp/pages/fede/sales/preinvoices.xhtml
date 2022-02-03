@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>#{i18n['app.fede.sales']}</li>
         <li>/</li>
         <li><p:link outcome="preinvoices">#{i18n['common.current']}</p:link></li>
     </ui:define>
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:tab>
                         <!-- overrides title on tab-->
                         <f:facet name="title">
-                            <h:outputText value="#{i18n['app.fede.sales.my.orders']}" escape="false" rendered="true"/> 
+                            <h:outputText value="#{i18n['app.fede.sales']}" escape="false" rendered="true"/> 
                         </f:facet>
                         <div class="ui-g">
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">

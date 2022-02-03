@@ -98,7 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.purchase']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.fede.inventory.purchase']}" for="@next"/>
                             <p:selectOneMenu id="emissionType"
                                              value="#{facturaElectronicaGastoHome.facturaElectronica.emissionType}"
                                              disabled="#{true}"
@@ -128,7 +128,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.document']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}" for="@next"/>
                             <p:selectOneMenu id="documentType"
                                              value="#{facturaElectronicaGastoHome.facturaElectronica.documentType}"
                                              disabled="#{true}"
@@ -140,7 +140,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12" style="padding: 0rem">
-                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.nr']} #{i18n['common.of']} #{i18n['common.document']}" 
+                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.nr']} #{i18n['common.of']} #{i18n['app.document']}" 
                                             value="#{facturaElectronicaGastoHome.facturaElectronica.code}" 
                                             disabled="#{true}"
                                             render="code" execute="@this save"
@@ -170,7 +170,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          rowKey="#{recordDetail.account}"
                                          selection="#{facturaElectronicaGastoHome.recordDetailSelected}" 
                                          selectionMode="single">
-                                <p:column headerText="#{i18n['common.account']}">
+                                <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                 </p:column>
                                 <p:column headerText="#{i18n['common.value']}" style="width: 10rem;">
@@ -226,7 +226,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:separator style="color: #EFEFEF"/>
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12" style="padding-left: 0.5rem; padding-right: 0.5rem;">
-                            <p:outputLabel value="#{i18n['app.fede.accounting.account.catalogue']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                             <p:autoComplete id="rcdd-account" 
                                             value="#{facturaElectronicaGastoHome.recordDetail.account}" var="account"
                                             itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
@@ -235,7 +235,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             converterMessage="El convertidor no responde."
                                             minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                             maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                            placeholder="#{i18n['common.account.find']}"
+                                            placeholder="#{i18n['app.fede.accounting.account.find']}"
                                             forceSelection="true" emptyMessage="No se encontraron resultados."
                                             cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
                                             dropdown="true">
@@ -346,7 +346,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.cash']}: "></h:outputText>
+                                        <h:outputText value="#{i18n['app.fede.sales.payment.cash.received']}: "></h:outputText>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                         <p:inputNumber id="pay-cash" value="#{facturaElectronicaGastoHome.payment.cash}" required="#{true}" 
@@ -420,7 +420,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </f:facet>
                                     </p:cellEditor>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.sales.payment.cash.received']}" styleClass="text-right">
                                     <p:cellEditor>
                                         <f:facet name="output">
                                             <h:outputText value="#{payment.cash}">

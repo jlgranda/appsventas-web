@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.purchase']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.fede.inventory.purchase']}" for="@next"/>
                             <p:selectOneMenu id="type"
                                              value="#{facturaElectronicaCompraHome.facturaElectronica.emissionType}"
                                              disabled="#{true}"
@@ -127,7 +127,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.document']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}" for="@next"/>
                             <p:selectOneMenu id="document"
                                              value="#{facturaElectronicaCompraHome.facturaElectronica.documentType}"
                                              disabled="#{true}"
@@ -139,7 +139,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12" style="padding: 0rem">
-                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.nr']} #{i18n['common.of']} #{i18n['common.document']}" 
+                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.nr']} #{i18n['common.of']} #{i18n['app.document']}" 
                                             value="#{facturaElectronicaCompraHome.facturaElectronica.code}" 
                                             disabled="#{true}"
                                             render="code" execute="@this save"
@@ -379,7 +379,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                    required="true">
                                         <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
                                     </p:inputNumber>
-                                    <p:outputLabel value="#{i18n['app.fede.inventory.price']}" for="@next"/>
+                                    <p:outputLabel value="#{i18n['common.price']}" for="@next"/>
                                     <p:inputNumber id="price" value="#{facturaElectronicaCompraHome.productNew.price}"
                                                    inputStyle="text-align: right" symbol="$"
                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -502,7 +502,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                            <h:outputText value="#{i18n['app.fede.sales.payment.cash']}: "></h:outputText>
+                                            <h:outputText value="#{i18n['app.fede.sales.payment.cash.received']}: "></h:outputText>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                             <p:inputNumber id="cash" value="#{facturaElectronicaCompraHome.payment.cash}" required="#{true}" 
@@ -577,7 +577,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" styleClass="text-right">
+                                    <p:column headerText="#{i18n['app.fede.sales.payment.cash.received']}" styleClass="text-right">
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{payment.cash}">

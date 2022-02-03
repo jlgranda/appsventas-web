@@ -40,7 +40,7 @@ public class EmailAddressValidator implements Validator {
             throws ValidatorException {
         String address = value.toString();
         if (!StringValidations.isEmailAddress(address)) {
-             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, I18nUtil.getMessages("common.email.novalid"),
+             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, I18nUtil.getMessages("app.email.invalid"),
                        null));
         }
     }

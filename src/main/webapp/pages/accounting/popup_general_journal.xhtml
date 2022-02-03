@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:dataTable id="recordDetails" 
                                                  value="#{record.recordDetails}" var="recordDetail"
                                                  rowKey="#{recordDetail.id}">
-                                        <p:column headerText="#{i18n['common.account']}">
+                                        <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                             <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
                                         </p:column>
                                         <p:column headerText="#{i18n['common.debe']}">

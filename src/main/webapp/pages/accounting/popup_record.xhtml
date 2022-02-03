@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="card ui-fluid p-shadow-1">
                     <div  class="ui-g">
                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
-                            <p:outputLabel value="#{i18n['app.fede.accounting.account.catalogue']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                             <p:autoComplete id="account"
                                             value="#{generalJournalHome.recordDetail.account}" var="account"
                                             itemLabel="#{account.name}"  itemValue="#{account}" 
@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                             converterMessage="El convertidor no responde."
                                             minQueryLength="3" maxResults="5" effect="fade"
-                                            placeholder="#{i18n['common.account.find']}"
+                                            placeholder="#{i18n['app.fede.accounting.account.find']}"
                                             forceSelection="true" emptyMessage="No se encontraron resultados."
                                             cache="true" queryDelay="1000" scrollHeight="1000"
                                             required="true">

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['common.purchases']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.purchases']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -34,9 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['common.purchases']}</p:link></li>
+        <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['app.fede.inventory.purchases']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/factura.jsf">#{facturaElectronicaHome.facturaElectronicaId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['common.purchase']}</p:link></li>
+        <li><p:link outcome="/pages/fede/factura.jsf">#{facturaElectronicaHome.facturaElectronicaId == null ? i18n['common.newa'] : i18n['common.edit']} #{i18n['app.fede.inventory.purchase']}</p:link></li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -114,7 +114,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g ui-lg-12 ui-md-12">
                                 <div class="ui-g ui-lg-4 ui-md-12">
-                                    <label>#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.document']}:</label>
+                                    <label>#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}:</label>
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-12">
                                     <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.documentType}"
@@ -127,7 +127,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g ui-lg-12 ui-md-12">
                                 <div class="ui-g ui-lg-4 ui-md-12">
-                                    <label>#{i18n['common.nr']} #{i18n['common.of']} #{i18n['common.document']}:</label>
+                                    <label>#{i18n['common.nr']} #{i18n['common.of']} #{i18n['app.document']}:</label>
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-12">
                                     <p:inputText id="code" value="#{facturaElectronicaHome.facturaElectronica.code}" required="#{false}" />
@@ -149,7 +149,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g ui-lg-12 ui-md-12">
                                 <div class="ui-g ui-lg-4 ui-md-12">
-                                    <label>#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.purchase']}:</label>
+                                    <label>#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.fede.inventory.purchase']}:</label>
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-12">
                                     <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}"
@@ -414,7 +414,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:inputNumber>
                                 </div>
                                 <div class="ui-g-4">
-                                    <h4 class="BigTopic">#{i18n['app.fede.inventory.price']}&nbsp;</h4>
+                                    <h4 class="BigTopic">#{i18n['common.price']}&nbsp;</h4>
                                     <p:inputNumber id="price" value="#{facturaElectronicaHome.productNew.price}" required="#{false}" 
                                                    inputStyle="text-align: right" symbol="$"
                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -488,7 +488,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:inputNumber>
                         </div>
                         <div class="ui-g-4 ui-lg-4 ui-g-md-12">
-                            <label>#{i18n['app.fede.sales.payment.cash']}</label>
+                            <label>#{i18n['app.fede.sales.payment.cash.received']}</label>
                             <p:inputNumber id="cash" value="#{facturaElectronicaHome.payment.cash}" required="#{true}" 
                                            styleClass="" inputStyle="text-align: right" symbol="$"  disabled="#{facturaElectronicaHome.payableTotal}" 
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -561,7 +561,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>
-                            <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" styleClass="text-right">
+                            <p:column headerText="#{i18n['app.fede.sales.payment.cash.received']}" styleClass="text-right">
                                 <p:cellEditor>
                                     <f:facet name="output">
                                         <h:outputText value="#{payment.cash}">

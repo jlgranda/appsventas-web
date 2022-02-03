@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                <label class="CardTopic Fs20">#{i18n['app.fede.sales.summary.today']} </label>
+                <label class="CardTopic Fs20">#{i18n['app.fede.reports.summary.today']} </label>
                 <h:outputText class="Fs15" value="#{now}">
                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                 </h:outputText>
@@ -93,7 +93,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card WhiteBlueBack TexAlCenter">
                             <i class="fa fa-apple Fs50 BoldGray DispBlock"></i> 
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.inventory.purchases']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24">#{cashBoxHome.purchasesTotal}</span>
                         </div>
@@ -146,7 +146,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                  value="#{cashBoxHome.listDiscount}" var="discount"
                                  selection="#{summaryHome.selectedBussinesEntities}">
                         <f:facet name="header">
-                            <h:outputText value="#{i18n['app.fede.sales.summary.discount.summary']}"></h:outputText>
+                            <h:outputText value="#{i18n['app.fede.reports.summary.sales.discounts']}"></h:outputText>
                         </f:facet>
                         <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" sortBy="#{discount[0]}" >
                             <h:outputText value="#{discount[0]}"/>

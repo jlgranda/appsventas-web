@@ -50,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:commandButton>
                             </f:facet>
                             <f:facet name="right">
-                                <p:button value="#{i18n['common.newa']} #{i18n['common.business.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
+                                <p:button value="#{i18n['common.newa']} #{i18n['bussines.entity.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
                                 <p:commandButton id="import-button" value="#{i18n['common.import']}" 
                                              ajax="true" immediate="true" icon="fas fa-file-import"
                                              actionListener="#{recordTemplateHome.prepararImportarReglas()}"
@@ -76,7 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:ajax event="toggleSelect"  listener="#{recordTemplateHome.onRowSelect}"/>
                             
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
                                 <h:outputText value="#{recordTemplate.code}" />
                             </p:column>-->
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                          id="dataTableImport" widgetVar="dataTable_wvImport" lazy="true">
                                 <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
                                     <h:outputText value="#{recordTemplate.code}" />
                                 </p:column>-->
                                 <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">

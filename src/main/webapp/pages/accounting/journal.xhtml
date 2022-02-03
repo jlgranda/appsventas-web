@@ -130,7 +130,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
                         
-                        <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.created']}" sortBy="#{record.createdOn}" style="width: 20%">
+                        <p:column  id="fechaEmision"  headerText="#{i18n['common.crationHour']}" sortBy="#{record.createdOn}" style="width: 20%">
                             <h:outputText value="#{record.createdOn}">
                                 <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                             </h:outputText>
@@ -159,9 +159,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:ajax render="selectedToolBar"></f:ajax>
                                 </p:selectOneMenu>
                                 <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}">
-                                    <jlgranda:input id="general-journal-date" name="general-journal-date" type="calendar" label="#{i18n['app.fede.accounting.journal.date']}" 
+                                    <jlgranda:input id="general-journal-date" name="general-journal-date" type="calendar" label="#{i18n['app.fede.accounting.record.date']}" 
                                         update="selectedToolBar" value="#{generalJournalHome.generalJournalDate}" 
-                                        required="false" requiredMessage="#{i18n['app.fede.accounting.journal.date']}"
+                                        required="false" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
                                         container="none"/>
                                 </p:panel>
                                 <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="true"

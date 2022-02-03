@@ -701,7 +701,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
         LineChartSeries purchases = new LineChartSeries();
         purchases.setFill(fillSeries);
-        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        purchases.setLabel(I18nUtil.getMessages("app.fede.inventory.purchases"));
 
         LineChartSeries profits = new LineChartSeries();
         profits.setFill(fillSeries);
@@ -748,7 +748,7 @@ public class SummaryHome extends FedeController implements Serializable {
         areaModel.addSeries(fixedCosts);
         areaModel.addSeries(customers);
 
-        areaModel.setTitle(I18nUtil.getMessages("linechart.salesvspurchases"));
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.smart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.chart.legendPosition", "ne"));
         areaModel.setStacked(false);
         areaModel.setAnimate(false);

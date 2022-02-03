@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:dataTable id="recordDetails" 
                                  value="#{accountHome.record.recordDetails}" var="recordDetail"
                                  rowKey="#{recordDetail.id}">
-                        <p:column headerText="#{i18n['common.account']}">
+                        <p:column headerText="#{i18n['app.fede.accounting.account']}">
                             <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
                         </p:column>
                         <p:column headerText="#{i18n['common.debe']}">
@@ -145,13 +145,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </p:messages>
                 <div class="ui-g ui-fluid">
                     <div class="ui-g ui-lg-4 ui-md-4">
-                        <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
+                        <h:outputText value="#{i18n['app.fede.accounting.account']} *"/>
                         <div class="EmptyBox10"></div>
                         <p:autoComplete value="#{accountHome.recordDetail.account}" effect="fade" 
                                         minQueryLength="2" completeMethod="#{accountHome.find}"  required="true"
                                         var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter" forceSelection="true"
-                                        placeholder="#{i18n['common.account.find']}">
+                                        placeholder="#{i18n['app.fede.accounting.account.find']}">
                             <p:column>
                                 <h:outputText value="#{entidad.code} #{entidad.name}"/>
                             </p:column>

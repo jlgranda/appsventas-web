@@ -462,7 +462,7 @@ public class AccountHome extends FedeController implements Serializable {
     public TreeNode createTreeAccounts() {
         List<Account> accountsOrder = getAccounts();
         Collections.sort(accountsOrder, (Account account1, Account other) -> account1.getCode().compareToIgnoreCase(other.getCode()));// Ordenar la lista por el atributo getCode()
-        TreeNode generalTree = new DefaultTreeNode(new Account(I18nUtil.getMessages("common.code"), I18nUtil.getMessages("common.account")), null); //Árbol general
+        TreeNode generalTree = new DefaultTreeNode(new Account(I18nUtil.getMessages("common.code"), I18nUtil.getMessages("app.fede.accounting.account")), null); //Árbol general
         TreeNode parent = null;
         for (Account x : accountsOrder) {
             if (x.getParentAccountId() == null) {
@@ -527,7 +527,7 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public void messageTreeNode() {
-        this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.account.report"));
+        this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ledger.report"));
     }
 
     /**
@@ -567,7 +567,7 @@ public class AccountHome extends FedeController implements Serializable {
         } else {
             this.accountSelected = (Account) event.getTreeNode().getData();
             this.recordDetailsAccount = new ArrayList<>();
-//            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.ledger.noleaf"));
+//            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ledger.noleaf"));
         }
     }
 
@@ -711,7 +711,7 @@ public class AccountHome extends FedeController implements Serializable {
 
     public void messageEditableRecord() {
         if (!isRecordOfReferen()) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.message.not.editable", " " + this.record.getBussinesEntityType()));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.not.editable.message", " " + this.record.getBussinesEntityType()));
         }
     }
 
@@ -725,7 +725,7 @@ public class AccountHome extends FedeController implements Serializable {
             //Preparar para una nueva entrada
             this.recordDetail = recordDetailService.createInstance();
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
         }
     }
 
@@ -772,7 +772,7 @@ public class AccountHome extends FedeController implements Serializable {
                     this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.account.amount"));
                 } else {
                     if (this.accountSelected.getId().compareTo(this.depositAccount.getId()) == 0) {
-                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
+                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.accounts.not"));
                     } else {
                         registerRecordInJournal();
                         findRecordDetailAccountTop();
@@ -780,7 +780,7 @@ public class AccountHome extends FedeController implements Serializable {
                 }
             }
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.account.none"));
         }
     }
 

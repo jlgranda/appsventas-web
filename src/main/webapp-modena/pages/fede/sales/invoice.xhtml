@@ -183,7 +183,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </div>
                             <div class="Container25 Responsive50">
                                 <div class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.fede.sales.payment.cash']}</h2>
+                                    <h2 class="BigTopic">#{i18n['app.fede.sales.payment.cash.received']}</h2>
                                     <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="false"
                                                    styleClass=""
                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -239,7 +239,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                             <p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                             immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                             </p:menuButton>

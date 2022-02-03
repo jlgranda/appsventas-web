@@ -376,7 +376,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     public void messageEditableRecord() {
         if (!isRecordOfReferen()) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.message.not.editable", " " + this.record.getBussinesEntityType()));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.not.editable.message", " " + this.record.getBussinesEntityType()));
         }
     }
 
@@ -394,7 +394,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             //Preparar para una nueva entrada
             this.recordDetail = recordDetailService.createInstance();
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
         }
     }
 

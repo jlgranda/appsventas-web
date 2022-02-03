@@ -978,7 +978,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             } else {
                 calculateTotals(this.saldoCash);
             }
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.quantity.change", "" + event.getObject().getDenomination(), event.getObject().getQuantity().toString()));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ajust.money.change", "" + event.getObject().getDenomination(), event.getObject().getQuantity().toString()));
         }
     }
 
@@ -1029,7 +1029,7 @@ public class CashBoxHome extends FedeController implements Serializable {
      */
     public void messageValidate() {
         if (this.activePanelVerification == true) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ajust.breakdown.verification"));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ajust.verification.start.message"));
         }
     }
 
@@ -1040,9 +1040,9 @@ public class CashBoxHome extends FedeController implements Serializable {
             cashBoxGeneralService.save(this.cashBoxInitialFinish.getCashBoxGeneral().getId(), this.cashBoxInitialFinish.getCashBoxGeneral());
             setActivePanelVerification(false); //Ocultar el panel de verificación
             generatePartialFinalToInitial();//Crear el nuevo _instance con los datos del último CashBoxPartial Final para detallar en caso que sea incorrecto
-            this.cashBoxPartial.setDescription(I18nUtil.getMessages("app.fede.accounting.ajust.breakdown.correct", "" + this.cashBoxPartial.getTotalCashBreakdown())); //Asignar los detalles del cashboxPartial Correcto y luego guardarlo
+            this.cashBoxPartial.setDescription(I18nUtil.getMessages("app.fede.accounting.ajust.correct.message", "" + this.cashBoxPartial.getTotalCashBreakdown())); //Asignar los detalles del cashboxPartial Correcto y luego guardarlo
             closeCashBoxChecker();
-            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.breakdown.verification.succesfully"));
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.start.correct.message"));
             findCashBoxs();
         }
     }
@@ -1056,7 +1056,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             setActiveIndex(-1); //Minimizar el panel
             generatePartialFinalToInitial();//Crear el nuevo _instance con los datos del último CashBoxPartial Final para detallar en caso que sea incorrecto
             setActivePanelBreakdown(true);//Activar el panel de desglose
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ajust.breakdown.verification.error"));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ajust.verification.message"));
         }
     }
 
@@ -1094,10 +1094,10 @@ public class CashBoxHome extends FedeController implements Serializable {
             setActiveButtonSelectDeposit(!(this.cashBoxPartial.getAmountDeposit().compareTo(BigDecimal.ZERO) == 1 && (this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == 0 || this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == -1))); //Activar/Desactivar Select y Botón de Depósito
             if (this.cashBoxPartial.getAmountDeposit().compareTo(BigDecimal.ZERO) == 1) {
                 if (this.cashBoxPartial.getAmountDeposit().compareTo(this.saldoCashFund) == 1) {
-                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.greater", "" + this.saldoCashFund.toString()));
+                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.deposit.amount.invalid", "" + this.saldoCashFund.toString()));
                 }
             } else {
-                this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.amount.less.zero"));
+                this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.deposit.amount.less.zero"));
             }
         }
     }
@@ -1105,12 +1105,12 @@ public class CashBoxHome extends FedeController implements Serializable {
     public void validateDeposit() {
         if (this.cashBoxPartial.getAccountDeposit() != null) {
             if (this.cashBoxPartial.getAccountDeposit().getId().equals(this.selectedAccount.getId())) {
-                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
+                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.account.equals"));
             } else {
                 registerRecordInJournal(); //Registrar asiento contable del depósito del valor de caja mediante Reglas de negocio
             }
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.account.none"));
         }
     }
 
@@ -1169,7 +1169,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             }
         }
         if (isAccountingEnabled() && registradoEnContabilidad) {
-            this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.sucessfully", Dates.toTimeString(Dates.now())));
+            this.addInfoMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.deposit.correct.message", Dates.toTimeString(Dates.now())));
             if (this.cashBoxPartial.getId() != null) {
                 this.cashBoxPartial = cashBoxPartialService.createInstance();
             }
@@ -1182,7 +1182,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             setActivePanelDeposit(false);//Ocultar el Panel de depósito
             cleanPanelDeposit();
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.fail")); //Falló el depósito 
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.deposit.fail.message")); //Falló el depósito 
         }
 
     }
@@ -1237,7 +1237,7 @@ public class CashBoxHome extends FedeController implements Serializable {
                 this.cashBoxGeneral.setOrganization(this.organizationData.getOrganization());
             }
             cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
-            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.breakdown.save"));
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.save.message"));
             findCashBoxs();
         }
     }
@@ -1334,7 +1334,7 @@ public class CashBoxHome extends FedeController implements Serializable {
             KnowledgeBuilderErrors kbers = FedeController.ruleRunner.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
 
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {

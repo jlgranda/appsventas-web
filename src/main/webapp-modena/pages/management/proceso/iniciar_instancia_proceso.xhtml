@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.documents.task']}" />
+        <ui:param name="title" value="#{i18n['app.document.task']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="procesoId" value="#{instanciaProcesoHome.instanciaProcesoId}" />
@@ -42,11 +42,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                         <div class="Card ShadowEffect ui-fluid">
                             <!-- INTANCIA PROCESO -->
-                            <span class="Fs20 BoldGray">#{i18n['app.documents.start']}</span>
+                            <span class="Fs20 BoldGray">#{i18n['app.documents.procedures']}</span>
                             <!-- Solicitante -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.documents.task.applicant']}</h2>
+                                    <h2 class="BigTopic">#{i18n['app.document.task.applicant']}</h2>
                                     <p:autoComplete value="#{instanciaProcesoHome.solicitante}" effect="fade" 
                                                     minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
                                                     var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
@@ -60,21 +60,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </h:panelGroup>
                             </div>
                             <!-- Cuerpo del mensaje -->
-                            <jlgranda:input id="ip-nme" name="ip-name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                            <jlgranda:input id="ip-nme" name="ip-name" type="text" label="#{i18n['app.fede.task.subject']}" 
                                             execute="@this save" render="ip-nme" value="#{instanciaProcesoHome.instanciaProceso.name}" required="true"
                                             container="none"/>
 
                             <jlgranda:input id="ip-descrpn" name="ip-descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                             value="#{instanciaProcesoHome.instanciaProceso.description}" execute="@this save" render="ip-descrpn" 
-                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                             container="none"/>
 
                             <!-- TAREA 0 -->
-                            <span class="Fs20 BoldGray">#{i18n['app.documents.start.task']}</span>
+                            <span class="Fs20 BoldGray">#{i18n['common.addressing']}</span>
                             <!-- Destinatario -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.documents.task.consignee']}</h2>
+                                    <h2 class="BigTopic">#{i18n['app.document.task.consignee']}</h2>
                                     <p:autoComplete value="#{instanciaProcesoHome.destinatario}" effect="fade" minQueryLength="2" completeMethod="#{subjectHome.find}"
                                                     var="entidad" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" maxResults="5" itemValue="#{entidad}" 
                                                     converter="org.jlgranda.fede.ui.converter.SubjectConverter" forceSelection="true">
@@ -85,13 +85,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </h:panelGroup>
                             </div>
                             <!-- Cuerpo del mensaje -->
-                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.task.subject']}" 
                                             execute="@this save" render="nme" value="#{instanciaProcesoHome.tarea.name}" required="true"
                                             container="none"/>
 
                             <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                             value="#{instanciaProcesoHome.tarea.description}" execute="@this save" render="descrpn" 
-                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                             container="none"/>
                             <!-- Aduntos -->
                             <div class="Container100  Responsive50">
@@ -108,7 +108,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandLink update="@form:documentList" ajax="@this" 
                                                        actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
                                                        title="#{i18n['Close']}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                       onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                       onclick="if (!confirm('#{i18n['app.document.remove.message']}'))
                                                                            return false;">
                                             <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
                                         </p:commandLink>

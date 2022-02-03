@@ -113,7 +113,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:panelGrid columns="5" layout="grid" style="border:0px !important; background:none;" styleClass="ui-panelgrid-blank">
                                         <p:inputText value="#{facturaElectronicaHome.payment.amount}" placeholder="#{i18n['app.fede.sales.payment.amount']}"></p:inputText>
                                         <p:inputText value="#{facturaElectronicaHome.payment.discount}" placeholder="#{i18n['app.fede.sales.payment.discount']}"></p:inputText>
-                                        <p:inputText value="#{facturaElectronicaHome.payment.cash}" placeholder="#{i18n['app.fede.sales.payment.cash']}"></p:inputText>
+                                        <p:inputText value="#{facturaElectronicaHome.payment.cash}" placeholder="#{i18n['app.fede.sales.payment.cash.received']}"></p:inputText>
                                         <p:inputText value="#{facturaElectronicaHome.payment.change}" placeholder="#{i18n['app.fede.sales.payment.change']}"></p:inputText>
                                         <p:commandButton id="add-payment" value="#{i18n['Add']}" ajax="true" 
                                                          actionListener="#{facturaElectronicaHome.addPayment()}" immediate="true"
@@ -138,7 +138,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['app.fede.sales.payment.discount']}">
                                             <h:outputText value="#{payment.discount}" />
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}">
+                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash.received']}">
                                             <h:outputText value="#{payment.cash}" />
                                         </p:column>
                                         <p:column headerText="#{i18n['app.fede.sales.payment.change']}">
@@ -172,7 +172,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                             <!--p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                             immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                             </p:menuButton-->

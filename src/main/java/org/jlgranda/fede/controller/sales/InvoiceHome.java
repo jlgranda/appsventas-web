@@ -734,7 +734,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             if (getInvoice().getId() != null) {
                 registerRecordInJournal();
             } else {
-                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.invoice.accounting.fail"));
+                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.sales.invoice.accounting.fail"));
             }
 
 //            //Guardar cambios en la entidad invoice
@@ -1264,7 +1264,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         LineChartSeries purchases = new LineChartSeries();
         purchases.setFill(fillSeries);
-        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        purchases.setLabel(I18nUtil.getMessages("app.fede.inventory.purchases"));
 
         LineChartSeries profits = new LineChartSeries();
         profits.setFill(fillSeries);
@@ -1301,7 +1301,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.addSeries(profits);
 //        areaModel.addSeries(fixedCosts);
 
-        areaModel.setTitle(I18nUtil.getMessages("linechart.salesvspurchases"));
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.smart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "ne"));
         areaModel.setExtender("skinChart");
         //areaModel.setExtender("chartExtender");
@@ -1501,7 +1501,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {

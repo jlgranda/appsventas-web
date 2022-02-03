@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['app.documents.tasks']}" icon="fa fa-tasks" 
+                <p:menuitem value="#{i18n['app.document.tasks]}" icon="fa fa-tasks" 
                             url="/pages/management/tarea/inbox.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
@@ -152,7 +152,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{instanciaProceso.name}" />
                             </p:column>
 
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{instanciaProceso.createdOn}"
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{instanciaProceso.createdOn}"
                                        styleClass="text-right">
                                 <h:outputText value="#{instanciaProceso.createdOn}">
                                     <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />

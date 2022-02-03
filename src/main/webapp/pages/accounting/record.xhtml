@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <h3>Agregar cuenta al asiento contable</h3>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.accounting.account.catalogue']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                                 <p:autoComplete id="account" 
                                                 value="#{recordHome.recordDetail.account}" var="account"
                                                 itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 converterMessage="El convertidor no responde."
                                                 minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                 maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                placeholder="#{i18n['common.account.find']}"
+                                                placeholder="#{i18n['app.fede.accounting.account.find']}"
                                                 forceSelection="true" emptyMessage="No se encontraron resultados."
                                                 cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
                                                 required="true">
@@ -123,7 +123,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax event="rowSelect" listener="#{recordHome.onRowSelect}" update="@form"/>
                                     <p:ajax event="rowUnselect" listener="#{recordHome.onRowUnselect}" update="@form"/>
 
-                                    <p:column headerText="#{i18n['common.account']}">
+                                    <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>

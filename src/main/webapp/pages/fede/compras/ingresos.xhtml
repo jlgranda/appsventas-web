@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.inventory']}</li>
             <li>/</li>
-            <li><p:link outcome="ingresos">#{i18n['common.vouchers.from.entry']}</p:link></li>
+            <li><p:link outcome="ingresos">#{i18n['app.fede.inventory.entry.vouchers']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -78,32 +78,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              ajax="false" immediate="true">
                             </p:commandButton>
                         </p:toolbarGroup>
-                        <p:toolbarGroup align="right" style="display: inline-table; padding-top: 0.5rem">
+                        <p:toolbarGroup align="right" style="display: inline-table;">
                             <p:button value="#{i18n['common.new']}"
                                       icon="pi pi-plus-circle" styleClass="danger-btn"
                                       outcome="ingreso"/>
-                            <p:commandButton id="commandAddFromFile"
-                                             value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
-                                             icon="pi pi-file" styleClass="secondary-button"
-                                             actionListener="#{facturaElectronicaIngresoHome.mostrarFormularioCargaFacturaElectronica()}">
-                                <p:ajax event="dialogReturn" update="@form"
-                                        listener="#{facturaElectronicaIngresoHome.handleReturn}">
-                                </p:ajax>
-                            </p:commandButton>
-                            <p:commandButton id="commandAddFromURL" 
-                                             value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
-                                             icon="pi pi-link" styleClass="secondary-button" 
-                                             actionListener="#{facturaElectronicaIngresoHome.mostrarFormularioDescargaFacturaElectronica()}">
-                                <p:ajax event="dialogReturn" update="@form"
-                                        listener="#{facturaElectronicaIngresoHome.handleReturn}">
-                                </p:ajax>
-                            </p:commandButton>
+                            <!--                            <p:commandButton id="commandAddFromFile"
+                                                                         value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
+                                                                         icon="pi pi-file" styleClass="secondary-button"
+                                                                         actionListener="#{facturaElectronicaIngresoHome.mostrarFormularioCargaFacturaElectronica()}">
+                                                            <p:ajax event="dialogReturn" update="@form"
+                                                                    listener="#{facturaElectronicaIngresoHome.handleReturn}">
+                                                            </p:ajax>
+                                                        </p:commandButton>
+                                                        <p:commandButton id="commandAddFromURL" 
+                                                                         value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
+                                                                         icon="pi pi-link" styleClass="secondary-button" 
+                                                                         actionListener="#{facturaElectronicaIngresoHome.mostrarFormularioDescargaFacturaElectronica()}">
+                                                            <p:ajax event="dialogReturn" update="@form"
+                                                                    listener="#{facturaElectronicaIngresoHome.handleReturn}">
+                                                            </p:ajax>
+                                                        </p:commandButton>-->
                         </p:toolbarGroup>
                     </p:toolbar>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
-
                         <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{facturaElectronica.id}"
@@ -113,39 +112,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaIngresoHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            <p:column id="code" headerText="#{i18n['common.code']}">
+                            <p:column id="code" headerText="Nº Documento">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">
+                            <p:column headerText="#{i18n['common.company.name']}" style="width:12rem;">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-                            <p:column id="summary" headerText="#{i18n['common.description']}">
-                                <h:outputText value="#{facturaElectronica.summary}" />
-                            </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}">
+                            <p:column headerText="#{i18n['ride.infoFactura.total']}">
                                 <h:outputText class="container-right" value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.amount']} #{i18n['common.collect.by']}">
+                            <p:column headerText="#{i18n['app.fede.sales.payment.cash']} #{i18n['common.collect.by']}">
                                 <h:outputText class="container-right" value="#{facturaElectronicaIngresoHome.montoPorPagar(facturaElectronica)}" 
                                               title="#{facturaElectronicaIngresoHome.messageDatePaymentExpired(facturaElectronica.fechaVencimiento)}" 
                                               style="#{facturaElectronicaIngresoHome.calculateDayOfExpiration(facturaElectronica)==true ? 'color: #F94C00' : ''}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
+                            <p:column  id="fechaUltimoPago"  headerText="Último Cobro">
+                                <h:outputText value="#{facturaElectronica.ultimaFechaPago}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column id="summary" headerText="#{i18n['common.description']}">
+                                <h:outputText value="#{facturaElectronica.summary}" />
+                            </p:column>
                             <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}">
                                 <h:outputText class="capital" value="#{facturaElectronica.emissionType == 'PURCHASE_CREDIT' ? i18n['OVERDUE']: facturaElectronica.emissionType == 'PURCHASE_CASH' ? i18n['PURCHASE_CASH_LIT']:
                                                                        facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
-                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                </h:outputText>
-                            </p:column>
-                            <p:column  id="fechaUltimoPago"  headerText="Último Cobro">
-                                <h:outputText value="#{facturaElectronica.ultimaFechaPago}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>

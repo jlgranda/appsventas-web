@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.smart']}</li>
         <li>/</li>
-        <li><p:link outcome="purchases">#{i18n['common.purchases']}</p:link></li>
+        <li><p:link outcome="purchases">#{i18n['app.fede.inventory.purchases']}</p:link></li>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -77,7 +77,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div><!-- comment -->
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                     <p:panel id="control-bar2" class="card"
-                             header="#{i18n['app.fede.smart.purchases.top']}" 
+                             header="#{i18n['app.fede.smart.purchases.top.supplier']}" 
                              styleClass="statistics ui-g">                        
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
                             <div align="right">
@@ -117,7 +117,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:column>
                                 <p:columnGroup type="footer" >
                                     <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                                        <span class="ui-g-10" style=" font-weight: bolder; text-align: right">#{i18n['common.purchases']} #{i18n['common.totals']}: </span>
+                                        <span class="ui-g-10" style=" font-weight: bolder; text-align: right">#{i18n['app.fede.inventory.purchases.totals']}: </span>
                                         <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
                                             <h:outputText value="#{summaryHome.getListPurchasesTotal()}" style="text-align: right">
                                                 <f:convertNumber type="currency" currencySymbol="$"/>

@@ -503,9 +503,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 //                        } else {
 //                            existTransaction = false;
 //                            if (this.kardexDetail.getOperationType().equals(KardexDetail.OperationType.DEVOLUCION_COMPRA)) {
-//                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.dev.purchases") + this.kardexDetail.getOperationType());
+//                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operation.type.purchases.code.none") + this.kardexDetail.getOperationType());
 //                            } else if (this.kardexDetail.getOperationType().equals(KardexDetail.OperationType.DEVOLUCION_VENTA)) {
-//                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.dev.sales") + this.kardexDetail.getOperationType());
+//                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operation.type.sales.code.none") + this.kardexDetail.getOperationType());
 //                            }
 //                        }
 //                    }
@@ -532,19 +532,19 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 //            if (existTransaction == true) {
 //                if (KardexDetail.OperationType.DEVOLUCION_VENTA.equals(this.kardexDetail.getOperationType())
 //                        && residue.compareTo(BigDecimal.ZERO) < 0) {
-//                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.code.dev.sales"));
+//                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operation.type.dev.sales"));
 //                } else if (KardexDetail.OperationType.DEVOLUCION_COMPRA.equals(this.kardexDetail.getOperationType())
 //                        && residue.compareTo(BigDecimal.ZERO) < 0) {
-//                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operationtype.code.dev.purchases"));
+//                    this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operation.type.dev.purchases"));
 //                } else {
 //                    if (KardexDetail.OperationType.DEVOLUCION_COMPRA.equals(this.kardexDetail.getOperationType())
 //                            && this.kardexDetail.getQuantity().compareTo(this.kardex.getQuantity()) > 0) {
-//                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.dev.purchases"));
+//                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.operation.type.dev.purchases.maximum"));
 //                    } else {
 //                        
 //                        if (this.kardexDetail.getUnitValue() == null || 
 //                                this.kardexDetail.getQuantity() == null){
-//                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.amount.invalid"));
+//                                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.inventory.kardex.amount.invalid"));
 //                        } else {
 //                            this.kardexDetail.setAuthor(this.subject);
 //                            this.kardexDetail.setOwner(this.subject);

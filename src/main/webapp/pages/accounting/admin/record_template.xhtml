@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:o="http://omnifaces.org/ui">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.documents.task']}" />
+        <ui:param name="title" value="#{i18n['app.document.task']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="recordTemplateId" value="#{recordTemplateHome.recordTemplateId}" />
@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <li>/</li>
             <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['common.recordtemplates']}</p:link></li>
             <li>/</li>
-            <li>#{recordTemplateHome.recordTemplateId == null ? i18n['common.newa'].concat(' ').concat(i18n['common.business.rule']).concat(' ') : ''} #{recordTemplateHome.recordTemplate.name}</li>
+            <li>#{recordTemplateHome.recordTemplateId == null ? i18n['common.newa'].concat(' ').concat(i18n['bussines.entity.rule']).concat(' ') : ''} #{recordTemplateHome.recordTemplate.name}</li>
         </ui:define>
         <ui:define name="content">
             <o:importConstants type="net.tecnopro.document.model.EstadoTipo" />
@@ -55,9 +55,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     inlinehelp="#{messages['common.firstnames.inlinehelp']}" render="name"
                                     class="ui-panelgrid-blank form-group"
                                     container="none"/>
-                    <jlgranda:input id="rule" name="rule" type="textarea" label="#{i18n['common.business.rule']}" 
+                    <jlgranda:input id="rule" name="rule" type="textarea" label="#{i18n['bussines.entity.rule']}" 
                                     value="#{recordTemplateHome.recordTemplate.rule}" required="false" 
-                                    inlinehelp="#{messages['common.business.rule']}" render="rule"
+                                    inlinehelp="#{messages['bussines.entity.rule']}" render="rule"
                                     class="ui-panelgrid-blank form-group"
                                     rows="#{settingHome.getValue('app.ui.textarea.rows', '32')}" maxlength="#{settingHome.getValue('app.ui.textarea.maxlength', '10240')}"
                                     container="none"/>
@@ -118,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                          id="dataTable" widgetVar="dataTable_wv" lazy="true">
                                 <p:column selectionMode="single" style="width:4rem;text-align:center"/>
-        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
                                     <h:outputText value="#{recordTemplate.code}" />
                                 </p:column>-->
                                 <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">

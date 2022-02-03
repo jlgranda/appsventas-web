@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          immediate="false"
                                          style="width: auto !important;">
                         </p:commandButton>
-                        <p:commandButton id="btn-kardexDetail-input" value="#{i18n['app.fede.inventory.input']}" icon="fa fa-plus"
+                        <p:commandButton id="btn-kardexDetail-input" value="#{i18n['common.entry']}" icon="fa fa-plus"
                                          actionListener="#{kardexInventoryHome.asignedKardexDetailProperties('input')}"
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
@@ -115,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          styleClass="ui-button-secondary"
                                          style="width: auto !important;">
                         </p:commandButton>
-                        <p:commandButton id="btn-kardexDetail-output" value="#{i18n['app.fede.inventory.output']}" icon="fa fa-minus"
+                        <p:commandButton id="btn-kardexDetail-output" value="#{i18n['common.exitd']}" icon="fa fa-minus"
                                          actionListener="#{kardexInventoryHome.asignedKardexDetailProperties('output')}"
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"

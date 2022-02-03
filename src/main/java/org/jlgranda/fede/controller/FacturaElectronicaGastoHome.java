@@ -1218,14 +1218,8 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
     }
 
     public void calculateDateExpired() {
-        this.facturaElectronica.setFechaVencimiento(Dates.addDays(Dates.now(), this.days));
-    }
-
-    public void calculateDaysExpired() {
-        this.days = 0;
-        Date x = this.facturaElectronica.getFechaVencimiento();
-        if (this.facturaElectronica.getFechaVencimiento() != null) {
-            this.days = ((int) Dates.calculateNumberOfDaysBetween(Dates.now(), (Date) this.facturaElectronica.getFechaVencimiento())) + 1;
+        if (this.facturaElectronica.getFechaEmision() != null && this.days >= 0) {
+            this.facturaElectronica.setFechaVencimiento(Dates.addDays(this.facturaElectronica.getFechaEmision(), this.days));
         }
     }
 
@@ -1252,7 +1246,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
     public String messageDatePaymentExpired(Date fechaVencimiento) {
         if (fechaVencimiento != null) {
-            return I18nUtil.getMessages("app.fede.purchases.credit.payment.message.alert", " " + Dates.calculateNumberOfDaysBetween(getEnd(), fechaVencimiento));
+            return I18nUtil.getMessages("app.fede.payments.purchase.credit.alert", " " + Dates.calculateNumberOfDaysBetween(getEnd(), fechaVencimiento));
         } else {
             return "";
         }
@@ -1260,7 +1254,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
     public void messageAlert() {
         if (this.facturaElectronicaId == null) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.message.start"));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.start.message"));
         }
     }
 
@@ -1312,13 +1306,13 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         if (this.facturaElectronica.getId() != null) {
             setOutcome(registerRecordInJournal());
         } else {
-            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.fail"));
         }
 
         if (Strings.isNullOrEmpty(getOutcome())) {
-            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.fail"));
         } else {
-            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.purchases.accounting.success"));
+            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.success"));
         }
 
     }
@@ -1347,7 +1341,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
             if (getPayment().getId() != null && getPayment().getMethod() != null) {
                 setOutcome(registerRecordInJournalPaymentCredit());
             } else {
-                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.fail"));
             }
 
             if (Strings.isNullOrEmpty(getOutcome())) {
@@ -1356,7 +1350,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                 addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.payments.accounting.success"));
             }
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.required"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.inlinehelp"));
         }
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         getPayment().setAmount(BigDecimal.ZERO);
@@ -1391,7 +1385,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
             facturaElectronica.addPayment(p);
             setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.incorrect"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.less.zero"));
         }
     }
 
@@ -1428,14 +1422,14 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrogastosefectivo", "REGISTRO_GASTOS_EFECTIVO"));
                 this.recordDetail.setAccountName("Caja dia");
                 this.record.addRecordDetail(recordDetail);
-                this.record.setDescription(String.format("Proveedor: %s \nConcepto: %s \nTotal facturado: %s", this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
+                this.record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal facturado: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
             } else if (EmissionType.PURCHASE_CREDIT.equals(facturaElectronica.getEmissionType())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrogastoscredito", "REGISTRO_GASTOS_CREDITO"));
                 this.recordDetail.setAccountName("PROVEEDORES $CEDULA");
                 if (this.facturaElectronica.getPayments().isEmpty()) {
-                    record.setDescription(String.format("Proveedor: %s \nConcepto: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno", this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
                 } else {
-                    record.setDescription(String.format("Proveedor: %s \nConcepto: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s", this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(this.facturaElectronica.getPayments().get(this.facturaElectronica.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(this.facturaElectronica.getPayments().get(this.facturaElectronica.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##")));
                 }
                 this.record.addRecordDetail(recordDetail);
             }
@@ -1543,7 +1537,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
 
         String outcome_ = ""; //Regresar a la lista.
 
-        if (true) {
+        if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
             if (getPayment().getMethod().equals("EFECTIVO")) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrogastoscreditopagoefectivo", "REGISTRO_GASTOS_CREDITO_PAGO_EFECTIVO"));
@@ -1745,12 +1739,12 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
 
-        if (true && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {
@@ -1784,12 +1778,12 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
 
-        if (true && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {
@@ -1797,17 +1791,13 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
                 record.setBussinesEntityId(_instance.getId());
                 record.setBussinesEntityHashCode(_instance.hashCode());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
-                System.out.println("Proveedor: " + _instance.getFacturaElectronica().getAuthor().getFullName());
-                System.out.println("Total facturado a crédito: " + Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"));
-                System.out.println("Monto abonado: " + Strings.format(_instance.getAmount().doubleValue(), "$ #0.##"));
-                System.out.println("Fecha de Pago: " + _instance.getDatePaymentCancel());
-                System.out.println("Método de Pago: " + _instance.getMethod());
                 if (_instance.getFacturaElectronica().getPayments().isEmpty() || _instance.getFacturaElectronica().getPayments().size() == 1) {
-                    record.setDescription(String.format("Proveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: ninguno \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s", _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: ninguno \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s",
+                            (_instance.getFacturaElectronica().getCode() + "/" + _instance.getFacturaElectronica().getId()), _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
                             Strings.format(_instance.getAmount().doubleValue(), "$ #0.##"), _instance.getDatePaymentCancel(), _instance.getMethod()));
                 } else {
-                    System.out.println("Penúltimo pago: " + Strings.format(_instance.getFacturaElectronica().getPayments().get(_instance.getFacturaElectronica().getPayments().size() - 2).getAmount().doubleValue(), "$ #0.##"));
-                    record.setDescription(String.format("Proveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: %s \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s", _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: %s \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s",
+                            (_instance.getFacturaElectronica().getCode() + "/" + _instance.getFacturaElectronica().getId()), _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
                             Strings.format(_instance.getFacturaElectronica().getPayments().get(_instance.getFacturaElectronica().getPayments().size() - 2).getAmount().doubleValue(), "$ #0.##"), Strings.format(_instance.getAmount().doubleValue(), "$ #0.##"), _instance.getDatePaymentCancel(), _instance.getMethod()));
                 }
             }

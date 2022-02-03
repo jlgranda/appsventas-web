@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.purchases']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.purchases']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -34,72 +34,72 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.inventory']}</li>
             <li>/</li>
-            <li><p:link outcome="compras">#{i18n['common.purchases']}</p:link></li>
+            <li><p:link outcome="compras">#{i18n['app.fede.inventory.purchases']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                        <p:toolbar>
-                            <p:toolbarGroup style="display: inline-table;">
-    <!--                            <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                                <p:inputText value="#{facturaElectronicaCompraHome.keyword}" class="input-sm">
-                                    <p:ajax listener="#{facturaElectronicaCompraHome.clear()}" />
-                                </p:inputText>  -->
-                                <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
-                                <p:autoComplete id="supplier" value="#{facturaElectronicaCompraHome.facturaElectronica.author}" effect="blind" 
-                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
-                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                forceSelection="true" required="#{false}" disabled="#{facturaElectronicaCompraHome.useDefaultSupplier}">
-                                    <p:column>
-                                        <h:outputText value="#{entidad.fullName}"/>
-                                    </p:column>
-                                    <p:ajax update="btn-buscar" partialSubmit="true"></p:ajax>
-                                </p:autoComplete>
-                                <h:panelGroup id="controles-busqueda-avanzada"  style="padding-right: 0.2rem">
-                                    <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                                        <label class="Gray">#{i18n['common.from']}:&nbsp;</label>
-                                        <p:calendar value="#{facturaElectronicaCompraHome.start}" class="input-sm">
-                                            <p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
-                                        </p:calendar>
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                                        <label class="Gray">#{i18n['common.to']}:&nbsp;</label>
-                                        <p:calendar value="#{facturaElectronicaCompraHome.end}" class="input-sm">
-                                            <p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.clear()}" /> 
-                                        </p:calendar>                        
-                                    </h:panelGroup>
+                    <p:toolbar>
+                        <p:toolbarGroup style="display: inline-table;">
+<!--                            <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                            <p:inputText value="#{facturaElectronicaCompraHome.keyword}" class="input-sm">
+                                <p:ajax listener="#{facturaElectronicaCompraHome.clear()}" />
+                            </p:inputText>  -->
+                            <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
+                            <p:autoComplete id="supplier" value="#{facturaElectronicaCompraHome.facturaElectronica.author}" effect="fade" 
+                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
+                                            var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
+                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                            converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                            forceSelection="true" required="#{false}" disabled="#{facturaElectronicaCompraHome.useDefaultSupplier}">
+                                <p:column>
+                                    <h:outputText value="#{entidad.fullName}"/>
+                                </p:column>
+                                <p:ajax update="btn-buscar" partialSubmit="true"></p:ajax>
+                            </p:autoComplete>
+                            <h:panelGroup id="controles-busqueda-avanzada"  style="padding-right: 0.2rem">
+                                <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                    <label class="Gray">#{i18n['common.from']}:&nbsp;</label>
+                                    <p:calendar value="#{facturaElectronicaCompraHome.start}" class="input-sm">
+                                        <p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
+                                    </p:calendar>
                                 </h:panelGroup>
-                                <p:commandButton id="btn-buscar" 
-                                                 value="#{i18n['common.find']}"
-                                                 icon="pi pi-search" styleClass="help-btn" 
-                                                 actionListener="#{facturaElectronicaCompraHome.clear()}"
-                                                 ajax="false" immediate="true">
-                                </p:commandButton>
-                            </p:toolbarGroup>
-                            <p:toolbarGroup align="right" style="display: inline-table; padding-top: 0.5rem">
-                                <p:button value="#{i18n['common.newa']}"
-                                          icon="pi pi-plus-circle" styleClass="danger-btn"
-                                          outcome="compra"/>
-                                <p:commandButton id="commandAddFromFile"
-                                                 value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
-                                                 icon="pi pi-file" styleClass="secondary-button"
-                                                 actionListener="#{facturaElectronicaCompraHome.mostrarFormularioCargaFacturaElectronica()}">
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{facturaElectronicaCompraHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandButton>
-                                <p:commandButton id="commandAddFromURL" 
-                                                 value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
-                                                 icon="pi pi-link" styleClass="secondary-button" 
-                                                 actionListener="#{facturaElectronicaCompraHome.mostrarFormularioDescargaFacturaElectronica()}">
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{facturaElectronicaCompraHome.handleReturn}">
-                                    </p:ajax>
-                                </p:commandButton>
-                            </p:toolbarGroup>
-                        </p:toolbar>
+                                <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                    <label class="Gray">#{i18n['common.to']}:&nbsp;</label>
+                                    <p:calendar value="#{facturaElectronicaCompraHome.end}" class="input-sm">
+                                        <p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.clear()}" /> 
+                                    </p:calendar>                        
+                                </h:panelGroup>
+                            </h:panelGroup>
+                            <p:commandButton id="btn-buscar" 
+                                             value="#{i18n['common.find']}"
+                                             icon="pi pi-search" styleClass="help-btn" 
+                                             actionListener="#{facturaElectronicaCompraHome.clear()}"
+                                             ajax="false" immediate="true">
+                            </p:commandButton>
+                        </p:toolbarGroup>
+                        <p:toolbarGroup align="right" style="display: inline-table;">
+                            <p:button value="#{i18n['common.newa']}"
+                                      icon="pi pi-plus-circle" styleClass="danger-btn"
+                                      outcome="compra"/>
+                            <p:commandButton id="commandAddFromFile"
+                                             value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
+                                             icon="pi pi-file" styleClass="secondary-button"
+                                             actionListener="#{facturaElectronicaCompraHome.mostrarFormularioCargaFacturaElectronica()}">
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{facturaElectronicaCompraHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                            <p:commandButton id="commandAddFromURL" 
+                                             value="#{i18n['common.download']} #{i18n['common.from.min']} #{i18n['common.URL']}"
+                                             icon="pi pi-link" styleClass="secondary-button" 
+                                             actionListener="#{facturaElectronicaCompraHome.mostrarFormularioDescargaFacturaElectronica()}">
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{facturaElectronicaCompraHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                        </p:toolbarGroup>
+                    </p:toolbar>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
@@ -112,26 +112,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaCompraHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            <p:column id="code" headerText="#{i18n['common.code']}">
+                            <p:column id="code" headerText="Nº Documento">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">
+                            <p:column headerText="#{i18n['common.company.name']}" style="width:12rem;">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-                            <p:column id="summary" headerText="#{i18n['common.description']}">
-                                <h:outputText value="#{facturaElectronica.summary}" />
-                            </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}">
+                            <p:column headerText="#{i18n['ride.infoFactura.total']}">
                                 <h:outputText class="container-right" value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.amount']} #{i18n['common.pay.by']}">
+                            <p:column headerText="#{i18n['app.fede.sales.payment.cash']} #{i18n['common.pay.by']}">
                                 <h:outputText class="container-right" value="#{facturaElectronicaCompraHome.montoPorPagar(facturaElectronica)}" 
                                               title="#{facturaElectronicaCompraHome.messageDatePaymentExpired(facturaElectronica.fechaVencimiento)}" 
                                               style="#{facturaElectronicaCompraHome.calculateDayOfExpiration(facturaElectronica)==true ? 'color: #F94C00' : ''}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
+                            </p:column>
+                            <p:column  id="fechaUltimoPago"  headerText="Último Pago">
+                                <h:outputText value="#{facturaElectronica.ultimaFechaPago}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column id="summary" headerText="#{i18n['common.description']}">
+                                <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>
                             <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}">
                                 <h:outputText class="capital" value="#{facturaElectronica.emissionType == 'PURCHASE_CREDIT' ? i18n['OVERDUE']: facturaElectronica.emissionType == 'PURCHASE_CASH' ? i18n['PURCHASE_CASH_LIT']:
@@ -140,11 +145,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:column>
                             <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
-                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                </h:outputText>
-                            </p:column>
-                            <p:column  id="fechaUltimoPago"  headerText="Último Pago">
-                                <h:outputText value="#{facturaElectronica.ultimaFechaPago}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>

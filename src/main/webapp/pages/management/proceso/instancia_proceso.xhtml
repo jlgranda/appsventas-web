@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:o="http://omnifaces.org/ui">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.documents.task']}" />
+        <ui:param name="title" value="#{i18n['app.document.task']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="instanciaProcesoId" value="#{instanciaProcesoHome.instanciaProcesoId}" />
@@ -93,19 +93,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_RESPONDER, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.owner ==  subject}"
-                                                                     icon="fa fa-mail-reply-all" styleClass="success-btn" title="#{i18n['app.documents.task.reply']}"
+                                                                     icon="fa fa-mail-reply-all" styleClass="success-btn" title="#{i18n['app.document.task.reply']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
                                                     <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_REDIRECCIONAR, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.owner ==  subject}"
-                                                                     icon="fa fa-mail-forward" styleClass="success-btn" title="#{i18n['app.documents.task.forward']}"
+                                                                     icon="fa fa-mail-forward" styleClass="success-btn" title="#{i18n['common.forward']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
                                                     <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_FINALIZAR, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.instanciaProceso.owner ==  subject}"
-                                                                     icon="fa fa-hourglass-end" styleClass="danger-btn" title="#{i18n['app.documents.task.finalize']}"
+                                                                     icon="fa fa-hourglass-end" styleClass="danger-btn" title="#{i18n['common.finish']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
                                                 </p:panel>
@@ -114,7 +114,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <div class="DispBlockDocuments">
                                             <div class="Separator"></div>
                                             <div class="EmptyBox20"></div>
-                                            <div class="Container100 Fs14 BoldGray FontRobotoRegular">#{tarea.documentos.size()} #{i18n['app.documents.task.documents']}</div>
+                                            <div class="Container100 Fs14 BoldGray FontRobotoRegular">#{tarea.documentos.size()} #{i18n['app.documents.procedures']}</div>
                                             <div class="EmptyBox20"></div>
                                             <div class="ui-g ui-lg-12 ui-fluid">
                                                 <ui:repeat value="#{tarea.documentos}" var="documento" rendered="#{true}">
@@ -154,7 +154,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:panel styleClass="ui-g ui-fluid" rendered="#{instanciaProcesoHome.tareaSeleccionada.checkStatus(EstadoTipo.ESPERA)}">
                                 <!-- Destinatario -->
                                 <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                    <p:outputLabel for="consignee" value="#{i18n['app.documents.task.consignee']}" />
+                                    <p:outputLabel for="consignee" value="#{i18n['app.document.task.consignee']}" />
                                 </h:panelGroup>
                                 <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
                                     <p:autoComplete id="consignee" value="#{instanciaProcesoHome.destinatario}" effect="fade" 
@@ -162,7 +162,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" multiple="false" 
                                                     maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                                     converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                    emptyMessage="#{i18n['common.emptyList']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
                                                     forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
                                         <p:column>
                                             <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
@@ -172,13 +172,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <!-- //Destinatario -->
 
                                 <!-- Cuerpo del mensaje -->
-                                <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                                <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.task.subject']}" 
                                                 execute="@this save" render="nme" value="#{instanciaProcesoHome.tarea.name}" required="true"
                                                 container="none"/>
 
                                 <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                                 value="#{instanciaProcesoHome.tarea.description}" execute="@this save" render="descrpn" 
-                                                required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                                required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                                 container="none"/>
 
                                 <div class="DispBlockDocuments">
@@ -199,7 +199,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:commandLink update="@form:documentList" ajax="@this" 
                                                                actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
                                                                title="#{i18n['common.close']}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                               onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                               onclick="if (!confirm('#{i18n['app.document.remove.message']}'))
                                                                            return false;">
                                                     <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
                                                 </p:commandLink>

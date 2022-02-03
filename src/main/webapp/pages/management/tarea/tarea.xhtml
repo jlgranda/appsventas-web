@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.documents.task']}" />
+        <ui:param name="title" value="#{i18n['app.document.task']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="procesoId" value="#{procesoHome.procesoId}" />
@@ -36,10 +36,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li><p:link outcome="/pages/management/tarea/inbox.jsf">#{i18n['common.tasks']}</p:link></li>
             <li>/</li>
-            <li> #{tareaHome.tareaId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.documents.task']) : i18n['common.edit']} #{tareaHome.tarea.name}</li>
+            <li> #{tareaHome.tareaId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.document.task']) : i18n['common.edit']} #{tareaHome.tarea.name}</li>
         </ui:define>
         <ui:define name="subheader">
-            #{tareaHome.tareaId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
+            #{tareaHome.tareaId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.document.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
         </ui:define>
         <ui:define name="content">
             <h:form id="form" enctype="multipart/form-data" >
@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <!-- Solicitante -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.documents.task.applicant']}</h2>
+                                    <h2 class="BigTopic">#{i18n['app.document.task.applicant']}</h2>
                                     <p:autoComplete value="#{tareaHome.solicitante}" effect="fade" 
                                                     minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
                                                     var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <!-- Destinatario -->
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.documents.task.consignee']}</h2>
+                                    <h2 class="BigTopic">#{i18n['app.document.task.consignee']}</h2>
                                     <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" 
                                                     minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
                                                     var="entidad" itemValue="#{entidad}"  itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
@@ -92,13 +92,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </h:panelGroup>
                             </div>
                             <!-- Cuerpo del mensaje -->
-                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                            <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.task.subject']}" 
                                             execute="@this save" render="nme" value="#{tareaHome.tarea.name}" required="true"
                                             container="none"/>
 
                             <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                             value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
-                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                             container="none"/>
 
                             <!-- Adjuntos -->
@@ -117,7 +117,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandLink update="@form:documentList" ajax="@this" 
                                                        actionListener="#{tareaHome.removerDocumento(documento, tareaHome.tarea)}"
                                                        title="#{i18n['common.close']}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                       onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                       onclick="if (!confirm('#{i18n['app.document.remove.message']}'))
                                                                    return false;">
                                             <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
                                         </p:commandLink>
@@ -225,7 +225,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 converter="omnifaces.SelectItemsConverter"
                                                 execute="@this save" render="@this"
                                                 container="default"/>
-                                <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.documents.document.numeroRegistro']}" 
+                                <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.document.number']}" 
                                                 value="#{tareaHome.documentoAceptar.numeroRegistro}" render="numReg" 
                                                 execute="@this save" required="false"  />
 

@@ -118,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </f:facet>
                                     <f:facet name="subtitle">
                                         <div class="capital container-center">
-                                            <h2>#{i18n['app.fede.accounting.generalLedger']}</h2>
+                                            <h2>#{i18n['app.fede.accounting.general']}</h2>
                                         </div>
                                         <h:panelGroup id="panel-message-date" class="bold-capital container-center">
                                             <span>Del <h:outputText value = "#{accountHome.start}" >
@@ -132,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <h:panelGroup id="panel-detail-accountSelected">
                                             <div class="ui-g">
                                                 <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2"><strong>#{i18n['common.code']}:</strong> #{accountHome.accountSelected.code}</div>
-                                                <div class="ui-g-10 ui-md-10 ui-lg-10 ui-sm-10"><strong>#{i18n['common.account']}:</strong> #{accountHome.accountSelected.name}</div>
+                                                <div class="ui-g-10 ui-md-10 ui-lg-10 ui-sm-10"><strong>#{i18n['app.fede.accounting.account']}:</strong> #{accountHome.accountSelected.name}</div>
                                                 <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><strong>#{i18n['common.fund']} #{i18n['common.total']}:</strong>
                                                     <h:outputText value="#{accountHome.fundAccountMain}">
                                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
@@ -142,7 +142,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </h:panelGroup>
                                     </f:facet>
                                     <div class="ui-g ui-lg-12 ui-md-12" style="background-color: gold">
-                                        <div class="ui-g ui-lg-9 ui-md-9 container-right capital">#{i18n['app.fede.accounting.account.fund.old']}: </div>
+                                        <div class="ui-g ui-lg-9 ui-md-9 container-right capital">#{i18n['app.fede.accounting.account.fund.previous']}: </div>
                                         <div class="ui-g ui-lg-3 ui-md-3 container-right bold-capital" style="padding-right: 5rem">
                                             <h:outputText id="fund-old-accountSelected" value="#{accountHome.fundOldAccountSelected}">
                                                 <f:convertNumber type="currency" currencySymbol="$"/>
