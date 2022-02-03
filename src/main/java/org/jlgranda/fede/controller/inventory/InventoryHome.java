@@ -727,8 +727,7 @@ public class InventoryHome extends FedeController implements Serializable {
                     java.util.logging.Logger.getLogger(InventoryHome.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-            }
-            if ("borrar".equalsIgnoreCase(this.selectedAction)) {
+            } else if ("borrar".equalsIgnoreCase(this.selectedAction)) {
                 for (Product p : this.getSelectedProducts()) {
                     p.setDeleted(Boolean.TRUE);
                     this.productService.save(p.getId(), p); //Actualizar el tipo de producto

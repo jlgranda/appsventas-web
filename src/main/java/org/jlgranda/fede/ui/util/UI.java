@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Account;
+import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -193,6 +194,27 @@ public class UI {
             i++;
         }
         for (Group x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
+        }
+        return items;
+    }
+    public SelectItem[] getGeneralJournalAsSelectItem(List<GeneralJournal> entities) {
+        
+        boolean selectOne = true;
+        int size = 1;
+        if (entities != null) {
+            size = selectOne ? entities.size() + 1 : entities.size();
+        }
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+        
+        if (size == 1) return items;
+        
+        for (GeneralJournal x : entities) {
             items[i++] = new SelectItem(x, x.getName());
         }
         return items;

@@ -1576,7 +1576,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 //La regla compiló bien
                 String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", I18nUtil.getMessages("app.fede.accounting.journal"));
                 String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
-                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+                GeneralJournal generalJournal = generalJournalService.find(this.invoice.getEmissionOn(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
 
                 //El General Journal del día
                 if (generalJournal != null) {

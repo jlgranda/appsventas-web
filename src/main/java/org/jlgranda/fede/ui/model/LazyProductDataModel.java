@@ -274,6 +274,8 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
 
+        _filters.put("deleted", false);
+        
         _filters.putAll(filters);
 
         if (sortField == null) {

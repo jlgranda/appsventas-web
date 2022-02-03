@@ -150,7 +150,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              oncomplete="PF('dataTableInvoices').unselectAllRows()"
                                              disabled="#{not invoiceHome.actionExecutable}"
                                              style="width: auto !important;"
-                                             type="submit"/>
+                                             type="submit">
+                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
                         </f:facet>
                     </p:toolbar>
                 </p:panel>
