@@ -121,8 +121,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  paginatorPosition="bottom" resizableColumns="true" rowKey="#{record.id}"
                                  rows="25" scrollRows="25"
                                  value="#{generalJournalHome.journal.records}" var="record"
-                                 selection="#{generalJournalHome.selectedBussinesEntities}"
+                                 selection="#{generalJournalHome.selectedRecords}"
                                  sortBy="#{record.createdOn}">
+                        
+                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                        <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectAsRecord}" update=":form:panelSelectedToolBar"/>
+                        <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                        
                         <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.created']}" sortBy="#{record.createdOn}" style="width: 20%">
                             <h:outputText value="#{record.createdOn}">
                                 <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
@@ -142,9 +149,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:commandButton>
                         </p:column>
                     </p:dataTable>
+                    <!--Herramientas con seleccionados -->
+                    <p:panel id="panelSelectedToolBar">
+                        <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.selectedRecords}">
+                            <f:facet name="left">
+                                <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
+                                <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
+                                    <f:selectItems value="#{generalJournalHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                    <f:ajax render="selectedToolBar"></f:ajax>
+                                </p:selectOneMenu>
+                                <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}">
+                                    <jlgranda:input id="general-journal-date" name="general-journal-date" type="calendar" label="#{i18n['app.fede.accounting.journal.date']}" 
+                                        update="selectedToolBar" value="#{generalJournalHome.generalJournalDate}" 
+                                        required="false" requiredMessage="#{i18n['app.fede.accounting.journal.date']}"
+                                        container="none"/>
+                                </p:panel>
+                                <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="true"
+                                                 actionListener="#{generalJournalHome.execute()}" 
+                                                 action="#{generalJournalHome.getOutcome()}"
+                                                 oncomplete="PF('dataTable-records').unselectAllRows()"
+                                                 disabled="#{not generalJournalHome.actionExecutable}"
+                                                 style="width: auto !important;"
+                                                 update="@form">
+                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                            </f:facet>
+                        </p:toolbar>
+                    </p:panel>
                 </div>
             </div>
         </div>
+    </ui:define>
+    <ui:define name="popups">
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">

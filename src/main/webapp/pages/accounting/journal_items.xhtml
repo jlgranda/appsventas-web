@@ -15,7 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -63,9 +64,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{journal.id}"
                                      rows="25" scrollRows="25"
                                      value="#{generalJournalHome.lazyDataModel}" var="journal"
-                                     selection="#{generalJournalHome.selectedBussinesEntities}"
-                                     sortBy="#{journal.createdOn}">
+                                     selection="#{generalJournalHome.selectedGeneralJournals}"
+                                     sortBy="#{journal.emissionDate}">
                             <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelect}"/>
+                            <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column headerText="#{i18n['common.code.UUID']}" sortBy="#{journal.code}">
                                 <h:outputText value="#{journal.code}" />
@@ -73,13 +78,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.label']}" sortBy="#{journal.name}" style="width: 45%">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{journal.createdOn}"
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{journal.emissionDate}"
                                        styleClass="text-right" style="width: auto">
-                                <h:outputText value="#{journal.createdOn}">
+                                <h:outputText value="#{journal.emissionDate}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>
+                        <!--Herramientas con seleccionados -->
+                        <p:panel id="panelSelectedToolBar">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.selectedGeneralJournals}">
+                                <f:facet name="left">
+                                    <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
+                                    <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
+                                        <f:selectItems value="#{generalJournalHome.generalJournalActions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                        <f:ajax render="selectedToolBar"></f:ajax>
+                                    </p:selectOneMenu>
+                                    <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}">
+                                        
+                                    </p:panel>
+                                    <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="true"
+                                                     actionListener="#{generalJournalHome.execute()}" 
+                                                     action="#{generalJournalHome.getOutcome()}"
+                                                     oncomplete="PF('dataTable-records').unselectAllRows()"
+                                                     disabled="#{not generalJournalHome.actionExecutable}"
+                                                     style="width: auto !important;"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </f:facet>
+                            </p:toolbar>
+                        </p:panel>
                     </div>
                 </div>
             </div>

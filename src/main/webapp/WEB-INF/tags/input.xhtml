@@ -136,7 +136,9 @@ limitations under the License.
                                         maxdate="#{maxdate}" mindate="#{mindate}"
                                         pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}">
                                 <f:validator validatorId="#{validator}"/>        
-                                <!--<p:ajax event="dateSelect" update="#{render}" partialSubmit="true"/>-->
+                                <c:if test="#{not empty update }">
+                                    <p:ajax event="dateSelect" update="#{update}" partialSubmit="true"/>
+                                </c:if>
                             </p:calendar>  
                         </c:when>
                         <c:when test="#{type == 'java.lang.Boolean' or type == 'checkbox'}">
