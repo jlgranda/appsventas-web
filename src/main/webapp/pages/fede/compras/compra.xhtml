@@ -47,7 +47,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="card">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <h:outputText id="tittle" class="Fs18 bold-capital" value="#{i18n[facturaElectronicaCompraHome.facturaElectronica.emissionType]}"></h:outputText>
-                    <div class="EmptyBox10"/>
                     <div class="ui-fluid">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:outputLabel value="#{i18n['common.supplier']}" for="@next"/>
@@ -276,7 +275,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <i class="fa fa-bars p-px-2"/>
                         </f:facet>
                         <f:facet name="right">
-                            <p:commandButton title="Principal" icon="pi pi-undo" styleClass="primary-button"
+                            <p:commandButton title="#{i18n['common.home']}" icon="pi pi-undo" styleClass="primary-button"
                                              actionListener="#{facturaElectronicaCompraHome.closeDialog(null)}" action="#{facturaElectronicaCompraHome.redirect()}"
                                              ajax ="true" immediate="true"/>                   
                         </f:facet>

@@ -397,6 +397,14 @@ public class AccountHome extends FedeController implements Serializable {
         return accountCache.filterByOrganization(this.organizationData.getOrganization());
     }
 
+    public void validateAccountNew(String keyword) {
+        if (keyword.contains(" ")) {
+            if (!find(keyword).isEmpty()) {
+                addWarningMessage(I18nUtil.getMessages("action.warning"), "Ya existe una cuenta con un nombre similar!");
+            }
+        }
+    }
+
     /**
      * Busca objetos <tt>Account</tt> para la clave de búsqueda en las columnas
      * name y code
@@ -412,7 +420,7 @@ public class AccountHome extends FedeController implements Serializable {
     public Account findParentAccount(Account x) {
         return accountCache.lookup(x.getParentAccountId());
     }
-    
+
     /**
      * Generar el código de un objeto <tt>Account</tt> según su objeto padre
      *

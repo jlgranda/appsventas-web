@@ -338,7 +338,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
-                                         title="Principal"
+                                         title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="preinvoices"
                                          disabled="#{true}" 
                                          ajax="true" immediate="true"/>
@@ -391,13 +391,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
-                                         title="Principal"
+                                         title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="#{invoiceHome.redirect}"
                                          disabled="#{true}"
                                          rendered="#{not invoiceHome.invoice.persistent}"
                                          ajax="true" immediate="true" type="submit"/>
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
-                                         title="Principal"
+                                         title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="#{invoiceHome.redirect}"
                                          disabled="#{true}"
                                          rendered="#{invoiceHome.invoice.persistent}"
