@@ -40,11 +40,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <p:toolbar>
-                        <p:toolbarGroup style="display: inline-table;">
+                        <f:facet name="left">
 <!--                            <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                            <p:inputText value="#{facturaElectronicaCompraHome.keyword}" class="input-sm">
-                                <p:ajax listener="#{facturaElectronicaCompraHome.clear()}" />
-                            </p:inputText>  -->
+                           <p:inputText value="#{facturaElectronicaCompraHome.keyword}" class="input-sm">
+                               <p:ajax listener="#{facturaElectronicaCompraHome.clear()}" />
+                           </p:inputText>  -->
                             <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
                             <p:autoComplete id="supplier" value="#{facturaElectronicaCompraHome.facturaElectronica.author}" effect="fade" 
                                             minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
@@ -77,8 +77,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              actionListener="#{facturaElectronicaCompraHome.clear()}"
                                              ajax="false" immediate="true">
                             </p:commandButton>
-                        </p:toolbarGroup>
-                        <p:toolbarGroup align="right" style="display: inline-table;">
+                        </f:facet>
+                        <f:facet name="right">
                             <p:button value="#{i18n['common.newa']}"
                                       icon="pi pi-plus-circle" styleClass="danger-btn"
                                       outcome="compra"/>
@@ -98,7 +98,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         listener="#{facturaElectronicaCompraHome.handleReturn}">
                                 </p:ajax>
                             </p:commandButton>
-                        </p:toolbarGroup>
+                        </f:facet>
                     </p:toolbar>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">

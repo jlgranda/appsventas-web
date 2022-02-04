@@ -25,26 +25,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="proveedorId" value="#{proveedorHome.proveedorId}" />
         </f:metadata>
     </ui:define>
-
     <ui:define name="title">#{i18n['common.suppliers']}</ui:define>
     <ui:define name="viewname">
         <li>#{i18n['common.payments']}</li>
         <li>/</li>
         <li><p:link outcome="proveedores">#{i18n['common.suppliers']}</p:link></li>
     </ui:define>
-
     <ui:define name="content">
-        <div class="ui-g ui-fluid">
+        <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0.8rem">
-                <p:toolbar id="topToolBar" rendered="#{true}" class="ui-g-12 ui-lg-12" style="display: block;">
+                <p:toolbar id="topToolBar">
                     <f:facet name="left">
-                        <label class="Gray">#{i18n['common.find']} #{i18n['common.supplier']}:&nbsp;</label>
+                        <p:outputLabel class="Gray" value="#{i18n['common.find']} #{i18n['common.supplier']}:&nbsp;" for="@next"/>
                         <!-- Lista de personas, decidir si es proveedor al seleccionar el item -->
                         <p:autoComplete id="customer" value="#{proveedorHome.proveedor.owner}" effect="fade" 
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
@@ -53,26 +50,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                         placeholder="Buscar.."
                                         converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                        forceSelection="true" required="true" >
+                                        forceSelection="true">
                             <p:column>
                                 <h:outputText value="#{ui.renderer('', entidad)}"/>
                             </p:column>
                             <p:ajax event="itemSelect" listener="#{proveedorHome.clear()}" update="@form" partialSubmit="true"></p:ajax>
                         </p:autoComplete>
-                        
-<!--                        <p:commandButton value="#{i18n['common.find']}" 
-                                         styleClass="raised-btn" 
-                                         actionListener="#{proveedorHome.clear()}" ajax="false">
-                        </p:commandButton>
-                        <p:commandButton value="#{i18n['app.fede.payments.immediate']}" 
-                                         styleClass="success-btn raised-btn" 
-                                         actionListener="#{proveedorHome.filtrarUrgentes()}" 
-                                         ajax="false">
-                        </p:commandButton>-->
-                    </f:facet>
-                   <f:facet name="right">
                         <p:commandButton id="button-change-customer"
-                                         icon="fa fa-user-plus" styleClass="help-btn"
+                                         icon="fa fa-user-plus" styleClass="primary-button"
                                          actionListener="#{proveedorHome.mostrarFormularioProfile()}"
                                          ajax="true" immediate="true">
                             <p:ajax event="dialogReturn" update="@form"
@@ -80,47 +65,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:ajax>
                         </p:commandButton>
                     </f:facet>
+                    <f:facet name="right">
+<!--                        <p:commandButton value="#{i18n['common.find']}" 
+                                         icon="pi pi-search" styleClass="help-btn" 
+                                         actionListener="#{proveedorHome.clear()}"
+                                         ajax="false" immediate="true">
+                        </p:commandButton>
+                        <p:commandButton value="#{i18n['app.fede.payments.immediate']}" 
+                                         icon="pi pi-star-fill" styleClass="success-btn raised-btn" 
+                                         actionListener="#{proveedorHome.filtrarUrgentes()}" 
+                                         ajax="false" immediate="true">
+                        </p:commandButton>-->
+                    </f:facet>
                 </p:toolbar>
             </div>
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0rem">
-                <p:panel id="formProveedor" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{proveedorHome.formProveedor}">
-                    <div class="card">
-                        <div class="ui-g ui-fluid">
-                            <h1 style="text-transform: uppercase"><strong>#{i18n['common.add']} #{i18n['common.supplier']}: #{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.date.pay.prefered']}" 
-                                                value="#{proveedorHome.proveedor.fechaPreferidaPago}"
-                                                required="#{true}" placeholder="false" 
-                                                render="fecha-preferida-pago"/>
-                            </div>
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:toolbar rendered="#{true}">
-                                    <f:facet name="left">
-                                        <p:commandButton id="save-button"
-                                                         value="#{i18n['common.save']}" 
-                                                         icon="pi pi-save" styleClass="danger-btn raised-btn" style="width: auto !important;"
-                                                         actionListener="#{proveedorHome.save()}" action="#{proveedorHome.redirect()}" 
-                                                         disabled="#{false}" 
-                                                         ajax="true" type="submit"/>
-                                        <span class="ui-separator">
-                                            <span class="fa fa-ellipsis-v SoftGray" />
-                                        </span>
-                                    </f:facet>
-                                    <f:facet name="right">
-                                        <p:commandButton icon="pi pi-replay" styleClass="primary-button p-mr-2"
-                                                         title="Principal"
-                                                         actionListener="#{proveedorHome.closeDialog(null)}" action="proveedores"
-                                                         disabled="#{false}" 
-                                                         ajax="true" immediate="true" type="submit"/>
-                                    </f:facet>
-
-                                </p:toolbar>
-                            </div>
-                        </div>
-                    </div>
-                </p:panel>
-                <p:panel id="dataProveedor" rendered="#{!proveedorHome.formProveedor}">
-                    <p:dataTable var="proveedor" 
+            <p:panel id="dataProveedor"
+                     class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{!proveedorHome.formProveedor}">
+                <div class="card">
+                    <p:dataTable var="proveedor" style="padding-left: 0.8rem; padding-right: 0.8rem;"
                                  value="#{proveedorHome.lazyDataModel}" 
                                  paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
                                  sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
@@ -132,7 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-                        
+
                         <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
                         <p:column headerText="#{i18n['common.dni.ruc']}" sortBy="#{proveedor.owner.fullName}">
                             <h:outputText value="#{proveedor.owner.code}" />
@@ -149,30 +111,77 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
                         </p:column>
+                        <p:column style="width: 4rem">
+                            <p:commandButton id="go-button"
+                                             icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
+                                             actionListener="#{proveedorHome.editarFormularioProfile(proveedor.id)}"
+                                             ajax="true" immediate="true">
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{proveedorHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                        </p:column> 
                     </p:dataTable>
                     <!--Herramientas con seleccionados -->
                     <p:panel id="panelSelectedToolBar">
                         <p:toolbar id="selectedToolBar" rendered="#{not empty proveedorHome.selectedProveedores}">
                             <f:facet name="left">
-                                <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
-                                <p:selectOneMenu value="#{proveedorHome.selectedAction}">
-                                    <f:selectItems value="#{proveedorHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
-                                    <f:ajax render="selectedToolBar"></f:ajax>
-                                </p:selectOneMenu>
-                                <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="false"
-                                                 actionListener="#{proveedorHome.execute()}" 
-                                                 action="#{proveedorHome.getOutcome()}"
-                                                 oncomplete="PF('dataTable').unselectAllRows()"
-                                                 disabled="#{not proveedorHome.actionExecutable}"
-                                                 style="width: auto !important;"
-                                                 type="submit">
-                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                </p:commandButton>
+                                <p:outputLabel class="Gray" value="#{i18n['common.withselected']}&nbsp;" for="@next"/>
+                                <div class="ui-g">
+                                    <p:selectOneMenu value="#{proveedorHome.selectedAction}">
+                                        <f:selectItems value="#{proveedorHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                        <f:ajax render="selectedToolBar"></f:ajax>
+                                    </p:selectOneMenu>
+                                    <p:commandButton id="go-button"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="success-btn"
+                                                     actionListener="#{proveedorHome.execute()}" action="#{proveedorHome.getOutcome()}"
+                                                     oncomplete="PF('dataTable').unselectAllRows()"
+                                                     disabled="#{not proveedorHome.actionExecutable}"
+                                                     ajax="false" type="submit">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </div>
                             </f:facet>
                         </p:toolbar>
                     </p:panel>
-                </p:panel>
-            </div>
+                </div>
+            </p:panel>
+            <p:panel id="formProveedor" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{proveedorHome.formProveedor}">
+                <div class="card">
+                    <div class="ui-g ui-fluid">
+                        <h1 style="text-transform: uppercase"><strong>#{i18n['common.add']} #{i18n['common.supplier']}: #{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.date.pay.prefered']}" 
+                                            value="#{proveedorHome.proveedor.fechaPreferidaPago}"
+                                            required="#{true}" placeholder="false" 
+                                            render="fecha-preferida-pago"/>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:toolbar rendered="#{true}">
+                                <f:facet name="left">
+                                    <p:commandButton id="save-button"
+                                                     value="#{i18n['common.save']}" 
+                                                     icon="pi pi-save" styleClass="danger-btn raised-btn" style="width: auto !important;"
+                                                     actionListener="#{proveedorHome.save()}" action="#{proveedorHome.redirect()}" 
+                                                     disabled="#{false}" 
+                                                     ajax="true" type="submit"/>
+                                    <span class="ui-separator">
+                                        <span class="fa fa-ellipsis-v SoftGray" />
+                                    </span>
+                                </f:facet>
+                                <f:facet name="right">
+                                    <p:commandButton icon="pi pi-replay" styleClass="primary-button p-mr-2"
+                                                     title="Principal"
+                                                     actionListener="#{proveedorHome.closeDialog(null)}" action="proveedores"
+                                                     disabled="#{false}" 
+                                                     ajax="true" immediate="true" type="submit"/>
+                                </f:facet>
+
+                            </p:toolbar>
+                        </div>
+                    </div>
+                </div>
+            </p:panel>
         </div>
     </ui:define>
     <ui:define name="script">

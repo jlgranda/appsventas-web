@@ -214,16 +214,32 @@ public class ProveedorHome extends FedeController implements Serializable {
         }
         if (success) { //Guardar profile
 
+//            setSupplier(getSubjectAdminHome().getSubjectEdit());
+//
+//            //Crear como proveedor de la organización
+//            this.proveedor = proveedorService.createInstance();
+//            this.proveedor.setOwner(getSupplier());
+//            this.proveedor.setOrganization(organizationData.getOrganization());
+//
+//            proveedorService.save(this.proveedor); //persistir
+//
+//            //Cerrar y regresar a pantalla de factura
+//            closeFormularioProfile(getSupplier());
             setSupplier(getSubjectAdminHome().getSubjectEdit());
+            System.out.println("save-proveeedor:::" + proveedor);
+            if (proveedor.isPersistent()) {
+                if (proveedor.getOrganization() == null) {
+                    proveedor.setOrganization(organizationData.getOrganization());
+                }
+                proveedor.setLastUpdate(Dates.now());
+            } else {
+                proveedor.setOrganization(organizationData.getOrganization());
+                proveedor.setAuthor(this.subject);
+            }
 
-            //Crear como proveedor de la organización
-            this.proveedor = proveedorService.createInstance();
             this.proveedor.setOwner(getSupplier());
-            this.proveedor.setOrganization(organizationData.getOrganization());
-
-            proveedorService.save(this.proveedor); //persistir
-
-            //Cerrar y regresar a pantalla de factura
+            proveedorService.save(this.proveedor);
+            //Cerrar y regresar a pantalla de proveedor
             closeFormularioProfile(getSupplier());
         }
 
@@ -325,28 +341,48 @@ public class ProveedorHome extends FedeController implements Serializable {
         return mostrarFormularioProfile(null);
     }
 
+    public boolean editarFormularioProfile(Long proveedorId) {
+        setProveedorId(proveedorId);
+        setProveedor(proveedorService.find(getProveedorId()));
+        super.setSessionParameter("SUPPLIER", this.proveedor.getOwner());
+        super.setSessionParameter("proveedorId", this.proveedor.getId());
+        return mostrarFormularioProfile(null);
+    }
+
     public void closeFormularioProfile(Object data) {
         removeSessionParameter("KEYWORD");
         removeSessionParameter("SUPPLIER");
+        removeSessionParameter("proveedorId");
         super.closeDialog(data);
     }
 
     public void loadSessionParameters() {
+        if (existsSessionParameter("proveedorId")) {
+            setProveedorId((Long) getSessionParameter("proveedorId"));
+            setProveedor(proveedorService.find(getProveedorId()));
+        } else {
+            setProveedor(proveedorService.createInstance());
+        }
+        System.out.println("is-proveedor::" + this.proveedor);
         if (existsSessionParameter("SUPPLIER")) {
             this.subjectAdminHome.setSubjectEdit((Subject) getSessionParameter("SUPPLIER"));
         } else if (existsSessionParameter("KEYWORD")) {
             Subject _subject = subjectService.createInstance();
             _subject.setCode((String) getSessionParameter("KEYWORD"));
             this.subjectAdminHome.setSubjectEdit(_subject);
+        } else if (existsSessionParameter("proveedorId")) {
+
         }
     }
 
     @Override
     public void handleReturn(SelectEvent event) {
+        setProveedorId(null);
+        setProveedor(new Proveedor());
 //        getProveedor().setOwner((Subject) event.getObject()); //Asocia el subject actual al proveedor
 //        this.clear();
-        getProveedor().setOwner(null); //Asocia el subject actual al proveedor
-        this.clear(); //Cargar la lista
+//        getProveedor().setOwner(null); //Asocia el subject actual al proveedor
+//        this.clear(); //Cargar la lista
     }
 
     @Override

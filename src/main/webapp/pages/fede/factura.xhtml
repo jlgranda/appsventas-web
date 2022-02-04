@@ -102,7 +102,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:selectBooleanCheckbox value="#{facturaElectronicaHome.useDefaultSupplier}">
                                         <p:ajax update="supplier btn-facturaElectronicaDetail-new" listener="#{facturaElectronicaHome.updateDefaultSupplier}" />
                                     </p:selectBooleanCheckbox>
-                                    <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
+                                    <p:commandButton id="button-change-customer"
+                                                     icon="fa fa-user-plus" styleClass="primary-button"
                                                      actionListener="#{facturaElectronicaHome.mostrarFormularioProfile()}" ajax="true"
                                                      immediate="true"
                                                      styleClass="RedButton" style="width:30px">

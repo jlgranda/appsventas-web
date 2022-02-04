@@ -302,7 +302,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:ajax update="customer" listener="#{invoiceHome.updateDefaultCustomer}" />
                             </p:selectBooleanCheckbox>
                             <p:commandButton id="button-change-customer" 
-                                             icon="fa fa-user-plus" styleClass="help-btn"
+                                             icon="fa fa-user-plus" styleClass="primary-button"
                                              actionListener="#{invoiceHome.mostrarFormularioProfile()}"
                                              disabled="#{true}"
                                              ajax="true" immediate="true">
@@ -340,13 +340,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
                                          title="Principal"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="preinvoices"
-                                          disabled="#{true}" 
+                                         disabled="#{true}" 
                                          ajax="true" immediate="true"/>
                         <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button">
                             <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                         icon="pi pi-check"
                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
-                                         disabled="#{true}" 
+                                        disabled="#{true}" 
                                         rendered="#{not invoiceHome.invoice.isPersistent()}"
                                         immediate="true"/>
                         </p:menuButton>                      
@@ -358,34 +358,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          value="#{i18n['common.collect']}" 
                                          icon="pi pi-dollar" styleClass="danger-btn"
                                          actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
-                                          disabled="#{true}" 
+                                         disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
                                          ajax="true" type="submit"/>
                         <p:commandButton id="overdue-button"
                                          value="#{i18n['common.overdue']}"
                                          icon="pi pi-credit-card" styleClass="help-btn"
                                          actionListener="#{invoiceHome.overdue()}" action="#{invoiceHome.redirect}"
-                                          disabled="#{true}" 
+                                         disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
                                          ajax="true" type="submit"/>
                         <p:commandButton id="courtesy-button"
                                          value="#{i18n['common.courtesy']}"
                                          icon="pi pi-star-fill" styleClass="success-btn"
                                          actionListener="#{invoiceHome.courtesy()}" action="#{invoiceHome.redirect}"
-                                          disabled="#{true}" 
+                                         disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
                                          ajax="true" type="submit"/>
                         <p:commandButton  value="#{i18n['common.save']}" 
                                           icon="pi pi-save" styleClass="primary-button"
                                           actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}"
-                                           disabled="#{true}" 
+                                          disabled="#{true}" 
                                           ajax="true" type="submit"/>
                         <i class="pi pi-bars p-px-2" style="margin-right: 0.5rem"/>
                         <p:commandButton id="print-button" 
                                          value="#{i18n['common.print']}" 
                                          icon="pi pi-print" styleClass="warning-btn"
                                          actionListener="#{invoiceHome.print()}" 
-                                          disabled="#{true}" 
+                                         disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
                                          ajax="true" process="@this" oncomplete="PF('reportViewer').show();"/>
                     </p:toolbarGroup>
@@ -456,7 +456,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </p:autoComplete>
                                     </div>
                                     <div class="ui-g-4">
-                                        <p:commandButton id="button-change-customer" icon="fa fa-user-plus"  disabled="true"
+                                        <p:commandButton id="button-change-customer"
+icon="fa fa-user-plus" styleClass="primary-button"
+disabled="true"
                                                          actionListener="#{invoiceHome.mostrarFormularioProfile()}" ajax="true"
                                                          immediate="true"
                                                          styleClass="RedButton" style="width:30px">
