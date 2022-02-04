@@ -361,6 +361,7 @@ public class ProveedorHome extends FedeController implements Serializable {
             setProveedorId((Long) getSessionParameter("proveedorId"));
             setProveedor(proveedorService.find(getProveedorId()));
         } else {
+            setProveedorId(null);
             setProveedor(proveedorService.createInstance());
         }
         System.out.println("is-proveedor::" + this.proveedor);
