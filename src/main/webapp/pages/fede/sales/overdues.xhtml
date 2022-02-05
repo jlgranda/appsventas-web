@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <ui:repeat value="#{invoiceHome.myOverduelastPreInvoices}" var="entity">
                                         <div class="Container70 Fs50 FontRobotoLight Orange">
                                             <span class="Fs18 DispBlock">
-                                               <strong>#{entity.owner.fullName}</strong> #{i18n['app.fede.sales.invoice.comanda.number']}: #{entity.code} | <strong>#{i18n['ride.infoFactura.total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                               <strong>#{entity.owner.fullName}</strong> #{i18n['app.fede.sales.invoice.comanda.number']}: #{entity.code} | <strong>#{i18n['app.fede.payment.amount.total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText></strong>
                                             </span>
@@ -76,7 +76,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             </span>
                                             <span class="Gray Fs14 FontRobotoLight DispBlock">#{i18n['common.subtotal']}: <h:outputText value="#{entity.total}">
                                                     <f:convertNumber type="currency"/>
-                                                </h:outputText> #{i18n['common.discount']}: <h:outputText value="#{entity.paymentsDiscount}">
+                                                </h:outputText> #{i18n['app.fede.payment.discount']}: <h:outputText value="#{entity.paymentsDiscount}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText> 
                                             </span>

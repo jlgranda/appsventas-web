@@ -1154,7 +1154,7 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
             getPayment().setCash(getPayment().getAmount().subtract(getPayment().getDiscount()));
             getPayment().setChange(getPayment().getCash().subtract(getPayment().getAmount()));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.invalid", " " + this.amountPending));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.invalid", " " + this.amountPending));
             getPayment().setCash(BigDecimal.ZERO);
             getPayment().setChange(BigDecimal.ZERO);
         }
@@ -1357,7 +1357,7 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
                 addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.payments.accounting.success"));
             }
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.inlinehelp"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.paid.inlinehelp"));
         }
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         getPayment().setAmount(BigDecimal.ZERO);
@@ -1392,7 +1392,7 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
             facturaElectronica.addPayment(p);
             setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.less.zero"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.less.zero"));
         }
     }
 

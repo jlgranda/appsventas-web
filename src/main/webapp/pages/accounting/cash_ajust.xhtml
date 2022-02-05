@@ -233,7 +233,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -261,7 +261,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -353,7 +353,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -395,7 +395,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -476,7 +476,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3 container-lefth">#{i18n['app.fede.accouting.deposit.question']} </div>
                             <h:panelGroup id="panel-deposit-detail">
                                 <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activeSelectDeposit}">
-                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">#{i18n['app.fede.sales.payment.cash']}
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">#{i18n['app.fede.payment.cash']}
                                         <p:inputNumber value="#{cashBoxHome.cashBoxPartial.amountDeposit}" required="true"
                                                        inputStyle="text-align: right" symbol="$" disabled="#{!cashBoxHome.activeButtonSelectDeposit}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -551,7 +551,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -592,7 +592,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -707,7 +707,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                            <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                 </h:outputText>
@@ -735,7 +735,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" style="text-align: right">
+                                            <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                 </h:outputText>

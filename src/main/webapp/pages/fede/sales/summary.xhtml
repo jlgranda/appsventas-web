@@ -84,7 +84,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card WhiteBlueBack TexAlCenter">
                             <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['common.discounts']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.payment.discounts']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24 hoverable" 
                                   update=":form:panel-dataTable" onclick="PF('dlgTblDiscounts').show()">
@@ -174,7 +174,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column id="amount" headerText="#{i18n['common.total']}" sortBy="#{discount[3]}" >
                                 <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
                             </p:column>
-                            <p:column id="numb_dscto" headerText="#{i18n['common.discount']}" sortBy="#{discount[4]}" >
+                            <p:column id="numb_dscto" headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{discount[4]}" >
                                 <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
                             </p:column>
                             <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align: center">

@@ -218,7 +218,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                        decimalPlaces="#{settingHome.getValue('app.fede.purchases.decimalPlaces', '4')}">
                                         </p:inputNumber>
                                     </div>
-                                    <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.discount']}</div>
+                                    <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['app.fede.payment.discount']}</div>
                                     <div class="invoice-value ui-g-4">
                                         <p:inputNumber id="descuento" value="#{facturaElectronicaCompraHome.facturaElectronica.totalDescuento}" required="#{true}"
                                                        styleClass="" inputStyle="text-align: right" symbol="$" disabled="#{true}"
@@ -448,7 +448,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                            <h:outputText value="#{i18n['app.fede.sales.payment.method']}: "></h:outputText>
+                                            <h:outputText value="#{i18n['app.fede.payment.method']}: "></h:outputText>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                             <p:selectOneMenu id="method"
@@ -475,7 +475,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:panelGroup>
                                         </h:panelGroup>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                            <h:outputText value="#{i18n['app.fede.sales.payment.cash.paid']}: "></h:outputText>
+                                            <h:outputText value="#{i18n['app.fede.payment.cash.paid']}: "></h:outputText>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                             <p:inputNumber id="total" value="#{facturaElectronicaCompraHome.payment.amount}" required="#{true}"
@@ -489,7 +489,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                            <h:outputText value="#{i18n['common.discount']}: "></h:outputText>
+                                            <h:outputText value="#{i18n['app.fede.payment.discount']}: "></h:outputText>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                             <p:inputNumber id="discount" value="#{facturaElectronicaCompraHome.payment.discount}" required="#{true}" 
@@ -502,7 +502,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                            <h:outputText value="#{i18n['app.fede.sales.payment.cash.received']}: "></h:outputText>
+                                            <h:outputText value="#{i18n['app.fede.payment.cash.received']}: "></h:outputText>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                             <p:inputNumber id="cash" value="#{facturaElectronicaCompraHome.payment.cash}" required="#{true}" 
@@ -514,12 +514,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                            <h:outputText value="#{i18n['app.fede.sales.payment.change']}: "></h:outputText>
+                                            <h:outputText value="#{i18n['app.fede.payment.change']}: "></h:outputText>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                             <p:inputNumber id="change" value="#{facturaElectronicaCompraHome.payment.change}" required="#{true}" 
                                                            styleClass="" inputStyle="text-align: right" symbol="$"  disabled="#{true}"
-                                                           placeholder="#{i18n['app.fede.sales.payment.change']}"
+                                                           placeholder="#{i18n['app.fede.payment.change']}"
                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
@@ -553,7 +553,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                         </h:outputText>
                                     </p:column>
-                                    <p:column headerText="#{i18n['app.fede.sales.payment.cash.paid']}" styleClass="text-right">
+                                    <p:column headerText="#{i18n['app.fede.payment.cash.paid']}" styleClass="text-right">
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{payment.amount}">
@@ -565,7 +565,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.discount']}" styleClass="text-right">
+                                    <p:column headerText="#{i18n['app.fede.payment.discount']}" styleClass="text-right">
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{payment.discount}">
@@ -577,7 +577,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="#{i18n['app.fede.sales.payment.cash.received']}" styleClass="text-right">
+                                    <p:column headerText="#{i18n['app.fede.payment.cash.received']}" styleClass="text-right">
                                         <p:cellEditor>
                                             <f:facet name="output">
                                                 <h:outputText value="#{payment.cash}">
@@ -589,10 +589,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </f:facet>
                                         </p:cellEditor>
                                     </p:column>
-                                    <p:column headerText="#{i18n['app.fede.sales.payment.method']}" styleClass="text-right">
+                                    <p:column headerText="#{i18n['app.fede.payment.method']}" styleClass="text-right">
                                         <h:outputText value="#{payment.method}"></h:outputText>
                                     </p:column>
-<!--                                    <p:column headerText="#{i18n['app.fede.sales.payment.change']}" styleClass="text-right">
+<!--                                    <p:column headerText="#{i18n['app.fede.payment.change']}" styleClass="text-right">
                                         <h:outputText value="#{payment.change}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                         </h:outputText>

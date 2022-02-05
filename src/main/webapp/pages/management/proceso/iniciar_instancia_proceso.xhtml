@@ -105,7 +105,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
                                                     paginatorAlwaysVisible="false" rendered="#{not empty instanciaProcesoHome.tarea.documentos}">
 
-                                            <p:commandLink title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
+                                            <p:commandLink title="#{documento.name}" styleClass="" style="zzdisplay:inline-block"
                                                            update="@form" immediate="true" actionListener="#{instanciaProcesoHome.editarDocumento(documento)}">
                                                 <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
                                                 &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>

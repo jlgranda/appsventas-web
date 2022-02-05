@@ -118,12 +118,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.company.name']}" style="width:12rem;">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.total']}">
+                            <p:column headerText="#{i18n['app.fede.payment.amount.total']}">
                                 <h:outputText class="container-right" value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['app.fede.sales.payment.cash']} #{i18n['common.collect.by']}">
+                            <p:column headerText="#{i18n['app.fede.payment.cash']} #{i18n['common.collect.by']}">
                                 <h:outputText class="container-right" value="#{facturaElectronicaIngresoHome.montoPorPagar(facturaElectronica)}" 
                                               title="#{facturaElectronicaIngresoHome.messageDatePaymentExpired(facturaElectronica.fechaVencimiento)}" 
                                               style="#{facturaElectronicaIngresoHome.calculateDayOfExpiration(facturaElectronica)==true ? 'color: #F94C00' : ''}">
@@ -138,7 +138,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column id="summary" headerText="#{i18n['common.description']}">
                                 <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}">
+                            <p:column headerText="#{i18n['ride.emission.type']}" sortBy="#{facturaElectronica.emissionType}">
                                 <h:outputText class="capital" value="#{facturaElectronica.emissionType == 'PURCHASE_CREDIT' ? i18n['OVERDUE']: facturaElectronica.emissionType == 'PURCHASE_CASH' ? i18n['PURCHASE_CASH_LIT']:
                                                                        facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
                                 </h:outputText>

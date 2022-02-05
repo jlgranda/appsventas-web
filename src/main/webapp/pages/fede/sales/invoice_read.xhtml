@@ -199,7 +199,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:panel id="payment-panel" class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12" rendered="#{not empty invoiceHome.candidateDetails}">
                         <div class="ui-fluid">
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.sales.payment.method']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.method']}" for="@next"/>
                                 <p:selectOneMenu id="method"
                                                  value="#{invoiceHome.payment.method}"
                                                  disabled="#{true}"
@@ -211,7 +211,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:selectOneMenu>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.sales.payment.cash.received']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.cash.received']}" for="@next"/>
                                 <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="#{true}"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -221,7 +221,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['common.discount']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.discount']}" for="@next"/>
                                 <p:inputNumber id="number_dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="#{true}"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -231,7 +231,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.sales.payment.change']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.change']}" for="@next"/>
                                 <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="#{true}"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -314,7 +314,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                     <div class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12">
                         <div class="ui-g-12" style="display: inline-flex; padding: 0rem">
-                            <h:outputLabel class="Fs16" style="margin-right: 0.5rem">#{i18n['common.alias']}:</h:outputLabel>
+                            <h:outputLabel class="Fs16 MarRight10">#{i18n['common.alias']}:</h:outputLabel>
                             <p:selectBooleanCheckbox value="#{invoiceHome.invoice.printAlias}" disabled="#{true}">
                                 <p:ajax update="alias" listener="#{invoiceHome.updatePrintAlias}"/>
                             </p:selectBooleanCheckbox>
@@ -380,7 +380,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                           actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}"
                                           disabled="#{true}" 
                                           ajax="true" type="submit"/>
-                        <i class="pi pi-bars p-px-2" style="margin-right: 0.5rem"/>
+                        <i class="pi pi-bars p-px-2 MarRight10"/>
                         <p:commandButton id="print-button" 
                                          value="#{i18n['common.print']}" 
                                          icon="pi pi-print" styleClass="warning-btn"
@@ -620,7 +620,7 @@ disabled="true"
                                     <div class="ui-g-12">
                                         <div class="ui-g-3">
                                             <div class="Container100 Responsive50">
-                                                <h:outputText value="#{i18n['app.fede.sales.payment.method']}"/>
+                                                <h:outputText value="#{i18n['app.fede.payment.method']}"/>
                                                 <p:selectOneMenu value="#{invoiceHome.payment.method}"
                                                                  required="#{true}" immediate="true" disabled="true"> 
                                                     <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
@@ -630,7 +630,7 @@ disabled="true"
                                         </div>
                                         <div class="ui-g-3">
                                             <div class="ContainerIndent">
-                                                <h:outputText value="#{i18n['app.fede.sales.payment.cash.received']}" />
+                                                <h:outputText value="#{i18n['app.fede.payment.cash.received']}" />
                                                 <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="true"
                                                                styleClass=""
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -642,7 +642,7 @@ disabled="true"
                                         </div>
                                         <div class="ui-g-3">
                                             <div class="ContainerIndent">
-                                                <h:outputText value="#{i18n['common.discount']}" />
+                                                <h:outputText value="#{i18n['app.fede.payment.discount']}" />
                                                 <p:inputNumber id="number_dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="true"
                                                                styleClass=""
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -654,7 +654,7 @@ disabled="true"
                                         </div>                                            
                                         <div class="ui-g-3">
                                             <div class="ContainerIndent">
-                                                <h:outputText value="#{i18n['app.fede.sales.payment.change']}" />
+                                                <h:outputText value="#{i18n['app.fede.payment.change']}" />
                                                 <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="true"
                                                                styleClass=""
                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 

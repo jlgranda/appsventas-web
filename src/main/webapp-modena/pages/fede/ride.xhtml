@@ -110,7 +110,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">#{facturaElectronica.numeroAutorizacion}
                                         </div>
-                                        <div class="Container100 Responsive100">#{i18n['ride.authorizationDate']}&nbsp;#{facturaElectronica.fechaAutorizacion}
+                                        <div class="Container100 Responsive100">#{i18n['ride.authorization.date']}&nbsp;#{facturaElectronica.fechaAutorizacion}
                                         </div>
                                         <div class="Container100 Responsive100">#{i18n['ride.environment']}&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoTributaria.ambiente}
                                         </div>
@@ -179,7 +179,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container70 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.totalSinImpuestos']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.amount.total.taxe.none']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.totalSinImpuestos}" class="text-primary">
@@ -189,7 +189,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container70 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.totalDescuento']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.discount']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.totalDescuento}" class="text-primary">
@@ -252,7 +252,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">#{facturaElectronica.numeroAutorizacion}
                                         </div>
-                                        <div class="Container100 Responsive100">#{i18n['ride.authorizationDate']}&nbsp;#{facturaElectronica.fechaAutorizacion}
+                                        <div class="Container100 Responsive100">#{i18n['ride.authorization.date']}&nbsp;#{facturaElectronica.fechaAutorizacion}
                                         </div>
                                         <div class="Container100 Responsive100">#{i18n['ride.environment']}&nbsp;
                                         </div>
@@ -286,7 +286,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container70 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.totalSinImpuestos']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.amount.total.taxe.none']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{facturaElectronica.totalSinImpuestos}" class="text-primary">
@@ -296,7 +296,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container70 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.totalDescuento']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.discount']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{facturaElectronica.totalDescuento}" class="text-primary">

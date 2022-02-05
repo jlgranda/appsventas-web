@@ -1158,7 +1158,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             getPayment().setCash(getPayment().getAmount().subtract(getPayment().getDiscount()));
             getPayment().setChange(getPayment().getCash().subtract(getPayment().getAmount()));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.invalid", " " + this.amoutPending));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.invalid", " " + this.amoutPending));
         }
     }
 
@@ -1191,7 +1191,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             getPayment().setDiscount(BigDecimal.ZERO);
             getPayment().setCash(BigDecimal.ZERO);
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.inlinehelp"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.paid.inlinehelp"));
         }
         if (!facturaElectronica.getPayments().isEmpty()) {
 //            Collections.sort(facturaElectronica.getPayments(), Collections.reverseOrder((Payment pay, Payment other) -> pay.getLastUpdate().compareTo(other.getLastUpdate())));
@@ -1254,7 +1254,7 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             facturaElectronica.addPayment(p);
             setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.less.zero"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.less.zero"));
         }
     }
 
