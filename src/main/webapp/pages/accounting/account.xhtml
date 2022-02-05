@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:outputLabel value="#{i18n['common.name']}" for="@next"/>
                                 <p:inputText id="nme" 
                                              value="#{accountHome.account.name}" required="true">
-                                    <p:ajax event="keyup" listener="#{accountHome.validateAccountNew(accountHome.account.name)}" update="@this" />
+                                    <p:ajax event="keyup" listener="#{accountHome.validateAccountNew(accountHome.account.name)}" update="save-button" />
                                 </p:inputText>
                             </div>
     <!--                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}"
@@ -81,14 +81,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
-                            <p:toolbarGroup style="flex-wrap: nowrap !important;">   
+                            <p:toolbarGroup style="flex-wrap: nowrap !important;">  
                                 <p:commandButton id="save-button" 
                                                  value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
                                                  actionListener="#{accountHome.save()}" action="#{accountHome.getOutcome()}"
-                                                 disabled="#{false}"
+                                                 disabled="#{accountHome.validateAccount}"
                                                  ajax="true" type="submit"/>
                                 <p:button value="#{i18n['app.fede.accounting.account.child']}" icon="fa fa-plus-square-o" styleClass="primary-button"  style="width: auto !important;"
-                                          outcome="/pages/accounting/account.jsf?parentAccountId=#{accountHome.account.id}" />
+                                          outcome="/pages/accounting/account.jsf?parentAccountId=#{accountHome.account.id}" 
+                                          disabled="#{!accountHome.account.id}"/>
                             </p:toolbarGroup>
                             <p:toolbarGroup align="rigth">
                                 <p:commandButton icon="pi pi-replay" styleClass="primary-button p-mr-2"

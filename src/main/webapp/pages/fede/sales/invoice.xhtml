@@ -344,7 +344,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <p:toolbar rendered="#{invoiceHome.invoice.persistent}">
                     <p:toolbarGroup style="display: inline-flex;">   
                         <p:commandButton id="collect-button" 
-                                         value="#{i18n['common.collect']}" 
+                                         value="#{i18n['common.collect']}"
                                          icon="pi pi-dollar" styleClass="danger-btn"
                                          actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
                                          disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 

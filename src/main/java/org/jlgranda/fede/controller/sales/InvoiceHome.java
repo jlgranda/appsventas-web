@@ -280,13 +280,12 @@ public class InvoiceHome extends FedeController implements Serializable {
 //                .filterValue(Arrays.asList(LocalDate.now().minusDays(28), LocalDate.now().plusDays(28)))
 //                .matchMode(MatchMode.RANGE)
 //                .build());
-
         initializeActions();
-        
+
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
         setOutcome(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().getVistaVentas() : "preinvoices");
-        
+
     }
 
     public Long getInvoiceId() {
@@ -745,6 +744,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
             //Enviar saludo a cliente
             sendNotification();
+            setOutcome("preinvoices");
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + getInvoice().getTotal()));
             setOutcome("");
