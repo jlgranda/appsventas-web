@@ -20,7 +20,7 @@
     <ui:define name="content" rendered="#{true}">
         <div class="layout-dashboard">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-6 ui-lg-6">
+                <div class="ui-g-6 ui-md-6 ui-lg-6 ui-xl-12">
                     <div class="overview-box sales">
                         <p:graphicImage name="images/icon-sales.png" library="ecuador-layout"  styleClass="image-icon" />
                         <div class="overview-title">#{i18n['app.fede.smart.goal']} #{i18n['app.fede.sales.net']}</div>
@@ -29,18 +29,20 @@
                             </h:outputText>                          
                         </div>
                         <div class="overview-subinfo">
-                            <div class="ui-g-11">
-                                <div class="ui-g-#{summaryHome.calculeProfitRateEquivalentForUX()} progressbar">
-                                <div class="progress sale"></div>
+                            <div class="ui-g-10" style="padding: 0rem">
+                                <div class="ui-g#{summaryHome.calculeProfitRateEquivalentForUX()} progressbar">
+                                    <div class="progress sale"></div>
+                                </div>
                             </div>
-                            </div>                            
-                            <span class="ui-g-1"><h:outputText value="#{summaryHome.calculeProfitRate()}">
-                                    <f:convertNumber type="percent" />
-                                </h:outputText></span>
+                            <div class="ui-g-2">
+                                <span><h:outputText value="#{summaryHome.calculeProfitRate()}">
+                                        <f:convertNumber type="percent" />
+                                    </h:outputText></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="ui-g-12 ui-md-6 ui-lg-6">
+                <div class="ui-g-6 ui-md-6 ui-lg-6 ui-xl-12">
                     <div class="overview-box views">
                         <p:graphicImage name="images/icon-sales.png" library="ecuador-layout" styleClass="image-icon" style="margin-top:10px"/>
                         <div class="overview-title">#{i18n['app.fede.smart.goal']} #{i18n['app.fede.inventory.purchases']}</div>
@@ -52,7 +54,6 @@
                             <div class="ui-g-6 progressbar">
                                 <div class="progress view"></div>
                             </div>
-                            <!--<span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("own")} #{i18n['common.more.min']}</span>-->
                             <span class="ui-g-6">#{facturaElectronicaHome.countRowsByTag("org")} #{i18n['common.more.min']}</span>
                         </div>
                     </div>
@@ -60,14 +61,14 @@
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                     <p:panel header="#{i18n['app.fede.smart.statistic']}" styleClass="statistics ui-g">
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
-<!--                                                        <i class="fa fa-level-up"></i>
+                            <!--                            <i class="fa fa-level-up"></i>
                                                         <span class="icon-label">Mejora</span>
                                                         <span>$ 85,397</span>
                                                         <div class="statsbar">
                                                             <div class="statsbar-value" style="width: 50%"></div>
                                                         </div>-->
-                            <i class="fa fa-usd"></i>
                             <!--30 días-->
+                            <i class="fa fa-usd"></i>
                             <span class="icon-label">#{i18n['app.fede.smart.average.last']} #{settingHome.getValue("app.fede.date.range.month", "30")} #{i18n['common.days']}</span>
                             <span>
                                 <h:outputText value="#{summaryHome.calculeProfitRateAverage(30)}">
@@ -87,7 +88,6 @@
                             <div class="statsbar">
                                 <div class="statsbar-value" style="width: #{summaryHome.calculeProfitRateAverage(7) * 100}%"></div>
                             </div>
-
                             <!-- Ayer -->
                             <span class="icon-label">#{i18n['common.date.yesterday']}</span>
                             <span>
@@ -183,11 +183,11 @@
                         </ul>
                     </p:panel>
                 </div>
-<!--                <div class="ui-g-12 ui-md-12 ui-lg-12">
-                    <p:panel header="#{i18n['app.setting.events.uncomming']}" style="height:100%">
-                        <p:schedule value="#{scheduleView.eventModel}"/>
-                    </p:panel>
-                </div>-->
+                <!--                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                                    <p:panel header="#{i18n['app.setting.events.uncomming']}" style="height:100%">
+                                        <p:schedule value="#{scheduleView.eventModel}"/>
+                                    </p:panel>
+                                </div>-->
             </div>
         </div>
     </ui:define>
