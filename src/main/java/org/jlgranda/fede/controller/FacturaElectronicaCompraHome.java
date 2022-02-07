@@ -1323,7 +1323,8 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             } else {
                 p = listPayment.get(0);
             }
-            p.setAmount(facturaElectronica.getSubtotalIVA0().add(facturaElectronica.getSubtotalIVA12()));
+//            p.setAmount(facturaElectronica.getSubtotalIVA0().add(facturaElectronica.getSubtotalIVA12()));
+            p.setAmount(facturaElectronica.getImporteTotal());
             p.setDiscount(facturaElectronica.getTotalDescuento());
             p.setCash(facturaElectronica.getImporteTotal());
             p.setChange(BigDecimal.ZERO);

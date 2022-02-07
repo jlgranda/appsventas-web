@@ -287,7 +287,6 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
         setActivePanelProduct(false);
 
         //Establecer variable de sistema que habilita o no el registro contable
-
         getPayment().setAmount(BigDecimal.ZERO);
         getPayment().setDiscount(BigDecimal.ZERO);
         getPayment().setCash(BigDecimal.ZERO);
@@ -1246,7 +1245,8 @@ public class FacturaElectronicaHome extends FedeController implements Serializab
             } else {
                 p = listPayment.get(0);
             }
-            p.setAmount(facturaElectronica.getTotalIVA0().add(facturaElectronica.getTotalIVA12()));
+//          p.setAmount(facturaElectronica.getTotalIVA0().add(facturaElectronica.getTotalIVA12()));
+            p.setAmount(facturaElectronica.getImporteTotal());
             p.setDiscount(facturaElectronica.getTotalDescuento());
             p.setCash(facturaElectronica.getImporteTotal());
             p.setChange(BigDecimal.ZERO);

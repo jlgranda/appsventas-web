@@ -1377,7 +1377,8 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
             } else {
                 p = listPayment.get(0);
             }
-            p.setAmount(facturaElectronica.getTotalSinImpuestos());
+//            p.setAmount(facturaElectronica.getTotalSinImpuestos());
+            p.setAmount(facturaElectronica.getImporteTotal());
             p.setDiscount(facturaElectronica.getTotalDescuento());
             p.setCash(facturaElectronica.getImporteTotal());
             p.setChange(BigDecimal.ZERO);

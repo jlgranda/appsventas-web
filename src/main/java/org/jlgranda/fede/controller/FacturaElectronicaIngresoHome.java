@@ -1384,7 +1384,8 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
             } else {
                 p = listPayment.get(0);
             }
-            p.setAmount(facturaElectronica.getTotalSinImpuestos());
+//            p.setAmount(facturaElectronica.getTotalSinImpuestos());
+            p.setAmount(facturaElectronica.getImporteTotal());
             p.setDiscount(facturaElectronica.getTotalDescuento());
             p.setCash(facturaElectronica.getImporteTotal());
             p.setChange(BigDecimal.ZERO);
@@ -1429,7 +1430,7 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registroingresosefectivo", "REGISTRO_INGRESOS_EFECTIVO"));
                 this.recordDetail.setAccountName("Caja dia");
                 this.record.addRecordDetail(recordDetail);
-                this.record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal facturado: %s",(this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
+                this.record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal facturado: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
             } else if (EmissionType.PURCHASE_CREDIT.equals(facturaElectronica.getEmissionType())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registroingresoscredito", "REGISTRO_INGRESOS_CREDITO"));
                 this.recordDetail.setAccountName("PROVEEDORES $CEDULA");
@@ -1463,7 +1464,7 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
                 //El General Journal del día
                 if (generalJournal != null) {
                     for (Record rcr : records) {
-                        
+
                         rcr.setCode(UUID.randomUUID().toString());
 
                         rcr.setOwner(this.subject);
