@@ -27,12 +27,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import net.sf.jasperreports.engine.JRException;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
@@ -43,6 +45,7 @@ import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaType;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jlgranda.fede.ui.model.LazyProveedorDataModel;
+import org.jlgranda.reportes.ReportUtil;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
@@ -499,11 +502,23 @@ public class ProveedorHome extends FedeController implements Serializable {
 
     //Acciones sobre seleccionados
     public void execute() {
-
+        if (this.isActionExecutable()) {
+            if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("organizationId", this.organizationData.getOrganization().getId());
+                params.put("proveedorId", this.selectedProveedores.get(0).getId());
+                try {
+                    ReportUtil.getInstance().generarReporte("/tmp/appsventas/", "/home/opt/appsventas/reportes/proveedores_facturas.jasper", params);
+                } catch (JRException ex) {
+                    java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                setOutcome("");
+            }
+        }
     }
 
     public boolean isActionExecutable() {
-        if ("collect".equalsIgnoreCase(this.selectedAction)) {
+        if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
             return true;
         }/* else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getGroupSelected() != null){
             return true;
@@ -519,8 +534,8 @@ public class ProveedorHome extends FedeController implements Serializable {
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         actions.add(item);
 
-//        item = new SelectItem("imprimir", I18nUtil.getMessages("common.collect"));
-//        actions.add(item);
+        item = new SelectItem("imprimir", I18nUtil.getMessages("common.print"));
+        actions.add(item);
 //        item = new SelectItem("moveto", "Mover a categoría");
 //        actions.add(item);
 //        

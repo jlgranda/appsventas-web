@@ -137,7 +137,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      actionListener="#{proveedorHome.execute()}" action="#{proveedorHome.getOutcome()}"
                                                      oncomplete="PF('dataTable').unselectAllRows()"
                                                      disabled="#{not proveedorHome.actionExecutable}"
-                                                     ajax="false" type="submit">
+                                                     ajax="true" update="@form"><!-- type="submit"-->
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                     </p:commandButton>
                                 </div>
