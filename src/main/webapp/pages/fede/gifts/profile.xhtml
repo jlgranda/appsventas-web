@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}"/>
-        <ui:define name="title">#{i18n['common.profile']} - #{subject.fullName}</ui:define>
+        <ui:define name="title">#{i18n['module.profile']} - #{subject.fullName}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="home">#{i18n['common.profile']} - #{subject.fullName}</p:link></li>
+            <li><p:link outcome="home">#{i18n['module.profile']} - #{subject.fullName}</p:link></li>
         </ui:define>
         <ui:define name="style" rendered="#{!request.isUserInRole('USER')}">
             <style type="text/css">

@@ -14,7 +14,7 @@
              </f:metadata>-->
         </ui:define>
         <ui:define name="subheader">
-            <p:menuButton value="#{i18n['panel.Group']}" iconPos="right"
+            <p:menuButton value="#{i18n['property.group']}" iconPos="right"
                           styleClass="MarRight10"
                           menuStyleClass="Gray"><!-- buttonStyleClass="ToolbarButton Fs14" iconStyleClass="Gray"-->
                 <p:menuitem value="#{i18n['common.users']}" icon="fa fa-users" 
@@ -165,10 +165,10 @@
                             <p:ajax event="rowUnselectCheckbox" update="@form"/>
                             <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            <p:column headerText="#{i18n['property.groupName']}" sortBy="#{group.name}">
+                            <p:column headerText="#{i18n['property.group.name']}" sortBy="#{group.name}">
                                 <h:outputText value="#{group.name}" />
                             </p:column>
-                            <p:column headerText="#{i18n['property.groupPath']}" sortBy="#{group.path}">
+                            <p:column headerText="#{i18n['property.group.path']}" sortBy="#{group.path}">
                                 <h:outputText value="#{group.path}" />
                             </p:column> 
                         </p:dataTable>

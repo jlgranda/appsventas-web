@@ -508,7 +508,7 @@ public class ProveedorHome extends FedeController implements Serializable {
                 params.put("organizationId", this.organizationData.getOrganization().getId());
                 params.put("proveedorId", this.selectedProveedores.get(0).getId());
                 try {
-                    ReportUtil.getInstance().generarReporte("/tmp/appsventas/", "/home/opt/appsventas/reportes/proveedores_facturas.jasper", params);
+                    ReportUtil.getInstance().generarReporte("/tmp/appsventas/", "/home/opt/appsventas/reportes/proveedor_facturas.jasper", params);
                 } catch (JRException ex) {
                     java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
                 }
