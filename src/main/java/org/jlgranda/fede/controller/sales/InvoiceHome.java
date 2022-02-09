@@ -1344,11 +1344,14 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @param details
      */
     private void registerInvoiceDetailsInKardex(List<Detail> details) {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
+        System.out.println("details:::::"+details);
         kardexService.save(
                 makeDetailableList(details),
                 settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-"),
                 subject, this.organizationData.getOrganization(),
                 KardexDetail.OperationType.VENTA);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
     }
 
     @Override
