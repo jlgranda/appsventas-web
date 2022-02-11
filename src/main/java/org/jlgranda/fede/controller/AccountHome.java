@@ -528,7 +528,7 @@ public class AccountHome extends FedeController implements Serializable {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
         }
     }
-
+    
     /**
      * Selección de un objeto específico de tipo <tt>Account</tt> para ingresar
      * a su vista y detalles

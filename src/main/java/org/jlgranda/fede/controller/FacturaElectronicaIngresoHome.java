@@ -1430,14 +1430,18 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registroingresosefectivo", "REGISTRO_INGRESOS_EFECTIVO"));
                 this.recordDetail.setAccountName("Caja dia");
                 this.record.addRecordDetail(recordDetail);
-                this.record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal facturado: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
+                this.record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado: %s \nConcepto: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()),
+                        this.facturaElectronica.getAuthor().getFullName(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##"), this.facturaElectronica.getDescription()));
             } else if (EmissionType.PURCHASE_CREDIT.equals(facturaElectronica.getEmissionType())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registroingresoscredito", "REGISTRO_INGRESOS_CREDITO"));
                 this.recordDetail.setAccountName("PROVEEDORES $CEDULA");
                 if (this.facturaElectronica.getPayments().isEmpty()) {
-                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno \nConcepto: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()),
+                            this.facturaElectronica.getAuthor().getFullName(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##"), this.facturaElectronica.getDescription()));
                 } else {
-                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nConcepto: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), this.facturaElectronica.getAuthor().getFullName(), this.facturaElectronica.getDescription(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(this.facturaElectronica.getPayments().get(this.facturaElectronica.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s \nConcepto: %s", (this.facturaElectronica.getCode() + "/" + this.facturaElectronica.getId()), 
+                            this.facturaElectronica.getAuthor().getFullName(), Strings.format(this.facturaElectronica.getImporteTotal().doubleValue(), "$ #0.##"),
+                            Strings.format(this.facturaElectronica.getPayments().get(this.facturaElectronica.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##"), this.facturaElectronica.getDescription()));
                 }
                 this.record.addRecordDetail(recordDetail);
             }
@@ -1761,12 +1765,12 @@ public class FacturaElectronicaIngresoHome extends FedeController implements Ser
                 record.setBussinesEntityHashCode(_instance.hashCode());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 if (EmissionType.PURCHASE_CASH.equals(_instance.getEmissionType())) {
-                    record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal a cobrar: %s", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Proveedor: %s \nTotal a cobrar: %s \nDetalle: %s", _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), _instance.getSummary()));
                 } else if (EmissionType.PURCHASE_CREDIT.equals(_instance.getEmissionType())) {
                     if (_instance.getPayments().isEmpty()) {
-                        record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal facturado a crédito: %s \nÚltimo cobro registrado: ninguno", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                        record.setDescription(String.format("Proveedor: %s \nTotal facturado a crédito: %s \nÚltimo cobro registrado: ninguno \nDetalle: %s", _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), _instance.getSummary()));
                     } else {
-                        record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal de la factura: %s \nÚltimo cobro registrado: %s", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(_instance.getPayments().get(_instance.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##")));
+                        record.setDescription(String.format("Proveedor: %s \nTotal de la factura: %s \nÚltimo cobro registrado: %s \nDetalle: %s", _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(_instance.getPayments().get(_instance.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##"), _instance.getSummary()));
                     }
                 }
             }

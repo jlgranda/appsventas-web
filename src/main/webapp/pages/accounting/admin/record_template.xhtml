@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['common.recordtemplates']}</p:link></li>
+            <li><p:link outcome="record-templates">#{i18n['common.recordtemplates']}</p:link></li>
             <li>/</li>
             <li>#{recordTemplateHome.recordTemplateId == null ? i18n['common.newa'].concat(' ').concat(i18n['bussines.entity.rule']).concat(' ') : ''} #{recordTemplateHome.recordTemplate.name}</li>
         </ui:define>

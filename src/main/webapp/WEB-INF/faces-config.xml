@@ -205,13 +205,23 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>general-journals</from-outcome>
+            <from-outcome>journals</from-outcome>
             <to-view-id>/pages/accounting/journal_items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>journal</from-outcome>
+            <to-view-id>/pages/accounting/journal.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>record-register</from-outcome>
             <to-view-id>/pages/accounting/record.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>general-ledger</from-outcome>
+            <to-view-id>/pages/accounting/general_ledger.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
         <!--<ui:param name="sitename" value="#{i18n['Sitename']}"/>-->
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.journals']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -34,51 +34,66 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
+            <li><p:link outcome="journals">#{i18n['app.fede.accounting.journals']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar id="topToolBar">
+                        <f:facet name="left">
+                            <p:outputLabel class="Gray" value="#{i18n['common.keyword']}:&nbsp;" for="@next"/>
+                            <p:inputText class="MarRight10" value="#{generalJournalHome.keyword}">
+                            </p:inputText>
+
+                            <h:panelGroup id="controles-busqueda-avanzada" style="padding-right: 0.2rem">
+                                <h:panelGroup rendered="#{generalJournalHome.busquedaAvanzada}">
+                                    <label class="Gray">#{i18n['common.from']}:&nbsp;</label>
+                                    <p:calendar value="#{generalJournalHome.start}" class="input-sm">
+                                        <p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
+                                    </p:calendar>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{generalJournalHome.busquedaAvanzada}">
+                                    <label class="Gray">#{i18n['common.to']}:&nbsp;</label>
+                                    <p:calendar value="#{generalJournalHome.end}" class="input-sm">
+                                        <p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" /> 
+                                    </p:calendar>                        
+                                </h:panelGroup>
+                            </h:panelGroup>
+                            <p:commandButton value="#{i18n['common.find']}"
+                                             icon="pi pi-search" styleClass="help-btn"
+                                             actionListener="#{kardexInventoryHome.clear()}" 
+                                             ajax="false" immediate="true">
+                            </p:commandButton>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:commandButton value="Libro del día" 
+                                             icon="pi pi-plus-circle" styleClass="danger-btn"
+                                             actionListener="#{generalJournalHome.validateNewJournal()}" 
+                                             ajax="false">
+                            </p:commandButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['common.from']}</label>
-                        <p:calendar value="#{generalJournalHome.start}" class="input-sm">
-                            <!--<p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" oncomplete="form.submit();"/>-->
-                        </p:calendar>
-                        <label class="Gray">#{i18n['common.to']}</label>
-                        <p:calendar value="#{generalJournalHome.end}" class="input-sm">
-                            <!--<p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" oncomplete="form.submit();"/>-->
-                        </p:calendar>                        
-                        <label class="Gray">#{i18n['common.keyword']}</label>
-                        <p:inputText value="#{generalJournalHome.keyword}" class="input-sm"></p:inputText>
-                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom: 10px;" styleClass="raised-btn"
-                                         actionListener="#{generalJournalHome.clear()}" ajax="false">
-                        </p:commandButton>
-                        <!--<p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/accounting/journal.jsf"/>-->
-                        <p:commandButton value="#{i18n['common.new']}" style="margin-bottom: 10px;" styleClass="danger-btn"
-                                         actionListener="#{generalJournalHome.validateNewJournal()}" ajax="false">
-                        </p:commandButton>
-                    </div>
-                    <div class="card">
-                        <p:dataTable id="dataTable-purchases" draggableColumns="true" lazy="true" liveResize="true"
+                        <p:dataTable var="journal" style="padding-left: 0.8rem; padding-right: 0.8rem;"
+                                     draggableColumns="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{journal.id}"
                                      rows="25" scrollRows="25"
-                                     value="#{generalJournalHome.lazyDataModel}" var="journal"
+                                     value="#{generalJournalHome.lazyDataModel}"
                                      selection="#{generalJournalHome.selectedGeneralJournals}"
-                                     sortBy="#{journal.emissionDate}">
+                                     sortBy="#{journal.emissionDate}"
+                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
                             <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelect}"/>
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            <p:column headerText="#{i18n['common.code.UUID']}" sortBy="#{journal.code}">
-                                <h:outputText value="#{journal.code}" />
-                            </p:column>
-                            <p:column headerText="#{i18n['common.label']}" sortBy="#{journal.name}" style="width: 45%">
+                            <p:column headerText="#{i18n['common.label']}/#{i18n['common.name']}" sortBy="#{journal.name}" style="width: 45%">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{journal.emissionDate}"
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{journal.emissionDate}"
                                        styleClass="text-right" style="width: auto">
                                 <h:outputText value="#{journal.emissionDate}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
@@ -89,23 +104,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:panel id="panelSelectedToolBar">
                             <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.selectedGeneralJournals}">
                                 <f:facet name="left">
-                                    <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
-                                    <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
-                                        <f:selectItems value="#{generalJournalHome.generalJournalActions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
-                                        <f:ajax render="selectedToolBar"></f:ajax>
-                                    </p:selectOneMenu>
-                                    <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}">
-                                        
-                                    </p:panel>
-                                    <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="true"
-                                                     actionListener="#{generalJournalHome.execute()}" 
-                                                     action="#{generalJournalHome.getOutcome()}"
-                                                     oncomplete="PF('dataTable-records').unselectAllRows()"
-                                                     disabled="#{not generalJournalHome.actionExecutable}"
-                                                     style="width: auto !important;"
-                                                     update="@form">
-                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                    </p:commandButton>
+                                    <p:outputLabel class="Gray" value="#{i18n['common.withselected']}&nbsp;" for="@next"/>
+                                    <div class="ui-g">
+                                        <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
+                                            <f:selectItems value="#{generalJournalHome.generalJournalActions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                            <f:ajax render="selectedToolBar"></f:ajax>
+                                        </p:selectOneMenu>
+                                        <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}">
+                                        </p:panel>
+                                        <p:commandButton id="go-button"
+                                                         value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                         actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
+                                                         oncomplete="PF('dataTable').unselectAllRows()"
+                                                         disabled="#{not generalJournalHome.actionExecutable}"
+                                                          ajax="true" update="@form">
+                                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                        </p:commandButton>
+                                    </div>
                                 </f:facet>
                             </p:toolbar>
                         </p:panel>

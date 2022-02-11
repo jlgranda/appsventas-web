@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.journals']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -36,44 +36,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/accounting/journal_items.jsf">#{i18n['app.fede.accounting.journals']}</p:link></li>
+        <li><p:link outcome="journals">#{i18n['app.fede.accounting.journals']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/accounting/journal.jsf">#{generalJournalHome.journalId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.journal']}</p:link></li>
-    </ui:define>
-    <ui:define name="style">
-        <style type="text/css">
-            .container-center{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            .bold-capital{
-                font-weight: bolder;
-                text-transform: uppercase;
-            }
-            .capital{
-                text-transform: uppercase;
-            }
-            .container-right{
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-            }
-            .container-lefth{
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-            }
-        </style>
+        <li><p:link outcome="journal">#{generalJournalHome.journalId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.accounting.journal']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.GeneralJournal"/>
         <div class="ui-g ui-fluid">
-            <div class="ui-g ui-lg-12 ui-md-12">
-                <h1 class="BigTopic capital">#{i18n['app.fede.accounting.journal']}</h1>
-                <div class="EmptyBox10"/>
-                <div class="card ui-g ui-lg-12 ui-md-12">
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <div class="card">
+                    <h:outputLabel class="BigTopic">#{i18n['app.fede.accounting.journal'].toUpperCase()}</h:outputLabel>
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
                                     value="#{generalJournalHome.journal.code}" required="true"
                                     inlinehelp="#{messages['common.code.UUID.inlinehelp']}"
@@ -86,91 +58,96 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     value="#{generalJournalHome.journal.description}" required="false"
                                     inlinehelp="#{messages['app.fede.accounting.journal.description.inlinehelp']}"
                                     execute="@this save" render="dscrpn"/>
-                    <div class="EmptyBox10"></div><!--Separador de sección-->
-                    <p:toolbar class="Container100" rendered="#{true}"><!--Sección Envío de formulario-->
+                    <p:toolbar rendered="#{true}">
                         <f:facet name="left">
-                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
+                            <p:commandButton id="save-button" 
+                                             value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
                                              actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
                                              disabled="#{false}"
-                                             style="width: auto !important;" styleClass="danger-btn"
-                                             type="submit"/>
+                                             ajax="true" type="submit"/>
                             <i class="fa fa-bars p-px-2"/>
                         </f:facet>
                         <f:facet name="right">
-                            <p:commandButton ajax ="true" icon="fa fa-trash Fs14 Black"
+                            <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="primary-button"
                                              actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
-                                             disabled="false" immediate="true"
-                                             styleClass="GrayButton"
-                                             type="submit"/>                          
+                                             ajax ="true" immediate="true"/>                          
                         </f:facet>
                     </p:toolbar>
                 </div>
-                <div class="EmptyBox10"></div>
-                <div class="card ui-g ui-lg-12 ui-md-12">
-                    <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs20">#{i18n['app.fede.accounting.records']}</div>
-                    <p:commandButton id="button-record-add" icon="fa fa-plus-square" value="#{i18n['common.new']}"
-                                     actionListener="#{generalJournalHome.mostrarFormularioRecord()}" ajax="true"
-                                     immediate="true" styleClass="success-btn">
-                        <p:ajax event="dialogReturn" update="@form"
-                                listener="#{generalJournalHome.handleReturn}">
-                        </p:ajax>
-                    </p:commandButton>
-                    <div class="EmptyBox20"></div>
-                    <p:dataTable id="dataTable-records" draggableColumns="true" lazy="true" liveResize="true"
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <div class="card">
+                    <h:outputLabel class="BigTopic Fs16">#{i18n['app.fede.accounting.records'].toUpperCase()}</h:outputLabel>
+                    <p:toolbar rendered="#{true}" style="margin: 0.8rem;">
+                        <f:facet name="left">
+                            <i class="fa fa-bars p-px-2"/>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:commandButton id="button-record-add" 
+                                             value="#{i18n['common.new']}" icon="fa fa-plus-square" styleClass="danger-btn"
+                                             actionListener="#{generalJournalHome.mostrarFormularioRecord()}"
+                                             ajax="true" immediate="true" >
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{generalJournalHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                        </f:facet>
+                    </p:toolbar>
+                    <p:dataTable var="record" style="padding-left: 0.8rem; padding-right: 0.8rem;"
+                                 draggableColumns="true" liveResize="true"
                                  paginator="true" paginatorAlwaysVisible="false"
                                  paginatorPosition="bottom" resizableColumns="true" rowKey="#{record.id}"
                                  rows="25" scrollRows="25"
-                                 value="#{generalJournalHome.journal.records}" var="record"
+                                 value="#{generalJournalHome.journal.records}"
                                  selection="#{generalJournalHome.selectedRecords}"
-                                 sortBy="#{record.createdOn}">
-                        
-                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                                 id="dataTable-records" widgetVar="dataTable_wv" lazy="true">
                         <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectAsRecord}" update=":form:panelSelectedToolBar"/>
                         <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-                        
-                        <p:column  id="fechaEmision"  headerText="#{i18n['common.crationHour']}" sortBy="#{record.createdOn}" style="width: 20%">
+                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                        <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.emission']}" style="width: 10rem;">
                             <h:outputText value="#{record.createdOn}">
                                 <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.description']}" sortBy="#{record.description}" style="width: 60%">
+                        <p:column headerText="#{i18n['common.description']}" sortBy="#{record.description}">
                             <h:outputText value="#{record.description}" />
                         </p:column>
-                        <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{record.id}" style="width: auto; text-align: center">
-                            <p:commandButton id="button-detail" value="#{i18n['common.view']} #{i18n['common.details']}"
-                                             actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" ajax="true"
-                                             immediate="true" update=""
-                                             styleClass="RedButton">
+                        <p:column id="report" style="width: 5rem; text-align: center">
+                            <p:commandButton id="button-detail" 
+                                             title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
+                                             actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" 
+                                             ajax="true" immediate="true">
                                 <p:ajax event="dialogReturn" update="@form"
                                         listener="#{generalJournalHome.handleReturn}">
                                 </p:ajax>
                             </p:commandButton>
                         </p:column>
                     </p:dataTable>
-                    <!--Herramientas con seleccionados -->
+                    <!--Herramientas con seleccionados--> 
                     <p:panel id="panelSelectedToolBar">
                         <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.selectedRecords}">
                             <f:facet name="left">
-                                <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
-                                <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
-                                    <f:selectItems value="#{generalJournalHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
-                                    <f:ajax render="selectedToolBar"></f:ajax>
-                                </p:selectOneMenu>
+                                <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                <div class="ui-g">
+                                    <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
+                                        <f:selectItems value="#{generalJournalHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                        <f:ajax render="selectedToolBar"></f:ajax>
+                                    </p:selectOneMenu>
+                                </div>
                                 <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}">
                                     <jlgranda:input id="general-journal-date" name="general-journal-date" type="calendar" label="#{i18n['app.fede.accounting.record.date']}" 
-                                        update="selectedToolBar" value="#{generalJournalHome.generalJournalDate}" 
-                                        required="false" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
-                                        container="none"/>
+                                                    update="selectedToolBar" value="#{generalJournalHome.generalJournalDate}" 
+                                                    required="false" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
+                                                    container="none"/>
                                 </p:panel>
-                                <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="true"
-                                                 actionListener="#{generalJournalHome.execute()}" 
-                                                 action="#{generalJournalHome.getOutcome()}"
+                                <p:commandButton id="go-button"
+                                                 value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button" style="width: auto !important;"
+                                                 actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
                                                  oncomplete="PF('dataTable-records').unselectAllRows()"
                                                  disabled="#{not generalJournalHome.actionExecutable}"
-                                                 style="width: auto !important;"
-                                                 update="@form">
+                                                 ajax="true" update="@form"><!-- type="submit"-->
                                     <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                 </p:commandButton>
                             </f:facet>
@@ -181,6 +158,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
     </ui:define>
     <ui:define name="popups">
+    </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+        </style>
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">

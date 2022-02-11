@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template_popup_libre.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewAction action="#{generalJournalHome.loadSessionParameters}" />
+                <!--<f:viewAction action="#{generalJournalHome.messageEditableRecord}" />-->
+                <f:viewAction action="#{generalJournalHome.orderRecordDetails}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting.journal']}</li>
+            <li>/</li>
+            <li>#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</li>
+        </ui:define>
+        <ui:define name="content">
+            <p:messages id="messages" showDetail="true" closable="true" >
+                <p:autoUpdate />
+            </p:messages>
+            <div class="ui-g">
+                <p:panel id="record-view"
+                         class="ui-g-12 ui-md-12 ui-lg-12" rendered="#{!generalJournalHome.recordOfReferen}">
+                    <div class="ui-g-4 ui-md-4 ui-lg-4" style="background-color: #E9E9E9">
+                        <span class="Fs16" style="font-weight: 700;"> Asiento <i class="pi pi-hashtag"/>#{generalJournalHome.record.id}</span>
+                        <div style="margin: 0.5rem 0 0 0;"><strong>CONCEPTO:</strong> #{generalJournalHome.record.description}</div>
+                    </div>
+                    <div class="ui-g-8 ui-md-8 ui-lg-8"  style="padding: 0rem">
+                        <p:dataTable id="recordDetails" 
+                                     value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
+                                     rowKey="#{recordDetail.id}">
+                            <p:column headerText="#{i18n['app.fede.accounting.account']}">
+                                <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.debe']}">
+                                <h:outputText value="#{recordDetail.amount}"
+                                              rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.haber']}">
+                                <h:outputText value="#{recordDetail.amount}"
+                                              rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </p:panel>
+                <p:panel id="record-edit"
+                         class="ui-g-12 ui-md-12 ui-lg-12" rendered="#{generalJournalHome.recordOfReferen}">
+                    <h:form>
+                        <div class="ui-g" style="padding: 0rem">
+                            <div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0rem">
+                                <div class="ui-fluid">
+                                    <h3>Agregar cuenta al asiento contable</h3>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                                            <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
+                                            <p:autoComplete id="account" 
+                                                            value="#{generalJournalHome.recordDetail.account}" var="account"
+                                                            itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                                            completeMethod="#{recordHome.filterAccounts}"
+                                                            converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                                            converterMessage="El convertidor no responde."
+                                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                            placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                                            forceSelection="true" emptyMessage="No se encontraron resultados."
+                                                            cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                            required="false">
+                                                <p:column>
+                                                    <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                                                </p:column>
+                                                <p:ajax process="@this"/>
+                                                <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
+                                            </p:autoComplete>
+                                        </div>
+                                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                                            <p:outputLabel value="Seleccione el tipo:" for="@next"/>
+                                            <p:selectOneRadio id="recordDetailType" 
+                                                              value="#{generalJournalHome.recordDetail.recordDetailType}" 
+                                                              layout="responsive" columns="3"
+                                                              required="false" style="width: 20rem;">
+                                                <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
+                                                               itemLabel="#{recordDetailType.label}" itemValue="#{recordDetailType}"/>
+                                                <p:ajax process="@this"/>
+                                                <f:ajax execute="@this" render="btnRecordAdd"></f:ajax>
+                                            </p:selectOneRadio>
+                                        </div>
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="padding: 0rem">
+                                            <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}"
+                                                            render="amount" value="#{generalJournalHome.recordDetail.amount}" 
+                                                            required="false" requiredMessage="#{i18n['common.money.letter']}"
+                                                            placeholder="false"
+                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                            container="none" rendered="true"/>
+                                        </div>
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: center; margin-top: 1rem">
+                                            <p:commandButton id="btnRecordAdd"
+                                                             icon="pi pi-check-square" styleClass="warning-btn"
+                                                             value="#{i18n['common.add']}"
+                                                             actionListener="#{generalJournalHome.recordDetailAdd}" 
+                                                             ajax="true" immediate="true"
+                                                             disabled="#{empty generalJournalHome.recordDetail.account or empty generalJournalHome.recordDetail.recordDetailType}"
+                                                             update="@form"/>
+                                        </div>
+                                    </div>
+                                    <h3>Configuración del asiento contable</h3>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                            <p:dataTable id="recordDetails"
+                                                         value="#{generalJournalHome.record.recordDetails}" var="recordDetail" 
+                                                         rowKey="#{recordDetail.account}"
+                                                         selection="#{generalJournalHome.recordDetailSelected}" 
+                                                         selectionMode="single">
+                                                <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectRecord}" update="@form"/>
+                                                <p:ajax event="rowUnselect" listener="#{generalJournalHome.onRowUnselectRecord}" update="@form"/>
+                                                <p:column headerText="#{i18n['app.fede.accounting.account']}" style="width: 20rem">
+                                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
+                                                </p:column>
+                                                <p:column headerText="#{i18n['common.debe']}">
+                                                    <h:outputText value="#{recordDetail.amount}"
+                                                                  rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="#{i18n['common.haber']}">
+                                                    <h:outputText value="#{recordDetail.amount}"
+                                                                  rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                            <p:outputLabel value="Concepto" for="@next"/>
+                                            <p:inputTextarea  class="BigTopic" style="font-weight: bold" 
+                                                              value="#{generalJournalHome.record.description}" 
+                                                              rows="3" cols="30" autoResize="false"
+                                                              required="true">
+                                                <p:ajax process="@this"/>
+                                                <p:ajax event="keyup" update="btnRecordSave" />
+                                            </p:inputTextarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-g-12 ui-md-12 ui-lg-12" style="padding-top: 0rem">
+                                <p:toolbar>
+                                    <f:facet name="left">
+                                        <p:commandButton id="btnRecordSave"
+                                                         value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
+                                                         actionListener="#{generalJournalHome.recordSave()}"
+                                                         disabled="#{empty generalJournalHome.record.recordDetails or empty generalJournalHome.record.description}"
+                                                         ajax="true" immediate="false" 
+                                                         update="@form"/>
+                                        <i class="pi pi-bars p-px-2"/>
+                                    </f:facet>
+                                    <f:facet name="right">
+                                        <p:commandButton id="btnRecordCancel"
+                                                         title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="primary-button"
+                                                         actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal.id)}" action="#{generalJournalHome.getOutcome()}" 
+                                                         ajax="true" immediate="true"/>
+                                    </f:facet>
+                                </p:toolbar>
+                            </div>
+                        </div>
+                    </h:form>
+                </p:panel>
+            </div>
+        </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+            </style>
+        </ui:define>
+        <ui:define name="script">
+        </ui:define>
+    </ui:composition>
+</html>
+
+
+<!--            <h:form id="form-nuevo-registro-detalle">
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate/>
+                </p:messages>
+                <div class="card ui-fluid p-shadow-1">
+                    <div  class="ui-g">
+                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                            <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
+                            <p:autoComplete id="account"
+                                            value="#{generalJournalHome.recordDetail.account}" var="account"
+                                            itemLabel="#{account.name}"  itemValue="#{account}" 
+                                            completeMethod="#{accountHome.find}"
+                                            converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                            converterMessage="El convertidor no responde."
+                                            minQueryLength="3" maxResults="5" effect="fade"
+                                            placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                            forceSelection="true" emptyMessage="No se encontraron resultados."
+                                            cache="true" queryDelay="1000" scrollHeight="1000"
+                                            required="true">
+                                <p:column>
+                                    <span style="text-transform: uppercase"><strong> #{account.code} </strong> - #{account.name}</span>
+                                </p:column>
+                                <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
+                            </p:autoComplete>
+                        </div>
+                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                            <p:outputLabel value="Seleccione el tipo:" for="@next"/>
+                            <p:selectOneRadio id="recordDetailType" 
+                                              value="#{generalJournalHome.recordDetail.recordDetailType}" 
+                                              layout="responsive" columns="3"
+                                              required="true" style="width: 20rem">
+                                <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            </p:selectOneRadio>
+                        </div>
+                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12">
+                            <h:outputText value="#{i18n['common.money.letter']}" />
+                            <div class="EmptyBox10"></div>
+                            <p:inputNumber id="number_amount" value="#{generalJournalHome.recordDetail.amount}" 
+                                           required="true" 
+                                           requiredMessage="#{i18n['common.value']} #{i18n['common.money.letter']} es requerido."
+                                           immediate="true" disabled="false"
+                                           styleClass=""
+                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                                <p:ajax update="number_amount" partialSubmit="true"></p:ajax>
+                            </p:inputNumber>
+                        </div>
+                        <div class="ui-g ui-lg-2 ui-md-2">
+                            <div class="EmptyBox10"></div>
+                            <p:commandButton id="add-record"  ajax="false" value="#{i18n['common.add']}"
+                                             disabled="#{!generalJournalHome.recordOfReferen}"
+                                             actionListener="#{generalJournalHome.addRecordDetail()}" immediate="false"
+                                             update="form-registro"
+                                             styleClass="warning-btn" icon="fa fa-plus-square"/>
+
+                            <p:commandButton id="add-record"
+                                             icon="pi pi-check-square" styleClass="warning-btn"
+                                             value="#{i18n['common.add']}"
+                                             actionListener="#{generalJournalHome.addRecordDetail}"
+                                             ajax="true" immediate="true"
+                                             disabled="#{!generalJournalHome.recordOfReferen}"
+                                             update="@form"/>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+            <h:form id="form-registro">
+                <div class="Container100 Responsive100" >
+                    <div class="ContainerIndent">
+                        <div class="Card SoftGrayBack">
+                            <div class="dataTable_wrapper">
+                                <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
+                                             liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                                             paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
+                                             rows="6" scrollRows="6" scrollHeight="100%" scrollWidth="100%"
+                                             scrollable="true"
+                                             value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
+                                             selection="#{generalJournalHome.selectedBussinesEntities}"
+                                             editable="#{generalJournalHome.recordOfReferen}">
+                                    <p:column headerText="#{i18n['common.details']}" style="width: auto">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{recordDetail.account.name}" style="#{recordDetail.recordDetailType=='HABER' ? 'padding-left: 10%':''};"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <h:selectOneMenu value="#{recordDetail.account}"
+                                                                 required="#{true}" immediate="true"
+                                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
+                                                    <f:selectItems value="#{ui.getAccountAsSelectItem(generalJournalHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
+                                                    <p:ajax update="@this"></p:ajax>
+                                                </h:selectOneMenu> 
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="#{i18n['common.debe']}" style="width: 15%; text-align: right">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                </h:outputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="#{i18n['common.haber']}" style="width: 15%">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                </h:outputText>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}"/>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="width: 8%">
+                                        <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.detail']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.changes']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
+                                    </p:column>
+                                </p:dataTable>
+                                <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['app.fede.accounting.record.description']}" class="Container100 BigTopic"
+                                                value="#{generalJournalHome.record.description}" required="true" 
+                                                inlinehelp="#{messages['app.fede.accounting.record.description.inlinehelp']}"
+                                                execute="@this save" render="dscrpn"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="EmptyBox10"></div>
+                <p:toolbar rendered="#{generalJournalHome.recordOfReferen}">
+                    <f:facet name="left">
+                        <p:commandButton id="save" value="#{i18n['common.save']}" 
+                                         ajax="false" 
+                                         actionListener="#{generalJournalHome.saveRecord()}" 
+                                         style="width: auto !important;"
+                                         type="submit"/>
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                                         actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal.id)}"
+                                         action="#{generalJournalHome.redirect}"
+                                         icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"/>
+                    </f:facet>
+                </p:toolbar>
+            </h:form>-->

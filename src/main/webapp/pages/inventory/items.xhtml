@@ -161,13 +161,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <p:ajax update="selectedToolBar"/>
                                             </p:selectOneMenu>
                                         </p:panel>
-                                            <p:commandButton id="go-button"
-                                                             value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
-                                                             actionListener="#{inventoryHome.execute()}" action="#{inventoryHome.getOutcome()}"
-                                                             disabled="#{not inventoryHome.actionExecutable}"
-                                                             ajax="false" update="@form">
-                                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                            </p:commandButton>
+                                        <p:commandButton id="go-button"
+                                                         value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                         actionListener="#{inventoryHome.execute()}" action="#{inventoryHome.getOutcome()}"
+                                                         disabled="#{not inventoryHome.actionExecutable}"
+                                                         ajax="false" update="@form">
+                                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                        </p:commandButton>
                                     </div>
                                 </f:facet>
                             </p:toolbar>

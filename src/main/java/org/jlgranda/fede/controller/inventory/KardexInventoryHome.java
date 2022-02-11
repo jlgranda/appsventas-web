@@ -652,9 +652,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             if ("borrar".equalsIgnoreCase(this.selectedAction)) {
                 for (Kardex k : this.getSelectedKardexs()) {
                     if (!k.getKardexDetails().isEmpty()) {
-                        for (KardexDetail kd : k.getKardexDetails()) {
+                        k.getKardexDetails().forEach(kd -> {
                             kd.setDeleted(Boolean.TRUE);
-                        }
+                        });
                     }
                     k.setDescription("Esta kardex es referencia del producto " + k.getProduct().getId() + " " + k.getProduct().getName() + "la cual fue borrada.");
                     k.setProduct(null);

@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </h:outputText>
                         </p:column>
                         <p:column style="width: 5rem">
-                            <p:button icon="fa fa-pencil" title="Editar" styleClass="secondary-button rounded-btn"
+                            <p:button title="#{i18n['common.edit']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
                                       outcome="/pages/accounting/account.jsf?accountId=#{account.id}"/>
                             <p:button icon="fa fa-plus-square-o" title="Añadir subcuenta" styleClass="primary-button rounded-btn"
                                       outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />

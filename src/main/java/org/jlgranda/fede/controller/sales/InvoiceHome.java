@@ -1515,9 +1515,11 @@ public class InvoiceHome extends FedeController implements Serializable {
                 record.setBussinesEntityHashCode(_instance.hashCode());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, _instance.getOwner(), this.organizationData.getOrganization()).isEmpty()) {
-                    record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Comanda: %s \nCliente: %s \nTotal del pedido: %s \nDetalle: %s", _instance.getInvoice().getCode(),
+                            _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
                 } else {
-                    record.setDescription(String.format("Empleado: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Comanda: %s \nEmpleado: %s \nTotal del pedido: %s \nDetalle: %s", _instance.getInvoice().getCode(),
+                            _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
                 }
             }
 

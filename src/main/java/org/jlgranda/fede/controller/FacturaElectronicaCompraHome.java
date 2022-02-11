@@ -1864,12 +1864,15 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 record.setBussinesEntityHashCode(_instance.hashCode());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 if (EmissionType.PURCHASE_CASH.equals(_instance.getEmissionType())) {
-                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nDetalle: %s \nTotal facturado: %s", (_instance.getCode() + "/" + _instance.getId()), _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado: %s \nDetalle: %s", (_instance.getCode() + "/" + _instance.getId()),
+                            _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), _instance.getSummary()));
                 } else if (EmissionType.PURCHASE_CREDIT.equals(_instance.getEmissionType())) {
                     if (_instance.getPayments().isEmpty()) {
-                        record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nDetalle: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno", (_instance.getCode() + "/" + _instance.getId()), _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                        record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno \nDetalle: %s", (_instance.getCode() + "/" + _instance.getId()),
+                                _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), _instance.getSummary()));
                     } else {
-                        record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nDetalle: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s", (_instance.getCode() + "/" + _instance.getId()), _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(_instance.getPayments().get(_instance.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##")));
+                        record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s \nDetalle: %s", (_instance.getCode() + "/" + _instance.getId()),
+                                _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(_instance.getPayments().get(_instance.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##"), _instance.getSummary()));
                     }
                 }
             }
