@@ -25,12 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['common.suppliers']}</ui:define>
+    <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="proveedorId" value="#{proveedorHome.proveedorId}" />
         </f:metadata>
     </ui:define>
-    <ui:define name="title">#{i18n['common.suppliers']}</ui:define>
     <ui:define name="viewname">
         <li>#{i18n['common.payments']}</li>
         <li>/</li>
@@ -105,7 +106,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:column headerText="#{i18n['common.alias']}" sortBy="#{proveedor.owner.fullName}">
                             <h:outputText value="#{proveedor.name}" />
                         </p:column>
-                        <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}"
+                        <p:column id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}"
                                    styleClass="text-right">
                             <h:outputText value="#{proveedor.activationTime}">
                                 <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
@@ -133,7 +134,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <f:ajax render="selectedToolBar"></f:ajax>
                                     </p:selectOneMenu>
                                     <p:commandButton id="go-button"
-                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="success-btn"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
                                                      actionListener="#{proveedorHome.execute()}" action="#{proveedorHome.getOutcome()}"
                                                      oncomplete="PF('dataTable').unselectAllRows()"
                                                      disabled="#{not proveedorHome.actionExecutable}"
@@ -146,7 +147,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </p:panel>
                 </div>
             </p:panel>
-            <p:panel id="formProveedor" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{proveedorHome.formProveedor}">
+            <p:panel id="formProveedor" 
+                     class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{proveedorHome.formProveedor}">
                 <div class="card">
                     <div class="ui-g ui-fluid">
                         <h1 style="text-transform: uppercase"><strong>#{i18n['common.add']} #{i18n['common.supplier']}: #{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>

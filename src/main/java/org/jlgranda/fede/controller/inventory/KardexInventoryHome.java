@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -91,6 +92,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     //VARIABLES AND OBJECTS TO EDIT
     private Product productSelected;
     private Kardex kardex;
+    private List<Kardex> selectedKardexs = new ArrayList<>();
     private Long kardexId;
     private KardexDetail kardexDetail;
     private boolean activeKardexEdition;
@@ -111,6 +113,8 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         //setListInvoices(invoiceService.findByNamedQuery("Invoice.findSequencialByDocumentTypeAndStatusAndOrg", this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString()));
         //setListFacturas(facturaElectronicaService.findByNamedQuery("FacturaElectronica.findCodeByOrg", this.organizationData.getOrganization(), true));
         generateProductsWithoutKardex();
+
+        initializeActions();
     }
 
     //GETTER AND SETTER
@@ -139,6 +143,14 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public void setKardex(Kardex kardex) {
         this.kardex = kardex;
+    }
+
+    public List<Kardex> getSelectedKardexs() {
+        return selectedKardexs;
+    }
+
+    public void setSelectedKardexs(List<Kardex> selectedKardexs) {
+        this.selectedKardexs = selectedKardexs;
     }
 
     public Long getKardexId() {
@@ -349,9 +361,9 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         this.kardex.setQuantity(BigDecimal.ZERO);
         this.kardex.setFund(BigDecimal.ZERO);
 
-        if (this.kardex.getKardexDetails().size() == 1){
+        if (this.kardex.getKardexDetails().size() == 1) {
             this.kardex.setQuantity(this.kardex.getKardexDetails().get(0).getCummulativeQuantity()); //Actualizar Saldo del Kardex
-                this.kardex.setFund(this.kardex.getKardexDetails().get(0).getCummulativeTotalValue());
+            this.kardex.setFund(this.kardex.getKardexDetails().get(0).getCummulativeTotalValue());
         } else {
             //Recorrer a partir del 2do registro
             for (int i = 1; i < this.kardex.getKardexDetails().size(); i++) { //Calcular Saldo de Kardex
@@ -632,6 +644,48 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             this.kardex.setOrganization(this.organizationData.getOrganization());
         }
         kardexService.save(this.kardex.getId(), this.kardex);
+    }
+
+    //Acciones sobre seleccionados
+    public void execute() {
+        if (this.isActionExecutable()) {
+            if ("borrar".equalsIgnoreCase(this.selectedAction)) {
+                for (Kardex k : this.getSelectedKardexs()) {
+                    if (!k.getKardexDetails().isEmpty()) {
+                        for (KardexDetail kd : k.getKardexDetails()) {
+                            kd.setDeleted(Boolean.TRUE);
+                        }
+                    }
+                    k.setDescription("Esta kardex es referencia del producto " + k.getProduct().getId() + " " + k.getProduct().getName() + "la cual fue borrada.");
+                    k.setProduct(null);
+                    k.setDeleted(Boolean.TRUE);
+                    this.kardexService.save(k.getId(), k); //Actualizar el tipo de producto
+                }
+                setOutcome("");
+            }
+        }
+    }
+
+    public boolean isActionExecutable() {
+        if ("borrar".equalsIgnoreCase(this.selectedAction) && !this.selectedKardexs.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+
+        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
+        actions.add(item);
+//        item = new SelectItem("moveto", "Mover a categoría");
+//        actions.add(item);
+//        
+//        item = new SelectItem("changeto", "Cambiar tipo a");
+//        actions.add(item);
     }
 
     @Override

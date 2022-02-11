@@ -406,6 +406,10 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.customer = null;
     }
 
+    public void updateCustomer() {
+        this.customer = null;
+    }
+
     public void updatePrintAlias() {
         String alias = settingHome.getValue("app.fede.sales.invoice.defaultprintalias", "Alimentación");
         if (Strings.isNullOrEmpty(invoice.getPrintAliasSummary())) {
@@ -642,6 +646,7 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String collect() {
         //Guardar cambios en la entidad invoice
+        getInvoice().setOwner(getCustomer());
         collect(StatusType.CLOSE.toString());
         return getOutcome(); //Redireccción de vistas
     }
@@ -655,7 +660,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String overdue() {
         if (!isUseDefaultCustomer()) {
             getInvoice().setDocumentTypeSource(DocumentType.OVERDUE);
-            getPayment().getInvoice().setOwner(getCustomer());
+            getInvoice().setOwner(getCustomer());
             getPayment().setDatePaymentCancel(null);
             collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
             //            setOutcome("invoices");
@@ -680,7 +685,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String courtesy() {
         if (!isUseDefaultCustomer()) {
             getInvoice().setDocumentTypeSource(DocumentType.COURTESY);
-            getPayment().getInvoice().setOwner(getCustomer());
+            getInvoice().setOwner(getCustomer());
             getPayment().setDatePaymentCancel(null);
             collect(DocumentType.COURTESY, StatusType.CLOSE.toString());
             setOutcome("preinvoices");
@@ -736,14 +741,14 @@ public class InvoiceHome extends FedeController implements Serializable {
                 addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.sales.invoice.accounting.fail"));
             }
 
-//            //Guardar cambios en la entidad invoice
-//            save(true);
-//            
             //Guardar movimientos en el Kardex
             registerInvoiceDetailsInKardex(this.invoice.getDetails());
 
             //Enviar saludo a cliente
             sendNotification();
+
+//            //Guardar cambios en la entidad invoice
+//            save(true);
             setOutcome("preinvoices");
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + getInvoice().getTotal()));
@@ -1344,14 +1349,11 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @param details
      */
     private void registerInvoiceDetailsInKardex(List<Detail> details) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
-        System.out.println("details:::::"+details);
         kardexService.save(
                 makeDetailableList(details),
                 settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-"),
                 subject, this.organizationData.getOrganization(),
                 KardexDetail.OperationType.VENTA);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
     }
 
     @Override

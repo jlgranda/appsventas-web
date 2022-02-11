@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <!--<ui:param name="sitename" value="#{i18n['Sitename']}" />-->
         <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
@@ -39,38 +38,51 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12">
-                    <div class="ui-g ui-lg-12 ui-md-12">
-                        <label class="Gray" style="padding-top: 8px;">#{i18n['app.fede.inventory.category']}&nbsp;</label>
-                        <p:selectOneMenu value="#{inventoryHome.groupSelected}"
-                                         immediate="true"
-                                         converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
-                            <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                        </p:selectOneMenu>
-                        <label class="Gray" style="padding-top: 8px;">#{i18n['common.type']}&nbsp;</label>
-                        <p:selectOneMenu value="#{inventoryHome.productType}"
-                                 required="#{false}" immediate="true">
-                            <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                            <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                        </p:selectOneMenu>
-                        <label class="Gray" style="padding-top: 8px;">#{i18n['common.keyword']}&nbsp;</label>
-                        <p:inputText value="#{inventoryHome.keyword}">
-                        </p:inputText>
-                        <p:commandButton value="#{i18n['common.find']}" styleClass="btn raised-btn" actionListener="#{inventoryHome.clear()}" ajax="false">
-                        </p:commandButton>
-                        <p:button value="#{i18n['common.new']}" styleClass="btn danger-btn" outcome="/pages/inventory/product.jsf"
-                                  disabled="#{empty organizationData.organization}"/>
-                    </div>
-                    <div class="EmptyBox10"></div>
-                    <div class="ui-g ui-lg-12 ui-md-12">
-                        <p:dataTable id="dataTable-products" draggableColumns="true" lazy="true" liveResize="true"
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar id="topToolBar">
+                        <f:facet name="left">
+                            <p:outputLabel class="Gray" value="#{i18n['app.fede.inventory.category']}:&nbsp;" for="@next"/>
+                            <p:selectOneMenu class="MarRight10"
+                                             value="#{inventoryHome.groupSelected}"
+                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"
+                                             immediate="true"> 
+                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel class="Gray" value="#{i18n['common.type']}:&nbsp;" for="@next"/>
+                            <p:selectOneMenu class="MarRight10"
+                                             value="#{inventoryHome.productType}"
+                                             immediate="true"
+                                             required="#{false}">
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel class="Gray" value="#{i18n['common.keyword']}:&nbsp;" for="@next"/>
+                            <p:inputText class="MarRight10" value="#{inventoryHome.keyword}">
+                            </p:inputText>
+                            <p:commandButton value="#{i18n['common.find']}"
+                                             icon="pi pi-search" styleClass="help-btn"
+                                             actionListener="#{inventoryHome.clear()}" 
+                                             ajax="false" immediate="true">
+                            </p:commandButton>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:button value="#{i18n['common.new']}"
+                                      icon="pi pi-plus-circle" styleClass="danger-btn"
+                                      disabled="#{empty organizationData.organization}"
+                                      outcome="product"/>
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <div class="card">
+                        <p:dataTable id="dataTable-products" style="padding-left: 0.8rem; padding-right: 0.8rem;"
+                                     draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{product.id}"
                                      rows="25" scrollRows="25"
                                      value="#{inventoryHome.lazyDataModel}" var="product"
                                      selection="#{inventoryHome.selectedProducts}"
                                      sortBy="#{product.createdOn}">
-                            
                             <p:ajax event="rowSelect" listener="#{inventoryHome.onRowSelect}" />
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar"/>
@@ -121,43 +133,46 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{product.productType}"/>
                             </p:column>
                         </p:dataTable>
-                        
+                        <p:panel id="panelSelectedToolBar">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty inventoryHome.selectedProducts}">
+                                <f:facet name="left">
+                                    <p:outputLabel class="Gray" value="#{i18n['common.withselected']}&nbsp;" for="@next"/>
+                                    <div class="ui-g">
+                                        <div style="align-self: center;">
+                                            <p:selectOneMenu value="#{inventoryHome.selectedAction}">
+                                                <f:selectItems value="#{inventoryHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                                <f:ajax render="selectedToolBar"></f:ajax>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <p:panel id="panelMoverTo" rendered="#{inventoryHome.selectedAction eq 'moveto'}">
+                                            <p:selectOneMenu value="#{inventoryHome.groupSelected}"
+                                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"
+                                                             immediate="true"> 
+                                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                <f:ajax render="selectedToolBar"></f:ajax>
+                                            </p:selectOneMenu>
+                                        </p:panel>
+                                        <p:panel id="panelChangeTo" rendered="#{inventoryHome.selectedAction eq 'changeto'}">
+                                            <p:selectOneMenu value="#{inventoryHome.productType}"
+                                                             immediate="true"
+                                                             required="#{true}">
+                                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                <p:ajax update="selectedToolBar"/>
+                                            </p:selectOneMenu>
+                                        </p:panel>
+                                            <p:commandButton id="go-button"
+                                                             value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                             actionListener="#{inventoryHome.execute()}" action="#{inventoryHome.getOutcome()}"
+                                                             disabled="#{not inventoryHome.actionExecutable}"
+                                                             ajax="false" update="@form">
+                                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                            </p:commandButton>
+                                    </div>
+                                </f:facet>
+                            </p:toolbar>
+                        </p:panel>
                     </div>
-                    <div class="EmptyBox10"></div>
-                    <p:panel id="panelSelectedToolBar">
-                        <p:toolbar id="selectedToolBar" rendered="#{not empty inventoryHome.selectedProducts}">
-                            <f:facet name="left">
-                                <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
-                                <p:selectOneMenu value="#{inventoryHome.selectedAction}">
-                                    <f:selectItems value="#{inventoryHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
-                                    <f:ajax render="selectedToolBar"></f:ajax>
-                                </p:selectOneMenu>
-                                <p:panel id="panelMoverTo" rendered="#{inventoryHome.selectedAction eq 'moveto'}">
-                                    <p:selectOneMenu value="#{inventoryHome.groupSelected}"
-                                                     immediate="true"
-                                                     converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
-                                        <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                        <f:ajax render="selectedToolBar"></f:ajax>
-                                    </p:selectOneMenu>
-                                </p:panel>
-                                <p:panel id="panelChangeTo" rendered="#{inventoryHome.selectedAction eq 'changeto'}">
-                                    <p:selectOneMenu value="#{inventoryHome.productType}"
-                                             required="#{true}" immediate="true">
-                                        <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                                        <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                        <p:ajax update="selectedToolBar" />
-                                    </p:selectOneMenu>
-                                </p:panel>
-                                <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="false"
-                                                 actionListener="#{inventoryHome.execute()}" action="#{inventoryHome.getOutcome()}"
-                                                 disabled="#{not inventoryHome.actionExecutable}"
-                                                 style="width: auto !important;"
-                                                 type="submit">
-                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                </p:commandButton>
-                            </f:facet>
-                        </p:toolbar>
-                    </p:panel>
                 </div>
             </div>
         </ui:define>
