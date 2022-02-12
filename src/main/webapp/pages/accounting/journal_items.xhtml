@@ -47,20 +47,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                             <h:panelGroup id="controles-busqueda-avanzada" style="padding-right: 0.2rem">
                                 <h:panelGroup rendered="#{generalJournalHome.busquedaAvanzada}">
-                                    <label class="Gray">#{i18n['common.from']}:&nbsp;</label>
+                                    <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
                                     <p:calendar value="#{generalJournalHome.start}" class="input-sm">
                                         <p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
                                     </p:calendar>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{generalJournalHome.busquedaAvanzada}">
-                                    <label class="Gray">#{i18n['common.to']}:&nbsp;</label>
+                                    <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
                                     <p:calendar value="#{generalJournalHome.end}" class="input-sm">
                                         <p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" /> 
                                     </p:calendar>                        
                                 </h:panelGroup>
                             </h:panelGroup>
-                            <p:commandButton value="#{i18n['common.find']}"
-                                             icon="pi pi-search" styleClass="help-btn"
+                            <p:commandButton value="#{i18n['common.find']}" icon="pi pi-search" styleClass="help-btn"
                                              actionListener="#{kardexInventoryHome.clear()}" 
                                              ajax="false" immediate="true">
                             </p:commandButton>
@@ -117,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
                                                          oncomplete="PF('dataTable').unselectAllRows()"
                                                          disabled="#{not generalJournalHome.actionExecutable}"
-                                                          ajax="true" update="@form">
+                                                         ajax="true" update="@form">
                                             <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                         </p:commandButton>
                                     </div>

@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                 <p:splitter layout="horizontal">
                     <p:splitterPanel size="25" minSize="25">
-                        <p:scrollPanel mode="native" style="width: 20rem; min-height: 22rem; padding: 0rem;">
+                        <p:scrollPanel mode="native" style="min-width: 20rem; min-height: 24rem; padding: 0rem;">
                             <p:tree id="tree-generalLedger" value="#{accountHome.treeDataModel}" var="node"
                                     selectionMode="single" style="border: transparent; width: 100%"
                                     selection="#{accountHome.singleSelectedNode}"
@@ -75,38 +75,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </p:splitterPanel>
                     <p:splitterPanel size="75" minSize="75">
                         <div class="ui-g">
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <div  class="ui-g">
-                                    <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-12"  style="text-align: -webkit-center;">
-                                        <p:outputLabel class="Gray" for="date-start" value="#{i18n['common.from']}: "/>
-                                        <p:datePicker id="date-start" value="#{accountHome.start}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0rem">
+                                <p:toolbar id="topToolBar">
+                                    <f:facet name="left">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
+                                        <p:datePicker id="date-start" value="#{accountHome.start}" class="input-sm MarRight10"
+                                                      monthNavigator="true" yearNavigator="true" showWeek="false">
                                             <p:ajax event="dateSelect" oncomplete="this"/>
                                         </p:datePicker>
-                                    </div>
-                                    <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-10"  style="text-align: -webkit-center;">
-                                        <p:outputLabel class="Gray" for="date-end" value="#{i18n['common.to']}: "/>
-                                        <p:datePicker id="date-end" value="#{accountHome.end}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
+                                        <p:datePicker id="date-end" value="#{accountHome.end}" class="input-sm MarRight10"
+                                                      monthNavigator="true" yearNavigator="true" showWeek="false">
                                             <p:ajax event="dateSelect" oncomplete="this"/>
                                         </p:datePicker>
-                                    </div>
-                                    <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2"  style="text-align: -webkit-center;">
-                                        <p:commandButton id="btn-search-account-details" icon="fa fa-search" ajax="true" immediate="true"
-                                                         disabled="#{empty accountHome.accountSelected}"
-                                                         actionListener="#{accountHome.chargeListDetailsforAccount()}"
+                                        <p:commandButton id="btn-search-account-details" 
+                                                         value="#{i18n['common.find']}" icon="fa fa-search"  styleClass="help-btn"
+                                                         disabled="#{empty accountHome.accountSelected}" actionListener="#{accountHome.chargeListDetailsforAccount()}"
                                                          update="dataTable-record-details panel-message-date radio-report-range fund-old-accountSelected"
-                                                         styleClass="warning-btn"/>
-                                    </div>
-                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="text-align: -webkit-center;">
+                                                         ajax="true" immediate="true">
+                                        </p:commandButton>
+                                    </f:facet>
+                                    <f:facet name="right">
                                         <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="true"  disabled="#{empty accountHome.accountSelected}">
                                             <f:selectItem itemLabel="#{i18n['common.lasta']} #{i18n['common.week']}" itemValue="0"/>
                                             <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.month']}" itemValue="1"/>
                                             <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.year']}" itemValue="2"/>
                                             <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" update="date-start date-end dataTable-record-details form:panel-message-date fund-old-accountSelected" partialSubmit="true"></p:ajax> 
                                         </p:selectOneRadio>
-                                    </div>
-                                </div>
+                                    </f:facet>
+                                </p:toolbar>
                             </div>
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0rem">
                                 <p:card style="background-color: #EFEFEF">
                                     <f:facet name="header">
                                         <div class="container-center"><h1>#{organizationData.organization.initials}</h1></div>
@@ -165,9 +164,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column headerText="Razón" style="width: auto">
                                         <h:outputText value="#{recordDetail.record.description}" />
                                     </p:column>
-<!--                                    <p:column headerText="REF" style="width: 10%">
+                                    <p:column headerText="REF" style="width: 10%">
                                         <h:outputText value="#{recordDetail.record.deleted}"/>
-                                    </p:column>-->
+                                    </p:column>
                                     <p:column headerText="#{i18n['common.debe']}" style="width: 15%;">
                                         <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
