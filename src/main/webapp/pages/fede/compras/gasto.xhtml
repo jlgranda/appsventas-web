@@ -157,11 +157,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              disabled="#{empty facturaElectronicaGastoHome.supplier or not empty facturaElectronicaGastoHome.facturaElectronica.payments}"/>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:dataTable id="rcdd-dtb"
+                            <p:dataTable id="rcdd-dtb" widgetVar="rcdd-dtb" lazy="#{false}"
                                          value="#{facturaElectronicaGastoHome.record.recordDetails}" var="recordDetail" 
-                                         rowKey="#{recordDetail.account}"
                                          selection="#{facturaElectronicaGastoHome.recordDetailSelected}" 
-                                         selectionMode="single">
+                                         rowKey="#{recordDetail.account}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
                                 <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                 </p:column>
@@ -368,14 +372,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
-                            <p:dataTable id="pay-dtbl" draggableColumns="true" lazy="false" liveResize="true"
-                                         liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{payment.id}"
-                                         rows="5" scrollRows="5"
-                                         scrollable="true"
+                            <p:dataTable id="pay-dtbl" widgetVar="pay-dtbl" lazy="#{false}"
                                          value="#{facturaElectronicaGastoHome.facturaElectronica.payments}" var="payment"
                                          selection="#{facturaElectronicaGastoHome.selectedBussinesEntities}"
-                                         sortBy="#{payment.createdOn}"
+                                         rowKey="#{payment.id}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single"
                                          editable="#{false}">
                                 <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" style="width: 15%" styleClass="text-right">
                                     <h:outputText value="#{payment.createdOn}">

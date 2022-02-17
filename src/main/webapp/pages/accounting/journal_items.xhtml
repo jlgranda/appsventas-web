@@ -75,15 +75,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
-                        <p:dataTable var="journal" style="padding-left: 0.8rem; padding-right: 0.8rem;"
-                                     draggableColumns="true" liveResize="true"
-                                     paginator="true" paginatorAlwaysVisible="false"
-                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{journal.id}"
-                                     rows="25" scrollRows="25"
-                                     value="#{generalJournalHome.lazyDataModel}"
+                        <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}"
+                                     value="#{generalJournalHome.lazyDataModel}" var="journal" 
                                      selection="#{generalJournalHome.selectedGeneralJournals}"
-                                     sortBy="#{journal.emissionDate}"
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                     rowKey="#{journal.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single"
+                                     style="padding-left: 0.8rem; padding-right: 0.8rem;">
                             <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelect}"/>
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />

@@ -37,16 +37,16 @@
                                 <span class="ui-separator">
                                     <span class="fa fa-ellipsis-v SoftGray" />
                                 </span>
-                                <p:menuButton value="#{i18n['Import']}" iconPos="right" 
+                                <p:menuButton value="#{i18n['common.import']}" iconPos="right" 
                                               styleClass="MarRight10"
                                               buttonStyleClass="ToolbarButton Fs14" 
                                               iconStyleClass="Gray"
                                               menuStyleClass="Gray">
-                                    <p:menuitem value="#{i18n['FromEmail']}"  icon="fa fa-inbox Fs15" 
+                                    <p:menuitem value="#{i18n['app.email.from']}"  icon="fa fa-inbox Fs15" 
                                                 actionListener="#{facturaElectronicaHome.importarDesdeInbox()}"/>
-                                    <p:menuitem value="#{i18n['FromFile']}" icon="fa fa-upload Fs15"
+                                    <p:menuitem value="#{i18n['common.file.from']}" icon="fa fa-upload Fs15"
                                                 onclick="triggerHiddenEventAddFromFile(); return false;"/>
-                                    <p:menuitem value="#{i18n['FromURL']}" icon="fa fa-link Fs15" 
+                                    <p:menuitem value="#{i18n['common.URL.from']}" icon="fa fa-link Fs15" 
                                                 onclick="triggerHiddenEventAddFromURL(); return false;"/>
                                 </p:menuButton>
                             </f:facet>
@@ -93,10 +93,10 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container100 Responsive100"><h3>#{fedeAPI.readFactura(facturaElectronica.contenido).infoTributaria.nombreComercial}</h3></div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoTributaria.dirMatriz']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoTributaria.dirMatriz}</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.dirEstablecimiento']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.dirEstablecimiento}</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.contribuyenteEspecial']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.contribuyenteEspecial}</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.obligadoContabilidad']}" escape="false" styleClass="text-uppercase"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.obligadoContabilidad}</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.head']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoTributaria.dirMatriz}</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.branch']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.dirEstablecimiento}</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.contribuyente.especial']}" escape="false" styleClass="text-muted"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.contribuyenteEspecial}</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.accounting.obligated']}" escape="false" styleClass="text-uppercase"/>&nbsp;#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.obligadoContabilidad}</div>
                                         </div>
                                     </div>
                                     <div class="Container50 Responsive100">
@@ -130,29 +130,29 @@
                                     <p:dataTable id="detailsTable" var="detalle" value="#{fedeAPI.readFactura(facturaElectronica.contenido).detalles.detalle}" 
                                                  rows="50" paginator="false"
                                                  reflow="true">
-                                        <p:column headerText="#{i18n['ride.Factura.Detalles.codigoPrincipal']}">
+                                        <p:column headerText="#{i18n['common.code.primary']}">
                                             <h:outputText value="#{detalle.codigoPrincipal}" />
                                         </p:column>
-                                        <p:column headerText="#{i18n['ride.Factura.Detalles.codigoAuxiliar']}">
+                                        <p:column headerText="#{i18n['common.code.auxiliary']}">
                                             <h:outputText value="#{detalle.codigoAuxiliar}" />
                                         </p:column>
-                                        <p:column headerText="#{i18n['ride.Factura.Detalles.cantidad']}">
+                                        <p:column headerText="#{i18n['common.quantity']}">
                                             <h:outputText value="#{detalle.cantidad} #{detalle.unidadMedida}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}">
                                             <h:outputText value="#{detalle.descripcion}" />
                                         </p:column>
-                                        <p:column headerText="#{i18n['ride.Factura.Detalles.precioUnitario']}" styleClass="TexAlRight">
+                                        <p:column headerText="#{i18n['common.price.unit']}" styleClass="TexAlRight">
                                             <h:outputText value="#{detalle.precioUnitario}">
                                                 <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
                                             </h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['ride.Factura.Detalles.descuento']}" styleClass="TexAlRight">
+                                        <p:column headerText="#{i18n['app.fede.payment.discount']}" styleClass="TexAlRight">
                                             <h:outputText value="#{detalle.descuento}">
                                                 <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
                                             </h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['ride.Factura.Detalles.precioTotalSinImpuesto']}" styleClass="TexAlRight">
+                                        <p:column headerText="#{i18n['app.fede.payment.amount.total.taxe.none']}" styleClass="TexAlRight">
                                             <h:outputText value="#{detalle.precioTotalSinImpuesto}">
                                                 <f:convertNumber type="currency" currencySymbol="$" locale="en_US"/>
                                             </h:outputText>
@@ -168,7 +168,7 @@
                                         <div class="Container100 Responsive100">
                                             <ui:repeat var="totalImpuesto" value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.totalConImpuestos.totalImpuesto}">
                                                 <div class="Container80 Responsive100">
-                                                    <h:outputText value="#{i18n['ride.subTotal']} #{fedeAPI.translateTaxRateIVA(totalImpuesto.codigoPorcentaje)}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                    <h:outputText value="#{i18n['common.subtotal']} #{fedeAPI.translateTaxRateIVA(totalImpuesto.codigoPorcentaje)}" escape="false" styleClass="text-muted"/>&nbsp;
                                                 </div>
                                                 <div class="Container20 Responsive100 TexAlRight">
                                                     <h:outputText value="#{totalImpuesto.baseImponible}" class="text-primary">
@@ -200,7 +200,7 @@
                                         <div class="EmptyBox10"></div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container70 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.propina']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.gratuity']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.propina}" class="text-primary">
@@ -210,7 +210,7 @@
                                         </div>
                                         <div class="Container100 Responsive100 Bold">
                                             <div class="Container70 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.importeTotal']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.amount.total']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{fedeAPI.readFactura(facturaElectronica.contenido).infoFactura.importeTotal}" class="text-primary">
@@ -235,10 +235,10 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container100 Responsive100"><h3>#{facturaElectronica.author.initials}</h3></div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoTributaria.dirMatriz']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.dirEstablecimiento']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.contribuyenteEspecial']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.obligadoContabilidad']}" escape="false" styleClass="text-uppercase"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.head']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.branch']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.contribuyente.especial']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.accounting.obligated']}" escape="false" styleClass="text-uppercase"/>&nbsp;</div>
                                         </div>
                                     </div>
                                     <div class="Container50 Responsive100">
@@ -307,7 +307,7 @@
                                         <div class="EmptyBox10"></div>
                                         <div class="Container100 Responsive100 Bold">
                                             <div class="Container70 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.importeTotal']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.amount.total']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container30 Responsive100 TexAlRight">
                                                 <h:outputText value="#{facturaElectronica.importeTotal}" class="text-primary">

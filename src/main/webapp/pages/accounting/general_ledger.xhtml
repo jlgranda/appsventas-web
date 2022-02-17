@@ -147,14 +147,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </div>
                                     </div>
                                 </p:card>
-                                <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
-                                             liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                             paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                             rows="10" scrollRows="10"
-                                             scrollable="true"
+                                <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
                                              value="#{accountHome.recordDetailsAccount}" var="recordDetail"
                                              selection="#{generalJournalHome.selectedBussinesEntities}"
-                                             sortBy="#{recordDetail.createdOn}"
+                                             rowKey="#{recordDetail.id}"
+                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                             paginator="#{true}" paginatorPosition="bottom" 
+                                             draggableColumns="#{true}" reflow="#{true}" 
+                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                             sortMode="single"
                                              editable="#{false}">
                                     <p:column headerText="#{i18n['common.date']}" style="width: 10%">
                                         <h:outputText value="#{recordDetail.createdOn}">

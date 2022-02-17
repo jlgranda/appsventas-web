@@ -115,11 +115,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <h3>Configuración del asiento contable</h3>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:dataTable id="recordDetails"
+                                <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
                                              value="#{recordHome.record.recordDetails}" var="recordDetail" 
-                                             rowKey="#{recordDetail.account}"
                                              selection="#{recordHome.recordDetailSelected}" 
-                                             selectionMode="single">
+                                             rowKey="#{recordDetail.account}"
+                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                             paginator="#{true}" paginatorPosition="bottom" 
+                                             draggableColumns="#{true}" reflow="#{true}" 
+                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                             sortMode="single">
                                     <p:ajax event="rowSelect" listener="#{recordHome.onRowSelect}" update="@form"/>
                                     <p:ajax event="rowUnselect" listener="#{recordHome.onRowUnselect}" update="@form"/>
                                     <p:column headerText="#{i18n['app.fede.accounting.account']}"  style="width: 20rem">
@@ -146,7 +150,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                   rows="3" cols="30" autoResize="false"
                                                   required="true">
                                     <p:ajax process="@this"/>
-                                     <p:ajax event="keyup" update="btnRecordSave" />
+                                    <p:ajax event="keyup" update="btnRecordSave" />
                                 </p:inputTextarea>
                             </div>
                         </div>

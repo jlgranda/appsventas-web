@@ -219,11 +219,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </label>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="cashbox-bills" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
-                                                 value="#{cashBoxHome.cashBoxsInitialBills(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail">
+                                    <p:dataTable id="cashbox-bills" widgetVar="cashbox-bills" lazy="#{false}" 
+                                                 value="#{cashBoxHome.cashBoxsInitialBills(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail"
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single">
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                         </f:facet>
@@ -247,11 +250,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:dataTable>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="cashbox-moneys" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
-                                                 value="#{cashBoxHome.cashBoxsInitialMoneys(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail">
+                                    <p:dataTable id="cashbox-moneys" widgetVar="cashbox-moneys" lazy="#{false}"
+                                                 value="#{cashBoxHome.cashBoxsInitialMoneys(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail"
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single">
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.moneys']}</label>
                                         </f:facet>
@@ -327,13 +333,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
                                     <!-- Detalle inicial antes de deposito -->
-                                    <p:dataTable id="dataTable-bills" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"  
+                                    <p:dataTable id="dataTable-bills" widgetVar="dataTable-bills" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills @form:panel-breakdown-totals" partialSubmit="true"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
@@ -369,13 +378,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="dataTable-moneys" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
+                                    <p:dataTable id="dataTable-moneys" widgetVar="dataTable-moneys" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="true"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
@@ -525,13 +537,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="dataTable-bills-fund" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"  
+                                    <p:dataTable id="dataTable-bills-fund" widgetVar="dataTable-bills-fund" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"  
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
@@ -566,13 +581,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="dataTable-moneys-fund" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
+                                    <p:dataTable id="dataTable-moneys-fund" widgetVar="dataTable-moneys-fund" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
@@ -693,11 +711,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </label>
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                        <p:dataTable id="cashBoxs-bills" draggableColumns="true" lazy="false"
-                                                     paginator="true" paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                     rows="10"
-                                                     value="#{cashBoxHome.cashBoxsClosedBills(cashBoxs)}" var="cashBoxDetail">
+                                        <p:dataTable id="cashBoxs-bills" widgetVar="cashBoxs-bills" lazy="#{false}"
+                                                     value="#{cashBoxHome.cashBoxsClosedBills(cashBoxs)}" var="cashBoxDetail"
+                                                     rowKey="#{cashBoxDetail.id}"
+                                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                     paginator="#{true}" paginatorPosition="bottom" 
+                                                     draggableColumns="#{true}" reflow="#{true}" 
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                     sortMode="single">
                                             <f:facet name="header">
                                                 <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                             </f:facet>
@@ -721,11 +742,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:dataTable>
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                        <p:dataTable id="cashBoxs-moneys" draggableColumns="true" lazy="false"
-                                                     paginator="true" paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                     rows="10"
-                                                     value="#{cashBoxHome.cashBoxsClosedMoneys(cashBoxs)}" var="cashBoxDetail">
+                                        <p:dataTable id="cashBoxs-moneys" widgetVar="cashBoxs-moneys" lazy="#{false}"
+                                                     value="#{cashBoxHome.cashBoxsClosedMoneys(cashBoxs)}" var="cashBoxDetail"
+                                                     rowKey="#{cashBoxDetail.id}"
+                                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                     paginator="#{true}" paginatorPosition="bottom" 
+                                                     draggableColumns="#{true}" reflow="#{true}" 
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                     sortMode="single">
                                             <f:facet name="header">
                                                 <label class="bold-capital">#{i18n['common.money.moneys']}</label>
                                             </f:facet>

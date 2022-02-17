@@ -51,9 +51,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div style="margin: 0.5rem 0 0 0;"><strong>CONCEPTO:</strong> #{generalJournalHome.record.description}</div>
                     </div>
                     <div class="ui-g-8 ui-md-8 ui-lg-8"  style="padding: 0rem">
-                        <p:dataTable id="recordDetails" 
+                        <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
                                      value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
-                                     rowKey="#{recordDetail.id}">
+                                     rowKey="#{recordDetail.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
                             <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                 <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
                             </p:column>
@@ -136,11 +141,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <h3>Configuración del asiento contable</h3>
                                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                            <p:dataTable id="recordDetails"
+                                            <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
                                                          value="#{generalJournalHome.record.recordDetails}" var="recordDetail" 
-                                                         rowKey="#{recordDetail.account}"
                                                          selection="#{generalJournalHome.recordDetailSelected}" 
-                                                         selectionMode="single">
+                                                         rowKey="#{recordDetail.account}"
+                                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                         paginator="#{true}" paginatorPosition="bottom" 
+                                                         draggableColumns="#{true}" reflow="#{true}" 
+                                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                         sortMode="single">
                                                 <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectRecord}" update="@form"/>
                                                 <p:ajax event="rowUnselect" listener="#{generalJournalHome.onRowUnselectRecord}" update="@form"/>
                                                 <p:column headerText="#{i18n['app.fede.accounting.account']}" style="width: 20rem">

@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.kardex']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -36,107 +36,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/inventory/kardex_items.jsf">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
+        <li><p:link outcome="inventory-kardexs">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/inventory/kardex.jsf">#{kardexInventoryHome.kardexId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
-    </ui:define>
-    <ui:define name="style">
-        <style type="text/css">
-            .rowPurchases {
-                background-color: #FCF3CF !important;
-            }
-            .rowPurchasesDev {
-                background-color: #FEF9E7 !important;
-            }
-            .rowSales {
-                background-color: #D8ECE1 !important;
-            }
-            .rowSalesDev {
-                background-color: #EAFAF1 !important;
-            }
-            .rowDefault {
-                background-color: #EFEFEF !important;
-            }
-            .container-center{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            .bold-capital{
-                font-weight: bolder;
-                text-transform: uppercase;
-            }
-            .capital{
-                text-transform: uppercase;
-            }
-            .container-right{
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-            }
-            .container-lefth{
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-            }
-            .line-separator{
-                color: #FBFCFC !important;
-                border-width: 0.5px;
-            }
-        </style>
+        <li><p:link outcome="kardex">#{kardexInventoryHome.kardexId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.sales.Kardex"/>
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <h1 class="capital">#{kardexInventoryHome.kardex.code} - #{kardexInventoryHome.kardex.product.name}</h1>
-                <p:toolbar rendered="#{true}">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <h:outputText class="BigTopic" value="#{kardexInventoryHome.kardex.code} | #{kardexInventoryHome.kardex.product.name}"></h:outputText>
+                <p:toolbar>
                     <f:facet name="left">
-                    </f:facet>
-                    <f:facet name="right">
-                        <!--                        <p:commandButton ajax="true" disabled="false" immediate="true"
-                                                                 actionListener="#{kardexInventoryHome.redirect()}" 
-                                                                 action="items"
-                                                                 icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
-                                                                 />-->
-                        <p:commandButton id="btn-kardex-edit" value="#{i18n['common.edit']}" icon="fa fa-edit"
+                        <p:commandButton id="btn-kardex-edit"
+                                         value="#{i18n['common.edit']}" icon="fa fa-edit" styleClass="help-btn" style="width: auto !important;"
                                          actionListener="#{kardexInventoryHome.activePanelKardex()}"
                                          update="editarKardexDialog"
                                          oncomplete="PF('editarKardexDialog').show()"
-                                         immediate="false"
-                                         style="width: auto !important;">
+                                         immediate="false">
                         </p:commandButton>
-                        <p:commandButton id="btn-kardexDetail-input" value="#{i18n['common.entry']}" icon="fa fa-plus"
+                        <i class="fa fa-bars p-px-2"/>
+                    </f:facet>
+                    <f:facet name="right">    
+                        <p:commandButton id="btn-kardexDetail-input" 
+                                         value="#{i18n['common.entry']}" icon="fa fa-plus" styleClass="primary-button" style="width: auto !important;"
                                          actionListener="#{kardexInventoryHome.asignedKardexDetailProperties('input')}"
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
-                                         immediate="false"
-                                         styleClass="ui-button-secondary"
-                                         style="width: auto !important;">
+                                         immediate="false">
                         </p:commandButton>
-                        <p:commandButton id="btn-kardexDetail-output" value="#{i18n['common.exitd']}" icon="fa fa-minus"
+                        <p:commandButton id="btn-kardexDetail-output"
+                                         value="#{i18n['common.exitd']}" icon="fa fa-minus" styleClass="warning-btn" style="width: auto !important;"
                                          actionListener="#{kardexInventoryHome.asignedKardexDetailProperties('output')}"
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
-                                         immediate="false"
-                                         styleClass="ui-button-info"
-                                         style="width: auto !important;">
+                                         immediate="false">
                         </p:commandButton>
-                        <p:button value="#{i18n['common.newa']}" icon="fa fa-cart-plus" styleClass="danger-btn" outcome="/pages/fede/compras/compra.jsf" style="width: auto !important;"/>
+                        <p:button value="#{i18n['common.newa']}" icon="fa fa-cart-plus" styleClass="danger-btn" style="width: auto !important;" 
+                                  outcome="/pages/fede/compras/compra.jsf"/>
                     </f:facet>
                 </p:toolbar>
-                <div class="ui-g-5"><p>#{i18n['common.detail']} #{i18n['common.of']} #{i18n['common.tarjet']} #{i18n['app.fede.inventory.kardex']}</p></div>
-                <div class="ui-g-7">
-                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.entries']}</p></div>
-                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.exitds']}</p></div>
-                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.fund']}</p></div>
-                </div>
-                <div class="ui-g ui-lg-12 ui-md-12">
-                    <p:dataTable id="dataTable-kardex-details" draggableColumns="true" lazy="false" liveResize="true"
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <div class="card">
+                    <p:dataTable id="dataTable-kardex-details" 
+                                 draggableColumns="true" lazy="false" liveResize="true"
                                  paginator="true" paginatorAlwaysVisible="false"
-                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{kardexDetail.id}"
-                                 rows="25" scrollRows="25"
+                                 paginatorPosition="bottom" resizableColumns="true" 
+                                 rowKey="#{kardexDetail.id}" 
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" scrollRows="25"
                                  value="#{kardexInventoryHome.kardex.kardexDetails}" var="kardexDetail"
                                  selection="#{kardexInventoryHome.selectedBussinesEntities}"
                                  sortMode="single"
@@ -144,6 +91,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                   or kardexDetail.operationType=='VENTA' ? 'rowSales' : 'rowDefault'
                                                   or kardexDetail.operationType=='PRODUCCION' ? 'rowPurchasesDev' : 'rowDefault'
                                                   or kardexDetail.operationType=='SALIDA_INVENTARIO' ? 'rowSalesDev' : 'rowDefault  '}">
+                        <f:facet name="header">
+                            <h:outputText value="MOVIMIENTOS DE KARDEX"/>
+                        </f:facet>
                         <p:column headerText="#{i18n['common.date.emission']}" sortOrder="asc" sortPriority="1">
                             <h:outputText value="#{kardexDetail.entryOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="dd/MM/yyyy HH:mm:ss"/>
@@ -198,6 +148,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </h:outputText>
                         </p:column>
                     </p:dataTable>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12 ui-md-12">
+                <div class="ui-g-7">
+                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.entries']}</p></div>
+                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.exitds']}</p></div>
+                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.fund']}</p></div>
+                </div>
+                <div class="ui-g ui-lg-12 ui-md-12">
+
                 </div>
             </div>
         </div>
@@ -262,31 +226,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:toolbar>
                     </div>
                 </div>
-                
+
             </h:form>
         </p:dialog>
         <p:dialog id="editarKardexDialog" header="Editar Kardex #{kardexInventoryHome.kardex.product.name}" widgetVar="editarKardexDialog" minHeight="40" width="800" showEffect="fade" modal="true">
             <h:form id="registerKardexForm">
                 <div class="ui-g">
-<!--                    <div class="ui-g-12 ui-md-12 ui-lg-6">
-                        <div class="ui-inputgroup" style="width: 100%">
-                            <span class="ui-inputgroup-addon capital" style="text-transform: uppercase; width: 50%">#{i18n['common.product']}</span>
-                            <p:autoComplete value="#{kardexInventoryHome.kardex.product}" effect="fade" disabled="#{kardexInventoryHome.kardexId != null}"
-                                            minQueryLength="2" completeMethod="#{kardexInventoryHome.completeProductKardex()}"
-                                            var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
-                                            converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
-                                            placeholder="#{i18n['common.product.find']}">
-                                <p:column>
-                                    <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
-                                </p:column>
-                                <p:ajax event="itemSelect" update="entradaDialog, kardex-code" partialSubmit="true" listener="#{kardexInventoryHome.generateCode()}"></p:ajax>
-                            </p:autoComplete>
-                        </div>
-                        <div class="ui-inputgroup" style="width: 100%">
-                            <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 50%">#{i18n['app.fede.inventory.kardex.sku']}</span>
-                            <p:inputText id="kardex-code" value="#{kardexInventoryHome.kardex.code}" required="#{true}" disabled="#{true}"/>
-                        </div>
-                    </div>-->
+                    <!--                    <div class="ui-g-12 ui-md-12 ui-lg-6">
+                                            <div class="ui-inputgroup" style="width: 100%">
+                                                <span class="ui-inputgroup-addon capital" style="text-transform: uppercase; width: 50%">#{i18n['common.product']}</span>
+                                                <p:autoComplete value="#{kardexInventoryHome.kardex.product}" effect="fade" disabled="#{kardexInventoryHome.kardexId != null}"
+                                                                minQueryLength="2" completeMethod="#{kardexInventoryHome.completeProductKardex()}"
+                                                                var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
+                                                                converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
+                                                                placeholder="#{i18n['common.product.find']}">
+                                                    <p:column>
+                                                        <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
+                                                    </p:column>
+                                                    <p:ajax event="itemSelect" update="entradaDialog, kardex-code" partialSubmit="true" listener="#{kardexInventoryHome.generateCode()}"></p:ajax>
+                                                </p:autoComplete>
+                                            </div>
+                                            <div class="ui-inputgroup" style="width: 100%">
+                                                <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 50%">#{i18n['app.fede.inventory.kardex.sku']}</span>
+                                                <p:inputText id="kardex-code" value="#{kardexInventoryHome.kardex.code}" required="#{true}" disabled="#{true}"/>
+                                            </div>
+                                        </div>-->
                     <div class="ui-g-12 ui-md-12 ui-lg-12">
                         <h:panelGroup id="panel-kardex-properties">
                             <div class="ui-inputgroup">
@@ -325,6 +289,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </p:commandButton>
             </h:form>
         </p:dialog>
+    </ui:define>
+    <ui:define name="style">
+        <style type="text/css">
+            .rowPurchases {
+                background-color: #FCF3CF !important;
+            }
+            .rowPurchasesDev {
+                background-color: #FEF9E7 !important;
+            }
+            .rowSales {
+                background-color: #D8ECE1 !important;
+            }
+            .rowSalesDev {
+                background-color: #EAFAF1 !important;
+            }
+            .rowDefault {
+                background-color: #EFEFEF !important;
+            }
+            .container-center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .bold-capital{
+                font-weight: bolder;
+                text-transform: uppercase;
+            }
+            .capital{
+                text-transform: uppercase;
+            }
+            .container-right{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .container-lefth{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            .line-separator{
+                color: #FBFCFC !important;
+                border-width: 0.5px;
+            }
+        </style>
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">

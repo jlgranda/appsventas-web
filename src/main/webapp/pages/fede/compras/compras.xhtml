@@ -41,12 +41,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <p:toolbar>
                         <f:facet name="left">
-<!--                            <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                           <p:inputText value="#{facturaElectronicaCompraHome.keyword}" class="input-sm">
-                               <p:ajax listener="#{facturaElectronicaCompraHome.clear()}" />
-                           </p:inputText>  -->
-                            <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
-                            <p:autoComplete id="supplier" value="#{facturaElectronicaCompraHome.facturaElectronica.author}" effect="fade" 
+                            <p:outputLabel class="Gray" value="#{i18n['common.supplier']}:&nbsp;" for="@next"/>
+                            <p:autoComplete id="supplier" class="MarRight10"
+                                            value="#{facturaElectronicaCompraHome.facturaElectronica.author}" effect="fade" 
                                             minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
                                             var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
                                             maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
@@ -57,16 +54,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:column>
                                 <p:ajax update="btn-buscar" partialSubmit="true"></p:ajax>
                             </p:autoComplete>
-                            <h:panelGroup id="controles-busqueda-avanzada" style="padding-right: 0.2rem">
+                            <h:panelGroup id="controles-busqueda-avanzada">
                                 <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                                    <label class="Gray">#{i18n['common.from']}:&nbsp;</label>
-                                    <p:calendar value="#{facturaElectronicaCompraHome.start}" class="input-sm">
+                                    <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
+                                    <p:calendar value="#{facturaElectronicaCompraHome.start}" class="input-sm MarRight10">
                                         <p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
                                     </p:calendar>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
-                                    <label class="Gray">#{i18n['common.to']}:&nbsp;</label>
-                                    <p:calendar value="#{facturaElectronicaCompraHome.end}" class="input-sm">
+                                    <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
+                                    <p:calendar value="#{facturaElectronicaCompraHome.end}" class="input-sm MarRight10">
                                         <p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.clear()}" /> 
                                     </p:calendar>                        
                                 </h:panelGroup>
@@ -103,13 +100,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
-                        <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" draggableColumns="true" lazy="true" liveResize="true"
-                                     paginator="true" paginatorAlwaysVisible="false"
-                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{facturaElectronica.id}"
-                                     rows="25" scrollRows="25"
+                        <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" lazy="#{true}" 
                                      value="#{facturaElectronicaCompraHome.lazyDataModel}" var="facturaElectronica"
                                      selection="#{facturaElectronicaCompraHome.selectedBussinesEntities}"
-                                     sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
+                                     rowKey="#{facturaElectronica.id}" 
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaCompraHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column id="code" headerText="Nº Documento">

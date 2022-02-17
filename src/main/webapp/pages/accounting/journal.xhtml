@@ -93,14 +93,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:commandButton>
                         </f:facet>
                     </p:toolbar>
-                    <p:dataTable var="record" style="padding-left: 0.8rem; padding-right: 0.8rem;"
-                                 draggableColumns="true" liveResize="true"
-                                 paginator="true" paginatorAlwaysVisible="false"
-                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{record.id}"
-                                 rows="25" scrollRows="25"
-                                 value="#{generalJournalHome.journal.records}"
+                    <p:dataTable id="dataTable-records" widgetVar="dataTable_wv" lazy="#{true}"
+                                 value="#{generalJournalHome.journal.records}" var="record"
                                  selection="#{generalJournalHome.selectedRecords}"
-                                 id="dataTable-records" widgetVar="dataTable_wv" lazy="true">
+                                 rowKey="#{record.id}"
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single"
+                                 style="padding-left: 0.8rem; padding-right: 0.8rem;">
                         <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectAsRecord}" update=":form:panelSelectedToolBar"/>
                         <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />

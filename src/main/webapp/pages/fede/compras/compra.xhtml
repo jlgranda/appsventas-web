@@ -155,14 +155,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><p:separator style="color: #EFEFEF"/></div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:dataTable id="dataTable-facturaElectronica-details" draggableColumns="true" lazy="false" liveResize="false"
-                                         paginator="true" paginatorAlwaysVisible="false"
-                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{facturaElectronicaDetail.id}"
-                                         rows="25" scrollRows="25"
+                            <p:dataTable id="dataTable-facturaElectronica-details" widgetVar="dataTable-facturaElectronica-details" lazy="#{false}" 
                                          value="#{facturaElectronicaCompraHome.facturaElectronica.facturaElectronicaDetails}" var="facturaElectronicaDetail"
                                          selection="#{kardexInventoryHome.selectedBussinesEntities}"
-                                         sortBy="#{facturaElectronicaDetail.createdOn}"
-                                         styleClass="ui-dataTable">
+                                         rowKey="#{facturaElectronicaDetail.id}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
                                 <p:column headerText="#{i18n['common.quantity']}">
                                     <h:outputText value="#{facturaElectronicaDetail.amount}"/>
                                 </p:column>
@@ -527,14 +528,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
-                            <p:dataTable id="dataTable-payments-credit" draggableColumns="true" lazy="false" liveResize="true"
-                                         liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{payment.id}"
-                                         rows="5" scrollRows="5"
-                                         scrollable="true"
+                            <p:dataTable id="dataTable-payments-credit" widgetVar="dataTable-payments-credit" lazy="#{false}"
                                          value="#{facturaElectronicaCompraHome.facturaElectronica.payments}" var="payment"
                                          selection="#{facturaElectronicaCompraHome.selectedBussinesEntities}"
-                                         sortBy="#{payment.createdOn}"
+                                         rowKey="#{payment.id}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single"
                                          editable="#{false}">
                                 <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" style="width: 15%" styleClass="text-right">
                                     <h:outputText value="#{payment.createdOn}">

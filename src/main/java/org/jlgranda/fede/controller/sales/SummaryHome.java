@@ -662,7 +662,7 @@ public class SummaryHome extends FedeController implements Serializable {
 
     private HorizontalBarChartModel createHorizontalPurchasesBarModel() {
         HorizontalBarChartModel model = new HorizontalBarChartModel();
-//        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("ride.infoFactura.importeTotal"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
+//        model.addSeries(createPurchasesSeries(I18nUtil.getMessages("app.fede.payment.amount.total"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetween"));
         model.addSeries(createPurchasesSeries(I18nUtil.getMessages("app.fede.payment.amount.total"), "FacturaElectronica.findTopTotalBussinesEntityIdsBetweenOrg"));
         if (!model.getSeries().isEmpty()) {
             for (ChartSeries sr : model.getSeries()) {

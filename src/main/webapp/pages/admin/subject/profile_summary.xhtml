@@ -80,14 +80,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </div>
                                 </div>
                                 <div class="EmptyBox5"></div>
-                                <p:dataTable var="group" 
-                                             value="#{securityGroupUserHome.lazyDataModel}" 
-                                             paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                             reflow="true" selection="#{securityGroupHome.selectedGroups}"
+                                <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}"
+                                             value="#{securityGroupUserHome.lazyDataModel}" var="group" 
+                                             selection="#{securityGroupHome.selectedGroups}"
                                              rowKey="#{group.id}" 
-                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                             id="dataTable" widgetVar="dataTable_wv" lazy="true">sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-
+                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                             paginator="#{true}" paginatorPosition="bottom" 
+                                             draggableColumns="#{true}" reflow="#{true}" 
+                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                             sortMode="single">
                                     <!--                                <p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
                                                                     <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>-->
                                     <!--                                <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>

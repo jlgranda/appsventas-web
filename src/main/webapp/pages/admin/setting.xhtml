@@ -81,9 +81,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <div class="ui-g-4 ui-lg-4 ui-md-4">
-                    <p:dataTable id="settingList" var="setting" 
-                                 paginator="true" rows="14"
-                                 value="#{settingHome.overwritableSettings}">
+                    <p:dataTable id="settingList" widgetVar="settingList" lazy="#{false}"
+                                 value="#{settingHome.overwritableSettings}" var="setting" 
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single">
                         <p:column filterBy="#{setting.label}" sortBy="#{setting.label}" filterMatchMode="contains">
                             <h:link title="#{setting.label}" outcome="/pages/admin/setting.jsf?settingName=#{setting.name}"
                                     styleClass="" style="margin-right:10px;display:inline-block"

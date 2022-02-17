@@ -138,13 +138,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                       fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
                       style="text-align: right" height="600" width="800">
                 <p:outputPanel id="panel-dataTable"> 
-                    <p:dataTable id="dataTable-sales-discounts" draggableColumns="true" lazy="false" liveResize="true"
-                                 liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{discount.id}"
-                                 rows="8" scrollRows="8" scrollHeight="100%" scrollWidth="100%"
-                                 scrollable="true"
+                    <p:dataTable id="dataTable-sales-discounts" widgetVar="dataTable-sales-discounts" lazy="#{false}"
                                  value="#{cashBoxHome.listDiscount}" var="discount"
-                                 selection="#{summaryHome.selectedBussinesEntities}">
+                                 selection="#{summaryHome.selectedBussinesEntities}"
+                                 rowKey="#{discount.id}"
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single">
                         <f:facet name="header">
                             <h:outputText value="#{i18n['app.fede.reports.summary.sales.discounts']}"></h:outputText>
                         </f:facet>

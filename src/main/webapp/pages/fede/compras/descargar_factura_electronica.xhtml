@@ -55,8 +55,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          action="#{facturaElectronicaHome.getOutcome()}" disabled="false" />
                     </div>
                     <div class="ui-g ui-g-12">
-                        <p:dataTable rendered="true" id="urls" 
-                                     var="url" value="#{facturaElectronicaHome.urls}"
+                        <p:dataTable id="urls" widgetVar="urls" lazy="#{false}"
+                                     value="#{facturaElectronicaHome.urls}" var="url"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single"
                                      emptyMessage="#{i18n['common.url.add.help']}">
                             <f:facet name="header">
                                 #{i18n['common.URLs']}

@@ -87,18 +87,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:commandButton>
                             </div>
                         </div>
-<!--                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.entry']}" for="@next"/>
-                            <p:selectOneMenu id="emissionType"
-                                             value="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType}"
-                                             disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
-                                             immediate="true"
-                                             required="true"> 
-                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                                <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@this tittle days date-title" />
-                            </p:selectOneMenu>
-                        </div>-->
+                        <!--                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                                    <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.entry']}" for="@next"/>
+                                                    <p:selectOneMenu id="emissionType"
+                                                                     value="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType}"
+                                                                     disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
+                                                                     immediate="true"
+                                                                     required="true"> 
+                                                        <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                                        <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                        <p:ajax update="@this tittle days date-title" />
+                                                    </p:selectOneMenu>
+                                                </div>-->
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:outputLabel value="#{i18n['common.date.emission']}" for="@next"/>
                             <p:calendar id="fechaEmision" 
@@ -109,25 +109,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <!--<p:ajax event="dateSelect" listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="days fechaVencimiento" />-->
                             </p:calendar>
                         </div>
-<!--                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12" > 
-                            <p:outputLabel value="Días Plazo/Fecha de Vencimiento" for="@next"/>
-                            <p:outputLabel id="date-title" class="BigTopic" value="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT ? '(NO APLICA)':''}"/>
-                            <div class="ui-g-12" style="display: inline-flex; padding: 0rem;">
-                                <p:spinner id="days" 
-                                           value="#{facturaElectronicaIngresoHome.days}" min="1" 
-                                           disabled="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
-                                           rendered="#{empty facturaElectronicaIngresoHome.facturaElectronica.id}"
-                                           immediate="false">
-                                    <p:ajax listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="true"></p:ajax>
-                                </p:spinner>
-                                <p:calendar id="fechaVencimiento" 
-                                            value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaVencimiento}" 
-                                            disabled="true"
-                                            immediate="false" 
-                                            required="true">
-                                </p:calendar>
-                            </div>
-                        </div>-->
+                        <!--                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12" > 
+                                                    <p:outputLabel value="Días Plazo/Fecha de Vencimiento" for="@next"/>
+                                                    <p:outputLabel id="date-title" class="BigTopic" value="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT ? '(NO APLICA)':''}"/>
+                                                    <div class="ui-g-12" style="display: inline-flex; padding: 0rem;">
+                                                        <p:spinner id="days" 
+                                                                   value="#{facturaElectronicaIngresoHome.days}" min="1" 
+                                                                   disabled="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
+                                                                   rendered="#{empty facturaElectronicaIngresoHome.facturaElectronica.id}"
+                                                                   immediate="false">
+                                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="true"></p:ajax>
+                                                        </p:spinner>
+                                                        <p:calendar id="fechaVencimiento" 
+                                                                    value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaVencimiento}" 
+                                                                    disabled="true"
+                                                                    immediate="false" 
+                                                                    required="true">
+                                                        </p:calendar>
+                                                    </div>
+                                                </div>-->
                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
                             <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}" for="@next"/>
                             <p:selectOneMenu id="documentType"
@@ -155,11 +155,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              disabled="#{empty facturaElectronicaIngresoHome.supplier or not empty facturaElectronicaIngresoHome.facturaElectronica.payments}"/>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:dataTable id="rcdd-dtb"
+                            <p:dataTable id="rcdd-dtb" widgetVar="rcdd-dtb" lazy="#{false}"
                                          value="#{facturaElectronicaIngresoHome.record.recordDetails}" var="recordDetail" 
-                                         rowKey="#{recordDetail.account}"
                                          selection="#{facturaElectronicaIngresoHome.recordDetailSelected}" 
-                                         selectionMode="single">
+                                         rowKey="#{recordDetail.account}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
                                 <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                 </p:column>
@@ -366,14 +370,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
-                            <p:dataTable id="pay-dtbl" draggableColumns="true" lazy="false" liveResize="true"
-                                         liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{payment.id}"
-                                         rows="5" scrollRows="5"
-                                         scrollable="true"
+                            <p:dataTable id="pay-dtbl" widgetVar="pay-dtbl" lazy="#{false}"
                                          value="#{facturaElectronicaIngresoHome.facturaElectronica.payments}" var="payment"
                                          selection="#{facturaElectronicaIngresoHome.selectedBussinesEntities}"
-                                         sortBy="#{payment.createdOn}"
+                                         rowKey="#{payment.id}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single"
                                          editable="#{false}">
                                 <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" style="width: 15%" styleClass="text-right">
                                     <h:outputText value="#{payment.createdOn}">
