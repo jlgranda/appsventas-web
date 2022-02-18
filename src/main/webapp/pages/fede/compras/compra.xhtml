@@ -157,7 +157,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:dataTable id="dataTable-facturaElectronica-details" widgetVar="dataTable-facturaElectronica-details" lazy="#{false}" 
                                          value="#{facturaElectronicaCompraHome.facturaElectronica.facturaElectronicaDetails}" var="facturaElectronicaDetail"
-                                         selection="#{kardexInventoryHome.selectedBussinesEntities}"
+                                         selection="#{facturaElectronicaCompraHome.selectedBussinesEntities}"
                                          rowKey="#{facturaElectronicaDetail.id}"
                                          rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                          paginator="#{true}" paginatorPosition="bottom" 

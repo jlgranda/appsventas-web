@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <f:metadata>
             <f:viewParam name="kardexId" value="#{kardexInventoryHome.kardexId}" />
             <f:viewAction action="#{kardexInventoryHome.messagesValidation()}" />
-            <f:viewAction action="#{kardexInventoryHome.calculateTotalKardex()}" />
+            <!--<f:viewAction action="#{kardexInventoryHome.calculateTotalKardex()}" />-->
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <o:importConstants type="org.jlgranda.fede.model.sales.Kardex"/>
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                <h:outputText class="BigTopic" value="#{kardexInventoryHome.kardex.code} | #{kardexInventoryHome.kardex.product.name}"></h:outputText>
+                <h:outputText class="BigTopic" value="#{kardexInventoryHome.kardex.id} #{kardexInventoryHome.kardex.code} | #{kardexInventoryHome.kardex.product.name}"></h:outputText>
                 <p:toolbar>
                     <f:facet name="left">
                         <p:commandButton id="btn-kardex-edit"
@@ -59,41 +59,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <f:facet name="right">    
                         <p:commandButton id="btn-kardexDetail-input" 
                                          value="#{i18n['common.entry']}" icon="fa fa-plus" styleClass="primary-button" style="width: auto !important;"
-                                         actionListener="#{kardexInventoryHome.asignedKardexDetailProperties('input')}"
+                                         actionListener="#{kardexInventoryHome.asignarPropiedadesKardexDetail('input')}"
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
+                                         disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
                                          immediate="false">
                         </p:commandButton>
                         <p:commandButton id="btn-kardexDetail-output"
                                          value="#{i18n['common.exitd']}" icon="fa fa-minus" styleClass="warning-btn" style="width: auto !important;"
-                                         actionListener="#{kardexInventoryHome.asignedKardexDetailProperties('output')}"
+                                         actionListener="#{kardexInventoryHome.asignarPropiedadesKardexDetail('output')}"
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
+                                         disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
                                          immediate="false">
                         </p:commandButton>
                         <p:button value="#{i18n['common.newa']}" icon="fa fa-cart-plus" styleClass="danger-btn" style="width: auto !important;" 
-                                  outcome="/pages/fede/compras/compra.jsf"/>
+                                  outcome="compra"/>
                     </f:facet>
                 </p:toolbar>
             </div>
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                 <div class="card">
-                    <p:dataTable id="dataTable-kardex-details" 
-                                 draggableColumns="true" lazy="false" liveResize="true"
-                                 paginator="true" paginatorAlwaysVisible="false"
-                                 paginatorPosition="bottom" resizableColumns="true" 
-                                 rowKey="#{kardexDetail.id}" 
-                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" scrollRows="25"
+                    <p:dataTable id="dataTable-kardex-details" widgetVar="dataTable_wv" lazy="#{false}"
                                  value="#{kardexInventoryHome.kardex.kardexDetails}" var="kardexDetail"
                                  selection="#{kardexInventoryHome.selectedBussinesEntities}"
-                                 sortMode="single"
-                                 rowStyleClass="#{kardexDetail.operationType=='COMPRA' ? 'rowPurchases' : 'rowDefault' 
-                                                  or kardexDetail.operationType=='VENTA' ? 'rowSales' : 'rowDefault'
-                                                  or kardexDetail.operationType=='PRODUCCION' ? 'rowPurchasesDev' : 'rowDefault'
-                                                  or kardexDetail.operationType=='SALIDA_INVENTARIO' ? 'rowSalesDev' : 'rowDefault  '}">
+                                 rowKey="#{kardexDetail.id}" 
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single">
                         <f:facet name="header">
-                            <h:outputText value="MOVIMIENTOS DE KARDEX"/>
+                            <h:outputText value="MOVIMIENTOS DEL PRODUCTO SEGÚN KARDEX"/>
                         </f:facet>
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column colspan="3" headerText="#{i18n['common.description']}"/>
+                                <p:column colspan="2" headerText="#{i18n['common.entries']}"/>
+                                <p:column colspan="2" headerText="#{i18n['common.exitds']}"/>
+                                <p:column colspan="2" headerText="#{i18n['common.fund']}"/>
+                            </p:row>
+                            <p:row>
+                                <p:column headerText="#{i18n['common.date.emission']}"/>
+                                <p:column headerText="#{i18n['app.fede.inventory.kardex.operation.type']}"/>
+                                <p:column headerText="#{i18n['common.price.unit']}"/>
+                                <p:column headerText="#{i18n['common.quantity']}"/>
+                                <p:column headerText="#{i18n['common.value']}"/>
+                                <p:column headerText="#{i18n['common.quantity']}"/>
+                                <p:column headerText="#{i18n['common.value']}"/>
+                                <p:column headerText="#{i18n['common.quantity']}"/>
+                                <p:column headerText="#{i18n['common.value']}"/>
+                            </p:row>
+                        </p:columnGroup>
                         <p:column headerText="#{i18n['common.date.emission']}" sortOrder="asc" sortPriority="1">
                             <h:outputText value="#{kardexDetail.entryOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="dd/MM/yyyy HH:mm:ss"/>
@@ -102,35 +119,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:column headerText="#{i18n['app.fede.inventory.kardex.operation.type']}" >
                             <h:outputText value="#{kardexDetail.operationType}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.vaucher']}">
-                            <h:outputText value="#{kardexDetail.code}"/>
-                        </p:column>
                         <p:column headerText="#{i18n['common.price.unit']}">
                             <h:outputText value="#{kardexDetail.unitValue}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.quantity']}">
-                            <label> #{kardexDetail.operationType=='DEVOLUCION_COMPRA' ? '-' : ''} </label>
+                        <p:column headerText="#{i18n['common.quantity']}" style="background: #D8ECE1 !important;">
+                            <!--<label> #{kardexDetail.operationType=='DEVOLUCION_COMPRA' ? '-' : ''} </label>-->
                             <h:outputText value="#{kardexDetail.quantity}" 
                                           rendered="#{kardexDetail.operationType=='EXISTENCIA_INICIAL' or kardexDetail.operationType=='PRODUCCION' 
                                                       or  kardexDetail.operationType=='COMPRA' or kardexDetail.operationType=='DEVOLUCION_COMPRA'}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.value']}">
-                            <!--<label> #{kardexDetail.operationType=='DEVOLUCION_COMPRA' ? '-' : ''} </label>-->
+                        <p:column headerText="#{i18n['common.value']}" style="background: #D8ECE1 !important;">
+                             <!--<label> #{kardexDetail.operationType=='DEVOLUCION_COMPRA' ? '-' : ''} </label>-->
                             <h:outputText value="#{kardexDetail.totalValue}"
                                           rendered="#{kardexDetail.operationType=='EXISTENCIA_INICIAL' or kardexDetail.operationType=='PRODUCCION' 
                                                       or kardexDetail.operationType=='COMPRA' or kardexDetail.operationType=='DEVOLUCION_COMPRA'}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.quantity']}">
+                        <p:column headerText="#{i18n['common.quantity']}" style="background: #FCF3CF !important;">
                             <label> #{kardexDetail.operationType=='DEVOLUCION_VENTA' ? '-' : ''} </label>
                             <h:outputText value="#{kardexDetail.quantity}" 
                                           rendered="#{kardexDetail.operationType=='SALIDA_INVENTARIO' or  kardexDetail.operationType=='VENTA' 
                                                       or kardexDetail.operationType=='DEVOLUCION_VENTA'}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.value']}">
+                        <p:column headerText="#{i18n['common.value']}"  style="background: #FCF3CF !important;">
                             <!--<label> #{kardexDetail.operationType=='DEVOLUCION_VENTA' ? '-' : ''} </label>-->
                             <h:outputText value="#{kardexDetail.totalValue}"
                                           rendered="#{kardexDetail.operationType=='SALIDA_INVENTARIO' or kardexDetail.operationType=='VENTA' 
@@ -142,26 +156,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:outputText value="#{kardexDetail.cummulativeQuantity}" style="#{kardexDetail.cummulativeQuantity lt 0 ? 'color: #e53935;': ''}"/>
                         </p:column>
                         <p:column headerText="#{i18n['common.value']}">
-                            <!--<h:outputText value="#{kardexDetail.cummulativeTotalValue lt 0 ? '-': ''}" style="#{kardexDetail.cummulativeTotalValue lt 0 ? 'color: #e53935;': ''}"/>-->
                             <h:outputText value="#{kardexDetail.cummulativeTotalValue}" style="#{kardexDetail.cummulativeTotalValue lt 0 ? 'color: #e53935;': ''}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
                     </p:dataTable>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-lg-12 ui-md-12">
-                <div class="ui-g-7">
-                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.entries']}</p></div>
-                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.exitds']}</p></div>
-                    <div class="ui-g-4 container-center capital"><p style="BigTopic">#{i18n['common.fund']}</p></div>
-                </div>
-                <div class="ui-g ui-lg-12 ui-md-12">
-
                 </div>
             </div>
         </div>
@@ -175,7 +174,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:outputLabel for="operationtype-input" value="#{i18n['app.fede.inventory.kardex.operation.type']}" />   
                         <p:selectOneMenu id="operationtype-input" value="#{kardexInventoryHome.kardexDetail.operationType}" style="width: 100%;"
                                          required="#{true}">
-                            <f:selectItems value="#{ui.getOperationTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            <f:selectItems value="#{ui.getOperationTypesAsSelectItem(kardexInventoryHome.operationTypeFlow)}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                             <p:ajax update="btn-agregar" partialSubmit="true"></p:ajax>
                         </p:selectOneMenu>
                         <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}" 
@@ -187,7 +186,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
                                         container="none" rendered="true"
                                         update="btn-agregar"/>
-
                         <jlgranda:input id="unit_value" name="unit_value" type="decimal" label="#{i18n['common.price.unit']}" 
                                         render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
                                         required="true" requiredMessage="#{i18n['common.price.unit']}"
@@ -211,14 +209,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:toolbar>
                             <f:facet name="left">
                                 <p:commandButton id="btn-agregar"
-                                                 icon="pi pi-check"  styleClass="danger-btn p-mr-2"
-                                                 value="#{i18n['common.add']}"
+                                                 value="#{i18n['common.add']}" icon="pi pi-check" styleClass="danger-btn" style="width: auto !important;"
                                                  actionListener="#{kardexInventoryHome.addKardexDetail()}"
-                                                 type="submit" ajax="false" 
+                                                 disabled="#{not kardexInventoryHome.validKardexDetail()}"
                                                  update="@form"
-                                                 disabled="#{not kardexInventoryHome.validatedKardexDetail()}"
-                                                 style="width: -webkit-fill-available;">
+                                                    ajax="false" type="submit">
                                 </p:commandButton>
+                                <i class="fa fa-bars p-px-2"/>
                             </f:facet>
                             <f:facet name="right">
 
@@ -256,7 +253,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-inputgroup">
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.unit']} #{i18n['common.of']} #{i18n['common.measure']}</span>
                                 <p:selectOneMenu id="unidad-medida" value="#{kardexInventoryHome.kardex.unitMeasure}" style="width: 100%;"
-                                                 required="#{true}" immediate="true" disabled="#{kardexInventoryHome.activeKardexEdition and kardexInventoryHome.kardexId!=null}"> 
+                                                 required="#{true}" immediate="true" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"> 
                                     <f:selectItem itemLabel="#{i18n['common.choice']}" itemValue="#{kardexInventoryHome.kardex.unitMeasure}" rendered="#{kardexInventoryHome.kardex.unitMeasure!=null}"/> 
                                     <f:selectItems value="#{ui.getMeasuresTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                     <p:ajax update="@this"></p:ajax>
@@ -264,12 +261,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-inputgroup">
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.minimun']}</span>
-                                <p:spinner value="#{kardexInventoryHome.kardex.unitMinimum}" disabled="#{kardexInventoryHome.activeKardexEdition and kardexInventoryHome.kardexId!=null}"
+                                <p:spinner value="#{kardexInventoryHome.kardex.unitMinimum}" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"
                                            min="1" immediate="false" styleClass="" required="#{true}">
                                     <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@form:unit_maximun"></p:ajax>
                                 </p:spinner>
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.maximum']}</span>
-                                <p:spinner id="unit_maximun" value="#{kardexInventoryHome.kardex.unitMaximum}" disabled="#{kardexInventoryHome.activeKardexEdition and kardexInventoryHome.kardexId!=null}"
+                                <p:spinner id="unit_maximun" value="#{kardexInventoryHome.kardex.unitMaximum}" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"
                                            min="#{kardexInventoryHome.kardex.unitMinimum==null? '1':kardexInventoryHome.kardex.unitMinimum}" immediate="true" 
                                            styleClass="" required="#{true}">
                                     <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@this"></p:ajax>
@@ -284,13 +281,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  actionListener="#{kardexInventoryHome.editKardex()}"
                                  type="submit" ajax="false" 
                                  update="@form"
-                                 disabled="#{kardexInventoryHome.activeKardexEdition}"
+                                 disabled="#{kardexInventoryHome.editarKardex}"
                                  style="width: -webkit-fill-available;">
                 </p:commandButton>
             </h:form>
         </p:dialog>
     </ui:define>
     <ui:define name="style">
+        <!--                        rowStyleClass="#{kardexDetail.operationType=='COMPRA' ? 'rowPurchases' : 'rowDefault' 
+                                                     or kardexDetail.operationType=='VENTA' ? 'rowSales' : 'rowDefault'
+                                                     or kardexDetail.operationType=='PRODUCCION' ? 'rowPurchasesDev' : 'rowDefault'
+                                                     or kardexDetail.operationType=='SALIDA_INVENTARIO' ? 'rowSalesDev' : 'rowDefault  '}"-->
         <style type="text/css">
             .rowPurchases {
                 background-color: #FCF3CF !important;

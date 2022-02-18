@@ -198,8 +198,9 @@ public class UI {
         }
         return items;
     }
+
     public SelectItem[] getGeneralJournalAsSelectItem(List<GeneralJournal> entities) {
-        
+
         boolean selectOne = true;
         int size = 1;
         if (entities != null) {
@@ -211,9 +212,11 @@ public class UI {
             items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
             i++;
         }
-        
-        if (size == 1) return items;
-        
+
+        if (size == 1) {
+            return items;
+        }
+
         for (GeneralJournal x : entities) {
             items[i++] = new SelectItem(x, x.getName());
         }
@@ -254,25 +257,29 @@ public class UI {
         return items;
     }
 
-    public List<SelectItem> getOperationTypesAsSelectItem() {
+    public List<SelectItem> getOperationTypesAsSelectItem(String type) {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL, "INVENTARIO INICIAL");
-        items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.PRODUCCION, "PRODUCCIÓN");
-        items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.SALIDA_INVENTARIO, "SALIDA DE INVENTARIO");
-        items.add(item);
+        System.out.println("type:::"+type);
+        if ("input".equals(type)) {
+            item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL, "INVENTARIO INICIAL");
+            items.add(item);
+            item = new SelectItem(KardexDetail.OperationType.PRODUCCION, "PRODUCCIÓN");
+            items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
 //        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
+//        items.add(item);
+        } else if ("output".equals(type)) {
+            item = new SelectItem(KardexDetail.OperationType.SALIDA_INVENTARIO, "SALIDA DE INVENTARIO");
+            items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
 //        items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_COMPRA.toString(), KardexDetail.OperationType.DEVOLUCION_COMPRA.toString());
 //        items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
-//        items.add(item);
+        }
 
         return items;
     }
@@ -442,7 +449,7 @@ public class UI {
             item = new SelectItem(cleanValue(o), o.getName());
             items.add(item);
         }
-        
+
         return items;
     }
 

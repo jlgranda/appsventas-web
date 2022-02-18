@@ -57,8 +57,8 @@
                             <p:menuitem id="om_kardex" value="#{i18n['app.fede.inventory.kardex']}" icon="fa fa-fw fa-table" outcome="inventory-kardexs" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
                             <p:menuitem id="rm_purchase" value="#{i18n['app.fede.inventory.purchases']}" icon="fa fa-fw fa-cart-plus" outcome="compras" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
                         </p:submenu>
-                        <p:menuitem id="rm_gastos" value="Comprobantes de Egreso" icon="fa fa-fw fa-shopping-cart" outcome="gastos" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
-                        <p:menuitem id="rm_ingresos" value="Comprobantes de Ingreso" icon="fa fa-fw fa-shopping-cart" outcome="ingresos" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
+                        <p:menuitem id="rm_gastos" value="#{i18n['app.fede.inventory.expense.vouchers']}" icon="fa fa-fw fa-shopping-cart" outcome="gastos" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
+                        <p:menuitem id="rm_ingresos" value="#{i18n['app.fede.inventory.entry.vouchers']}" icon="fa fa-fw fa-shopping-cart" outcome="ingresos" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
                         <p:submenu id="om_admin_payments" label="#{i18n['app.fede.payments']}" icon="fa fa-fw fa-usd" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
                             <p:menuitem id="rm_payments_suppliers" value="#{i18n['common.suppliers']}" icon="fa fa-fw fa-handshake-o" outcome="/pages/fede/pagos/proveedores.jsf"  rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}"/> 
                         </p:submenu>
