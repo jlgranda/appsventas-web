@@ -21,7 +21,7 @@ and open the template in the editor.
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            #{tareaHome.tareaId == null ? i18n['New_a'].concat(' ').concat(i18n['app.documents.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
+            #{tareaHome.tareaId == null ? i18n['New_a'].concat(' ').concat(i18n['app.document.task']).concat(': ') : i18n['common.edit'].concat(': ')} #{tareaHome.tarea.name}
             <p>#{tareaHome.tarea.description}</p>
         </ui:define>
         <ui:define name="content">
@@ -31,7 +31,7 @@ and open the template in the editor.
                         <div class="Card ShadowEffect ui-fluid">
                             <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                             <p:tabView>
-                                <p:tab title="#{i18n['common.basic.data']}" rendered="#{not organizationHome.organization.persistent}">
+                                <p:tab title="#{i18n['app.management.organization.data.basic']}" rendered="#{not organizationHome.organization.persistent}">
                                     <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['RUC']}" 
                                         value="#{organizationHome.organization.ruc}" required="true" 
                                         inlinehelp="#{messages['RUC.inlinehelp']}" execute="@this save" render="ruc"

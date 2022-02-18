@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"
                                                     /><!--mode="read"-->
 
-                                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
+                                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                                     value="#{securityGroupUserHome.subject.email}" validator="emailValidator"
                                                     required="#{!securityGroupUserHome.subject.persistent}" placeholder="true" 
                                                     execute="@this save" render="email"/><!--mode="read"-->
@@ -80,26 +80,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </div>
                                 </div>
                                 <div class="EmptyBox5"></div>
-                                <p:dataTable var="group" 
-                                             value="#{securityGroupUserHome.lazyDataModel}" 
-                                             paginator="false" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                             reflow="true" selection="#{securityGroupHome.selectedGroups}"
+                                <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}"
+                                             value="#{securityGroupUserHome.lazyDataModel}" var="group" 
+                                             selection="#{securityGroupHome.selectedGroups}"
                                              rowKey="#{group.id}" 
-                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                             id="dataTable" widgetVar="dataTable_wv" lazy="true">sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
-
+                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                             paginator="#{true}" paginatorPosition="bottom" 
+                                             draggableColumns="#{true}" reflow="#{true}" 
+                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                             sortMode="single">
                                     <!--                                <p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
                                                                     <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>-->
                                     <!--                                <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>
                                                                     <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>-->
-                                    <p:column headerText="#{i18n['property.groupName']}" sortBy="#{group.name}">
+                                    <p:column headerText="#{i18n['property.group.name']}" sortBy="#{group.name}">
                                         <h:outputText value="#{group.name}" />
                                     </p:column>
-                                    <p:column headerText="#{i18n['property.groupPath']}" sortBy="#{group.path}">
+                                    <p:column headerText="#{i18n['property.group.path']}" sortBy="#{group.path}">
                                         <h:outputText value="#{group.path}" />
                                     </p:column> 
-                                    <p:column headerText="#{i18n['common.remove']} #{i18n['panel.Group']}" >
-                                        <p:commandButton  onclick="if (!confirm('#{i18n['property.group.message.remove']}'))
+                                    <p:column headerText="#{i18n['common.remove']} #{i18n['property.group']}" >
+                                        <p:commandButton  onclick="if (!confirm('#{i18n['property.group.remove.message']}'))
                                                     return false;" update="@form:dataTable" actionListener="#{securityGroupUserHome.removerUserFromGroup(group)}"  disabled="false" immediate="true"
                                                           icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                     </p:column> 
@@ -107,7 +108,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </div>
                         </div>
                         <p:dialog id="dlgSeleccionarGrupo" width="400"  widgetVar="dlgSeleccionarGrupo" 
-                                  header="#{i18n['property.groups.asigned.users']}" 
+                                  header="#{i18n['property.groups.users.asigned']}" 
                                   modal="true" draggable="true" position="center" closable="false" >
                             <div class="Container100">
                                 <div class="ContainerIndent">

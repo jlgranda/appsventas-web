@@ -46,13 +46,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g" style="padding: 0.1rem">
                                 <div class="ui-g-4 ui-md-4 ui-lg-4" style="background-color: #E9E9E9">
                                     <span class="Fs16" style="font-weight: 700;"> Asiento <i class="pi pi-hashtag"/>#{record.id}</span>
-                                    <div style="margin: 0.5rem 0 0 0;">RAZÓN: #{record.description}</div>
+                                    <div style="margin: 0.5rem 0 0 0;"><strong>CONCEPTO:</strong> #{record.description}</div>
                                 </div>
                                 <div class="ui-g-8 ui-md-8 ui-lg-8" style="padding: 0rem">
-                                    <p:dataTable id="recordDetails" 
+                                    <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
                                                  value="#{record.recordDetails}" var="recordDetail"
-                                                 rowKey="#{recordDetail.id}">
-                                        <p:column headerText="#{i18n['common.account']}">
+                                                 rowKey="#{recordDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single">
+                                        <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                             <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
                                         </p:column>
                                         <p:column headerText="#{i18n['common.debe']}">

@@ -35,6 +35,46 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <li>/</li>
         <li><p:link outcome="trends">#{i18n['app.fede.smart.trends']}</p:link></li>
     </ui:define>
+    <ui:define name="content" rendered="#{true}">
+        <div class="layout-dashboard">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar>
+                        <p:toolbarGroup>
+                            <p:outputLabel class="Gray MarRight10" value="#{i18n['common.from']}:" for="@next"/>
+                            <p:calendar value="#{summaryHome.start}"  class="input-sm MarRight10">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}"
+                                        update="chartline1"/> <!-- oncomplete="form.submit();" --> 
+                            </p:calendar>
+                            <p:outputLabel class="Gray MarRight10" value="#{i18n['common.to']}:" for="@next"/>
+                            <p:calendar value="#{summaryHome.end}" class="input-sm MarRight10">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}"
+                                        update="chartline1"/> 
+                            </p:calendar>          
+                        </p:toolbarGroup>
+                        <p:toolbarGroup>
+
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <!--Listado de Productos más vendidos: Cantidad-->
+                    <p:panel id="control-bar0"
+                             header="#{i18n['app.fede.smart.trends']}" 
+                             rendered="#{not empty summaryHome.horizontalProductsBarModel}"
+                             styleClass="statistics ui-g">                        
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
+                            <p:chart id="chartline1" 
+                                     type="line" 
+                                     model="#{summaryHome.balanceLineChartModel}" 
+                                     rendered="#{not empty summaryHome.balanceLineChartModel}"
+                                     responsive="true"/>  
+                        </div>                        
+                    </p:panel>
+                </div>
+            </div>                           
+        </div>
+    </ui:define>
     <ui:define name="style">
         <style type="text/css">
 
@@ -52,44 +92,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 border-color: #d8dae2;
             }
         </style>
-    </ui:define>
-
-    <ui:define name="content" rendered="#{true}">
-        <div class="layout-dashboard">
-            <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <div class="card">
-                        <h:panelGroup>
-                            <h:panelGroup>
-                                <label class="Gray">#{i18n['common.from']}</label>
-                                <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="chartline1"/> <!-- oncomplete="form.submit();" --> 
-                                </p:calendar>
-                            </h:panelGroup>
-                            <h:panelGroup>
-                                <label class="Gray">#{i18n['common.to']}</label>
-                                <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="chartline1"/> 
-                                </p:calendar>                            
-                            </h:panelGroup>
-                        </h:panelGroup>
-                    </div>  
-                </div><!-- comment -->
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel id="control-bar0" class="card" header="#{i18n['app.fede.smart.trends']}" 
-                             rendered="#{not empty summaryHome.horizontalProductsBarModel}"
-                             styleClass="statistics ui-g">                        
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                            <!--Listado de Productos más vendidos: Cantidad-->
-                            <p:chart id="chartline1" type="line" 
-                                     model="#{summaryHome.balanceLineChartModel}" 
-                                     rendered="#{not empty summaryHome.balanceLineChartModel}"
-                                     responsive="true"/>  
-                        </div>                        
-                    </p:panel>
-                </div>
-            </div>                           
-        </div>
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">

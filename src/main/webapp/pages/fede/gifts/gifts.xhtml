@@ -53,10 +53,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{gift.createdOn}">
                                 <h:outputText value="#{gift.createdOn}" />
                             </p:column>
-                            <p:column headerText="#{i18n['app.gift.discount.type']}" sortBy="#{gift.discountType}">
+                            <p:column headerText="#{i18n['app.fede.payment.discount.type']}" sortBy="#{gift.discountType}">
                                 <h:outputText value="#{gift.discountType}" />
                             </p:column>
-                            <p:column headerText="#{i18n['app.gift.discount.value']}" sortBy="#{gift.discountValue}">
+                            <p:column headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{gift.discountValue}">
                                 <h:outputText value="#{gift.discountValue}" />
                             </p:column>
                             
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.description']}" sortBy="#{giftHome.author.initials}">
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{giftHome.importeTotal}"
+                            <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{giftHome.importeTotal}"
                                       styleClass="text-right">
                                 <h:outputText value="#{giftHome.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>

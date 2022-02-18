@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                         <h:form>
                             <p:tabView style="margin:-20px; border:none 0px;">
-                                <p:tab title="#{i18n['app.fede.tarea.misTareas']}">
+                                <p:tab title="#{i18n['app.document.tasks.my']}">
                                     <div class="Container100">
                                         <div class="Container100 Responsive100">
                                             <div class="ContainerIndent">
@@ -99,16 +99,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     </span>
                                                     <span class="BoldGray Fs12 FontRobotoLight DispBlock">#{tareaHome.ultimaTareaRecibida.instanciaProceso.name}</span>
                                                     <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.author']}: #{tareaHome.ultimaTareaRecibida.author.firstname}, #{tareaHome.ultimaTareaRecibida.author.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaRecibida.createdOn}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.document.task.send.in'}: #{tareaHome.ultimaTareaRecibida.createdOn}</span>
                                                 </div>
                                                 <div class="Container60 Fs50 FontRobotoLight Orange #{not tareaHome.ultimaTareaRecibida.persistent ? '' : 'hide'}">
                                                     <span class="DispBlock">
-                                                            #{i18n['app.document.task.todo.empty']}
+                                                            #{i18n['app.document.tasks.none']}
                                                     </span>
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
-                                                    <p:button value="#{i18n['app.documents.task.complete']}" styleClass="CyanButton Fright" 
+                                                    <p:button value="#{i18n['common.complete']}" styleClass="CyanButton Fright" 
                                                               outcome="/pages/management/proceso/instancia_proceso.jsf?instanciaProcesoId=#{tareaHome.ultimaTareaRecibida.instanciaProceso.id}" style="width:75%"
                                                               rendered="#{tareaHome.ultimaTareaRecibida.persistent}"/>
                                                 </div>
@@ -116,7 +116,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Separator"></div>
                                                 <div class="EmptyBox10"></div>
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttasks']}</div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.document.tasks.recently']}</div>
                                                 <div class="EmptyBox10"></div>
                                                 <ui:repeat value="#{tareaHome.misUltimasTareasRecibidas}" var="tarea">
                                                     <div class="Container60">
@@ -127,7 +127,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="Separator"></div>
                                                 <div class="EmptyBox10"></div>
                                                 <div class="TexAlCenter DispBlock">
-                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                    <p:button value="#{i18n['common.show.all']}" 
                                                               styleClass="OrangeButton White Fs14" icon="fa fa-table"
                                                               outcome="/pages/management/tarea/inbox.jsf"/>
                                                 </div>
@@ -135,7 +135,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </div>
                                     </div>
                                 </p:tab>
-                                <p:tab title="#{i18n['app.fede.tarea.tareasEnviadas']}">
+                                <p:tab title="#{i18n['app.document.tasks.send']}">
                                     <div class="Container100">
                                         <div class="Container100 Responsive100">
                                             <div class="ContainerIndent">
@@ -146,8 +146,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                         #{tareaHome.ultimaTareaEnviada.name}
                                                     </span>
                                                     <span class="BoldGray Fs12 FontRobotoLight DispBlock">#{tareaHome.ultimaTareaEnviada.instanciaProceso.name}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.consignee']}: #{tareaHome.ultimaTareaEnviada.owner.firstname}, #{tareaHome.ultimaTareaEnviada.owner.surname}</span>
-                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.documents.task.sentDate']}: #{tareaHome.ultimaTareaEnviada.createdOn}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.document.task.consignee']}: #{tareaHome.ultimaTareaEnviada.owner.firstname}, #{tareaHome.ultimaTareaEnviada.owner.surname}</span>
+                                                    <span class="Gray Fs12 FontRobotoLight DispBlock">#{i18n['app.document.task.send.in']}: #{tareaHome.ultimaTareaEnviada.createdOn}</span>
                                                 </div>
                                                 <div class="Container40">
                                                     <p:button value="#{i18n['New']}" styleClass="RedButton Fright" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf" style="width:75%"/>
@@ -158,7 +158,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="EmptyBox10"></div>
                                                 <div class="Separator"></div>
                                                 <div class="EmptyBox10"></div>
-                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.documents.lasttasks']}</div>
+                                                <div class="Container100 Fs22 BoldGray FontRobotoRegular">#{i18n['app.document.tasks.recently']}</div>
                                                 <div class="EmptyBox10"></div>
                                                 <ui:repeat value="#{tareaHome.misUltimasTareasEnviadas}" var="tarea">
                                                     <div class="Container60">
@@ -169,7 +169,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="Separator"></div>
                                                 <div class="EmptyBox10"></div>
                                                 <div class="TexAlCenter DispBlock">
-                                                    <p:button value="#{i18n['ShowAll']}" 
+                                                    <p:button value="#{i18n['common.show.all']}" 
                                                               styleClass="OrangeButton White Fs14" icon="fa fa-table"
                                                               outcome="/pages/management/tarea/inbox.jsf"/>
                                                 </div>
@@ -203,7 +203,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="Card SoftGrayBack TexAlCenter">
                                     <i class="icon-create Fs50 BoldGray DispBlock"></i>
                                     <div class="EmptyBox5"></div>
-                                    <span class="FontRobotoLight Fs18">#{i18n['app.documents.task']}</span>
+                                    <span class="FontRobotoLight Fs18">#{i18n['app.document.task']}</span>
                                     <div class="EmptyBox10"></div>
                                     <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/management/tarea/tarea.jsf"/>
                                 </div>

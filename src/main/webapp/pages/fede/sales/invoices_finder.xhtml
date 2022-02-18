@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
     <o:importConstants type="org.jlgranda.fede.model.document.DocumentType"/>
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>#{i18n['app.fede.sales']}</li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/sales/invoices_finder.jsf?interval=7&amp;overcome=overdues&amp;documentType=#{invoiceHome.documentType}">#{i18n[invoiceHome.documentType]}</p:link></li>
     </ui:define>
@@ -101,12 +101,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains">
                             <h:outputText value="#{invoice.summary}" />
                         </p:column>
-                        <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{invoice.total}"  style="width:128px;text-align:right;">
+                        <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{invoice.total}"  style="width:128px;text-align:right;">
                             <h:outputText value="#{invoice.total}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.discount']}" sortBy="#{invoice.paymentsDiscount}"  style="width:128px;text-align:right;">
+                        <p:column headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{invoice.paymentsDiscount}"  style="width:128px;text-align:right;">
                             <h:outputText value="#{invoice.paymentsDiscount}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>

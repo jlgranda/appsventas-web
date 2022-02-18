@@ -33,25 +33,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/accounting/admin/record_templates.jsf">#{i18n['common.recordtemplates']}</p:link></li>
+            <li><p:link outcome="record-templates">#{i18n['common.recordtemplates']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12">
-                    <div class="card">
-                        <p:toolbar id="selectedToolBar" rendered="#{true}">
-                            <f:facet name="left">
-                                <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                                <p:inputText value="#{recordTemplateHome.keyword}" class="input-sm">
-                                </p:inputText>
-                                <p:commandButton value="#{i18n['common.find']}" 
-                                                 styleClass="raised-btn" 
-                                                 actionListener="#{recordTemplateHome.clear()}" ajax="false">
-                                </p:commandButton>
-                            </f:facet>
-                            <f:facet name="right">
-                                <p:button value="#{i18n['common.newa']} #{i18n['common.business.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
-                                <p:commandButton id="import-button" value="#{i18n['common.import']}" 
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar id="selectedToolBar" rendered="#{true}">
+                        <f:facet name="left">
+                            <p:outputLabel class="Gray" value="#{i18n['common.keyword']}:&nbsp;" for="@next"/>
+                            <p:inputText value="#{recordTemplateHome.keyword}" class="input-sm MarRight10">
+                            </p:inputText>
+                            <p:commandButton value="#{i18n['common.find']}"
+                                             icon="pi pi-search" styleClass="help-btn"
+                                             actionListener="#{recordTemplateHome.clear()}" 
+                                             ajax="false" immediate="true">
+                            </p:commandButton>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:button value="#{i18n['common.newa']} #{i18n['bussines.entity.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
+                            <p:commandButton id="import-button" value="#{i18n['common.import']}" 
                                              ajax="true" immediate="true" icon="fas fa-file-import"
                                              actionListener="#{recordTemplateHome.prepararImportarReglas()}"
                                              update="importarReglasDialog" 
@@ -60,23 +60,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              style="width: auto !important;"
                                              styleClass="btn raised-btn success-btn"
                                              />
-                            </f:facet>
-                        </p:toolbar>
-                    </div>
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
-                        <p:dataTable var="recordTemplate" 
-                                     value="#{recordTemplateHome.lazyDataModel}" 
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     sortMode="single"
-                                     reflow="true" selection="#{recordTemplateHome.selectedRecordTemplates}" 
+                        <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}" 
+                                     value="#{recordTemplateHome.lazyDataModel}" var="recordTemplate" 
+                                     selection="#{recordTemplateHome.selectedRecordTemplates}"
                                      rowKey="#{recordTemplate.id}" 
-                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
                             <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
                             <p:ajax event="toggleSelect"  listener="#{recordTemplateHome.onRowSelect}"/>
-                            
+
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
                                 <h:outputText value="#{recordTemplate.code}" />
                             </p:column>-->
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
@@ -108,16 +110,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                         <div class="ui-g-12 ui-lg-12 ui-md-12">
-                            <p:dataTable var="recordTemplate" 
-                                         value="#{recordTemplateHome.lazyDataModel}" 
-                                         paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                         sortMode="single"
-                                         reflow="true" selection="#{recordTemplateHome.selectedRecordTemplates}" 
+                            <p:dataTable id="dataTableImport" widgetVar="dataTable_wvImport" lazy="#{true}" 
+                                         value="#{recordTemplateHome.lazyDataModel}" var="recordTemplate" 
+                                         selection="#{recordTemplateHome.selectedRecordTemplates}"
                                          rowKey="#{recordTemplate.id}" 
-                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                         id="dataTableImport" widgetVar="dataTable_wvImport" lazy="true">
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
                                 <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['common.business.rule']}" sortBy="#{recordTemplate.code}">
+        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
                                     <h:outputText value="#{recordTemplate.code}" />
                                 </p:column>-->
                                 <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
@@ -130,15 +133,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:column>
                             </p:dataTable>
                         </div>
-                    <p:commandButton id="btn-importar"
-                                     icon="pi pi-check"  styleClass="danger-btn p-mr-2"
-                                     value="#{i18n['common.import']}"
-                                     actionListener="#{recordTemplateHome.importarReglas()}"
-                                     type="submit" ajax="false" 
-                                     update="@form"
-                                     disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
-                                     style="width: -webkit-fill-available;">
-                    </p:commandButton>
+                        <p:commandButton id="btn-importar"
+                                         icon="pi pi-check"  styleClass="danger-btn p-mr-2"
+                                         value="#{i18n['common.import']}"
+                                         actionListener="#{recordTemplateHome.importarReglas()}"
+                                         type="submit" ajax="false" 
+                                         update="@form"
+                                         disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
+                                         style="width: -webkit-fill-available;">
+                        </p:commandButton>
                     </div>
                 </h:form>
             </p:dialog>

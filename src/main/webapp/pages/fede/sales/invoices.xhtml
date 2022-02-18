@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['common.purchases']}" icon="fa fa-apple" 
+                <p:menuitem value="#{i18n['app.fede.inventory.purchases']}" icon="fa fa-apple" 
                             url="/pages/fede/inbox.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
@@ -182,7 +182,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:column headerText="#{i18n['common.type']}" sortBy="#{entity.documentType}">
                                     <h:outputText value="#{entity.documentType}" />
                                 </p:column>
-                                <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{entity.total}"
+                                <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{entity.total}"
                                           styleClass="text-right">
                                     <h:outputText value="#{entity.total}">
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>

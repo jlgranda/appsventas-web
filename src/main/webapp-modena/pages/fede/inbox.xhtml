@@ -73,16 +73,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             disabled="#{empty facturaElectronicaHome.selectedBussinesEntities}">
                                 </p:menuitem>
                             </p:menuButton>
-                            <p:menuButton value="#{i18n['Import']}" iconPos="right" 
+                            <p:menuButton value="#{i18n['common.import']}" iconPos="right" 
                                           styleClass="MarRight10"
                                           buttonStyleClass="ToolbarButton Fs14" 
                                           iconStyleClass="Gray"
                                           menuStyleClass="Gray">
-                                <p:menuitem value="#{i18n['FromEmail']}"  icon="fa fa-inbox Fs15" 
+                                <p:menuitem value="#{i18n['app.email.from']}"  icon="fa fa-inbox Fs15" 
                                             actionListener="#{facturaElectronicaHome.importarDesdeInbox()}"/>
-                                <p:menuitem value="#{i18n['FromFile']}" icon="fa fa-upload Fs15"
+                                <p:menuitem value="#{i18n['common.file.from']}" icon="fa fa-upload Fs15"
                                             onclick="triggerHiddenEventAddFromFile(); return false;"/>
-                                <p:menuitem value="#{i18n['FromURL']}" icon="fa fa-link Fs15" 
+                                <p:menuitem value="#{i18n['common.URL.from']}" icon="fa fa-link Fs15" 
                                             onclick="triggerHiddenEventAddFromURL(); return false;"/>
                             </p:menuButton>
                             <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
@@ -191,7 +191,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <!--./toolbar-->
         <ui:define name="sidebar">
             <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/compras/compra.jsf"/>
+                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="compra"/>
             </div>
             <div class="EmptyBox10"></div>
             <ul class="layout-menu ShadowEffect modena-menu" id="side-menu" style="width: 99%; margin: 0px auto 10px;">
@@ -234,7 +234,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['ride.Factura.Detalles.descripcion']}" sortBy="#{facturaElectronica.author.initials}">
                                 <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{facturaElectronica.importeTotal}"
+                            <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{facturaElectronica.importeTotal}"
                                       styleClass="text-right">
                                 <h:outputText value="#{facturaElectronica.importeTotal}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>

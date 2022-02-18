@@ -373,12 +373,12 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     public void procesarUploadFile(UploadedFile file) {
         if (file == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return;
         }
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return;
         }
         try {
@@ -485,7 +485,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             doc.setName(Strings.isNullOrEmpty(getDocumento().getName()) ? file.getFileName() : getDocumento().getName());
             doc.setDocumentType(getDocumento().getDocumentType() == null ? DocumentType.UNDEFINED : getDocumento().getDocumentType());
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return null;
         }
         doc.setFileName(file.getFileName());

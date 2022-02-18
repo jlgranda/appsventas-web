@@ -73,7 +73,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </p:autoComplete>
                                     </div>
                                     <div class="Container20">
-                                        <p:commandButton id="button-change-customer" icon="fa fa-user-plus Fs14 Black" 
+                                        <p:commandButton id="button-change-customer" 
+                                                         icon="fa fa-user-plus" styleClass="primary-button"
                                                          actionListener="#{invoiceHome.mostrarFormularioProfile()}" ajax="true"
                                                          immediate="true"
                                                          styleClass="RedButton" style="width:75%">
@@ -175,15 +176,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </h:outputText>]</div>
                         <div class="ContainerIndent">
                             <div class="Container25 Responsive50">
-                            <jlgranda:input id="method" name="method" type="text" label="#{i18n['app.fede.sales.payment.method']}" 
+                            <jlgranda:input id="method" name="method" type="text" label="#{i18n['app.fede.payment.method']}" 
                                             disabled="true"
                                             value="#{invoiceHome.payment.method}" required="true" 
-                                            inlinehelp="#{messages['app.fede.sales.payment.method.inlinehelp']}" 
+                                            inlinehelp="#{messages['app.fede.payment.method.inlinehelp']}" 
                                             execute="@this save" render="method"/>
                             </div>
                             <div class="Container25 Responsive50">
                                 <div class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.fede.sales.payment.cash']}</h2>
+                                    <h2 class="BigTopic">#{i18n['app.fede.payment.cash.received']}</h2>
                                     <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="false"
                                                    styleClass=""
                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -207,7 +208,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </div>
                             <div class="Container25 Responsive50">
                                 <div class="ContainerIndent">
-                                    <h2 class="BigTopic">#{i18n['app.fede.sales.payment.change']}</h2>
+                                    <h2 class="BigTopic">#{i18n['app.fede.payment.change']}</h2>
                                     <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="false"
                                                    styleClass=""
                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -239,7 +240,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                             <p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                             immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                             </p:menuButton>

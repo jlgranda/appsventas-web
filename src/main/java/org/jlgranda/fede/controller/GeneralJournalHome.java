@@ -48,6 +48,7 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +130,11 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     private Account accountSelected;
     
     protected List<SelectItem> generalJournalActions = new ArrayList<>();
-
+    
+        private RecordDetail recordDetailSelected;
+    
+    private boolean busquedaAvanzada;
+    
     @PostConstruct
     private void init() {
         int range = 0;
@@ -139,11 +144,13 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             nfe.printStackTrace();
             range = 7;
         }
+        
+        setBusquedaAvanzada(true);
 
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         setJournal(journalService.createInstance());//Instancia de Cuenta
-        setOutcome("general-journals");
+        setOutcome("journals");
         filter();
 
         this.record = recordService.createInstance();
@@ -277,6 +284,13 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.selectedRecords = selectedRecords;
     }
 
+    public boolean isBusquedaAvanzada() {
+        return busquedaAvanzada;
+    }
+
+    public void setBusquedaAvanzada(boolean busquedaAvanzada) {
+        this.busquedaAvanzada = busquedaAvanzada;
+    }
     
     public void clear() {
         filter();
@@ -301,6 +315,14 @@ public class GeneralJournalHome extends FedeController implements Serializable {
             lazyDataModel.setFilterValue(getKeyword());
         }
     }
+
+    public RecordDetail getRecordDetailSelected() {
+        return recordDetailSelected;
+    }
+
+    public void setRecordDetailSelected(RecordDetail recordDetailSelected) {
+        this.recordDetailSelected = recordDetailSelected;
+    }
     
     public void onRowSelect(SelectEvent event) {
         try {
@@ -315,6 +337,17 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     }
     public void onRowSelectAsRecord(SelectEvent event) {
         //dummy
+    }
+    
+    public void onRowSelectRecord(SelectEvent<RecordDetail> event) {
+        this.recordDetail = event.getObject();
+        addInfoMessage(I18nUtil.getMessages("action.sucessfully"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
+
+    }
+
+    public void onRowUnselectRecord(UnselectEvent<RecordDetail> event) {
+
+        this.setRecordDetail(recordDetailService.createInstance()); //Encerar formulario de edición
     }
 
     public void save() {
@@ -376,7 +409,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     public void messageEditableRecord() {
         if (!isRecordOfReferen()) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.message.not.editable", " " + this.record.getBussinesEntityType()));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.not.editable.message", " " + this.record.getBussinesEntityType()));
         }
     }
 
@@ -387,21 +420,21 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     /**
      * Agrega un detalle al Record
      */
-    public void addRecordDetail() {
+    public void recordDetailAdd() {
         if (this.recordDetail.getAccount() != null && (BigDecimal.ZERO.compareTo(this.recordDetail.getAmount()) == -1) && this.recordDetail.getRecordDetailType() != null) {
             this.recordDetail.setOwner(subject);
             this.record.addRecordDetail(this.recordDetail);
             //Preparar para una nueva entrada
             this.recordDetail = recordDetailService.createInstance();
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
         }
     }
 
     /**
      * Agrega un record al Journal
      */
-    public void saveRecord() {
+    public void recordSave() {
         this.record.setOwner(subject);
         this.record.setGeneralJournalId(this.journalId);
         BigDecimal sumDebe = new BigDecimal(0);

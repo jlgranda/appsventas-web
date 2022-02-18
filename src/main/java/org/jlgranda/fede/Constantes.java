@@ -25,4 +25,5 @@ public class Constantes {
     
     public static String ESPACIO = " ";
     public static String COPIA = "(Copia)";
+    public static String JNDI_NAME = "java:/FedeXADS";
 }

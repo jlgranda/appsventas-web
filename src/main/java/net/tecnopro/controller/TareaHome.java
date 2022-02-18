@@ -593,12 +593,12 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void procesarUploadFileSiguienteTarea(FileUploadEvent event) {
         if (event.getFile() == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return;
         }
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return;
         }
         try {
@@ -618,12 +618,12 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void procesarUploadFile(UploadedFile file) {
         if (file == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return;
         }
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return;
         }
         try {

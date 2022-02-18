@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>#{i18n['app.fede.sales']}</li>
         <li>/</li>
         <li><p:link outcome="preinvoices">#{i18n['common.current']}</p:link></li>
     </ui:define>
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:tab>
                         <!-- overrides title on tab-->
                         <f:facet name="title">
-                            <h:outputText value="#{i18n['app.fede.sales.my.orders']}" escape="false" rendered="true"/> 
+                            <h:outputText value="#{i18n['app.fede.sales']}" escape="false" rendered="true"/> 
                         </f:facet>
                         <div class="ui-g">
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -77,7 +77,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <span class="Fs18 DispBlock">
                                             #{entity.summary}<i class="fa fa-shopping-cart Fs14"><span class="CartText #{entity.status} White" style="#{entity.status eq 'ATTEND' ? 'background-color: #4b6cb7;' : ''}"> #{entity.boardNumber}</span></i>
                                         </span>
-                                        <span class="Fs12 Gray FontRobotoLight DispBlock">#{i18n['common.taxes.total.none']}:&nbsp;
+                                        <span class="Fs12 Gray FontRobotoLight DispBlock">#{i18n['app.fede.payment.amount.total.taxe.none']}:&nbsp;
                                             <h:outputText value="#{entity.totalSinImpuesto}">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
@@ -175,13 +175,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <span class="Fs18 DispBlock">
                                             #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
                                         </span>
-                                        <span class="Fs12 Gray FontRobotoLight DispBlock">#{i18n['common.taxes.total.none']}:&nbsp;<h:outputText value="#{entity.totalSinImpuesto}">
+                                        <span class="Fs12 Gray FontRobotoLight DispBlock">#{i18n['app.fede.payment.amount.total.taxe.none']}:&nbsp;<h:outputText value="#{entity.totalSinImpuesto}">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
                                             &nbsp;|&nbsp;#{i18n['common.iva.0']}:&nbsp;<h:outputText value="#{entity.getTotalTax(TaxType.IVA)}">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
-                                            &nbsp;|&nbsp;#{i18n['common.discount']}:&nbsp;<h:outputText value="#{entity.getPaymentsDiscount()}">
+                                            &nbsp;|&nbsp;#{i18n['app.fede.payment.discount']}:&nbsp;<h:outputText value="#{entity.getPaymentsDiscount()}">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
                                             &nbsp;|&nbsp;#{i18n['common.total.pay']}:&nbsp;<h:outputText value="#{entity.total - entity.getPaymentsDiscount()}">

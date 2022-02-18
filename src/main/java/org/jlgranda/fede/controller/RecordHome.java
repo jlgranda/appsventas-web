@@ -192,7 +192,7 @@ public class RecordHome extends FedeController implements Serializable {
     
     public void onRowSelect(SelectEvent<RecordDetail> event) {
         this.recordDetail = event.getObject();
-        addInfoMessage(I18nUtil.getMessages("action.info"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
+        addInfoMessage(I18nUtil.getMessages("action.sucessfully"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
 
     }
 
@@ -205,16 +205,16 @@ public class RecordHome extends FedeController implements Serializable {
         boolean valido = true;
         if (this.record.getRecordDetails().isEmpty()) {
             valido = false;
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.recordDetail.incomplete"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
         }
         if (org.jpapi.util.Strings.isNullOrEmpty(this.record.getDescription())) {
             valido = false;
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.required"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.inlinehelp"));
         }
 
         if (this.record.getEmissionDate() == null) {
             valido = false;
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.emision.required"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.date.inlinehelp"));
         }
 
         if (valido) {
@@ -240,7 +240,7 @@ public class RecordHome extends FedeController implements Serializable {
                     this.record = recordService.createInstance();
                     this.record.setEmissionDate(lastEmissionDate);
 
-                    this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.manual.sucessfully"));
+                    this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
                     //this.generalJournal = generalJournalService.createInstance();
                 }
             } else {

@@ -156,7 +156,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
     @EJB
     private ProductService productService;
-    
+
     @EJB
     private ProveedorService proveedorService;
 
@@ -303,7 +303,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         setAmoutPending(BigDecimal.ZERO);
         setRecordCompleto(Boolean.TRUE);
         setOutcome("compras");
-        
+
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
     }
@@ -667,7 +667,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         List<FacturaElectronica> result = new ArrayList<>();
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return result;
         }
         try {
@@ -696,12 +696,12 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     public void procesarUploadFile(UploadedFile file) {
 
         if (file == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return;
         }
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return;
         }
         String xml = null;
@@ -987,13 +987,13 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         if (this.facturaElectronica.getId() != null) {
             setOutcome(registerRecordInJournal());
         } else {
-            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.fail"));
         }
 
         if (Strings.isNullOrEmpty(getOutcome())) {
-            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.fail"));
         } else {
-            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.purchases.accounting.success"));
+            addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.success"));
         }
 
     }
@@ -1216,7 +1216,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             getPayment().setCash(getPayment().getAmount().subtract(getPayment().getDiscount()));
             getPayment().setChange(getPayment().getCash().subtract(getPayment().getAmount()));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.invalid", " " + this.amoutPending));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.invalid", " " + this.amoutPending));
             getPayment().setCash(BigDecimal.ZERO);
             getPayment().setChange(BigDecimal.ZERO);
         }
@@ -1244,15 +1244,17 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             p.setDatePaymentCancel(Dates.now());
             this.getFacturaElectronica().addPayment(p);
             facturaElectronicaService.save(facturaElectronica.getId(), facturaElectronica);///guardar el pago
-            if (p.getUuid() != null) {
-                setPayment(paymentService.findByCode(p));
+            setFacturaElectronica(facturaElectronicaService.find(facturaElectronica.getId()));
+
+            if (!facturaElectronica.getPayments().isEmpty()) {
+                setPayment(facturaElectronica.getPayments().get(facturaElectronica.getPayments().size() - 1));
             }
 
             //Registrar asiento contable del pago de la compra
             if (getPayment().getId() != null && getPayment().getMethod() != null) {
                 setOutcome(registerRecordInJournalPaymentCredit());
             } else {
-                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.accounting.fail"));
+                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.accounting.fail"));
             }
 
             if (Strings.isNullOrEmpty(getOutcome())) {
@@ -1261,7 +1263,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.payments.accounting.success"));
             }
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.required"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.paid.inlinehelp"));
         }
         setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         getPayment().setAmount(BigDecimal.ZERO);
@@ -1321,7 +1323,8 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             } else {
                 p = listPayment.get(0);
             }
-            p.setAmount(facturaElectronica.getSubtotalIVA0().add(facturaElectronica.getSubtotalIVA12()));
+//            p.setAmount(facturaElectronica.getSubtotalIVA0().add(facturaElectronica.getSubtotalIVA12()));
+            p.setAmount(facturaElectronica.getImporteTotal());
             p.setDiscount(facturaElectronica.getTotalDescuento());
             p.setCash(facturaElectronica.getImporteTotal());
             p.setChange(BigDecimal.ZERO);
@@ -1329,7 +1332,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             facturaElectronica.addPayment(p);
             setPayment(paymentService.createInstance("EFECTIVO", null, null, null));
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.sales.payment.cash.paid.incorrect"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.payment.cash.less.zero"));
         }
     }
 
@@ -1340,7 +1343,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar proveedores en factura de compra
-    
+
     public SubjectAdminHome getSubjectAdminHome() {
         return subjectAdminHome;
     }
@@ -1406,16 +1409,16 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             success = true;
         }
         if (success) { //Guardar profile
-            
+
             setSupplier(getSubjectAdminHome().getSubjectEdit());
-            
+
             //Crear como proveedor de la organización
             Proveedor proveedor = proveedorService.createInstance();
             proveedor.setOwner(getSupplier());
             proveedor.setOrganization(organizationData.getOrganization());
-            
+
             proveedorService.save(proveedor); //persistir
-            
+
             //Cerrar y regresar a pantalla de factura
             closeFormularioProfile(getSupplier());
         }
@@ -1459,7 +1462,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 //El General Journal del día
                 if (generalJournal != null) {
                     for (Record rcr : records) {
-                        System.out.println("records:::"+records);
 
                         this.recordCompleto = Boolean.TRUE;
 
@@ -1503,10 +1505,6 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                             } else {
                                 rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
                             }
-                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                            System.out.println("rcrd.getAccount():::"+rcrd.getAccount());
-                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                             if (rcrd.getAccount() == null) {
                                 this.recordCompleto = Boolean.FALSE;
                             }
@@ -1548,9 +1546,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
         if (isAccountingEnabled()) {
             //Ejecutar las reglas de negocio para el registro del cierre de cada
-            if ( "EFECTIVO".equals(getPayment().getMethod()) ) {
+            if ("EFECTIVO".equals(getPayment().getMethod())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprascreditopagoefectivo", "REGISTRO_COMPRAS_CREDITO_PAGO_EFECTIVO"));
-            } else if ( "TRANSFERENCIA".equals(getPayment().getMethod()) ) {
+            } else if ("TRANSFERENCIA".equals(getPayment().getMethod())) {
                 setReglas(settingHome.getValue("app.fede.accounting.rule.registrocomprascreditopagotransferencia", "REGISTRO_COMPRAS_CREDITO_PAGO_TRANSFERENCIA"));
             }
 
@@ -1726,7 +1724,9 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
     }
 
     public void calculateDateExpired() {
-        this.facturaElectronica.setFechaVencimiento(Dates.addDays(Dates.now(), this.days));
+        if (this.facturaElectronica.getFechaEmision() != null && this.days >= 0) {
+            this.facturaElectronica.setFechaVencimiento(Dates.addDays(this.facturaElectronica.getFechaEmision(), this.days));
+        }
     }
 
     public void calculateDaysExpired() {
@@ -1760,7 +1760,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
     public String messageDatePaymentExpired(Date fechaVencimiento) {
         if (fechaVencimiento != null) {
-            return I18nUtil.getMessages("app.fede.purchases.credit.payment.message.alert", " " + Dates.calculateNumberOfDaysBetween(getEnd(), fechaVencimiento));
+            return I18nUtil.getMessages("app.fede.payments.purchase.credit.alert", " " + Dates.calculateNumberOfDaysBetween(getEnd(), fechaVencimiento));
         } else {
             return "";
         }
@@ -1796,7 +1796,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         this.productNew.setOwner(this.subject);
         productService.save(this.productNew.getId(), this.productNew); //Volver a guardar el producto para almacenar el ggroup
         this.facturaElectronicaDetail.setProduct(this.productNew);
-        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.product.add", " " + this.productNew.getName()));
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.inventory.product.add.success", " " + this.productNew.getName()));
         this.activePanelProduct = false;
 
         //Cargar producto en el cache
@@ -1808,7 +1808,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
 
     public void messageAlert() {
         if (this.facturaElectronicaId == null) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.purchases.message.start"));
+            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.purchase.start.message"));
         }
     }
 
@@ -1850,12 +1850,12 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
 
-        if (true && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {
@@ -1864,12 +1864,15 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 record.setBussinesEntityHashCode(_instance.hashCode());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 if (EmissionType.PURCHASE_CASH.equals(_instance.getEmissionType())) {
-                    record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal facturado: %s", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado: %s \nDetalle: %s", (_instance.getCode() + "/" + _instance.getId()),
+                            _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), _instance.getSummary()));
                 } else if (EmissionType.PURCHASE_CREDIT.equals(_instance.getEmissionType())) {
                     if (_instance.getPayments().isEmpty()) {
-                        record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##")));
+                        record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado a crédito: %s \nÚltimo pago registrado: ninguno \nDetalle: %s", (_instance.getCode() + "/" + _instance.getId()),
+                                _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), _instance.getSummary()));
                     } else {
-                        record.setDescription(String.format("Proveedor: %s \nDetalle: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s", _instance.getAuthor().getFullName(), _instance.getSummary(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(_instance.getPayments().get(_instance.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##")));
+                        record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal de la factura: %s \nÚltimo pago registrado: %s \nDetalle: %s", (_instance.getCode() + "/" + _instance.getId()),
+                                _instance.getAuthor().getFullName(), Strings.format(_instance.getImporteTotal().doubleValue(), "$ #0.##"), Strings.format(_instance.getPayments().get(_instance.getPayments().size() - 1).getAmount().doubleValue(), "$ #0.##"), _instance.getSummary()));
                     }
                 }
             }
@@ -1894,7 +1897,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {
@@ -1902,17 +1905,13 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
                 record.setBussinesEntityId(_instance.getId());
                 record.setBussinesEntityHashCode(_instance.hashCode());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
-                System.out.println("Proveedor: " + _instance.getFacturaElectronica().getAuthor().getFullName());
-                System.out.println("Total facturado a crédito: " + Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"));
-                System.out.println("Monto abonado: " + Strings.format(_instance.getAmount().doubleValue(), "$ #0.##"));
-                System.out.println("Fecha de Pago: " + _instance.getDatePaymentCancel());
-                System.out.println("Método de Pago: " + _instance.getMethod());
                 if (_instance.getFacturaElectronica().getPayments().isEmpty() || _instance.getFacturaElectronica().getPayments().size() == 1) {
-                    record.setDescription(String.format("Proveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: ninguno \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s", _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: ninguno \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s",
+                            (_instance.getFacturaElectronica().getCode() + "/" + _instance.getFacturaElectronica().getId()), _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
                             Strings.format(_instance.getAmount().doubleValue(), "$ #0.##"), _instance.getDatePaymentCancel(), _instance.getMethod()));
                 } else {
-                    System.out.println("Penúltimo pago: " + Strings.format(_instance.getFacturaElectronica().getPayments().get(_instance.getFacturaElectronica().getPayments().size() - 2).getAmount().doubleValue(), "$ #0.##"));
-                    record.setDescription(String.format("Proveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: %s \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s", _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
+                    record.setDescription(String.format("Nº Documento: %s \nProveedor: %s \nTotal facturado a crédito: %s \nPenúltimo pago registrado: %s \nMonto abonado: %s \nFecha de pago del abono: %s \nMétodo de pago: %s",
+                            (_instance.getFacturaElectronica().getCode() + "/" + _instance.getFacturaElectronica().getId()), _instance.getFacturaElectronica().getAuthor().getFullName(), Strings.format(_instance.getFacturaElectronica().getImporteTotal().doubleValue(), "$ #0.##"),
                             Strings.format(_instance.getFacturaElectronica().getPayments().get(_instance.getFacturaElectronica().getPayments().size() - 2).getAmount().doubleValue(), "$ #0.##"), Strings.format(_instance.getAmount().doubleValue(), "$ #0.##"), _instance.getDatePaymentCancel(), _instance.getMethod()));
                 }
             }

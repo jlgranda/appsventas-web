@@ -69,14 +69,17 @@ public class AggregationHome extends FedeController implements Serializable {
     @EJB
     private ProductCache productCache;
 
-    private LazyAggregationDataModel lazyDataModel;
-
-//    private List<ProductAggregations> productosAgregaciones;
-//    private ProductAggregations productoAgregaciones;
-    private Aggregation aggregation;
+    /**
+     * Objeto de edición.
+     */
     private Long aggregationId;
-
+    private Aggregation aggregation;
     private AggregationDetail detail;
+    
+    /**
+     * Auxiliares.
+     */
+    private LazyAggregationDataModel lazyDataModel;
 
     @PostConstruct
     private void init() {

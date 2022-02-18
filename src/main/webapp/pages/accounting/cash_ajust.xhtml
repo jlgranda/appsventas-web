@@ -83,12 +83,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <div class="cash-summary card ui-g-4 ui-lg-4 ui-md-4">
                     <h:panelGroup id="panel-saldo" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs20">#{i18n['app.fede.accounting.ajust.money']}
+                        <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center capital Fs20">#{i18n['app.fede.accounting.money.current']}
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center bold-capital Fs30">
                                 <h:outputText id="total-saldo" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText></div>
                         </div>
                     </h:panelGroup>
-                    <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" 
+                    <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.start.message']}" 
                                      action="#{cashBoxHome.openPanelBreakdown()}" 
                                      update="btn-breakdown panel-breakdown saldo-cash panel-saldo panel-cashboxs-initial panel-cashboxs-partial 
                                      btn-close-general panel-deposit btn-close-general" 
@@ -96,7 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      rendered="#{request.isUserInRole('CHECKER')}"
                                      styleClass="green-btn">
                     </p:commandButton>
-                    <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
+                    <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['common.finish.today']}"
                                      action="#{cashBoxHome.closeCashBoxGeneral()}"
                                      disabled="#{cashBoxHome.activeButtonCloseCash}"
                                      update=" panel-deposit btn-breakdown panel-cashboxs-partial panel-cashboxs-initial panel-breakdown panel-message-finish
@@ -115,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:outputText id="init-cash" value="#{cashBoxHome.saldoInitial}"><f:convertNumber type="currency"/></h:outputText></div>
                     </div>-->
                     <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth bold-capital Fs20">#{i18n['common.date.yesterday']}</div>
-                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 Fs13">#{i18n['common.fund']} #{i18n['common.of']} #{i18n['app.fede.accounting.ajust.last']}</div>
+                    <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 Fs13">#{i18n['common.fund']} #{i18n['common.of']} #{i18n['app.fede.accounting.ajust.previous']}</div>
                     <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
                         <h:outputText id="init-cash" value="#{cashBoxHome.saldoInitial}"><f:convertNumber type="currency"/></h:outputText>
                     </div>
@@ -126,7 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
                             <h:outputText id="sales-total" value="#{cashBoxHome.salesTotal}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.cash']}: </div>
+                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['app.fede.accounting.money.cash']}: </div>
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="sales-cash" value="#{cashBoxHome.salesCash}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
@@ -145,11 +145,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <!--<div class="ui-g-12"><p:separator class="line-separator"/></div>-->
                     </h:panelGroup>
                     <h:panelGroup id="panel-purchases" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13">#{i18n['common.purchases']} (#{i18n['common.cash']} + #{i18n['common.overdue']}) </div>
+                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs13">#{i18n['app.fede.inventory.purchases']} (#{i18n['app.fede.accounting.money.cash']} + #{i18n['common.overdue']}) </div>
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs13 container-right">
                             <h:outputText id="purchases-total" value="#{cashBoxHome.purchasesTotal}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.cash']}: </div>
+                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['app.fede.accounting.money.cash']}: </div>
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="purchases-cash" value="#{cashBoxHome.purchasesCash}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
@@ -172,11 +172,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:convertNumber type="currency"/>
                             </h:outputText>
                         </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.insert']} #{i18n['common.to.a']} #{i18n['common.box']}: </div>
+                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['app.fede.accounting.ajust.cash.entry']}: </div>
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="transactions-debit" value="#{cashBoxHome.transactionDebit}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
-                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['common.disposal']} #{i18n['common.of']} #{i18n['common.box']}: </div>
+                        <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['app.fede.accounting.ajust.cash.entry']}: </div>
                         <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 container-right">
                             <h:outputText id="transactions-credit" value="#{cashBoxHome.transactionCredit}"><f:convertNumber type="currency"/></h:outputText>
                         </div>
@@ -187,12 +187,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 capital Fs15 container-right">
                                                 <h:outputText id="total-cash" value="#{cashBoxHome.cashTotal}"><f:convertNumber type="currency"/></h:outputText>
                                             </div>
-                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs15 container-right">#{i18n['app.fede.accounting.ajust.money']}: </div>
+                                            <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 bold-capital Fs15 container-right">#{i18n['app.fede.accounting.money.current']}: </div>
                                             <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4 bold-capital Fs15 container-lefth">
                                                 <h:outputText id="total-saldo" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
                                             </div>
                                         </h:panelGroup>-->
-<!--                    <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.breakdown.start']}" 
+<!--                    <p:commandButton id="btn-breakdown" icon="fa fa-play-circle" value="#{i18n['app.fede.accounting.ajust.start.message']}" 
                                      action="#{cashBoxHome.openPanelBreakdown()}" 
                                      update="btn-breakdown panel-breakdown saldo-cash panel-saldo panel-cashboxs-initial panel-cashboxs-partial 
                                      btn-close-general panel-deposit btn-close-general" 
@@ -214,16 +214,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <h:outputText value="#{' '} #{cashBoxHome.cashBoxInitialFinish.owner.fullName}"></h:outputText>
                                 </f:facet>
                                 <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 Fs15 capital container-center">
-                                    <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
+                                    <label>#{i18n['app.fede.accounting.ajust.detail']}:
                                         <h:outputText class="bold-capital" value="#{cashBoxHome.cashBoxInitialFinish.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
                                     </label>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="cashbox-bills" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
-                                                 value="#{cashBoxHome.cashBoxsInitialBills(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail">
+                                    <p:dataTable id="cashbox-bills" widgetVar="cashbox-bills" lazy="#{false}" 
+                                                 value="#{cashBoxHome.cashBoxsInitialBills(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail"
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single">
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                         </f:facet>
@@ -233,7 +236,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -247,11 +250,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:dataTable>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="cashbox-moneys" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
-                                                 value="#{cashBoxHome.cashBoxsInitialMoneys(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail">
+                                    <p:dataTable id="cashbox-moneys" widgetVar="cashbox-moneys" lazy="#{false}"
+                                                 value="#{cashBoxHome.cashBoxsInitialMoneys(cashBoxHome.cashBoxInitialFinish)}" var="cashBoxDetail"
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single">
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.moneys']}</label>
                                         </f:facet>
@@ -261,7 +267,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -320,20 +326,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h:panelGroup id="panel-breakdown">
                         <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12" rendered="#{cashBoxHome.activePanelBreakdown}">
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 Fs20 capital container-center">
-                                <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
+                                <label>#{i18n['app.fede.accounting.ajust.detail']}:
                                     <h:outputText id="saldo-cash" class="bold-capital Fs20" value="#{cashBoxHome.saldoCash}"><f:convertNumber type="currency"/></h:outputText>
                                 </label>
                             </div>
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
                                     <!-- Detalle inicial antes de deposito -->
-                                    <p:dataTable id="dataTable-bills" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"  
+                                    <p:dataTable id="dataTable-bills" widgetVar="dataTable-bills" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills @form:panel-breakdown-totals" partialSubmit="true"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
@@ -353,7 +362,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -369,13 +378,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="dataTable-moneys" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
+                                    <p:dataTable id="dataTable-moneys" widgetVar="dataTable-moneys" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="true"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
@@ -395,7 +407,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -438,7 +450,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      actionListener="#{cashBoxHome.save()}" action="#{cashBoxHome.redirect()}" 
                                                      update="panel-breakdown"
                                                      styleClass="success-btn" style="width: auto !important;"/>
-                                    <p:commandButton id="btn-close-partial" icon="fa fa-check" value="#{i18n['common.finish']} #{i18n['common.and']} #{i18n['common.depositto']}"
+                                    <p:commandButton id="btn-close-partial" icon="fa fa-check" value="#{i18n['app.fede.accouting.deposit.and.finish']}"
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
                                                      update="  panel-cashboxs-partial panel-breakdown panel-deposit panel-cashboxs-initial btn-breakdown"
                                                      styleClass="info-btn" style="width: auto !important"><!--update=toolbar-close-->
@@ -465,7 +477,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <h:outputText class="bold-capital" id="saldo-cash-fund" value="#{cashBoxHome.saldoCashFund}"><f:convertNumber type="currency"/></h:outputText>
                                 </label>
                                 <div class="EmptyBox5"/>
-                                <label>#{i18n['app.fede.accounting.ajust.money']} + #{i18n['common.money']} #{i18n['common.excess']} - #{i18n['common.money']} #{i18n['common.missing']}</label>
+                                <label>#{i18n['app.fede.accounting.money.current']} + #{i18n['common.money']} #{i18n['common.excess']} - #{i18n['common.money']} #{i18n['common.missing']}</label>
                             </div>
                             <div class="ui-g ui-panelgrid-cell ui-g-1 ui-md-1 container-right">
                                 <p:selectBooleanCheckbox id="select-active-deposit" value="#{cashBoxHome.activeSelectDeposit}"
@@ -473,10 +485,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax event="change" update="panel-deposit-detail" />
                                 </p:selectBooleanCheckbox>
                             </div>
-                            <div class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3 container-lefth">#{i18n['app.fede.accouting.validate.deposit.message']} </div>
+                            <div class="ui-g ui-panelgrid-cell ui-g-3 ui-md-3 container-lefth">#{i18n['app.fede.accouting.deposit.question']} </div>
                             <h:panelGroup id="panel-deposit-detail">
                                 <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activeSelectDeposit}">
-                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">#{i18n['common.amount']}
+                                    <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">#{i18n['app.fede.payment.cash']}
                                         <p:inputNumber value="#{cashBoxHome.cashBoxPartial.amountDeposit}" required="true"
                                                        inputStyle="text-align: right" symbol="$" disabled="#{!cashBoxHome.activeButtonSelectDeposit}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -495,7 +507,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4"/>
                                     <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8 container-right">
-                                        <p:commandButton id="btn-deposit" value="#{i18n['common.deposit']}" icon="fa fa-exchange"
+                                        <p:commandButton id="btn-deposit" value="#{i18n['app.fede.accouting.deposit']}" icon="fa fa-exchange"
                                                          actionListener="#{cashBoxHome.validateDeposit()}"
                                                          update="panel-deposit-detail panel-transactions panel-saldo panel-deposit panel-breakdown-fund @form:panel-cashboxs-initial"
                                                          disabled="#{cashBoxHome.activeButtonSelectDeposit}"
@@ -510,28 +522,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </h:panelGroup>
                         </h:panelGroup>
                         <h:panelGroup id="panel-message-rule" class=" ui-g ui-panelgrid-cell ui-g-12 ui-md-12" rendered="#{cashBoxHome.activePanelDeposit and cashBoxHome.accountingEnabled==false}">
-                            <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accouting.validate.deposit.rule.message']}" style="width: 100%"/>
+                            <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accouting.deposit.rule.none']}" style="width: 100%"/>
                         </h:panelGroup>
                     </h:panelGroup>
                     <!-- //Registro detalle sino se ha echo un depósito-->
                     <div class="EmptyBox5"/>
                     <h:panelGroup id="panel-breakdown-fund">
                         <h:panelGroup class="card ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activePanelBreakdownFund}">
-                            <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accouting.validate.deposit.residue.message']}" style="width: 100%"/>
+                            <p:staticMessage severity="warn" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accouting.deposit.residue.message']}" style="width: 100%"/>
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-center">
-                                <label class="capital Fs18">#{i18n['app.fede.accounting.ajust.breakdown']} #{i18n['common.registered']}
+                                <label class="capital Fs18">#{i18n['app.fede.accounting.ajust.detail']} #{i18n['common.registered']}
                                     <h:outputText class="bold-capital Fs20" value="#{cashBoxHome.saldoCashFund}"><f:convertNumber type="currency"/></h:outputText>
                                 </label>
                             </div>
                             <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12">
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="dataTable-bills-fund" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"  
+                                    <p:dataTable id="dataTable-bills-fund" widgetVar="dataTable-bills-fund" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxBills}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"  
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
@@ -551,7 +566,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -566,13 +581,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
                                 <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                    <p:dataTable id="dataTable-moneys-fund" draggableColumns="true" lazy="false"
-                                                 paginator="true" paginatorAlwaysVisible="false"
-                                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                 rows="10"
+                                    <p:dataTable id="dataTable-moneys-fund" widgetVar="dataTable-moneys-fund" lazy="#{false}"
                                                  value="#{cashBoxHome.cashBoxMoneys}" var="cashBoxDetail"
                                                  selection="#{cashBoxHome.selectedBussinesEntities}"
-                                                 editable="true">
+                                                 rowKey="#{cashBoxDetail.id}"
+                                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                 paginator="#{true}" paginatorPosition="bottom" 
+                                                 draggableColumns="#{true}" reflow="#{true}" 
+                                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                 sortMode="single"
+                                                 editable="#{true}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
@@ -592,7 +610,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 </f:facet>
                                             </p:cellEditor>
                                         </p:column>
-                                        <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                             <h:outputText value="#{cashBoxDetail.amount}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
@@ -631,7 +649,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <p:toolbar id="toolbar-partial-fund" class="ui-g-12" rendered="#{empty cashBoxHome.cashBoxPartial.id || cashBoxHome.cashBoxPartial.statusCashBoxPartial == 'OPEN'}">
                                 <f:facet name="left">
-                                    <p:commandButton id="btn-close-partial-fund" icon="fa fa-check" value="#{i18n['common.finish']} #{i18n['common.and']} #{i18n['common.depositto']}" 
+                                    <p:commandButton id="btn-close-partial-fund" icon="fa fa-check" value="#{i18n['app.fede.accouting.deposit.and.finish']}" 
                                                      action="#{cashBoxHome.closeCashBoxChecker()}"
                                                      update=" panel-cashboxs-partial panel-breakdown-fund panel-deposit panel-cashboxs-initial btn-breakdown"
                                                      styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"--><!--toolbar-close-->
@@ -674,7 +692,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <h:panelGroup id="panel-cashboxs-partial">
                     <h:panelGroup class="card ui-g-12 ui-lg-12 ui-md-12" rendered="#{not empty cashBoxHome.cashBoxsClosed}">
-                        <!--<div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth Fs15">#{i18n['app.fede.accounting.close.cashs.partials.history']}</div>-->
+                        <!--<div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth Fs15">#{i18n['common.history']} #{i18n['common.of']} #{i18n['app.fede.accounting.close.cashs.partials']} </div>-->
                         <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 container-lefth bold-capital Fs20">#{i18n['common.details']} #{i18n['common.previouss']}</div>
                         <p:accordionPanel activeIndex="-1" class="ui-g-12 ">
                             <c:forEach var="cashBoxs" items="#{cashBoxHome.cashBoxsClosed}">
@@ -688,16 +706,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <h:outputText value="#{')'} "></h:outputText>
                                     </f:facet>
                                     <div class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12 capital Fs20">
-                                        <label>#{i18n['app.fede.accounting.ajust.breakdown']}:
+                                        <label>#{i18n['app.fede.accounting.ajust.detail']}:
                                             <h:outputText class="bold-capital" value="#{cashBoxs.saldoPartial}"><f:convertNumber type="currency"/></h:outputText>
                                         </label>
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                        <p:dataTable id="cashBoxs-bills" draggableColumns="true" lazy="false"
-                                                     paginator="true" paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                     rows="10"
-                                                     value="#{cashBoxHome.cashBoxsClosedBills(cashBoxs)}" var="cashBoxDetail">
+                                        <p:dataTable id="cashBoxs-bills" widgetVar="cashBoxs-bills" lazy="#{false}"
+                                                     value="#{cashBoxHome.cashBoxsClosedBills(cashBoxs)}" var="cashBoxDetail"
+                                                     rowKey="#{cashBoxDetail.id}"
+                                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                     paginator="#{true}" paginatorPosition="bottom" 
+                                                     draggableColumns="#{true}" reflow="#{true}" 
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                     sortMode="single">
                                             <f:facet name="header">
                                                 <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                             </f:facet>
@@ -707,7 +728,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                 </h:outputText>
@@ -721,11 +742,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:dataTable>
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-6 ui-md-6">
-                                        <p:dataTable id="cashBoxs-moneys" draggableColumns="true" lazy="false"
-                                                     paginator="true" paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{cashBoxDetail.id}"
-                                                     rows="10"
-                                                     value="#{cashBoxHome.cashBoxsClosedMoneys(cashBoxs)}" var="cashBoxDetail">
+                                        <p:dataTable id="cashBoxs-moneys" widgetVar="cashBoxs-moneys" lazy="#{false}"
+                                                     value="#{cashBoxHome.cashBoxsClosedMoneys(cashBoxs)}" var="cashBoxDetail"
+                                                     rowKey="#{cashBoxDetail.id}"
+                                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                     paginator="#{true}" paginatorPosition="bottom" 
+                                                     draggableColumns="#{true}" reflow="#{true}" 
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                     sortMode="single">
                                             <f:facet name="header">
                                                 <label class="bold-capital">#{i18n['common.money.moneys']}</label>
                                             </f:facet>
@@ -735,7 +759,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:column headerText="#{i18n['common.quantity']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                             </p:column>
-                                            <p:column headerText="#{i18n['common.amount']}" style="text-align: right">
+                                            <p:column headerText="#{i18n['app.fede.payment.cash']}" style="text-align: right">
                                                 <h:outputText value="#{cashBoxDetail.amount}">
                                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                 </h:outputText>
@@ -779,7 +803,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <!--                <h:panelGroup id="toolbar-close">
                                     <p:toolbar rendered="#{not empty cashBoxHome.cashBoxsClosed and request.isUserInRole('CHECKER')}">
                                         <f:facet name="left">
-                                            <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['app.fede.accounting.close.cash.today']}"
+                                            <p:commandButton id="btn-close-general" icon="fa fa-check" value="#{i18n['common.finish.today']}"
                                                              action="#{cashBoxHome.closeCashBoxGeneral()}"
                                                              disabled="#{cashBoxHome.activeButtonCloseCash}"
                                                              update="toolbar-close panel-deposit btn-breakdown panel-cashboxs-partial panel-cashboxs-initial panel-breakdown panel-message-finish

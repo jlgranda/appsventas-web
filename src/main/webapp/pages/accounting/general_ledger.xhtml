@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.ledger']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -38,9 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/accounting/general_ledger_items.jsf">#{i18n['app.fede.accounting.ledger']}</p:link></li>
-        <li>/</li>
-        <li><p:link rendered="#{accountHome.account.parentAccountId!=null}" outcome="/pages/accounting/general_ledger.jsf?accountId=#{accountHome.account.parentAccountId}">#{accountHome.findParentAccount(accountHome.account).name}</p:link></li>
+        <li><p:link outcome="general-ledger">#{i18n['app.fede.accounting.ledger']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
@@ -57,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                 <p:splitter layout="horizontal">
                     <p:splitterPanel size="25" minSize="25">
-                            <p:scrollPanel mode="native" style="width: 20rem; min-height: 22rem; padding: 0rem;">
+                        <p:scrollPanel mode="native" style="min-width: 20rem; min-height: 24rem; padding: 0rem;">
                             <p:tree id="tree-generalLedger" value="#{accountHome.treeDataModel}" var="node"
                                     selectionMode="single" style="border: transparent; width: 100%"
                                     selection="#{accountHome.singleSelectedNode}"
@@ -77,38 +75,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </p:splitterPanel>
                     <p:splitterPanel size="75" minSize="75">
                         <div class="ui-g">
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <div  class="ui-g">
-                                    <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-12"  style="text-align: -webkit-center;">
-                                        <p:outputLabel class="Gray" for="date-start" value="#{i18n['common.from']}: "/>
-                                        <p:datePicker id="date-start" value="#{accountHome.start}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0rem">
+                                <p:toolbar id="topToolBar">
+                                    <f:facet name="left">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
+                                        <p:datePicker id="date-start" value="#{accountHome.start}" class="input-sm MarRight10"
+                                                      monthNavigator="true" yearNavigator="true" showWeek="false">
                                             <p:ajax event="dateSelect" oncomplete="this"/>
                                         </p:datePicker>
-                                    </div>
-                                    <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-10"  style="text-align: -webkit-center;">
-                                        <p:outputLabel class="Gray" for="date-end" value="#{i18n['common.to']}: "/>
-                                        <p:datePicker id="date-end" value="#{accountHome.end}" monthNavigator="true" yearNavigator="true" showWeek="false">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
+                                        <p:datePicker id="date-end" value="#{accountHome.end}" class="input-sm MarRight10"
+                                                      monthNavigator="true" yearNavigator="true" showWeek="false">
                                             <p:ajax event="dateSelect" oncomplete="this"/>
                                         </p:datePicker>
-                                    </div>
-                                    <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2"  style="text-align: -webkit-center;">
-                                        <p:commandButton id="btn-search-account-details" icon="fa fa-search" ajax="true" immediate="true"
-                                                         disabled="#{empty accountHome.accountSelected}"
-                                                         actionListener="#{accountHome.chargeListDetailsforAccount()}"
+                                        <p:commandButton id="btn-search-account-details" 
+                                                         value="#{i18n['common.find']}" icon="fa fa-search"  styleClass="help-btn"
+                                                         disabled="#{empty accountHome.accountSelected}" actionListener="#{accountHome.chargeListDetailsforAccount()}"
                                                          update="dataTable-record-details panel-message-date radio-report-range fund-old-accountSelected"
-                                                         styleClass="warning-btn"/>
-                                    </div>
-                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="text-align: -webkit-center;">
+                                                         ajax="true" immediate="true">
+                                        </p:commandButton>
+                                    </f:facet>
+                                    <f:facet name="right">
                                         <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="true"  disabled="#{empty accountHome.accountSelected}">
                                             <f:selectItem itemLabel="#{i18n['common.lasta']} #{i18n['common.week']}" itemValue="0"/>
                                             <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.month']}" itemValue="1"/>
                                             <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.year']}" itemValue="2"/>
                                             <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" update="date-start date-end dataTable-record-details form:panel-message-date fund-old-accountSelected" partialSubmit="true"></p:ajax> 
                                         </p:selectOneRadio>
-                                    </div>
-                                </div>
+                                    </f:facet>
+                                </p:toolbar>
                             </div>
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0rem">
                                 <p:card style="background-color: #EFEFEF">
                                     <f:facet name="header">
                                         <div class="container-center"><h1>#{organizationData.organization.initials}</h1></div>
@@ -118,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </f:facet>
                                     <f:facet name="subtitle">
                                         <div class="capital container-center">
-                                            <h2>#{i18n['app.fede.accounting.generalLedger']}</h2>
+                                            <h2>#{i18n['app.fede.accounting.general']}</h2>
                                         </div>
                                         <h:panelGroup id="panel-message-date" class="bold-capital container-center">
                                             <span>Del <h:outputText value = "#{accountHome.start}" >
@@ -131,9 +128,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </h:panelGroup>
                                         <h:panelGroup id="panel-detail-accountSelected">
                                             <div class="ui-g">
-                                                <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2"><strong>#{i18n['common.code']}:</strong> #{accountHome.accountSelected.code}</div>
-                                                <div class="ui-g-10 ui-md-10 ui-lg-10 ui-sm-10"><strong>#{i18n['common.account']}:</strong> #{accountHome.accountSelected.name}</div>
-                                                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><strong>#{i18n['common.fund']} #{i18n['common.total']}:</strong>
+                                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><strong>#{i18n['app.fede.accounting.account']}:&nbsp;</strong> #{accountHome.accountSelected.name}</div>
+                                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><strong>#{i18n['common.code']}:&nbsp;</strong> #{accountHome.accountSelected.code}</div>
+                                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><strong>#{i18n['common.fund']} #{i18n['common.total']}:&nbsp;</strong>
                                                     <h:outputText value="#{accountHome.fundAccountMain}">
                                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                     </h:outputText>
@@ -142,7 +139,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </h:panelGroup>
                                     </f:facet>
                                     <div class="ui-g ui-lg-12 ui-md-12" style="background-color: gold">
-                                        <div class="ui-g ui-lg-9 ui-md-9 container-right capital">#{i18n['app.fede.accounting.account.fund.old']}: </div>
+                                        <div class="ui-g ui-lg-9 ui-md-9 container-right capital">#{i18n['app.fede.accounting.account.fund.previous']}: </div>
                                         <div class="ui-g ui-lg-3 ui-md-3 container-right bold-capital" style="padding-right: 5rem">
                                             <h:outputText id="fund-old-accountSelected" value="#{accountHome.fundOldAccountSelected}">
                                                 <f:convertNumber type="currency" currencySymbol="$"/>
@@ -150,14 +147,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </div>
                                     </div>
                                 </p:card>
-                                <p:dataTable id="dataTable-record-details" draggableColumns="true" lazy="false" liveResize="true"
-                                             liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                             paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                             rows="10" scrollRows="10"
-                                             scrollable="true"
+                                <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
                                              value="#{accountHome.recordDetailsAccount}" var="recordDetail"
                                              selection="#{generalJournalHome.selectedBussinesEntities}"
-                                             sortBy="#{recordDetail.createdOn}"
+                                             rowKey="#{recordDetail.id}"
+                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                             paginator="#{true}" paginatorPosition="bottom" 
+                                             draggableColumns="#{true}" reflow="#{true}" 
+                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                             sortMode="single"
                                              editable="#{false}">
                                     <p:column headerText="#{i18n['common.date']}" style="width: 10%">
                                         <h:outputText value="#{recordDetail.createdOn}">
@@ -167,9 +165,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column headerText="Razón" style="width: auto">
                                         <h:outputText value="#{recordDetail.record.description}" />
                                     </p:column>
-                                    <!--                            <p:column headerText="REF" style="width: 10%">
-                                                                    <h:outputText value="#{recordDetail.record.code}"/>
-                                                                </p:column>-->
+                                    <p:column headerText="REF" style="width: 10%">
+                                        <h:outputText value="#{recordDetail.record.deleted}"/>
+                                    </p:column>
                                     <p:column headerText="#{i18n['common.debe']}" style="width: 15%;">
                                         <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
@@ -186,10 +184,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </h:outputText>
                                     </p:column>
                                     <p:column id="report" style="width: 5rem; text-align: center">
-                                        <p:commandButton id="button-detail" icon="fa fa-list" label="#{i18n['common.detail']}" title="#{i18n['common.detail']}"
-                                                         actionListener="#{accountHome.editarFormularioRecord(recordDetail.record.id)}" ajax="true"
-                                                         immediate="true"
-                                                         styleClass="info-btn">
+                                        <p:commandButton id="button-detail" 
+                                                         title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
+                                                         actionListener="#{accountHome.editarFormularioRecord(recordDetail.record.id)}" 
+                                                         ajax="true" immediate="true">
                                             <p:ajax event="dialogReturn" update="@form"
                                                     listener="#{accountHome.handleReturn}">
                                             </p:ajax>

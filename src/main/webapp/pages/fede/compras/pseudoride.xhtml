@@ -35,12 +35,12 @@
                                 <span class="ui-separator">
                                     <span class="fa fa-ellipsis-v SoftGray" />
                                 </span>
-                                <p:menuButton value="#{i18n['Import']}" iconPos="right" 
+                                <p:menuButton value="#{i18n['common.import']}" iconPos="right" 
                                               styleClass="MarRight10"
                                               menuStyleClass="Gray"><!--buttonStyleClass="ToolbarButton Fs14" iconStyleClass="Gray"-->
-                                    <p:menuitem value="#{i18n['common.update']} #{i18n['FromFile']}" icon="fa fa-upload Fs15"
+                                    <p:menuitem value="#{i18n['common.update']} #{i18n['common.file.from']}" icon="fa fa-upload Fs15"
                                                 onclick="triggerHiddenEventUpdateFromFile(); return false;"/>
-                                    <p:menuitem value="#{i18n['common.update']} #{i18n['FromURL']}" icon="fa fa-link Fs15" 
+                                    <p:menuitem value="#{i18n['common.update']} #{i18n['common.URL.from']}" icon="fa fa-link Fs15" 
                                                 onclick="triggerHiddenEventUpdateFromURL(); return false;"/>
                                 </p:menuButton>
                             </f:facet>
@@ -87,8 +87,8 @@
                                             <div class="Container100 Responsive100"><h3>#{facturaElectronica.author.initials}</h3></div>
                                             <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.head']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
                                             <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.adress.branch']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.contribuyenteEspecial']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
-                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.infoFactura.obligadoContabilidad']}" escape="false" styleClass="text-uppercase"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.contribuyente.especial']}" escape="false" styleClass="text-muted"/>&nbsp;</div>
+                                            <div class="Container100 Responsive100"><h:outputText value="#{i18n['ride.accounting.obligated']}" escape="false" styleClass="text-uppercase"/>&nbsp;</div>
                                         </div>
                                     </div>
                                     <div class="Container50 Responsive100">
@@ -102,7 +102,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">#{facturaElectronica.numeroAutorizacion}
                                         </div>
-                                        <div class="Container100 Responsive100">#{i18n['ride.authorizationDate']}&nbsp;#{facturaElectronica.fechaAutorizacion}
+                                        <div class="Container100 Responsive100">#{i18n['ride.authorization.date']}&nbsp;#{facturaElectronica.fechaAutorizacion}
                                         </div>
                                         <div class="Container100 Responsive100">#{i18n['ride.environment']}&nbsp;
                                         </div>
@@ -136,7 +136,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container80 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.totalSinImpuestos']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.amount.total.taxe.none']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container20 Responsive100 TexAlRight">
                                                 <h:outputText value="#{facturaElectronica.totalSinImpuestos}" class="text-primary">
@@ -146,7 +146,7 @@
                                         </div>
                                         <div class="Container100 Responsive100">
                                             <div class="Container80 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.totalDescuento']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.discount']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container20 Responsive100 TexAlRight">
                                                 <h:outputText value="#{facturaElectronica.totalDescuento}" class="text-primary">
@@ -157,7 +157,7 @@
                                         <div class="EmptyBox10"></div>
                                         <div class="Container100 Responsive100 Bold">
                                             <div class="Container80 Responsive100">
-                                                <h:outputText value="#{i18n['ride.infoFactura.importeTotal']}" escape="false" styleClass="text-muted"/>&nbsp;
+                                                <h:outputText value="#{i18n['app.fede.payment.amount.total']}" escape="false" styleClass="text-muted"/>&nbsp;
                                             </div>
                                             <div class="Container20 Responsive100 TexAlRight">
                                                 <h:outputText value="#{facturaElectronica.importeTotal}" class="text-primary">

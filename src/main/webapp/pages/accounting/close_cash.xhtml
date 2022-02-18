@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="content">
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                <label class="CardTopic Fs20">#{i18n['app.fede.sales.summary.today']} </label>
+                <label class="CardTopic Fs20">#{i18n['app.fede.reports.summary.today']} </label>
                 <h:outputText class="Fs15" value="#{now}">
                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                 </h:outputText>
@@ -70,7 +70,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card WhiteBlueBack TexAlCenter">
                             <i class="fa fa-dollar Fs50 BoldGray DispBlock"></i>
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['common.discounts']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.payment.discounts']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24 hoverable" 
                                   update=":form:tableDetail" onclick="PF('dlgTblDiscounts').show()">
@@ -93,7 +93,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card WhiteBlueBack TexAlCenter">
                             <i class="fa fa-apple Fs50 BoldGray DispBlock"></i> 
                             <div class="EmptyBox5"></div>
-                            <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                            <span class="FontRobotoLight Fs18">#{i18n['app.fede.inventory.purchases']}</span>
                             <div class="EmptyBox10"></div>
                             <span class="FontRobotoLight Fs24">#{cashBoxHome.purchasesTotal}</span>
                         </div>
@@ -138,15 +138,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                       fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
                       style="text-align: right" height="600" width="800">
                 <p:outputPanel id="panel-dataTable"> 
-                    <p:dataTable id="dataTable-sales-discounts" draggableColumns="true" lazy="false" liveResize="true"
-                                 liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{discount.id}"
-                                 rows="8" scrollRows="8" scrollHeight="100%" scrollWidth="100%"
-                                 scrollable="true"
+                    <p:dataTable id="dataTable-sales-discounts" widgetVar="dataTable-sales-discounts" lazy="#{false}"
                                  value="#{cashBoxHome.listDiscount}" var="discount"
-                                 selection="#{summaryHome.selectedBussinesEntities}">
+                                 selection="#{summaryHome.selectedBussinesEntities}"
+                                 rowKey="#{discount.id}"
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single">
                         <f:facet name="header">
-                            <h:outputText value="#{i18n['app.fede.sales.summary.discount.summary']}"></h:outputText>
+                            <h:outputText value="#{i18n['app.fede.reports.summary.sales.discounts']}"></h:outputText>
                         </f:facet>
                         <p:column id="code" headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" sortBy="#{discount[0]}" >
                             <h:outputText value="#{discount[0]}"/>
@@ -160,7 +162,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:column id="amount" headerText="#{i18n['common.total']}" sortBy="#{discount[3]}" >
                             <h:outputText value="#{discount[3]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
                         </p:column>
-                        <p:column id="numb_dscto" headerText="#{i18n['common.discount']}" sortBy="#{discount[4]}" >
+                        <p:column id="numb_dscto" headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{discount[4]}" >
                             <h:outputText value="#{discount[4]}"><f:convertNumber type="currency" currencySymbol="$"/></h:outputText>
                         </p:column>
                         <p:column id="report" headerText="#{i18n['common.report']}" sortBy="#{discount[5]}" style="text-align: center">

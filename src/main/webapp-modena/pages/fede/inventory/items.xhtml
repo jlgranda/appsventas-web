@@ -211,13 +211,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{product.name}">
                                 <h:outputText value="#{product.name}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.Factura.Detalles.precioUnitario']}" sortBy="#{product.price}"
+                            <p:column headerText="#{i18n['common.price.unit']}" sortBy="#{product.price}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.price}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.crationDate']}" sortBy="#{product.createdOn}"
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}"
                                        styleClass="text-right">
                                 <h:outputText value="#{product.createdOn}">
                                     <f:convertDateTime pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />

@@ -25,16 +25,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup_libre.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewAction action="#{accountHome.loadSessionParametersRecord}" />
-                <!--<f:viewAction action="#{accountHome.messageEditableRecord}" />-->
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li>#{i18n['app.fede.accounting.journal']}</li>
+            <li>#{accountHome.record.generalJournalId != null ? i18n['app.fede.accounting.journal'].concat(' # ').concat(accountHome.record.generalJournalId) : ''}</li>
             <li>/</li>
             <li>#{accountHome.record.id != null ? i18n['app.fede.accounting.record'].concat(' # ').concat(accountHome.record.id) : ''} </li>
         </ui:define>
@@ -42,13 +41,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g">
                 <div class="ui-g-4 ui-md-4 ui-lg-4" style="background-color: #E9E9E9">
                     <span class="Fs16" style="font-weight: 700;"> Asiento <i class="pi pi-hashtag"/>#{accountHome.record.id}</span>
-                    <div style="margin: 0.5rem 0 0 0;">RAZÓN: #{accountHome.record.description}</div>
+                    <div style="margin: 0.5rem 0 0 0;"><strong>CONCEPTO:</strong> #{accountHome.record.description}</div>
                 </div>
                 <div class="ui-g-8 ui-md-8 ui-lg-8" style="padding: 0rem">
-                    <p:dataTable id="recordDetails" 
+                    <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
                                  value="#{accountHome.record.recordDetails}" var="recordDetail"
-                                 rowKey="#{recordDetail.id}">
-                        <p:column headerText="#{i18n['common.account']}">
+                                 rowKey="#{recordDetail.id}"
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single">
+                        <p:column headerText="#{i18n['app.fede.accounting.account']}">
                             <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
                         </p:column>
                         <p:column headerText="#{i18n['common.debe']}">
@@ -145,13 +149,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 </p:messages>
                 <div class="ui-g ui-fluid">
                     <div class="ui-g ui-lg-4 ui-md-4">
-                        <h:outputText value="#{i18n['app.fede.accounting.account.catalogue']} *"/>
+                        <h:outputText value="#{i18n['app.fede.accounting.account']} *"/>
                         <div class="EmptyBox10"></div>
                         <p:autoComplete value="#{accountHome.recordDetail.account}" effect="fade" 
                                         minQueryLength="2" completeMethod="#{accountHome.find}"  required="true"
                                         var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter" forceSelection="true"
-                                        placeholder="#{i18n['common.account.find']}">
+                                        placeholder="#{i18n['app.fede.accounting.account.find']}">
                             <p:column>
                                 <h:outputText value="#{entidad.code} #{entidad.name}"/>
                             </p:column>

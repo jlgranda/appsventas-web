@@ -51,13 +51,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/admin/template/template.jsf"/>
                     </div>
                     <div class="card card-w-title">
-                        <p:dataTable var="_template" 
-                                     value="#{templateHome.lazyDataModel}" 
-                                     paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                     reflow="true" selection="#{templateHome.selectedBussinesEntities}" 
+                        <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}"
+                                     value="#{templateHome.lazyDataModel}" var="_template" 
+                                     selection="#{templateHome.selectedBussinesEntities}" 
                                      rowKey="#{_template.id}" 
-                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true"><!--sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"-->
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
                             <p:ajax event="rowSelect" listener="#{templateHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{_template.code}">

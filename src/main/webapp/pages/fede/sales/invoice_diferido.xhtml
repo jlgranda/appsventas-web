@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>#{i18n['app.fede.sales']}</li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/sales/preinvoices_search.jsf">#{i18n['common.historic']}</p:link></li>
         <li>/</li>
@@ -200,7 +200,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:panel id="payment-panel" class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12" rendered="#{not empty invoiceHome.candidateDetails}">
                         <div class="ui-fluid">
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.sales.payment.method']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.method']}" for="@next"/>
                                 <p:selectOneMenu id="method"
                                                  value="#{invoiceHome.payment.method}"
                                                  disabled="#{not empty invoiceHome.payment.datePaymentCancel}"
@@ -212,7 +212,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:selectOneMenu>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.sales.payment.cash']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.cash.received']}" for="@next"/>
                                 <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="false"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -222,7 +222,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['common.discount']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.discount']}" for="@next"/>
                                 <p:inputNumber id="number_dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="false"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -232,7 +232,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
-                                <p:outputLabel value="#{i18n['app.fede.sales.payment.change']}" for="@next"/>
+                                <p:outputLabel value="#{i18n['app.fede.payment.change']}" for="@next"/>
                                 <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="false"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -301,7 +301,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:ajax update="customer" listener="#{invoiceHome.updateDefaultCustomer}" />
                             </p:selectBooleanCheckbox>
                             <p:commandButton id="button-change-customer" 
-                                             icon="fa fa-user-plus" styleClass="help-btn"
+                                             icon="fa fa-user-plus" styleClass="primary-button"
                                              actionListener="#{invoiceHome.mostrarFormularioProfile()}"
                                              ajax="true" immediate="true">
                                 <p:ajax event="dialogReturn" update="@form"
@@ -312,7 +312,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                     <div class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12">
                         <div class="ui-g-12" style="display: inline-flex; padding: 0rem">
-                            <h:outputLabel class="Fs16" style="margin-right: 0.5rem">#{i18n['common.alias']}:</h:outputLabel>
+                            <h:outputLabel class="Fs16 MarRight10">#{i18n['common.alias']}:</h:outputLabel>
                             <p:selectBooleanCheckbox value="#{invoiceHome.invoice.printAlias}">
                                 <p:ajax update="alias" listener="#{invoiceHome.updatePrintAlias}"/>
                             </p:selectBooleanCheckbox>
@@ -336,11 +336,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
-                                         title="Principal"
+                                         title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="preinvoices"
                                          ajax="true" immediate="true"/>
                         <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button">
-                            <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
+                            <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                         icon="pi pi-check"
                                         actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
                                         rendered="#{not invoiceHome.invoice.isPersistent()}"
@@ -376,7 +376,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                           actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}"
                                           disabled="false" 
                                           ajax="true" type="submit"/>
-                        <i class="pi pi-bars p-px-2" style="margin-right: 0.5rem"/>
+                        <i class="pi pi-bars p-px-2 MarRight10"/>
                         <p:commandButton id="print-button" 
                                          value="#{i18n['common.print']}" 
                                          icon="pi pi-print" styleClass="warning-btn"
@@ -387,12 +387,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
-                                         title="Principal"
+                                         title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="#{invoiceHome.redirect}"
                                          rendered="#{not invoiceHome.invoice.persistent}"
                                          ajax="true" immediate="true" type="submit"/>
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
-                                         title="Principal"
+                                         title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="#{invoiceHome.redirect}"
                                          rendered="#{invoiceHome.invoice.persistent}"
                                          ajax="true" immediate="true" type="submit"/>
@@ -461,7 +461,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:autoComplete>
                             </div>
                             <div class="ui-g-4">
-                                <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
+                                <p:commandButton id="button-change-customer" 
+icon="fa fa-user-plus" styleClass="primary-button"
                                                  actionListener="#{invoiceHome.mostrarFormularioProfile()}" ajax="true"
                                                  immediate="true"
                                                  styleClass="RedButton" style="width:30px">
@@ -625,7 +626,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ui-g-12">
                                 <div class="ui-g-3">
                                     <div class="Container100 Responsive50">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.method']}"/>
+                                        <h:outputText value="#{i18n['app.fede.payment.method']}"/>
                                         <p:selectOneMenu value="#{invoiceHome.payment.method}"
                                                          required="#{true}" immediate="true"> 
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
@@ -635,7 +636,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                                 <div class="ui-g-3">
                                     <div class="ContainerIndent">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.cash']}" />
+                                        <h:outputText value="#{i18n['app.fede.payment.cash.received']}" />
                                         <p:inputNumber id="number_amount" value="#{invoiceHome.payment.cash}" required="true" disabled="false"
                                                        styleClass=""
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -647,7 +648,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                                 <div class="ui-g-3">
                                     <div class="ContainerIndent">
-                                        <h:outputText value="#{i18n['common.discount']}" />
+                                        <h:outputText value="#{i18n['app.fede.payment.discount']}" />
                                         <p:inputNumber id="number_dscto" value="#{invoiceHome.payment.discount}" required="true" disabled="false"
                                                        styleClass=""
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -659,7 +660,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </div>
                                 <div class="ui-g-3">
                                     <div class="ContainerIndent">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.change']}" />
+                                        <h:outputText value="#{i18n['app.fede.payment.change']}" />
                                         <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="false"
                                                        styleClass=""
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -693,7 +694,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  icon="fa fa-trash Fs14 Black" styleClass="secondary-button" type="submit"
                                                  />
                                 <p:menuButton value="#{i18n['common.options']}"  styleClass="secondary-button">
-                                    <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['common.collect']}" 
+                                    <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                                 actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                                 immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                                 </p:menuButton>

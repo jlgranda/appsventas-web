@@ -38,86 +38,80 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <li>/</li>
             <li><p:link outcome="/pages/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
             <li>/</li>
-            <li><p:link outcome="/pages/admin/subject/profile.jsf">#{i18n['common.profile']}</p:link></li>
+            <li><p:link outcome="/pages/admin/subject/profile.jsf">#{i18n['module.profile']}</p:link></li>
         </ui:define>
-            <ui:define name="content">
-                <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-lg-12 ui-md-12">
-                    <div class="ui-g ui-fluid">
-                        <div class="ui-g ui-lg-8" style="align-self: center">
-                            <h1>#{subjectAdminHome.subjectEdit.fullName}</h1>
-                        </div>
-                        <div class="ui-g ui-lg-4" style="place-content: flex-end;">
-                            <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}"  
-                                            height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
-                                            width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
-                                            value="/FedeServlet?entity=#{i18n['app.subject.servlet']}" cache="false"/>
-                            <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}"> 
-                                <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
-                            </p:panel>
-                            <p:fileUpload mode="advanced" dragDropSupport="true" auto="true"
-                                          process="@form" update="photo"   
-                                          sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
-                                          fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
-                                          allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/><!--fileUploadListener="#{subjectAdminHome.handlePhotoUpload}" -->
-                        </div>
+        <ui:define name="content">
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-9 ui-lg-9 ui-md-9 ui-sm-12">
+                    <h1>#{subjectAdminHome.subjectEdit.fullName}</h1>
+                    <div class="ui-g-12" style="padding: 1rem">
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
+                                        value="#{subjectAdminHome.subjectEdit.code}" validator="#{subjectAdminHome.subjectEdit.nonnative ? 'safeTextUTF8Validator' : 'ciValidator'}"
+                                        required="#{!subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
+                        <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.name']}" 
+                                        value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['common.firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                        <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastname']}" 
+                                        value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
+                                        inlinehelp="#{messages['common.lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+
+                        <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
+                                        value="#{subjectAdminHome.subjectEdit.description}" required="false" 
+                                        inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
+
+                        <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
+                                        value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                        required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        execute="@this save" render="email"/>
+
+                        <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
+                                        value="#{subjectAdminHome.subjectEdit.mobileNumber}"
+                                        required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        execute="@this save" render="mobileNumber"/>
+
+                        <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
+                                        value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
+                                        execute="@this save" render="bio"/>
                     </div>
-                    <div class="ui-g ui-fluid">
-                        <div class="ui-g ui-lg-12">
-                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
-                                            value="#{subjectAdminHome.subjectEdit.code}" validator="#{subjectAdminHome.subjectEdit.nonnative ? 'safeTextUTF8Validator' : 'ciValidator'}"
-                                            required="#{!subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
-                            <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.name']}" 
-                                            value="#{subjectAdminHome.subjectEdit.firstname}" required="#{!subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['common.firstname.inlinehelp']}" execute="@this save" render="fstn"/>
-                            <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastname']}" 
-                                            value="#{subjectAdminHome.subjectEdit.surname}" required="#{!subjectAdminHome.subjectEdit.persistent}"
-                                            inlinehelp="#{messages['common.lastname.inlinehelp']}" execute="@this save" render="lstn"/>
-
-                            <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                            value="#{subjectAdminHome.subjectEdit.description}" required="false" 
-                                            inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
-
-                            <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
-                                            value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                            required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
-                                            execute="@this save" render="email"/>
-
-                            <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
-                                            value="#{subjectAdminHome.subjectEdit.mobileNumber}"
-                                            required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
-                                            execute="@this save" render="mobileNumber"/>
-
-                            <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
-                                            value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
-                                            execute="@this save" render="bio"/>
-
-                            <p:panel rendered="#{!subjectAdminHome.subjectEdit.persistent}">
-                                <jlgranda:input id="clave" name="clave" type="password" label="#{i18n['common.password']}" 
-                                                value="#{subjectAdminHome.clave}"  placeholder="true"
-
-                                                execute="@this save" render="clave">
-                                </jlgranda:input>
-                                <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['app.signin.password.confirm']}" 
-                                                value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="true"
-                                                execute="@this save" render="confirmar-clave"/>
-                            </p:panel>
-                        </div>                           
-                    </div>
-                    <div class="EmptyBox10"></div>
+                    <p:panel rendered="#{!subjectAdminHome.subjectEdit.persistent}">
+                        <jlgranda:input id="clave" name="clave" type="password" label="#{i18n['common.password']}" 
+                                        value="#{subjectAdminHome.clave}"  placeholder="true"
+                                        execute="@this save" render="clave">
+                        </jlgranda:input>
+                        <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['app.signin.password.confirm']}" 
+                                        value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="true"
+                                        execute="@this save" render="confirmar-clave"/>
+                    </p:panel>
+                </div>
+                <div class="ui-g-3 ui-lg-3 ui-md-3 ui-sm-12" style="align-self: center">
+                    <p:graphicImage id="photo" rendered="#{subjectAdminHome.subjectEdit.photo!=null}"  
+                                    height="#{settingHome.getValue('app.profile.photo.height', '100')}" 
+                                    width="#{settingHome.getValue('app.profile.photo.width', '100')}" 
+                                    value="/FedeServlet?entity=#{i18n['app.subject.servlet']}" cache="false"/>
+                    <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}"> 
+                        <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
+                    </p:panel>
+                    <p:fileUpload mode="advanced" dragDropSupport="true" auto="true"
+                                  process="@form" update="photo"   
+                                  sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
+                                  fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
+                                  allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/><!--fileUploadListener="#{subjectAdminHome.handlePhotoUpload}" -->
+                </div>
+                <div class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12">
                     <p:toolbar>
                         <f:facet name="left">
-                            <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                             ajax="true" 
-                                             actionListener="#{subjectAdminHome.saveValidado()}" 
-                                             action="#{subjectAdminHome.getOutcome()}"
-                                             style="width: auto !important;"
-                                             type="submit"/>
+                            <p:commandButton id="save"
+                                             value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
+                                             actionListener="#{subjectAdminHome.saveValidado()}" action="#{subjectAdminHome.getOutcome()}"
+                                             ajax="true" type="submit"/>
                         </f:facet>
                         <f:facet name="right">
-                            <p:commandButton ajax="false" action="#{subjectAdminHome.getOutcome()}" disabled="false" immediate="true"
-                                             icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                            <p:commandButton icon="pi pi-replay" styleClass="primary-button"
+                                             title="#{i18n['common.back']}"
+                                             action="#{subjectAdminHome.getOutcome()}"
+                                             ajax="true" immediate="true"/>
                             <p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem icon="fa fa-key" value="#{i18n['app.signin.password.change']}" onclick="PF('dlgCambiarClave').show()"
+                                <p:menuitem value="#{i18n['app.signin.password.change']}" icon="fa fa-key"
+                                            onclick="PF('dlgCambiarClave').show()"
                                             rendered="#{subjectAdminHome.subjectEdit.persistent}"
                                             immediate="true"/>
                                 <p:menuitem icon="fa fa-group" value="#{i18n['app.signin.setting.roles']}"

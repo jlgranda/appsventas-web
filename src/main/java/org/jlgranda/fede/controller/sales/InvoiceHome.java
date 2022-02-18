@@ -280,13 +280,12 @@ public class InvoiceHome extends FedeController implements Serializable {
 //                .filterValue(Arrays.asList(LocalDate.now().minusDays(28), LocalDate.now().plusDays(28)))
 //                .matchMode(MatchMode.RANGE)
 //                .build());
-
         initializeActions();
-        
+
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
         setOutcome(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().getVistaVentas() : "preinvoices");
-        
+
     }
 
     public Long getInvoiceId() {
@@ -404,6 +403,10 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public void updateDefaultCustomer() {
+        this.customer = null;
+    }
+
+    public void updateCustomer() {
         this.customer = null;
     }
 
@@ -643,6 +646,7 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public String collect() {
         //Guardar cambios en la entidad invoice
+        getInvoice().setOwner(getCustomer());
         collect(StatusType.CLOSE.toString());
         return getOutcome(); //Redireccción de vistas
     }
@@ -656,7 +660,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String overdue() {
         if (!isUseDefaultCustomer()) {
             getInvoice().setDocumentTypeSource(DocumentType.OVERDUE);
-            getPayment().getInvoice().setOwner(getCustomer());
+            getInvoice().setOwner(getCustomer());
             getPayment().setDatePaymentCancel(null);
             collect(DocumentType.OVERDUE, StatusType.CLOSE.toString());
             //            setOutcome("invoices");
@@ -681,7 +685,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     public String courtesy() {
         if (!isUseDefaultCustomer()) {
             getInvoice().setDocumentTypeSource(DocumentType.COURTESY);
-            getPayment().getInvoice().setOwner(getCustomer());
+            getInvoice().setOwner(getCustomer());
             getPayment().setDatePaymentCancel(null);
             collect(DocumentType.COURTESY, StatusType.CLOSE.toString());
             setOutcome("preinvoices");
@@ -734,17 +738,18 @@ public class InvoiceHome extends FedeController implements Serializable {
             if (getInvoice().getId() != null) {
                 registerRecordInJournal();
             } else {
-                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.invoice.accounting.fail"));
+                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.sales.invoice.accounting.fail"));
             }
 
-//            //Guardar cambios en la entidad invoice
-//            save(true);
-//            
             //Guardar movimientos en el Kardex
             registerInvoiceDetailsInKardex(this.invoice.getDetails());
 
             //Enviar saludo a cliente
             sendNotification();
+
+//            //Guardar cambios en la entidad invoice
+//            save(true);
+            setOutcome("preinvoices");
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + getInvoice().getTotal()));
             setOutcome("");
@@ -1264,7 +1269,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         LineChartSeries purchases = new LineChartSeries();
         purchases.setFill(fillSeries);
-        purchases.setLabel(I18nUtil.getMessages("common.purchases"));
+        purchases.setLabel(I18nUtil.getMessages("app.fede.inventory.purchases"));
 
         LineChartSeries profits = new LineChartSeries();
         profits.setFill(fillSeries);
@@ -1301,7 +1306,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         areaModel.addSeries(profits);
 //        areaModel.addSeries(fixedCosts);
 
-        areaModel.setTitle(I18nUtil.getMessages("linechart.salesvspurchases"));
+        areaModel.setTitle(I18nUtil.getMessages("app.fede.smart.salesvspurchases"));
         areaModel.setLegendPosition(settingHome.getValue("app.fede.barchart.legendPosition", "ne"));
         areaModel.setExtender("skinChart");
         //areaModel.setExtender("chartExtender");
@@ -1501,7 +1506,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             RuleRunner ruleRunner1 = new RuleRunner();
             KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
             if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.business.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
                 logger.error(kbers.toString());
                 record = null; //Invalidar el record
             } else {
@@ -1510,9 +1515,11 @@ public class InvoiceHome extends FedeController implements Serializable {
                 record.setBussinesEntityHashCode(_instance.hashCode());
                 record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
                 if (employeeService.findByNamedQueryWithLimit("Employee.findByOwnerAndOrganization", 1, _instance.getOwner(), this.organizationData.getOrganization()).isEmpty()) {
-                    record.setDescription(String.format("Cliente: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Comanda: %s \nCliente: %s \nTotal del pedido: %s \nDetalle: %s", _instance.getInvoice().getCode(),
+                            _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
                 } else {
-                    record.setDescription(String.format("Empleado: %s \nDetalle: %s \nTotal del pedido: %s", _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
+                    record.setDescription(String.format("Nº Comanda: %s \nEmpleado: %s \nTotal del pedido: %s \nDetalle: %s", _instance.getInvoice().getCode(),
+                            _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
                 }
             }
 

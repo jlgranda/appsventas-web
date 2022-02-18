@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.profile']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['module.profile']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['common.customer']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/sales/popup_profile.jsf">#{invoiceHome.subjectAdminHome.subjectId == null ? i18n['common.new'].concat(' ').concat(i18n['common.profile']) : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
+            <li><p:link outcome="/pages/fede/sales/popup_profile.jsf">#{invoiceHome.subjectAdminHome.subjectId == null ? i18n['common.new'].concat(' ').concat(i18n['module.profile']) : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -73,7 +73,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 execute="@this save" render="phone"/>
                             </div>
                             <div class="ui-g-4">
-                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
+                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                                 required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                                 execute="@this save" render="email"/>

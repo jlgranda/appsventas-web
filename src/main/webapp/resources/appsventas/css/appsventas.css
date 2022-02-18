@@ -1007,6 +1007,7 @@ input[type="text"], input[type="password"], textarea{ -webkit-appearance: none; 
 .TexAlCenter{ text-align:center;}
 .TexAlLeft{ text-align:left;}
 .TexAlRight{ text-align:right !important;}
+.TexUppercase{ text-transform: uppercase}
 
 /* Padding With Transparent Border*/
 .PadWithBorder1{ border:solid 1px transparent;}
@@ -1343,7 +1344,7 @@ body .ui-panel .ui-panel-content {
     margin-block-end: 0.67em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
-    font-weight: bold;
+    font-weight: bold !important;
     color: black;
 }
 

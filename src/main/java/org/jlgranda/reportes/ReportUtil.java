@@ -34,6 +34,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jlgranda.fede.Constantes;
 
 /**
  * The Class ReportUtil.
@@ -76,7 +77,7 @@ public class ReportUtil implements Serializable {
 
             initialContext = new InitialContext();
 
-            ds = (DataSource) initialContext.lookup("JNDI_NAME");
+            ds = (DataSource) initialContext.lookup(Constantes.JNDI_NAME);
             conn = ds.getConnection();
 
             JasperReport jasperReport = null;
@@ -86,7 +87,7 @@ public class ReportUtil implements Serializable {
                     jasperReport, params, conn);
 
             //nombreReporteSalida = Constantes.REPORTE_BASE_NAME + System.currentTimeMillis() + ".pdf";
-            nombreReporteSalida = "";
+            nombreReporteSalida = "kellyreport.pdf";
 
             String nombreDocumento = rutaDirectorioSalida + nombreReporteSalida;
             output = new FileOutputStream(

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template_popup.xhtml">
         <!--<ui:param name="sitename" value="#{i18n['Sitename']}" />-->
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.profile']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['module.profile']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['common.supplier']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/popup_profile.jsf">#{facturaElectronicaHome.subjectAdminHome.subjectId == null ? i18n['common.new'].concat(' ').concat(i18n['common.profile']) : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
+            <li><p:link outcome="/pages/fede/popup_profile.jsf">#{facturaElectronicaHome.subjectAdminHome.subjectId == null ? i18n['common.new'].concat(' ').concat(i18n['module.profile']) : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         execute="@this save" render="phone"/>
                             </div>
                             <div class="ui-g-8">
-                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
+                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                         value="#{facturaElectronicaHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                         required="#{!facturaElectronicaHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                         execute="@this save" render="email"/>

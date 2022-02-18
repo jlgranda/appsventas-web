@@ -59,7 +59,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </p:column>
                     <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
                 </p:autoComplete>
-                <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
+                <p:commandButton id="button-change-customer" 
+                                 icon="fa fa-user-plus" styleClass="primary-button"
                                  actionListener="#{proveedorHome.mostrarFormularioProfile()}" ajax="true"
                                  immediate="true"
                                  styleClass="RedButton" style="width:30px">
@@ -77,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     value="#{proveedorHome.proveedor.name}"
                                     required="#{true}" placeholder="false" 
                                     render="proveedor-alias"/>
-                    <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.preferedDate']}" 
+                    <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.date.pay.prefered']}" 
                                     value="#{proveedorHome.proveedor.fechaPreferidaPago}"
                                     required="#{true}" placeholder="false" 
                                     render="fecha-preferida-pago"/>

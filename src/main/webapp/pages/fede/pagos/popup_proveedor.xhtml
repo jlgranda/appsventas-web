@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['common.supplier']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/fede/pagos/popup_proveedor.jsf">#{proveedorHome.subjectAdminHome.subjectId == null ? i18n['common.new'].concat(' ').concat(i18n['common.supplier']) : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
+            <li><p:link outcome="/pages/fede/pagos/popup_proveedor.jsf">#{proveedorHome.subjectAdminHome.subjectEdit.id == null ? i18n['common.new'].concat(' ').concat(i18n['common.supplier']) : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g ui-fluid">
@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="true"
                                     value="#{proveedorHome.subjectAdminHome.subjectEdit.code}" 
                                     validator="#{'rucValidator'}" maxlength="13"
+                                    disabled="#{proveedorHome.subjectAdminHome.subjectEdit.persistent}"
                                     required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" 
                                     render="code"/>
                     <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstnames']}" 
@@ -53,11 +54,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastnames']}" 
                                     value="#{proveedorHome.subjectAdminHome.subjectEdit.surname}" required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}"
                                     inlinehelp="#{messages['common.lastnames.inlinehelp']}" render="lstn"/>
+                    <jlgranda:input id="alias" name="alias" type="text" label="#{i18n['common.alias']}" 
+                                    value="#{proveedorHome.proveedor.name}" required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}"
+                                    inlinehelp="#{messages['common.name.inlinehelp']}" render="alias"/>
                     <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
                                     value="#{proveedorHome.subjectAdminHome.subjectEdit.mobileNumber}"
                                     required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                     render="phone"/>
-                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
+                    <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                     value="#{proveedorHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                     required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
                                     render="email"/>
@@ -69,10 +73,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:toolbar>
                         <f:facet name="left">
                             <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                             ajax="false" 
                                              actionListener="#{proveedorHome.saveSupplier()}" 
-                                             style="width: auto !important;"
-                                             type="submit"/>
+                                             ajax="false" type="submit"/>
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton ajax="true" disabled="false" immediate="true"

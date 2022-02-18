@@ -36,9 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="gastos">#{i18n['common.vouchers.from.expense']}</p:link></li>
+        <li><p:link outcome="gastos">#{i18n['app.fede.inventory.expense.vouchers']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="gasto">#{facturaElectronicaGastoHome.facturaElectronicaId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.expense']}</p:link></li>
+        <li><p:link outcome="gasto">#{facturaElectronicaGastoHome.facturaElectronicaId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.expense']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g ui-fluid">
             <div class="card">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <h:outputText id="title" class="Fs18 bold-capital" value="#{i18n[facturaElectronicaGastoHome.facturaElectronica.emissionType]}"></h:outputText>
+                    <h:outputText id="tittle" class="Fs18 bold-capital" value="#{i18n[facturaElectronicaGastoHome.facturaElectronica.emissionType]}"></h:outputText>
                     <div class="EmptyBox10"/>
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax update="supplier rcdd-btn-add" listener="#{facturaElectronicaGastoHome.updateDefaultSupplier}" />
                                 </p:selectBooleanCheckbox>
                                 <p:commandButton id="supplier-btn-chg"
-                                                 icon="fa fa-user-plus" styleClass="help-btn"
+                                                 icon="fa fa-user-plus" styleClass="primary-button"
                                                  actionListener="#{facturaElectronicaGastoHome.mostrarFormularioProfile()}" 
                                                  disabled="#{not empty facturaElectronicaGastoHome.facturaElectronica.id}"
                                                  ajax="true" immediate="true">
@@ -88,7 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.purchase']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.fede.inventory.expense']}" for="@next"/>
                             <p:selectOneMenu id="emissionType"
                                              value="#{facturaElectronicaGastoHome.facturaElectronica.emissionType}"
                                              disabled="#{not empty facturaElectronicaGastoHome.facturaElectronica.id}"
@@ -96,21 +96,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              required="true"> 
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@this days title" />
+                                <p:ajax update="@this tittle days date-title" />
                             </p:selectOneMenu>
                         </div>
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" > 
-                            <p:outputLabel value="Días Plazo/Fecha de Vencimiento" for="@next"/>
+                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
+                            <p:outputLabel value="#{i18n['common.date.emission']}" for="@next"/>
+                            <p:calendar id="fechaEmision" 
+                                        value="#{facturaElectronicaGastoHome.facturaElectronica.fechaEmision}"
+                                        pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}"
+                                        disabled="#{not empty facturaElectronicaGastoHome.facturaElectronica.payments}"
+                                        immediate="true"
+                                        required="true">
+                                <p:ajax event="dateSelect" listener="#{facturaElectronicaGastoHome.calculateDateExpired()}" update="days fechaVencimiento" />
+                            </p:calendar>
+                        </div>
+                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12" > 
+                            <p:outputLabel value="Días Plazo/Fecha de Vencimiento " for="@next"/>
+                            <p:outputLabel id="date-title" class="BigTopic" value="#{facturaElectronicaGastoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT ? '(NO APLICA)':''}"/>
                             <div class="ui-g-12" style="display: inline-flex; padding: 0rem;">
                                 <p:spinner id="days" 
                                            value="#{facturaElectronicaGastoHome.days}" min="1" 
-                                           disabled="#{facturaElectronicaGastoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
+                                           disabled="#{empty facturaElectronicaGastoHome.facturaElectronica.fechaEmision or facturaElectronicaGastoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
                                            rendered="#{empty facturaElectronicaGastoHome.facturaElectronica.id}"
                                            immediate="false">
                                     <p:ajax listener="#{facturaElectronicaGastoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="true"></p:ajax>
                                 </p:spinner>
                                 <p:calendar id="fechaVencimiento" 
                                             value="#{facturaElectronicaGastoHome.facturaElectronica.fechaVencimiento}" 
+                                            pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}"
                                             disabled="true"
                                             immediate="false" 
                                             required="true">
@@ -118,7 +131,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['common.document']}" for="@next"/>
+                            <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}" for="@next"/>
                             <p:selectOneMenu id="documentType"
                                              value="#{facturaElectronicaGastoHome.facturaElectronica.documentType}"
                                              immediate="true"
@@ -129,20 +142,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12" style="padding: 0rem">
-                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.nr']} #{i18n['common.of']} #{i18n['common.document']}" 
+                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.nr']} #{i18n['common.of']} #{i18n['app.document']}" 
                                             value="#{facturaElectronicaGastoHome.facturaElectronica.code}" 
                                             render="code" execute="@this save"
                                             inlinehelp="#{messages['common.code.inlinehelp']}"
                                             required="true"/>
-                        </div>
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="#{i18n['common.date.emission']}" for="@next"/>
-                            <p:calendar id="fechaEmision" 
-                                        value="#{facturaElectronicaGastoHome.facturaElectronica.fechaEmision}"
-                                        disabled="#{not empty facturaElectronicaGastoHome.facturaElectronica.payments}"
-                                        immediate="true"
-                                        required="true">
-                            </p:calendar>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><p:separator style="color: #EFEFEF"/></div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -153,12 +157,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              disabled="#{empty facturaElectronicaGastoHome.supplier or not empty facturaElectronicaGastoHome.facturaElectronica.payments}"/>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:dataTable id="rcdd-dtb"
+                            <p:dataTable id="rcdd-dtb" widgetVar="rcdd-dtb" lazy="#{false}"
                                          value="#{facturaElectronicaGastoHome.record.recordDetails}" var="recordDetail" 
-                                         rowKey="#{recordDetail.account}"
                                          selection="#{facturaElectronicaGastoHome.recordDetailSelected}" 
-                                         selectionMode="single">
-                                <p:column headerText="#{i18n['common.account']}">
+                                         rowKey="#{recordDetail.account}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
+                                <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                 </p:column>
                                 <p:column headerText="#{i18n['common.value']}" style="width: 10rem;">
@@ -168,10 +176,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:column>
                                 <p:columnGroup  type="footer">
                                     <p:row>
-                                        <p:column colspan="1" class="Fs16" style="text-align:right" footerText="#{i18n['common.total.pay']}"/>
-                                        <p:column>
+                                        <p:column colspan="1" style="text-align:right; font-weight: bold" footerText="#{i18n['common.total.pay']}"/>
+                                        <p:column style="text-align:right">
                                             <f:facet name="footer">
-                                                <h:outputText class="Fs16 BigTopic" value="#{facturaElectronicaGastoHome.facturaElectronica.importeTotal}">
+                                                <h:outputText class="Fs14 BigTopic" value="#{facturaElectronicaGastoHome.facturaElectronica.importeTotal}">
                                                     <f:convertNumber type="currency" currencySymbol="$"/>
                                                 </h:outputText>
                                             </f:facet>
@@ -201,8 +209,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <i class="fa fa-bars p-px-2"/>
                         </f:facet>
                         <f:facet name="right">
-                            <p:commandButton title="Principal" icon="pi pi-undo" styleClass="primary-button"
-                                             actionListener="#{invoiceHome.closeDialog(null)}" action="#{facturaElectronicaGastoHome.redirect()}"
+                            <p:commandButton title="#{i18n['common.home']}" icon="pi pi-undo" styleClass="primary-button"
+                                             actionListener="#{facturaElectronicaGastoHome.closeDialog(null)}" action="#{facturaElectronicaGastoHome.redirect()}"
                                              ajax ="true" type="submit"/>                   
                         </f:facet>
                     </p:toolbar>
@@ -214,16 +222,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p:separator style="color: #EFEFEF"/>
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12" style="padding-left: 0.5rem; padding-right: 0.5rem;">
-                        <p:outputLabel value="#{i18n['app.fede.accounting.account.catalogue']}" for="@next"/>
+                        <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                         <p:autoComplete id="rcdd-account" 
                                         value="#{facturaElectronicaGastoHome.recordDetail.account}" var="account"
                                         itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                        completeMethod="#{recordHome.filterAccountsChildrens('gastos')}"
+                                        completeMethod="#{accountHome.find}"
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                         converterMessage="El convertidor no responde."
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        placeholder="#{i18n['common.account.find']}"
+                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
                                         forceSelection="true" emptyMessage="No se encontraron resultados."
                                         cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
                                         dropdown="true">
@@ -273,7 +281,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </h:outputText>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.method']}: "></h:outputText>
+                                        <h:outputText value="#{i18n['app.fede.payment.method']}: "></h:outputText>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                         <p:selectOneMenu id="pay-method"
@@ -301,7 +309,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </h:panelGroup>
                                     </h:panelGroup>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.cash.paid']}: "></h:outputText>
+                                        <h:outputText value="#{i18n['app.fede.payment.cash.paid']}: "></h:outputText>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                         <p:inputNumber id="pay-amount" value="#{facturaElectronicaGastoHome.payment.amount}" required="#{true}"
@@ -315,7 +323,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                        <h:outputText value="#{i18n['common.discount']}: "></h:outputText>
+                                        <h:outputText value="#{i18n['app.fede.payment.discount']}: "></h:outputText>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                         <p:inputNumber id="pay-discount" value="#{facturaElectronicaGastoHome.payment.discount}" required="#{true}" 
@@ -328,7 +336,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.cash']}: "></h:outputText>
+                                        <h:outputText value="#{i18n['app.fede.payment.cash.received']}: "></h:outputText>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                         <p:inputNumber id="pay-cash" value="#{facturaElectronicaGastoHome.payment.cash}" required="#{true}" 
@@ -340,12 +348,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                        <h:outputText value="#{i18n['app.fede.sales.payment.change']}: "></h:outputText>
+                                        <h:outputText value="#{i18n['app.fede.payment.change']}: "></h:outputText>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
                                         <p:inputNumber id="pay-change" value="#{facturaElectronicaGastoHome.payment.change}" required="#{true}" 
                                                        styleClass="" inputStyle="text-align: right" symbol="$"  disabled="#{true}"
-                                                       placeholder="#{i18n['app.fede.sales.payment.change']}"
+                                                       placeholder="#{i18n['app.fede.payment.change']}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
@@ -364,21 +372,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
-                            <p:dataTable id="pay-dtbl" draggableColumns="true" lazy="false" liveResize="true"
-                                         liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{payment.id}"
-                                         rows="5" scrollRows="5"
-                                         scrollable="true"
+                            <p:dataTable id="pay-dtbl" widgetVar="pay-dtbl" lazy="#{false}"
                                          value="#{facturaElectronicaGastoHome.facturaElectronica.payments}" var="payment"
                                          selection="#{facturaElectronicaGastoHome.selectedBussinesEntities}"
-                                         sortBy="#{payment.createdOn}"
+                                         rowKey="#{payment.id}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single"
                                          editable="#{false}">
                                 <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" style="width: 15%" styleClass="text-right">
                                     <h:outputText value="#{payment.createdOn}">
                                         <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.sales.payment.cash.paid']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.cash.paid']}" styleClass="text-right">
                                     <p:cellEditor>
                                         <f:facet name="output">
                                             <h:outputText value="#{payment.amount}">
@@ -390,7 +399,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </f:facet>
                                     </p:cellEditor>
                                 </p:column>
-                                <p:column headerText="#{i18n['common.discount']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.discount']}" styleClass="text-right">
                                     <p:cellEditor>
                                         <f:facet name="output">
                                             <h:outputText value="#{payment.discount}">
@@ -402,7 +411,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </f:facet>
                                     </p:cellEditor>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.sales.payment.cash']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.cash.received']}" styleClass="text-right">
                                     <p:cellEditor>
                                         <f:facet name="output">
                                             <h:outputText value="#{payment.cash}">
@@ -414,7 +423,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </f:facet>
                                     </p:cellEditor>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.sales.payment.method']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.method']}" styleClass="text-right">
                                     <h:outputText value="#{payment.method}"></h:outputText>
                                 </p:column>
                                 <p:column style="width: 8%" rendered="#{false}">

@@ -50,13 +50,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/admin/subject/profile.jsf"/>
                     </div>
                     <div class="Card">
-                        <p:dataTable id="dataTable-persons" draggableColumns="true" lazy="true" liveResize="true"
-                                     paginator="true" paginatorAlwaysVisible="false"
-                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{_subject.id}"
-                                     rows="25" scrollRows="25"
+                        <p:dataTable id="dataTable-persons" widgetVar="dataTable-persons" lazy="#{true}"
                                      value="#{subjectAdminHome.lazyDataModel}" var="_subject"
                                      selection="#{subjectAdminHome.selectedBussinesEntities}"
-                                     sortBy="#{_subject.createdOn}">
+                                     rowKey="#{_subject.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
                             <p:ajax event="rowSelect" listener="#{subjectAdminHome.onRowSelect}"/>
                             <p:ajax event="rowSelectCheckbox" 
                                     process="dataTable-persons" update="dataTable-persons"/>
@@ -77,7 +79,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                        styleClass="text-right">
                                 <h:outputText value="#{_subject.code}"/>
                             </p:column>
-                            <p:column  id="codeType"  headerText="#{i18n['common.email']}" sortBy="#{_subject.email}"
+                            <p:column  id="codeType"  headerText="#{i18n['app.email']}" sortBy="#{_subject.email}"
                                        styleClass="text-right">
                                 <h:outputText value="#{_subject.email}"/>
                             </p:column>

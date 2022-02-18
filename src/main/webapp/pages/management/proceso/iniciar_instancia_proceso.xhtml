@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.name']} - #{i18n['app.documents.task']}" />
+        <ui:param name="title" value="#{i18n['app.name']} - #{i18n['app.document.task']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="procesoId" value="#{instanciaProcesoHome.instanciaProcesoId}" />
@@ -40,11 +40,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-lg-12 ui-md-12">
                     <!-- INTANCIA PROCESO -->
-                    <h1 class="BigTopic">#{i18n['app.documents.start']}</h1>
+                    <h1 class="BigTopic">#{i18n['app.documents.procedures']}</h1>
                     <div class="card">
                             <!-- Solicitante -->
                             <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <p:outputLabel for="applicant" value="#{i18n['app.documents.task.applicant']}" />
+                                <p:outputLabel for="applicant" value="#{i18n['app.document.task.applicant']}" />
                             </h:panelGroup>
                             <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
                                 <p:autoComplete id="applicant" value="#{instanciaProcesoHome.solicitante}" effect="fade" 
@@ -61,7 +61,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <!-- //Solicitante -->
                             
                             <!-- Cuerpo del mensaje -->
-                            <jlgranda:input id="ip-nme" name="ip-name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                            <jlgranda:input id="ip-nme" name="ip-name" type="text" label="#{i18n['app.fede.task.subject']}" 
                                             execute="@this save" render="ip-nme" value="#{instanciaProcesoHome.instanciaProceso.name}" required="true"
                                             container="none"/>
 
@@ -69,12 +69,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             type="richtext" 
                                             label="#{i18n['app.document.task.description']}" placeholder="true"
                                             value="#{instanciaProcesoHome.instanciaProceso.description}" execute="@this save" render="ip-descrpn" 
-                                            required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                            required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                             container="none"/>
                             <!-- TAREA 0 -->
                             <!-- Destinatario -->
                             <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <p:outputLabel for="consignee" value="#{i18n['app.documents.task.consignee']}" />
+                                <p:outputLabel for="consignee" value="#{i18n['app.document.task.consignee']}" />
                             </h:panelGroup>
                             <h:panelGroup id="consignee-pg" class="ui-panelgrid-cell ui-g-8 ui-md-8">
                                 <p:autoComplete id="consignee" value="#{instanciaProcesoHome.destinatario}" effect="fade" 
@@ -89,7 +89,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:autoComplete>
                             </h:panelGroup>
                             <div class="ui-g-4 ui-md-4">
-                                <h:outputText value="#{i18n['app.documents.task.consignee.self']}&nbsp;" />
+                                <h:outputText value="#{i18n['app.document.task.consignee.self']}&nbsp;" />
                                 <p:selectBooleanCheckbox value="#{instanciaProcesoHome.usarDestinatarioPorDefecto}">
                                     <p:ajax update="consignee-pg" listener="#{instanciaProcesoHome.actualizarDestinatarioPorDefecto}" />
                                 </p:selectBooleanCheckbox>
@@ -105,7 +105,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
                                                     paginatorAlwaysVisible="false" rendered="#{not empty instanciaProcesoHome.tarea.documentos}">
 
-                                            <p:commandLink title="#{documento.name}" styleClass="" style="margin-right:10px;display:inline-block"
+                                            <p:commandLink title="#{documento.name}" styleClass="" style="zzdisplay:inline-block"
                                                            update="@form" immediate="true" actionListener="#{instanciaProcesoHome.editarDocumento(documento)}">
                                                 <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
                                                 &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
@@ -113,7 +113,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:commandLink update="@form:documentList" ajax="@this" 
                                                            actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
                                                            title="#{i18n['common.close']}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                           onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                           onclick="if (!confirm('#{i18n['app.document.remove.message']}'))
                                                                                return false;">
                                                 <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
                                             </p:commandLink>
