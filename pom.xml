@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.tecnopro</groupId>
+    <groupId>org.jlgranda</groupId>
     <artifactId>appsventas-web</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>appsventas-web</name>
 
-    <description>Aplicaciones y Sistemas de Ventas</description>
+    <description>Plataforma para negocios exitosos</description>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -250,7 +250,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <version>${hibernate.version}</version>
+            <version>7.0.2.Final</version>
             <scope>runtime</scope>
         </dependency>
          
@@ -389,11 +389,11 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>[24.1.1,)</version>
-        </dependency> 
+        </dependency> -->
 
         <dependency>
             <groupId>net.sf.jasperreports</groupId>

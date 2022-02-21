@@ -262,7 +262,6 @@ public class UI {
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         items.add(item);
-        System.out.println("type:::"+type);
         if ("input".equals(type)) {
             item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL, "INVENTARIO INICIAL");
             items.add(item);

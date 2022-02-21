@@ -48,6 +48,8 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Lists;
+import org.jpapi.util.Strings;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +112,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public Kardex getKardex() {
         if (this.kardexId != null && !this.kardex.isPersistent()) {
-            return kardexService.find(kardexId);
+            this.kardex = kardexService.find(kardexId);
         }
         return kardex;
     }
@@ -169,19 +171,46 @@ public class KardexInventoryHome extends FedeController implements Serializable 
      */
     public void addKardexDetail() {
         this.kardexDetail.setTotalValue(this.kardexDetail.getUnitValue().multiply(this.kardexDetail.getQuantity()));
+        
         if (this.kardexDetail.getCode().length() < 1) {
             this.kardexDetail.setCode(I18nUtil.getMessages("common.vaucher.none"));
         }
 //        BigDecimal totalacumulado = kardexDetailService.findBigDecimal("KardexDetail.findCumulativeQuantityByKardex", getOperationTypesFlowOutput(), this.kardex);
-        List<Object[]> objects = kardexDetailService.findObjectsByNamedQueryWithLimit("KardexDetail.findCumulativeQuantityByKardex", Integer.MAX_VALUE, this.operationTypesFlowOutput, this.kardex);
-        System.out.println("--------------------------------------------------------------");
-        System.out.println("--------------------------------------------------------------");
-        System.out.println("objects::::"+objects);
-        System.out.println("--------------------------------------------------------------");
-        System.out.println("--------------------------------------------------------------");
+        //List<KardexDetail> kardexDetails = kardexDetailService.findByNamedQueryWithLimit("KardexDetail.findCumulativeQuantityByKardex", Integer.MAX_VALUE, this.operationTypesFlowOutput, this.kardex);
+        String entryOn = Dates.toString(this.kardexDetail.getEntryOn(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy hh:mm:s"));
+        String query = Strings.render("select cast(sum(case when kardexdeta0_.operation_type in ('%s') then kardexdeta0_.quantity * -1 else kardexdeta0_.quantity end) as decimal(5,2)) as col_0_0_ from Kardex_detail kardexdeta0_ where kardexdeta0_.kardex_id=%s and kardexdeta0_.fecha_ingreso_bodega <= '%s' and kardexdeta0_.deleted=false", 
+                Lists.toString(this.operationTypesFlowOutput, "','"), 
+                this.getKardexId(),
+                entryOn);
+        List<BigDecimal> resultSet = kardexDetailService.findBigDecimalResultSet(query);
         
-        this.kardexDetail.setAuthor(subject);
-        this.kardexDetail.setOwner(subject);
+        if ( !resultSet.isEmpty() && !BigDecimal.ZERO.equals(resultSet.get(0)) ){
+            BigDecimal totalAlaFecha = resultSet.get(0);
+            List<KardexDetail> recalcularKardexDetailList = this.getKardex().getKardexDetails().stream().filter(kd -> kd.getEntryOn().compareTo(this.kardexDetail.getEntryOn()) > 0).collect(Collectors.toList());
+            recalcularKardexDetailList.forEach(kd -> {
+                kd.setCummulativeQuantity(BigDecimal.ZERO);
+                kd.setCummulativeTotalValue(BigDecimal.ZERO);
+                this.getKardex().replaceKardexDetail(kd);
+            });
+            
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+            System.out.println("totalAlaFecha::::" + totalAlaFecha);
+            System.out.println("this.getKardex().getKardexDetails()::::" + this.getKardex().getKardexDetails().size());
+            System.out.println("recalcularKardexDetailList::::" + recalcularKardexDetailList.size());
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+
+            this.kardexDetail.setAuthor(subject);
+            this.kardexDetail.setOwner(subject);
+            
+            this.getKardex().addKardexDetail(this.kardexDetail);
+            
+            kardexService.save(this.getKardex().getId(), this.getKardex());
+            
+            Collections.sort(this.getKardex().getKardexDetails());
+            
+            System.out.println("Objeto persistido");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        }
     }
 
     /**
