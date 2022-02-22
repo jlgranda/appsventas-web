@@ -302,8 +302,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         }
 //        lazyDataModel.setOwner(this.subject);
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
-        lazyDataModel.setStart(getStart());
-        lazyDataModel.setEnd(getEnd());
+        lazyDataModel.setStart(Dates.minimumDate(getStart()));
+        lazyDataModel.setEnd(Dates.maximumDate(getEnd()));
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {

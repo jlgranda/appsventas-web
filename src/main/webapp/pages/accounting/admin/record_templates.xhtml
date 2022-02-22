@@ -41,12 +41,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:toolbar id="selectedToolBar" rendered="#{true}">
                         <f:facet name="left">
                             <p:outputLabel class="Gray" value="#{i18n['common.keyword']}:&nbsp;" for="@next"/>
-                            <p:inputText value="#{recordTemplateHome.keyword}" class="input-sm MarRight10">
+                            <p:inputText class="input-sm MarRight10" value="#{recordTemplateHome.keyword}" >
                             </p:inputText>
                             <p:commandButton value="#{i18n['common.find']}"
                                              icon="pi pi-search" styleClass="help-btn"
                                              actionListener="#{recordTemplateHome.clear()}" 
-                                             ajax="false" immediate="true">
+                                             ajax="false">
                             </p:commandButton>
                         </f:facet>
                         <f:facet name="right">

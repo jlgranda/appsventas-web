@@ -42,9 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:toolbar id="topToolBar">
                         <f:facet name="left">
                             <p:outputLabel class="Gray" value="#{i18n['common.keyword']}:&nbsp;" for="@next"/>
-                            <p:inputText class="MarRight10" value="#{generalJournalHome.keyword}">
+                            <p:inputText class="input-sm MarRight10" value="#{generalJournalHome.keyword}">
                             </p:inputText>
-
                             <h:panelGroup id="controles-busqueda-avanzada" style="padding-right: 0.2rem">
                                 <h:panelGroup rendered="#{generalJournalHome.busquedaAvanzada}">
                                     <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
@@ -59,9 +58,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:calendar>                        
                                 </h:panelGroup>
                             </h:panelGroup>
-                            <p:commandButton value="#{i18n['common.find']}" icon="pi pi-search" styleClass="help-btn"
+                            <p:commandButton value="#{i18n['common.find']}" 
+                                             icon="pi pi-search" styleClass="help-btn"
                                              actionListener="#{generalJournalHome.clear()}" 
-                                             ajax="false" immediate="true">
+                                             ajax="false">
                             </p:commandButton>
                         </f:facet>
                         <f:facet name="right">
