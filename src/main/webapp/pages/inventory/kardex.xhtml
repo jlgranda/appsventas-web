@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                 <div class="card">
-                    <p:dataTable id="dataTable-kardex-details" widgetVar="dataTable_wv" lazy="#{false}"
+                    <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{false}"
                                  value="#{kardexInventoryHome.kardex.kardexDetails}" var="kardexDetail"
                                  selection="#{kardexInventoryHome.selectedBussinesEntities}"
                                  rowKey="#{kardexDetail.id}" 
@@ -111,7 +111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['common.value']}"/>
                             </p:row>
                         </p:columnGroup>
-                        <p:column headerText="#{i18n['common.date.emission']}" sortOrder="asc" sortPriority="1">
+                        <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{kardexDetail.entryOn}" sortOrder="ASC">
                             <h:outputText value="#{kardexDetail.entryOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="dd/MM/yyyy HH:mm:ss"/>
                             </h:outputText>
@@ -195,14 +195,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
                                         container="none" rendered="true"
                                         update="btn-agregar"/>
-                        <jlgranda:input id="entryon" name="entryon" type="calendar" label="#{i18n['common.date.register']}" 
+                        <jlgranda:input id="entryon" name="entryon" type="calendar-time" label="#{i18n['common.date.register']}" 
                                         render="entryon" value="#{kardexInventoryHome.kardexDetail.entryOn}" 
                                         required="false" requiredMessage="#{i18n['common.date.register']}"
                                         container="none"/>
                         <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.vaucher']} #{i18n['common.nr']}" 
                                         render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
                                         required="false" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
-                                        container="none"
+                                        container="none" 
                                         listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-agregar"/>
                     </div>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -213,7 +213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  actionListener="#{kardexInventoryHome.addKardexDetail()}"
                                                  disabled="#{not kardexInventoryHome.validKardexDetail()}"
                                                  update="@form"
-                                                    ajax="false" type="submit">
+                                                 ajax="false" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
                                 </p:commandButton>
                                 <i class="fa fa-bars p-px-2"/>
                             </f:facet>

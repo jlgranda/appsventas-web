@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -93,6 +94,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     private boolean editarKardex;
     private String operationTypeFlow;
     private List<KardexDetail.OperationType> operationTypesFlowOutput;
+    private boolean activeKardexEdition;
 
     @PostConstruct
     private void init() {
@@ -166,50 +168,125 @@ public class KardexInventoryHome extends FedeController implements Serializable 
         this.operationTypeFlow = operationTypeFlow;
     }
 
+    public boolean isActiveKardexEdition() {
+        return activeKardexEdition;
+    }
+
+    public void setActiveKardexEdition(boolean activeKardexEdition) {
+        this.activeKardexEdition = activeKardexEdition;
+    }
+
     /**
      * Métodos persistencia.
      */
     public void addKardexDetail() {
         this.kardexDetail.setTotalValue(this.kardexDetail.getUnitValue().multiply(this.kardexDetail.getQuantity()));
-        
+
         if (this.kardexDetail.getCode().length() < 1) {
             this.kardexDetail.setCode(I18nUtil.getMessages("common.vaucher.none"));
         }
 //        BigDecimal totalacumulado = kardexDetailService.findBigDecimal("KardexDetail.findCumulativeQuantityByKardex", getOperationTypesFlowOutput(), this.kardex);
         //List<KardexDetail> kardexDetails = kardexDetailService.findByNamedQueryWithLimit("KardexDetail.findCumulativeQuantityByKardex", Integer.MAX_VALUE, this.operationTypesFlowOutput, this.kardex);
         String entryOn = Dates.toString(this.kardexDetail.getEntryOn(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy hh:mm:s"));
-        String query = Strings.render("select cast(sum(case when kardexdeta0_.operation_type in ('%s') then kardexdeta0_.quantity * -1 else kardexdeta0_.quantity end) as decimal(5,2)) as col_0_0_ from Kardex_detail kardexdeta0_ where kardexdeta0_.kardex_id=%s and kardexdeta0_.fecha_ingreso_bodega <= '%s' and kardexdeta0_.deleted=false", 
-                Lists.toString(this.operationTypesFlowOutput, "','"), 
+        String queryQuantity = Strings.render("select cast(sum(case when kardexdeta0_.operation_type in ('%s') then kardexdeta0_.quantity * -1 else kardexdeta0_.quantity end) as decimal(5,2)) as col_0_0_ from Kardex_detail kardexdeta0_ where kardexdeta0_.kardex_id=%s and kardexdeta0_.fecha_ingreso_bodega <= '%s' and kardexdeta0_.deleted=false",
+                Lists.toString(this.operationTypesFlowOutput, "','"),
                 this.getKardexId(),
                 entryOn);
-        List<BigDecimal> resultSet = kardexDetailService.findBigDecimalResultSet(query);
-        
-        if ( !resultSet.isEmpty() && !BigDecimal.ZERO.equals(resultSet.get(0)) ){
-            BigDecimal totalAlaFecha = resultSet.get(0);
-            List<KardexDetail> recalcularKardexDetailList = this.getKardex().getKardexDetails().stream().filter(kd -> kd.getEntryOn().compareTo(this.kardexDetail.getEntryOn()) > 0).collect(Collectors.toList());
-            recalcularKardexDetailList.forEach(kd -> {
+        List<BigDecimal> resultSetQuantity = kardexDetailService.findBigDecimalResultSet(queryQuantity);
+        String queryTotalValue = Strings.render("select cast(sum(case when kardexdeta0_.operation_type in ('%s') then kardexdeta0_.total_value * -1 else kardexdeta0_.total_value end) as decimal(5,2)) as col_0_0_ from Kardex_detail kardexdeta0_ where kardexdeta0_.kardex_id=%s and kardexdeta0_.fecha_ingreso_bodega <= '%s' and kardexdeta0_.deleted=false",
+                Lists.toString(this.operationTypesFlowOutput, "','"),
+                this.getKardexId(),
+                entryOn);
+        List<BigDecimal> resultSetTotalValue = kardexDetailService.findBigDecimalResultSet(queryTotalValue);
+
+        BigDecimal totalQuantityKardex = BigDecimal.ZERO;
+        BigDecimal totalValueKardex = BigDecimal.ZERO;
+
+        if (!resultSetQuantity.isEmpty() && !resultSetTotalValue.isEmpty()) {
+
+            BigDecimal quantityToDate = resultSetQuantity.get(0);
+            BigDecimal totalValueToDate = resultSetTotalValue.get(0);
+
+            //Al total a la fecha le agregamos la cantidad del nuevo detalle
+            BigDecimal totalQuantity = this.operationTypesFlowOutput.contains(this.kardexDetail.getOperationType()) ? quantityToDate.subtract(this.kardexDetail.getQuantity()) : quantityToDate.add(this.kardexDetail.getQuantity());
+            this.kardexDetail.setCummulativeQuantity(totalQuantity);
+            //Al total a la fecha le agregamos el valor total del nuevo detalle
+            BigDecimal totalValue = this.operationTypesFlowOutput.contains(this.kardexDetail.getOperationType()) ? totalValueToDate.subtract(this.kardexDetail.getTotalValue()) : totalValueToDate.add(this.kardexDetail.getTotalValue());
+            this.kardexDetail.setCummulativeTotalValue(totalValue);
+
+            //Buscamos los detalles posteriores al nuevo detalle
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
+            List<KardexDetail> recalcularKardexDetailList = this.kardex.getKardexDetails().stream().filter(kd -> kd.getEntryOn().compareTo(this.kardexDetail.getEntryOn()) > 0).collect(Collectors.toList());
+//            System.out.println("Detalles por recalcular::::" + recalcularKardexDetailList.size());
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
+//            System.out.println("kd Init:::" + this.kardexDetail.getId() + " - " + this.kardexDetail.getQuantity() + " - " + this.kardexDetail.getCummulativeQuantity());
+            int iterator = 1;
+            for (KardexDetail kd : recalcularKardexDetailList) {
                 kd.setCummulativeQuantity(BigDecimal.ZERO);
                 kd.setCummulativeTotalValue(BigDecimal.ZERO);
-                this.getKardex().replaceKardexDetail(kd);
-            });
-            
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
-            System.out.println("totalAlaFecha::::" + totalAlaFecha);
-            System.out.println("this.getKardex().getKardexDetails()::::" + this.getKardex().getKardexDetails().size());
-            System.out.println("recalcularKardexDetailList::::" + recalcularKardexDetailList.size());
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
-
+                //Recalculamos sus valores
+                totalQuantity = this.operationTypesFlowOutput.contains(kd.getOperationType()) ? totalQuantity.subtract(kd.getQuantity()) : totalQuantity.add(kd.getQuantity());
+                kd.setCummulativeQuantity(totalQuantity);
+                totalValue = this.operationTypesFlowOutput.contains(kd.getOperationType()) ? totalValue.subtract(kd.getTotalValue()) : totalValue.add(kd.getTotalValue());
+                kd.setCummulativeTotalValue(totalValue);
+//                System.out.println("kd:::" + kd.getId() + " - " + kd.getQuantity() + " - " + kd.getCummulativeQuantity() + " - " + kd.getCummulativeTotalValue());
+                this.kardex.replaceKardexDetail(kd);
+                
+//                System.out.println("iterator:::"+iterator);
+                if (iterator == recalcularKardexDetailList.size()) {
+                    this.kardex.setQuantity(kd.getCummulativeQuantity());
+                    this.kardex.setFund(kd.getCummulativeTotalValue());
+//                    System.out.println("es el ultimo");
+//                    System.out.println("kd.."+this.kardex.getQuantity());
+//                    System.out.println("kd.."+this.kardex.getFund());
+                }
+                iterator++;
+            }
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+//            System.out.println("totalAlaFecha::::" + totalAlaFecha);
+//            System.out.println("this.getKardex().getKardexDetails()::::" + this.getKardex().getKardexDetails().size());
+//            System.out.println("recalcularKardexDetailList::::" + recalcularKardexDetailList.size());
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
             this.kardexDetail.setAuthor(subject);
             this.kardexDetail.setOwner(subject);
-            
-            this.getKardex().addKardexDetail(this.kardexDetail);
-            
-            kardexService.save(this.getKardex().getId(), this.getKardex());
-            
+
+            this.kardex.addKardexDetail(this.kardexDetail);
+
+            //Actualizar los valores de la kardex
+            kardexService.save(this.kardex.getId(), this.kardex);
+            setKardex(kardexService.find(this.kardex.getId()));
+
+            setKardexDetail(kardexDetailService.createInstance());
+
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
+//            System.out.println("Detalles luego de agregación:::" + this.getKardex().getKardexDetails());
+//            this.getKardex().getKardexDetails().forEach(kd -> {
+//                System.out.println("kd::" + kd.getId() + " - " + kd.getEntryOn() + " - " + kd.getQuantity());
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><");
             Collections.sort(this.getKardex().getKardexDetails());
-            
-            System.out.println("Objeto persistido");
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+
+//            System.out.println("Objeto persistido");
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+        }
+    }
+
+    public void editKardex() {
+        if (this.kardex.getUnitMeasure() != null && this.kardex.getUnitMinimum() != null && this.kardex.getUnitMaximum() != null) {
+            if (this.kardex.getUnitMaximum().compareTo(this.kardex.getUnitMinimum()) == -1) {
+                this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.kardex.maximum.minimum.valid"));
+            } else {
+                if (this.kardex.isPersistent()) {
+                    this.kardex.setLastUpdate(Dates.now());
+                } else {
+                    this.kardex.setAuthor(this.subject);
+                    this.kardex.setOwner(this.subject);
+                    this.kardex.setOrganization(this.organizationData.getOrganization());
+                }
+                kardexService.save(this.kardex.getId(), this.kardex);
+                this.kardex = kardexService.find(this.kardex.getId());
+                messagesValidation();//Emitir mensajes de validación por Cantidad de Producto
+                this.activeKardexEdition = true; //Deshabilidar los inputs de propiedades
+            }
         }
     }
 
@@ -217,7 +294,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
      * Métodos utilitarios.
      */
     public boolean verificarKardexsProductos() {
-        System.out.println("existen productos sin kardex?" + (productService.count("Product.countWhithoutKardex", this.organizationData.getOrganization()) > 0));
+//        System.out.println("existen productos sin kardex?" + (productService.count("Product.countWhithoutKardex", this.organizationData.getOrganization()) > 0));
         return productService.count("Product.countWhithoutKardex", this.organizationData.getOrganization()) > 0;
     }
 
@@ -324,6 +401,24 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     public boolean validKardexDetail() {
         return this.kardexDetail.getEntryOn() != null && this.kardexDetail.getOperationType() != null && this.kardexDetail.getQuantity() != null && this.kardexDetail.getUnitValue() != null;
+    }
+
+    public void activePanelKardex() {
+        if (this.kardexId != null) {
+            activeKardexEdition = false; //Habilitar los inputs de propiedades
+        }
+    }
+
+    public void asignedMaximum() {
+        if (kardexId == null) {
+            this.kardex.setUnitMaximum(BigDecimal.ONE);
+        }
+        if (this.kardex.getUnitMaximum() != null
+                && this.kardex.getUnitMinimum() != null
+                && this.kardex.getUnitMaximum().compareTo(this.kardex.getUnitMinimum()) == -1) {
+
+            getKardex().setUnitMaximum(getKardex().getUnitMinimum());
+        }
     }
 
     @Override

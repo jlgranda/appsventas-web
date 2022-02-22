@@ -62,7 +62,7 @@ limitations under the License.
                 <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field ui-g ui-g-12 ui-md-12">
                     <c:if test="#{placeholder == 'false' and rendered == 'true'}">
                         <!--<h:panelGroup id="panel-group-label-#{id}" rendered="#{rendered}" styleClass="ui-g ui-g-12 ui-md-12">-->
-                            <p:outputLabel for="#{name}" value="#{label}" />
+                        <p:outputLabel for="#{name}" value="#{label}" />
                         <!--</h:panelGroup>-->
                         <!--<label>#{label}</label>-->
                     </c:if>
@@ -84,11 +84,11 @@ limitations under the License.
                         </c:when>
                         <c:when test="#{type == 'decimal' }">
                             <p:inputNumber id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
-                                         required="#{required}" disabled="#{disabled}" requiredMessage="#{label}: #{cache}"
-                                         class="#{class}" title="#{cache}" style="#{style}"
-                                         decimalSeparator="#{decimalSeparator}" 
-                                         thousandSeparator="#{thousandSeparator}" 
-                                         decimalPlaces="#{decimalPlaces}">
+                                           required="#{required}" disabled="#{disabled}" requiredMessage="#{label}: #{cache}"
+                                           class="#{class}" title="#{cache}" style="#{style}"
+                                           decimalSeparator="#{decimalSeparator}" 
+                                           thousandSeparator="#{thousandSeparator}" 
+                                           decimalPlaces="#{decimalPlaces}">
                                 <c:if test="#{not empty validator}">
                                     <f:validator validatorId="#{validator}"/>
                                 </c:if>
@@ -107,7 +107,7 @@ limitations under the License.
                             <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}"
                                          required="#{required}" disabled="#{disabled}" type="#{type}" requiredMessage="#{label}: #{cache}"
                                          class="#{class}" title="#{cache}"
-                                         onblur="value=value.toLowerCase()">
+                                         onblur="value = value.toLowerCase()">
                                 <c:if test="#{not empty validator}">
                                     <f:validator validatorId="#{validator}"/>
                                 </c:if>
@@ -135,6 +135,20 @@ limitations under the License.
                                         title="#{cache}"
                                         maxdate="#{maxdate}" mindate="#{mindate}"
                                         pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}">
+                                <f:validator validatorId="#{validator}"/>        
+                                <c:if test="#{not empty update }">
+                                    <p:ajax event="dateSelect" update="#{update}" partialSubmit="true"/>
+                                </c:if>
+                            </p:calendar>  
+                        </c:when>
+                        <c:when test="#{type == 'java.util.Date' or type == 'calendar-time'}">
+                            <p:calendar value="#{value}" id="#{name}" navigator="true" label="#{label}" 
+                                        disabled="#{disabled}" 
+                                        required="#{required}" 
+                                        requiredMessage="#{label}: #{cache}"
+                                        title="#{cache}"
+                                        maxdate="#{maxdate}" mindate="#{mindate}"
+                                        pattern="#{settingHome.getValue('fede.date.hour.pattern', 'dd-MM-yyyy HH:mm:ss')}">
                                 <f:validator validatorId="#{validator}"/>        
                                 <c:if test="#{not empty update }">
                                     <p:ajax event="dateSelect" update="#{update}" partialSubmit="true"/>
