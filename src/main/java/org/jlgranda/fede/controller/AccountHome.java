@@ -63,35 +63,35 @@ import org.slf4j.LoggerFactory;
 @Named
 @ViewScoped
 public class AccountHome extends FedeController implements Serializable {
-
+    
     private static final long serialVersionUID = -1007161141552849702L;
-
+    
     Logger logger = LoggerFactory.getLogger(AccountHome.class);
-
+    
     @EJB
     AccountCache accountCache;
-
+    
     @Inject
     private Subject subject;
-
+    
     @Inject
     private SettingHome settingHome;
-
+    
     @Inject
     private OrganizationData organizationData;
-
+    
     @EJB
     private GroupService groupService;
-
+    
     @EJB
     private AccountService accountService;
-
+    
     @EJB
     private GeneralJournalService journalService;
-
+    
     @EJB
     private RecordService recordService;
-
+    
     @EJB
     private RecordDetailService recordDetailService;
 
@@ -104,6 +104,7 @@ public class AccountHome extends FedeController implements Serializable {
 
     //Objetos Account para edición
     private Long accountId;
+    private String accountName;
     private Long parentAccountId;
     private Account account;
     private Account accountSelected;
@@ -129,7 +130,7 @@ public class AccountHome extends FedeController implements Serializable {
      * RecordDetail para edición
      */
     private RecordDetail recordDetail;
-
+    
     private Long recordId;
 
     /**
@@ -145,16 +146,16 @@ public class AccountHome extends FedeController implements Serializable {
      * Lista con los recordsDetails true
      */
     private List<RecordDetail> recordDetailsUpdate;
-
+    
     private int rangeReport;
     private boolean validateAccount;
-
+    
     @PostConstruct
     private void init() {
-
+        
         setAccount(accountService.createInstance());
         setParentAccount(accountService.createInstance());
-
+        
         int range = 0;
         try {
             range = Integer.valueOf(settingHome.getValue(SettingNames.ACCOUNT_TOP_RANGE, "7"));
@@ -168,27 +169,27 @@ public class AccountHome extends FedeController implements Serializable {
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
-
+        
         setTreeDataModel(createTreeAccounts());
-
+        
         setRecord(recordService.createInstance());
         setRecordDetail(recordDetailService.createInstance());
-
+        
         setRangeReport(-1);
         setFundAccountMain(BigDecimal.ZERO);
         setFundOldAccountSelected(BigDecimal.ZERO);
     }
-
+    
     @Override
     public void handleReturn(SelectEvent event) {
         chargeListDetailsforAccount();
     }
-
+    
     @Override
     public Group getDefaultGroup() {
         return this.defaultGroup;
     }
-
+    
     @Override
     public List<Group> getGroups() {
         if (this.groups.isEmpty()) {
@@ -204,191 +205,200 @@ public class AccountHome extends FedeController implements Serializable {
     public LazyAccountDataModel getLazyDataModel() {
         return lazyDataModel;
     }
-
+    
     public void setLazyDataModel(LazyAccountDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-
+    
     public TreeNode getTreeDataModel() {
         return treeDataModel;
     }
-
+    
     public void setTreeDataModel(TreeNode treeDataModel) {
         this.treeDataModel = treeDataModel;
     }
-
+    
     public TreeNode getSingleSelectedNode() {
         return singleSelectedNode;
     }
-
+    
     public void setSingleSelectedNode(TreeNode singleSelectedNode) {
         this.singleSelectedNode = singleSelectedNode;
     }
-
+    
     public Long getAccountId() {
         return accountId;
     }
-
+    
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
-
+    
+    public String getAccountName() {
+        return accountName;
+    }
+    
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+    
     public Long getParentAccountId() {
         return parentAccountId;
     }
-
+    
     public void setParentAccountId(Long parentAccountId) {
         this.parentAccountId = parentAccountId;
         if (this.parentAccountId != null && !this.parentAccount.isPersistent()) {
             this.parentAccount = accountService.find(parentAccountId);
         }
     }
-
+    
     public Account getAccount() {
         if (this.accountId != null && !this.account.isPersistent()) {
             this.account = this.accountCache.lookup(this.accountId);
             this.parentAccount = this.accountCache.lookup(this.account.getParentAccountId());
+            setAccountName(this.account.getName());
         }
         return account;
     }
-
+    
     public void setAccount(Account account) {
         this.account = account;
     }
-
+    
     public Account getAccountSelected() {
         return this.accountSelected;
     }
-
+    
     public void setAccountSelected(Account accountSelected) {
         this.accountSelected = accountSelected;
     }
-
+    
     public Account getParentAccount() {
         if (this.accountId != null && !this.account.isPersistent()) {
             this.parentAccount = accountCache.lookup(this.parentAccountId);
         }
         return this.parentAccount;
     }
-
+    
     public void setParentAccount(Account parentAccount) {
         this.parentAccount = parentAccount;
     }
-
+    
     public Account getDepositAccount() {
         return depositAccount;
     }
-
+    
     public void setDepositAccount(Account depositAccount) {
         this.depositAccount = depositAccount;
     }
-
+    
     public BigDecimal getAmountDebeRdOld() {
         return amountDebeRdOld;
     }
-
+    
     public void setAmountDebeRdOld(BigDecimal amountDebeRdOld) {
         this.amountDebeRdOld = amountDebeRdOld;
     }
-
+    
     public BigDecimal getAmountHaberRdOld() {
         return amountHaberRdOld;
     }
-
+    
     public void setAmountHaberRdOld(BigDecimal amountHaberRdOld) {
         this.amountHaberRdOld = amountHaberRdOld;
     }
-
+    
     public List<Object[]> getObjectsRecordDetail() {
         return objectsRecordDetail;
     }
-
+    
     public void setObjectsRecordDetail(List<Object[]> objectsRecordDetail) {
         this.objectsRecordDetail = objectsRecordDetail;
     }
-
+    
     public BigDecimal getAmountAccount() {
         return amountAccount;
     }
-
+    
     public void setAmountAccount(BigDecimal amountAccount) {
         this.amountAccount = amountAccount;
     }
-
+    
     public List<RecordDetail> getRecordDetailsAccount() {
         return recordDetailsAccount;
     }
-
+    
     public void setRecordDetailsAccount(List<RecordDetail> recordDetailsAccount) {
         this.recordDetailsAccount = recordDetailsAccount;
     }
-
+    
     public Record getRecord() {
         if (this.recordId != null && !this.record.isPersistent()) {
             this.record = recordService.find(recordId);
         }
         return record;
     }
-
+    
     public void setRecord(Record record) {
         this.record = record;
     }
-
+    
     public RecordDetail getRecordDetail() {
         return recordDetail;
     }
-
+    
     public void setRecordDetail(RecordDetail recordDetail) {
         this.recordDetail = recordDetail;
     }
-
+    
     public Long getRecordId() {
         return recordId;
     }
-
+    
     public void setRecordId(Long recordId) {
         this.recordId = recordId;
     }
-
+    
     public BigDecimal getFundAccountMain() {
         if (this.accountSelected != null) {
             this.fundAccountMain = accountService.mayorizar(this.accountSelected, this.organizationData.getOrganization(), getStart(), getEnd());
         }
         return fundAccountMain;
     }
-
+    
     public void setFundAccountMain(BigDecimal fundAccountMain) {
         this.fundAccountMain = fundAccountMain;
     }
-
+    
     public BigDecimal getFundOldAccountSelected() {
         return fundOldAccountSelected;
     }
-
+    
     public void setFundOldAccountSelected(BigDecimal fundOldAccountSelected) {
         this.fundOldAccountSelected = fundOldAccountSelected;
     }
-
+    
     public List<RecordDetail> getRecordDetailsUpdate() {
         return recordDetailsUpdate;
     }
-
+    
     public void setRecordDetailsUpdate(List<RecordDetail> recordDetailsUpdate) {
         this.recordDetailsUpdate = recordDetailsUpdate;
     }
-
+    
     public int getRangeReport() {
         return rangeReport;
     }
-
+    
     public void setRangeReport(int rangeReport) {
         this.rangeReport = rangeReport;
     }
-
+    
     public boolean isValidateAccount() {
         return validateAccount;
     }
-
+    
     public void setValidateAccount(boolean validateAccount) {
         this.validateAccount = validateAccount;
     }
@@ -405,7 +415,7 @@ public class AccountHome extends FedeController implements Serializable {
         //return accountService.findByOrganization(this.organizationData.getOrganization());
         return accountCache.filterByOrganization(this.organizationData.getOrganization());
     }
-
+    
     public void validateAccountNew(String keyword) {
         if (!keyword.isEmpty()) {
             if (!findStart(keyword).isEmpty()) {
@@ -428,11 +438,11 @@ public class AccountHome extends FedeController implements Serializable {
     public List<Account> find(String keyword) {
         return accountCache.filterByNameOrCode(keyword, this.organizationData.getOrganization()); //sólo cuentas de la organización
     }
-
+    
     public List<Account> findStart(String keyword) {
         return accountCache.filterByNameOrCodeStart(keyword, this.organizationData.getOrganization()); //sólo cuentas de la organización
     }
-
+    
     public Account findParentAccount(Account x) {
         return accountCache.lookup(x.getParentAccountId());
     }
@@ -456,7 +466,7 @@ public class AccountHome extends FedeController implements Serializable {
     public void clear() {
         filter();
     }
-
+    
     public void filter() {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyAccountDataModel(accountService);
@@ -493,11 +503,11 @@ public class AccountHome extends FedeController implements Serializable {
                 parent = new DefaultTreeNode(x, generalTree);
                 addChild(parent, x);
             }
-
+            
         }
         return generalTree;
     }
-
+    
     public TreeNode addChild(TreeNode parent, Account accountChild) {
         TreeNode child = null;
         List<Account> childs = accountService.findByNamedQuery("Account.findByParentId", accountChild.getId(), this.organizationData.getOrganization());
@@ -549,7 +559,7 @@ public class AccountHome extends FedeController implements Serializable {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
         }
     }
-
+    
     public void messageTreeNode() {
         this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ledger.report"));
     }
@@ -559,6 +569,7 @@ public class AccountHome extends FedeController implements Serializable {
      *
      */
     public void save() {
+        this.account.setName(this.getAccountName());
         if (this.parentAccount != null) {
             account.setParentAccountId(this.parentAccount.getId());
         }
@@ -653,7 +664,7 @@ public class AccountHome extends FedeController implements Serializable {
         setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
     }
-
+    
     public void calculeRangeReport() {
         Calendar dayDate = Calendar.getInstance();
         setEnd(Dates.maximumDate(Dates.now()));
@@ -684,7 +695,7 @@ public class AccountHome extends FedeController implements Serializable {
         }
         return mostrarFormularioRecord(null);
     }
-
+    
     public boolean mostrarFormularioRecord(Map<String, List<String>> params) {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "400");
@@ -693,7 +704,7 @@ public class AccountHome extends FedeController implements Serializable {
         super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALLEDGER_RECORD, width, height, left, top, true, params);
         return true;
     }
-
+    
     public void loadSessionParametersRecord() {
         if (existsSessionParameter("recordId")) {
             this.setRecordId((Long) getSessionParameter("recordId"));
@@ -701,12 +712,12 @@ public class AccountHome extends FedeController implements Serializable {
         this.getRecord(); //Carga el objeto persistente
         updateBackUpRecord(); //Respaldar el record original
     }
-
+    
     public void closeFormularioRecord(Object data) {
         removeSessionParameter("recordId");
         super.closeDialog(data);
     }
-
+    
     private void updateBackUpRecord() {
         recordDetailsUpdate = new ArrayList<>();
         RecordDetail recordDetailUpdate = recordDetailService.createInstance();
@@ -732,7 +743,7 @@ public class AccountHome extends FedeController implements Serializable {
     public boolean isRecordOfReferen() {
         return this.record.getBussinesEntityId() == null;
     }
-
+    
     public void messageEditableRecord() {
         if (!isRecordOfReferen()) {
             this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.not.editable.message", " " + this.record.getBussinesEntityType()));
@@ -779,7 +790,7 @@ public class AccountHome extends FedeController implements Serializable {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
         }
     }
-
+    
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -807,7 +818,7 @@ public class AccountHome extends FedeController implements Serializable {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.account.none"));
         }
     }
-
+    
     public void registerRecordInJournal() {
         GeneralJournal journal = buildFindJournal();//Crear o encontrar el journal y el record, para insertar los recordDetails
         Record record = buildRecord();
@@ -819,7 +830,7 @@ public class AccountHome extends FedeController implements Serializable {
         journalService.save(journal.getId(), journal); //Guardar el journal
 
     }
-
+    
     private GeneralJournal buildFindJournal() {
         GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
         if (generalJournal == null) {
@@ -833,13 +844,13 @@ public class AccountHome extends FedeController implements Serializable {
         }
         return generalJournal;
     }
-
+    
     private Record buildRecord() {
         Record recordGeneral = recordService.createInstance();
         recordGeneral.setOwner(subject);
         return recordGeneral;
     }
-
+    
     private RecordDetail updateRecordDetail(String NameAccount) {
         RecordDetail recordDetailGeneral = recordDetailService.createInstance();
         if (this.amountAccount.compareTo(BigDecimal.ZERO) == 1) {
@@ -855,12 +866,12 @@ public class AccountHome extends FedeController implements Serializable {
         }
         return recordDetailGeneral;
     }
-
+    
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     public void findRecordDetailAccountTop() {
         this.amountDebeRdOld = BigDecimal.ZERO;
         this.amountHaberRdOld = BigDecimal.ZERO;
@@ -901,7 +912,7 @@ public class AccountHome extends FedeController implements Serializable {
         super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALLEDGER, width, height, left, top, true, params);
         return true;
     }
-
+    
     public boolean mostrarFormularioLedger(Account account) {
         if (account != null) {
             this.accountSelected = account;
@@ -909,20 +920,20 @@ public class AccountHome extends FedeController implements Serializable {
         if (this.accountSelected != null) {
             super.setSessionParameter("account", this.accountSelected);
         }
-
+        
         return mostrarFormularioLedgerValues(null);
     }
-
+    
     public void closeFormularioLedger(Object data) {
         removeSessionParameter("account");
         super.closeDialog(data);
     }
-
+    
     public void loadSessionParameters() {
         if (existsSessionParameter("account")) {
             this.setAccountSelected((Account) getSessionParameter("account"));
             this.getAccountSelected(); //Carga el objeto persistente
         }
     }
-
+    
 }

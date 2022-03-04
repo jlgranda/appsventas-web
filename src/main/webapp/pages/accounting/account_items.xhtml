@@ -32,38 +32,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/accounting/account_items.jsf">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
+            <li><p:link outcome="accounts">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <p:treeTable id="treeTable-generalLedger" 
-                                 value="#{accountHome.treeDataModel}" var="account"
-                                 selectionMode="single" selection="#{accountHome.singleSelectedNode}">
-                        <f:facet name="header">
-                            <p:button value="#{i18n['common.newa']} #{i18n['app.fede.accounting.account']}"
-                                      icon="pi pi-dollar" styleClass="danger-btn" style="display: flex;"
-                                      outcome="/pages/accounting/account.jsf"/>
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <p:button value="#{i18n['common.newa']}"
+                                      icon="pi pi-plus-circle" styleClass="danger-btn"
+                                      outcome="account"/>
                         </f:facet>
-                        <!--<p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>-->
-                        <p:column headerText="#{i18n['common.code']}" filterBy="#{account.code}" filterMatchMode="contains" style="width: 10rem">
-                            <h:outputText value="#{account.code}"/>
-                        </p:column>
-                        <p:column headerText="#{i18n['common.name']}" filterBy="#{account.name}" filterMatchMode="contains">
-                            <h:outputText value="#{account.name}"/>
-                        </p:column>
-                        <p:column  headerText="#{i18n['common.date.created']}" style="width: 10rem">
-                            <h:outputText value="#{account.createdOn}">
-                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                            </h:outputText>
-                        </p:column>
-                        <p:column style="width: 5rem">
-                            <p:button title="#{i18n['common.edit']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
-                                      outcome="/pages/accounting/account.jsf?accountId=#{account.id}"/>
-                            <p:button icon="fa fa-plus-square-o" title="Añadir subcuenta" styleClass="primary-button rounded-btn"
-                                      outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />
-                        </p:column>
-                    </p:treeTable>
+                        <f:facet name="right">
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <div class="card">
+                        <p:treeTable id="treeTable-generalLedger" 
+                                     value="#{accountHome.treeDataModel}" var="account"
+                                     selectionMode="single" selection="#{accountHome.singleSelectedNode}">
+                            <!--<p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>-->
+                            <p:column headerText="#{i18n['common.code']}" filterBy="#{account.code}" filterMatchMode="contains" style="width: 10rem">
+                                <h:outputText value="#{account.code}"/>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.name']}" filterBy="#{account.name}" filterMatchMode="contains">
+                                <h:outputText value="#{account.name}"/>
+                            </p:column>
+                            <p:column  headerText="#{i18n['common.date.created']}" style="width: 10rem">
+                                <h:outputText value="#{account.createdOn}">
+                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column style="width: 5rem">
+                                <p:button title="#{i18n['common.edit']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
+                                          outcome="/pages/accounting/account.jsf?accountId=#{account.id}"/>
+                                <p:button icon="fa fa-plus-square-o" title="Añadir subcuenta" styleClass="primary-button rounded-btn"
+                                          outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />
+                            </p:column>
+                        </p:treeTable>
+                    </div>
                 </div>
             </div>
         </ui:define>

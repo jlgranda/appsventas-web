@@ -205,6 +205,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>account</from-outcome>
+            <to-view-id>/pages/accounting/account.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>journals</from-outcome>
             <to-view-id>/pages/accounting/journal_items.jsf</to-view-id>
             <redirect />
