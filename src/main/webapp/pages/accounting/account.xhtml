@@ -47,14 +47,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                 <h1>#{i18n['app.fede.accounting.account'].toUpperCase()}</h1>
                 <div class="ui-fluid">
+                    
+                    
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                        <p:outputLabel value="#{i18n['app.fede.accounting.account.parent']}" for="@next"/>
-                        <p:selectOneMenu id="account" value="#{accountHome.parentAccount}" style="width: 100%"
-                                         required="#{false}" immediate="true"
-                                         converter="org.jlgranda.fede.ui.converter.AccountConverter">
-                            <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                            <p:ajax update="@this"></p:ajax>
-                        </p:selectOneMenu>
+                        <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
+                        <p:autoComplete id="account" 
+                                        value="#{accountHome.parentAccount}" var="account"
+                                        itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                        completeMethod="#{accountHome.find}"
+                                        converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                        converterMessage="El convertidor no responde."
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                        forceSelection="true" emptyMessage="No se encontraron resultados."
+                                        cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        dropdown="false">
+                            <p:column>
+                                <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                            </p:column>
+                            <p:ajax process="@this"/>
+                        </p:autoComplete>
                     </div>
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
                                     value="#{accountHome.account.code}" required="true"
