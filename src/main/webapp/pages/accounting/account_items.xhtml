@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -49,10 +49,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
-                        <p:treeTable id="treeTable-generalLedger" 
+                        <p:treeTable id="treeTable" 
                                      value="#{accountHome.treeDataModel}" var="account"
-                                     selectionMode="checkbox" selection="#{accountHome.selectedNodes}">
-                            <!--<p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>-->
+                                     selectionMode="checkbox" selection="#{accountHome.selectedNodes}"
+                                     propagateSelectionUp="#{false}" propagateSelectionDown="#{false}"
+                                     style="padding-left: 0.8rem; padding-right: 0.8rem;">
+                            <p:ajax event="select" update=":form:panelSelectedToolBar"/>
                             <p:column headerText="#{i18n['common.code']}" filterBy="#{account.code}" filterMatchMode="contains" style="width: 10rem">
                                 <h:outputText value="#{account.code}"/>
                             </p:column>
@@ -71,28 +73,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                           outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />
                             </p:column>
                         </p:treeTable>
-<!--                        <p:treeTable id="treeTable-generalLedger" 
-                                     value="#{accountHome.treeDataModel}" var="account"
-                                     selectionMode="single" selection="#{accountHome.singleSelectedNode}">
-                            <p:ajax event="select" listener="#{accountHome.onNodeSelect}" update="treeTable-generalLedger"/>
-                            <p:column headerText="#{i18n['common.code']}" filterBy="#{account.code}" filterMatchMode="contains" style="width: 10rem">
-                                <h:outputText value="#{account.code}"/>
-                            </p:column>
-                            <p:column headerText="#{i18n['common.name']}" filterBy="#{account.name}" filterMatchMode="contains">
-                                <h:outputText value="#{account.name}"/>
-                            </p:column>
-                            <p:column  headerText="#{i18n['common.date.created']}" style="width: 10rem">
-                                <h:outputText value="#{account.createdOn}">
-                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                </h:outputText>
-                            </p:column>
-                            <p:column style="width: 5rem">
-                                <p:button title="#{i18n['common.edit']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
-                                          outcome="/pages/accounting/account.jsf?accountId=#{account.id}"/>
-                                <p:button icon="fa fa-plus-square-o" title="Añadir subcuenta" styleClass="primary-button rounded-btn"
-                                          outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />
-                            </p:column>
-                        </p:treeTable>-->
+                        <p:panel id="panelSelectedToolBar">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty accountHome.selectedNodes}">
+                                <f:facet name="left">
+                                    <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                    <div class="ui-g">
+                                        <p:selectOneMenu value="#{accountHome.selectedAction}">
+                                            <f:selectItems value="#{accountHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                            <f:ajax render="selectedToolBar"></f:ajax>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <p:panel id="panelMoverTo" rendered="#{accountHome.selectedAction eq 'moveto'}">
+                                        <p:autoComplete id="account" 
+                                                        value="#{accountHome.parentAccountMoveTo}" var="account"
+                                                        itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                                        completeMethod="#{accountHome.find}"
+                                                        converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                                        converterMessage="El convertidor no responde."
+                                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                                        forceSelection="true" emptyMessage="No se encontraron resultados."
+                                                        cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                        dropdown="false">
+                                            <p:column>
+                                                <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                                            </p:column>
+                                            <p:ajax process="@this"/>
+                                        </p:autoComplete>
+                                    </p:panel>
+                                    <p:commandButton id="go-button"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                     actionListener="#{accountHome.execute()}" action="#{accountHome.getOutcome()}"
+                                                     disabled="#{not accountHome.actionExecutable}"
+                                                     ajax="true" update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </f:facet>
+                            </p:toolbar>
+                        </p:panel>
                     </div>
                 </div>
             </div>
