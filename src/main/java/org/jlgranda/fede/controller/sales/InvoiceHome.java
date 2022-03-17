@@ -56,6 +56,7 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import org.jlgranda.fede.Constantes;
 
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
@@ -1388,7 +1389,9 @@ public class InvoiceHome extends FedeController implements Serializable {
      * Enviar agradecimiento de compra
      */
     public void sendNotification() {
-        if (this.invoice.isPersistent() && !this.isUseDefaultCustomer()) {
+        if (this.invoice.isPersistent() 
+                && this.invoice.getOwner() != null 
+                && !"consumidorfinal@fede.com".equalsIgnoreCase(this.invoice.getOwner().getEmail())) {
             //Agradecimiento compra
             String url = this.organizationData.getOrganization().getUrl();
             String url_title = this.organizationData.getOrganization().getName();

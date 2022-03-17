@@ -231,7 +231,7 @@ public class TemplateHome extends FedeController implements Serializable {
             logger.warn(I18nUtil.getMessages("app.mail.template.404", templateId));
         } else {
 
-            String _from = settingHome.getValue("mail.smtps.from", "APPSVENTAS <appsventas@jlgranda.com>");
+            String _from = settingHome.getValue("mail.smtps.from", "AppsVentas Plataforma <notificacion@jlgranda.com>");
             String title;
             String body;
             String txt;
