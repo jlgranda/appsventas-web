@@ -190,6 +190,7 @@ public class SubjectHome extends FedeController implements Serializable {
      * @param _signup el objeto <tt>Subject</tt> a agregar
      * @param owner el propietario del objeto a agregar
      * @param roles
+     * @param setupRoles
      */
     public void processSignup(Subject _signup, Subject owner, String roles, boolean setupRoles) {
         if (_signup != null) {
