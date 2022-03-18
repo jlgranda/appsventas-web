@@ -856,7 +856,13 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public String save(boolean force) {
-        if (candidateDetails.isEmpty() && !force) {
+        List<Detail> details = new ArrayList<>();
+        candidateDetails.forEach(d -> {//Quitar los detalles en amount 0
+            if (BigDecimal.ZERO.compareTo(d.getAmount()) == -1) {
+                details.add(d);
+            }
+        });
+        if (details.isEmpty() && !force) {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.invoice.incomplete"), I18nUtil.getMessages("app.fede.sales.invoice.incomplete.detail"));
             setOutcome("");
             return "";
@@ -865,7 +871,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setAuthor(subject);
             getInvoice().setOwner(getCustomer()); //Propietario de la factura, la persona que realiza la compra
             getInvoice().setOrganization(this.organizationData.getOrganization());
-            getCandidateDetails().stream().forEach((d) -> {
+            details.stream().forEach((d) -> {
                 if (d.isPersistent()) { //Actualizar la cantidad
                     getInvoice().replaceDetail(d);
                 } else {

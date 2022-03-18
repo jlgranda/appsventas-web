@@ -37,9 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.accounting']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/accounting/account_items.jsf">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
+        <li><p:link outcome="accounts">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="/pages/accounting/account.jsf">#{accountHome.accountId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.fede.accounting.account']) : i18n['common.edit'].concat(': ')} #{accountHome.account.name}</p:link></li>
+        <li><p:link outcome="account">#{accountHome.accountId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.fede.accounting.account']) : i18n['common.edit'].concat(': ')} #{accountHome.account.name}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
@@ -49,12 +49,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-fluid">
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <p:outputLabel value="#{i18n['app.fede.accounting.account.parent']}" for="@next"/>
-                        <p:selectOneMenu id="account" value="#{accountHome.parentAccount}" style="width: 100%"
-                                         required="#{false}" immediate="true"
-                                         converter="org.jlgranda.fede.ui.converter.AccountConverter">
-                            <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                            <p:ajax update="@this"></p:ajax>
-                        </p:selectOneMenu>
+                        <p:autoComplete id="account" 
+                                        value="#{accountHome.parentAccount}" var="account"
+                                        itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                        completeMethod="#{accountHome.find}"
+                                        converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                        converterMessage="El convertidor no responde."
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                        forceSelection="true" emptyMessage="No se encontraron resultados."
+                                        cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        dropdown="false">
+                            <p:column>
+                                <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                            </p:column>
+                            <p:ajax process="@this"/>
+                        </p:autoComplete>
                     </div>
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
                                     value="#{accountHome.account.code}" required="true"
@@ -63,8 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <p:outputLabel value="#{i18n['common.name']}" for="@next"/>
                         <p:inputText id="nme" 
-                                     value="#{accountHome.account.name}" required="true">
-                            <p:ajax event="keyup" listener="#{accountHome.validateAccountNew(accountHome.account.name)}" update="save-button" />
+                                     value="#{accountHome.accountName}" required="true">
+                            <p:ajax event="keyup" listener="#{accountHome.validateAccountNew(accountHome.accountName)}" update="save-button" />
                         </p:inputText>
                     </div>
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"

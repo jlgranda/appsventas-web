@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -101,14 +102,17 @@ public class AccountHome extends FedeController implements Serializable {
     //Modelo de árbol de datos
     private TreeNode treeDataModel;
     private TreeNode singleSelectedNode;
+    private TreeNode<Account>[] selectedNodes;
 
     //Objetos Account para edición
     private Long accountId;
+    private String accountName;
     private Long parentAccountId;
     private Account account;
     private Account accountSelected;
     private Account parentAccount;
     private Account depositAccount;
+    private Account parentAccountMoveTo;
 
     //Calcular el GeneralLedger: Montos (recordDetails) de Accounts 
     private BigDecimal amountDebeRdOld;
@@ -149,6 +153,8 @@ public class AccountHome extends FedeController implements Serializable {
     private int rangeReport;
     private boolean validateAccount;
 
+    protected List<SelectItem> actions = new ArrayList<>();
+
     @PostConstruct
     private void init() {
 
@@ -177,6 +183,8 @@ public class AccountHome extends FedeController implements Serializable {
         setRangeReport(-1);
         setFundAccountMain(BigDecimal.ZERO);
         setFundOldAccountSelected(BigDecimal.ZERO);
+
+        initializeActions();
     }
 
     @Override
@@ -225,12 +233,28 @@ public class AccountHome extends FedeController implements Serializable {
         this.singleSelectedNode = singleSelectedNode;
     }
 
+    public TreeNode<Account>[] getSelectedNodes() {
+        return selectedNodes;
+    }
+
+    public void setSelectedNodes(TreeNode<Account>[] selectedNodes) {
+        this.selectedNodes = selectedNodes;
+    }
+
     public Long getAccountId() {
         return accountId;
     }
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
     }
 
     public Long getParentAccountId() {
@@ -248,6 +272,7 @@ public class AccountHome extends FedeController implements Serializable {
         if (this.accountId != null && !this.account.isPersistent()) {
             this.account = this.accountCache.lookup(this.accountId);
             this.parentAccount = this.accountCache.lookup(this.account.getParentAccountId());
+            setAccountName(this.account.getName());
         }
         return account;
     }
@@ -273,6 +298,14 @@ public class AccountHome extends FedeController implements Serializable {
 
     public void setParentAccount(Account parentAccount) {
         this.parentAccount = parentAccount;
+    }
+
+    public Account getParentAccountMoveTo() {
+        return parentAccountMoveTo;
+    }
+
+    public void setParentAccountMoveTo(Account parentAccountMoveTo) {
+        this.parentAccountMoveTo = parentAccountMoveTo;
     }
 
     public Account getDepositAccount() {
@@ -391,6 +424,14 @@ public class AccountHome extends FedeController implements Serializable {
 
     public void setValidateAccount(boolean validateAccount) {
         this.validateAccount = validateAccount;
+    }
+
+    public List<SelectItem> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<SelectItem> actions) {
+        this.actions = actions;
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -559,6 +600,7 @@ public class AccountHome extends FedeController implements Serializable {
      *
      */
     public void save() {
+        this.account.setName(this.getAccountName());
         if (this.parentAccount != null) {
             account.setParentAccountId(this.parentAccount.getId());
         }
@@ -923,6 +965,55 @@ public class AccountHome extends FedeController implements Serializable {
             this.setAccountSelected((Account) getSessionParameter("account"));
             this.getAccountSelected(); //Carga el objeto persistente
         }
+    }
+
+//Acciones sobre seleccionados
+    public void execute() {
+        if (this.isActionExecutable()) {
+            if ("moveto".equalsIgnoreCase(this.selectedAction)) {
+                for (TreeNode<Account> tree : this.getSelectedNodes()) {
+                    Account ac = tree.getData();
+                    ac.setParentAccountId(this.parentAccountMoveTo.getId());
+                    System.out.println("ac A::::" + ac.getName());
+                    accountService.save(ac.getId(), ac);
+//                    if (!tree.getChildren().isEmpty()) {
+//                        moveToAccount(tree.getChildren());
+//                    }
+                }
+                setTreeDataModel(createTreeAccounts());//Refrescar el árbol de cuentas
+                setOutcome("");
+            }
+        }
+    }
+
+    private void moveToAccount(List<TreeNode<Account>> tree) {
+        for (TreeNode<Account> node : tree) {
+            Account ac = node.getData();
+            ac.setParentAccountId(this.parentAccountMoveTo.getId());
+            System.out.println("ac V::::" + ac.getName());
+//            accountService.save(ac.getId(), ac);
+            if (!node.getChildren().isEmpty()) {
+                moveToAccount(node.getChildren());
+            }
+        };
+    }
+
+    public boolean isActionExecutable() {
+        if ("moveto".equalsIgnoreCase(this.selectedAction) && this.selectedNodes.length > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+
+        item = new SelectItem("moveto", I18nUtil.getMessages("common.moveto"));
+        actions.add(item);
+
     }
 
 }
