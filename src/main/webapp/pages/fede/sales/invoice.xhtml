@@ -416,7 +416,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         display: none !important; /* hide PDF viewer toolbar */
                     }		
                 </style>				   	               
-                <iframe id="ifrmReportViewer" src="#{request.contextPath}/fedeServlet/?entity=invoice&amp;id=#{invoiceHome.invoice.sequencial}&amp;type=pdf" height="100%" width="100%"></iframe> 
+                <iframe id="ifrmReportViewer" src="#{request.contextPath}/fedeServlet/?entity=invoice&amp;id=#{invoiceHome.invoice.uuid}&amp;type=pdf" height="100%" width="100%"></iframe> 
             </p:dialog>
         </h:panelGroup>
     </ui:define>

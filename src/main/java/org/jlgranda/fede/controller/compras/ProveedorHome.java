@@ -229,7 +229,6 @@ public class ProveedorHome extends FedeController implements Serializable {
 //            //Cerrar y regresar a pantalla de factura
 //            closeFormularioProfile(getSupplier());
             setSupplier(getSubjectAdminHome().getSubjectEdit());
-            System.out.println("save-proveeedor:::" + proveedor);
             if (proveedor.isPersistent()) {
                 if (proveedor.getOrganization() == null) {
                     proveedor.setOrganization(organizationData.getOrganization());

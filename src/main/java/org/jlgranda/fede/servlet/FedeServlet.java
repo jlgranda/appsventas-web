@@ -27,6 +27,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.jlgranda.fede.Constantes;
 import org.jpapi.util.Strings;
 
 /**
@@ -72,7 +73,7 @@ public class FedeServlet extends HttpServlet {
                                 System.err.println("entity: " + entity + ", id=" + entityId + ", ERROR: // 404.");
                                 return;
                             }
-                            file = new File("/tmp/" + entityId + ".pdf");
+                            file = new File(Constantes.DIRECTORIO_SALIDA_REPORTES + entityId + ".pdf");
                             contents = getContent(file);
                             if (contents == null) {
                                 response.sendError(HttpServletResponse.SC_NO_CONTENT); // 404.

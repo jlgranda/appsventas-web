@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jlgranda.fede.Constantes;
+import org.jlgranda.util.IOUtils;
 
 /**
  * The Class ReportUtil.
@@ -86,8 +87,72 @@ public class ReportUtil implements Serializable {
             JasperPrint jasperPrint = JasperFillManager.fillReport(
                     jasperReport, params, conn);
 
-            //nombreReporteSalida = Constantes.REPORTE_BASE_NAME + System.currentTimeMillis() + ".pdf";
-            nombreReporteSalida = "kellyreport.pdf";
+            nombreReporteSalida = Constantes.REPORTE_BASE_NAME + System.currentTimeMillis() + ".pdf";
+            //nombreReporteSalida = "kellyreport.pdf";
+
+            String nombreDocumento = rutaDirectorioSalida + nombreReporteSalida;
+            output = new FileOutputStream(
+                    new File(nombreDocumento));
+            JasperExportManager.exportReportToPdfStream(jasperPrint, output);
+
+        } catch (NamingException | SQLException | JRException | IOException e) {
+            Logger.getLogger(ReportUtil.class.getName()).log(Level.SEVERE, e.getLocalizedMessage());
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace(System.out);
+                }
+            }
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace(System.out);
+                }
+            }
+        }
+
+        return nombreReporteSalida;
+    }
+    
+    /**
+     * Generar reporte.
+     *
+     * @param rutaDirectorioSalida
+     * @param rutaArchivoJasper
+     * @param nombreReporte
+     * @param params the params
+     * @return the string
+     * @throws JRException the JR exception
+     */
+    public String generarReporte(String rutaDirectorioSalida, String rutaArchivoJasper, String nombreReporte, Map<String, Object> params) throws JRException {
+        String nombreReporteSalida = "";
+        
+        //Aseguar directorio de salida de reportes
+        IOUtils.prepareDirectory(rutaDirectorioSalida);
+        
+        Connection conn = null;
+        OutputStream output = null;
+        try {
+            InitialContext initialContext = null;
+            DataSource ds = null;
+
+            initialContext = new InitialContext();
+
+            ds = (DataSource) initialContext.lookup(Constantes.JNDI_NAME);
+            conn = ds.getConnection();
+
+            JasperReport jasperReport = null;
+
+            jasperReport = (JasperReport) JRLoader.loadObjectFromFile(rutaArchivoJasper);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    jasperReport, params, conn);
+            
+            nombreReporteSalida = nombreReporte + ".pdf";
+            //nombreReporteSalida = "kellyreport.pdf";
 
             String nombreDocumento = rutaDirectorioSalida + nombreReporteSalida;
             output = new FileOutputStream(
