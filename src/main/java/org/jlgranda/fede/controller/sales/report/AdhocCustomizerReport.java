@@ -43,6 +43,7 @@ import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.dynamicreports.report.definition.datatype.DRIDataType;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.model.sales.Invoice;
 
 /**
@@ -120,7 +121,7 @@ public class AdhocCustomizerReport {
             
             
             //PDF
-            JasperPdfExporterBuilder pdfExporter = export.pdfExporter("/tmp/" + invoice.getSequencial() + ".pdf")
+            JasperPdfExporterBuilder pdfExporter = export.pdfExporter(Constantes.DIRECTORIO_SALIDA_REPORTES + invoice.getUuid() + ".pdf")
                     .setEncrypted(false);
             reportBuilder.toPdf(pdfExporter);
             
