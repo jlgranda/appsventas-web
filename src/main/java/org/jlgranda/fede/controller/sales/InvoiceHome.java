@@ -68,6 +68,8 @@ import org.jlgranda.fede.controller.admin.SubjectAdminHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.controller.compras.ProveedorHome;
 import org.jlgranda.fede.controller.inventory.InventoryHome;
+import org.jlgranda.fede.controller.sales.report.AdhocCustomizerReport;
+import org.jlgranda.fede.controller.sales.report.InvoiceDesign;
 import org.jlgranda.fede.model.Detailable;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
@@ -767,29 +769,30 @@ public class InvoiceHome extends FedeController implements Serializable {
         setInvoice(invoiceService.createInstance());
         getInvoice(); //recargar la instancia actual
         
-        //Imprimir reporte via el sistema general de reportes
-        Map<String, Object> params = new HashMap<>();
-        params.put("invoiceId", this.invoice.getId().intValue());
-        params.put("param_cliente", "Cliente: " + invoice.getOwner().getFullName());
-        params.put("param_ruc", "C.I./RUC: " + invoice.getOwner().getCode());
-        params.put("param_direccion", "Dirección: " + invoice.getOwner().getDescription());
-        params.put("param_telefono", "Teléfono: " + invoice.getOwner().getMobileNumber());
-        params.put("param_correo", "Correo: " + corregirCorreoElectronico(invoice.getOwner().getEmail()));
-        params.put("param_fecha", "Fecha: " + Dates.toString(invoice.getCreatedOn(), "d/MM/yyyy HH:mm"));
-        params.put("param_mesa", "Mesa: " + invoice.getBoardNumber() + " : " + invoice.getCode() + " / Servicio: " + invoice.getAuthor().getFirstname());
-        try {
-            ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, "/home/opt/appsventas/reportes/factura-rollpaper_76x297.jasper", this.invoice.getUuid(), params);
-        } catch (JRException ex) {
-            java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //Imprimir reporte
-//        Map<String, String> settings = new HashMap<>();
-//        settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "40"));
-//        //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
-//        settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "9"));
-//        settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));
+//        //Imprimir reporte via el sistema general de reportes
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("invoiceId", this.invoice.getId().intValue());
+//        params.put("param_cliente", "Cliente: " + invoice.getOwner().getFullName());
+//        params.put("param_ruc", "C.I./RUC: " + invoice.getOwner().getCode());
+//        params.put("param_direccion", "Dirección: " + invoice.getOwner().getDescription());
+//        params.put("param_telefono", "Teléfono: " + invoice.getOwner().getMobileNumber());
+//        params.put("param_correo", "Correo: " + corregirCorreoElectronico(invoice.getOwner().getEmail()));
+//        params.put("param_fecha", "Fecha: " + Dates.toString(invoice.getCreatedOn(), "d/MM/yyyy HH:mm"));
+//        params.put("param_mesa", "Mesa: " + invoice.getBoardNumber() + " : " + invoice.getCode() + " / Servicio: " + invoice.getAuthor().getFirstname());
+//        try {
+//            ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, "/home/opt/appsventas/reportes/factura-rollpaper_76x297.jasper", this.invoice.getUuid(), params);
+//        } catch (JRException ex) {
+//            java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        //Imprimir reporte con dynamic report
+        Map<String, String> settings = new HashMap<>();
+        settings.put("app.fede.report.invoice.startLine", settingHome.getValue("app.fede.report.invoice.startLine", "40"));
+        //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
+        settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "9"));
+        settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));
 
-        //AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(getInvoice(), settings);
+        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(getInvoice(), settings);
+        
         //InvoiceDesign invoiceDesign = new InvoiceDesign(getInvoice(), settings);
         //Invocar Servlet en nueva ventana del navegador
 //            redirectTo("/fedeServlet/?entity=invoice&id=" + getInvoice().getSequencial() + "&type=odt");
