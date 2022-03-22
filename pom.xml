@@ -19,7 +19,7 @@
         <primefaces.theme.version>1.0.10</primefaces.theme.version>
         <hibernate.version>5.4.24.Final</hibernate.version>
 
-        <shiro.version>1.7.1</shiro.version>
+        <shiro.version>1.8.0</shiro.version>
         <deltaspike.version>1.8.2</deltaspike.version>
         <slf4j.version>1.6.4</slf4j.version>
         <!-- WildFly dependency versions -->
