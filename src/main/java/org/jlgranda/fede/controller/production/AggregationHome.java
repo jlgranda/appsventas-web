@@ -17,9 +17,11 @@
 package org.jlgranda.fede.controller.production;
 
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.production.AggregationDetailService;
 import com.jlgranda.fede.ejb.production.AggregationService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -67,26 +69,38 @@ public class AggregationHome extends FedeController implements Serializable {
     @EJB
     private AggregationService aggregationService;
     @EJB
+    private AggregationDetailService aggregationDetailService;
+    @EJB
     private ProductCache productCache;
 
     /**
-     * Objeto de edición.
+     * EDIT OBJECT.
      */
     private Long aggregationId;
     private Aggregation aggregation;
-    private AggregationDetail detail;
+    private AggregationDetail aggregationDetail;
 
     /**
-     * Auxiliares.
+     * UX.
      */
     private LazyAggregationDataModel lazyDataModel;
+    private BigDecimal priceUnit;
     private List<Aggregation> productosAgregaciones;
     private List<ProductAggregations> productoAgregaciones;
 
     @PostConstruct
     private void init() {
         setAggregation(aggregationService.createInstance());
+        setAggregationDetail(aggregationDetailService.createInstance());
+        setPriceUnit(BigDecimal.ZERO);
+    }
 
+    public Long getAggregationId() {
+        return aggregationId;
+    }
+
+    public void setAggregationId(Long aggregationId) {
+        this.aggregationId = aggregationId;
     }
 
     public Aggregation getAggregation() {
@@ -100,20 +114,12 @@ public class AggregationHome extends FedeController implements Serializable {
         this.aggregation = aggregation;
     }
 
-    public Long getAggregationId() {
-        return aggregationId;
-    }
-
-    public void setAggregationId(Long aggregationId) {
-        this.aggregationId = aggregationId;
-    }
-
     public AggregationDetail getAggregationDetail() {
-        return this.detail;
+        return this.aggregationDetail;
     }
 
-    public void setAggregationDetail(AggregationDetail detail) {
-        this.detail = detail;
+    public void setAggregationDetail(AggregationDetail aggregationDetail) {
+        this.aggregationDetail = aggregationDetail;
     }
 
     public LazyAggregationDataModel getLazyDataModel() {
@@ -124,6 +130,84 @@ public class AggregationHome extends FedeController implements Serializable {
         this.lazyDataModel = lazyDataModel;
     }
 
+    public BigDecimal getPriceUnit() {
+        return priceUnit;
+    }
+
+    public void setPriceUnit(BigDecimal priceUnit) {
+        this.priceUnit = priceUnit;
+    }
+
+    /**
+     * METHODS.
+     */
+    public void aggregationDetailAdd() {
+        if (this.aggregation.getProduct() != null) {
+            if (this.aggregationDetail.getProduct() != null && this.aggregationDetail.getQuantity() != null && this.priceUnit != null) {
+                if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getQuantity()) == -1 && BigDecimal.ZERO.compareTo(this.aggregationDetail.getProduct().getPriceCost()) == -1) {
+                    this.aggregationDetail.setCost(this.aggregationDetail.getQuantity().multiply(this.priceUnit));
+                }
+                this.aggregationDetailValid();
+            } else {
+                addWarningMessage(I18nUtil.getMessages("action.warn"), I18nUtil.getMessages("property.required.invalid.form"));
+            }
+        } else {
+            addWarningMessage(I18nUtil.getMessages("action.warn"), I18nUtil.getMessages("app.fede.inventory.product.main.required"));
+        }
+    }
+
+    public void saveAggregation() {
+        if (this.aggregation.isPersistent()) {
+            this.aggregation.setLastUpdate(Dates.now());
+        } else {
+            this.aggregation.setAuthor(subject);
+            this.aggregation.setOwner(subject);
+            this.aggregation.setOrganization(this.organizationData.getOrganization());
+        }
+        aggregationService.save(aggregation.getId(), aggregation);
+        //Actualizar la agregación
+        setAggregationId(this.aggregation.getId());
+        this.getAggregation();
+    }
+
+    /**
+     * METHODS UTIL.
+     */
+    public List<Product> filterProductsService(String query) {
+        return productCache.lookup(query, ProductType.SERVICE, this.organizationData.getOrganization()); //sólo servicios
+    }
+
+    public List<Product> filterProductsRawMaterial(String query) {
+        return productCache.lookup(query, ProductType.RAW_MATERIAL, this.organizationData.getOrganization()); //sólo servicios
+    }
+
+    private void aggregationDetailValid() {
+        this.aggregationDetail.setAggregation(this.aggregation);
+        System.out.println("AAAA::: " + this.aggregation.getOrganization());
+        System.out.println("AAAA::: " + this.aggregation.getProduct());
+        System.out.println("this.agg::: " + this.aggregationDetail.getProduct());
+        System.out.println("this.agg::: " + this.aggregationDetail.getQuantity());
+        System.out.println("this.agg::: " + this.aggregationDetail.getCost());
+        if (this.aggregation.getAggregationDetails().contains(this.aggregationDetail)) {
+            int index = this.aggregation.getAggregationDetails().indexOf(this.aggregationDetail);
+            this.aggregation.getAggregationDetails().set(index, this.aggregationDetail);
+        } else {
+            this.aggregation.getAggregationDetails().add(this.aggregationDetail);
+        }
+        //Guardar la agregacion
+        System.out.println("this.asdasd::: " + this.aggregation.getAggregationDetails());
+        this.saveAggregation();
+        this.aggregationDetail = aggregationDetailService.createInstance();
+        this.priceUnit = BigDecimal.ZERO;
+    }
+
+    public void calculePriceUnit() {
+        if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getProduct().getPriceCost()) == -1) {
+            this.priceUnit = this.aggregationDetail.getProduct().getPriceCost();
+        }
+    }
+
+//BORRAR
     public List<Aggregation> getProductosAgregaciones() {
         return productosAgregaciones;
     }
@@ -138,32 +222,6 @@ public class AggregationHome extends FedeController implements Serializable {
 
     public void setProductoAgregaciones(List<ProductAggregations> productoAgregaciones) {
         this.productoAgregaciones = productoAgregaciones;
-    }
-
-    public List<Product> filterProducts(String query) {
-        return productCache.lookup(query, ProductType.PRODUCT, this.organizationData.getOrganization()); //sólo productos
-    }
-
-    public void aggregationAdd() {
-//        if (this.aggregation.getProduct() != null) {
-//            if (this.detail.getElement() != null && this.detail.getQuantity() != null && this.detail.getCost() != null) {
-//                this.aggregation.getDetails().add(this.detail);
-////                this.detail = aggregationService.createInstance();
-//            }
-//        } else {
-//            addWarningMessage(I18nUtil.getMessages("action.warn"), "Se requiere seleccionar el producto principal!");
-//        }
-    }
-
-    public void saveAggregation() {
-        if (aggregation.isPersistent()) {
-            aggregation.setLastUpdate(Dates.now());
-        } else {
-            aggregation.setAuthor(subject);
-            aggregation.setOwner(subject);
-//            aggregation.setOrganization(this.organizationData.getOrganization());
-        }
-        aggregationService.save(aggregation.getId(), aggregation);
     }
 
     @Override
