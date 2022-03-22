@@ -534,7 +534,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setShowPointLabels(false);
         model.setExtender("skinBar");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.product"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.inventory.product"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
@@ -563,7 +563,7 @@ public class SummaryHome extends FedeController implements Serializable {
         model.setShowPointLabels(false);
         model.setExtender("skinBar2");
 
-        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.product"));
+        Axis xAxis = new CategoryAxis(I18nUtil.getMessages("app.fede.inventory.product"));
         xAxis.setTickAngle(SummaryHome.TICKANGLE);
         model.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = model.getAxis(AxisType.Y);
@@ -639,7 +639,7 @@ public class SummaryHome extends FedeController implements Serializable {
         xAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
 
         Axis yAxis = model.getAxis(AxisType.Y);
-        yAxis.setLabel(I18nUtil.getMessages("common.product"));
+        yAxis.setLabel(I18nUtil.getMessages("app.fede.inventory.product"));
         yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "0")));
         return model;
     }

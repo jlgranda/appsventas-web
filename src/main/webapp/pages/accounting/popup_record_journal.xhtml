@@ -40,7 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <li>#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</li>
         </ui:define>
         <ui:define name="content">
-            <p:messages id="messages" showDetail="true" closable="true" >
+            <p:messages id="messages" showDetail="#{true}" closab"#{true}"ue" >
                 <p:autoUpdate />
             </p:messages>
             <div class="ui-g">
@@ -92,13 +92,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                             itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
                                                             completeMethod="#{recordHome.filterAccounts}"
                                                             converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                            converterMessage="El convertidor no responde."
+                                                            placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                                            emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                            converterMessage="#{i18n['property.converter.fail']}"
                                                             minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                             maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                            placeholder="#{i18n['app.fede.accounting.account.find']}"
-                                                            forceSelection="true" emptyMessage="No se encontraron resultados."
-                                                            cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                                            required="false">
+                                                            forceSelection="#{true}" dropdown="#{false}"
+                                                            cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                            required="#{false}">
                                                 <p:column>
                                                     <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
                                                 </p:column>
@@ -126,14 +127,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                             decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                             thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                             decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                                            container="none" rendered="true"/>
+                                                            container="none" rendered="#{true}"/>
                                         </div>
                                         <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: center; margin-top: 1rem">
                                             <p:commandButton id="btnRecordAdd"
                                                              icon="pi pi-check-square" styleClass="warning-btn"
                                                              value="#{i18n['common.add']}"
                                                              actionListener="#{generalJournalHome.recordDetailAdd}" 
-                                                             ajax="true" immediate="true"
+                                                             ajax="#{true}" immediate="#{true}"
                                                              disabled="#{empty generalJournalHome.recordDetail.account or empty generalJournalHome.recordDetail.recordDetailType}"
                                                              update="@form"/>
                                         </div>
@@ -174,7 +175,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:inputTextarea  class="BigTopic" style="font-weight: bold" 
                                                               value="#{generalJournalHome.record.description}" 
                                                               rows="3" cols="30" autoResize="false"
-                                                              required="true">
+                                                              required="#{true}">
                                                 <p:ajax process="@this"/>
                                                 <p:ajax event="keyup" update="btnRecordSave" />
                                             </p:inputTextarea>
@@ -189,7 +190,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                          value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
                                                          actionListener="#{generalJournalHome.recordSave()}"
                                                          disabled="#{empty generalJournalHome.record.recordDetails or empty generalJournalHome.record.description}"
-                                                         ajax="true" immediate="false" 
+                                                         ajax="#{true}" immediate="#{true}"
                                                          update="@form"/>
                                         <i class="pi pi-bars p-px-2"/>
                                     </f:facet>
@@ -197,7 +198,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton id="btnRecordCancel"
                                                          title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="primary-button"
                                                          actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal.id)}" action="#{generalJournalHome.getOutcome()}" 
-                                                         ajax="true" immediate="true"/>
+                                                         ajax="#{true}" immediate="#{true}"/>
                                     </f:facet>
                                 </p:toolbar>
                             </div>

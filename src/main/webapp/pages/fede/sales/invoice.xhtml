@@ -138,11 +138,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </c:if>
                     </div>
                     <p:panel id="AutoCompletePanel" class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
-                        <p:autoComplete value="#{invoiceHome.candidateDetail.product}" effect="fade" 
-                                        minQueryLength="2" completeMethod="#{inventoryHome.find}"
-                                        var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
-                                        converter="org.jlgranda.fede.ui.converter.ProductConverter" forceSelection="true"
-                                        placeholder="#{i18n['common.product.find']}">
+                        <p:autoComplete value="#{invoiceHome.candidateDetail.product}" var="entidad" 
+                                        itemLabel="#{entidad.name}" itemValue="#{entidad}" 
+                                        completeMethod="#{inventoryHome.find}"
+                                        converter="org.jlgranda.fede.ui.converter.ProductConverter"
+                                        placeholder="#{i18n['app.fede.inventory.product.find']}"
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{false}">
                             <p:column>
                                 <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
                             </p:column>
@@ -278,14 +285,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             itemLabel="#{entidad.code} #{entidad.fullName}" itemValue="#{entidad}" 
                                             completeMethod="#{invoiceHome.find}"
                                             converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                            converterMessage="El convertidor no responde."
+                                            disabled="#{invoiceHome.useDefaultCustomer}"
+                                            placeholder="#{i18n['common.find']}"
+                                            emptyMessage="#{i18n['app.setting.list.empty']}"
+                                            converterMessage="#{i18n['property.converter.fail']}"
                                             minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                             maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                            placeholder="#{i18n['common.find']}"
-                                            forceSelection="true" emptyMessage="No se encontraron resultados."
-                                            cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                            disabled="#{invoiceHome.useDefaultCustomer}"
-                                            required="true">
+                                            multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                            cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                            required="#{true}">
                                 <p:column>
                                     <h:outputText value="#{ui.renderer('', entidad)}"/>
                                 </p:column>
@@ -297,7 +305,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:commandButton id="button-change-customer" 
                                              icon="fa fa-user-plus" styleClass="primary-button"
                                              actionListener="#{invoiceHome.mostrarFormularioProfile()}"
-                                             ajax="true" immediate="true">
+                                             ajax="#{true}" immediate="#{true}">
                                 <p:ajax event="dialogReturn" update="@form"
                                         listener="#{invoiceHome.handleReturn}">
                                 </p:ajax>
@@ -332,7 +340,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:commandButton icon="pi pi-replay" styleClass="primary-button"
                                          title="#{i18n['common.back']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="preinvoices"
-                                         ajax="true" immediate="true"/>
+                                         ajax="#{true}" immediate="#{true}"/>
                         <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button">
                             <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                         icon="pi pi-check"
@@ -384,12 +392,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="#{invoiceHome.redirect}"
                                          rendered="#{not invoiceHome.invoice.persistent}"
-                                         ajax="true" immediate="true" type="submit"/>
+                                         ajax="#{true}" immediate="#{true}" type="submit"/>
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
                                          title="#{i18n['common.home']}"
                                          actionListener="#{invoiceHome.closeDialog(null)}" action="#{invoiceHome.redirect}"
                                          rendered="#{invoiceHome.invoice.persistent}"
-                                         ajax="true" immediate="true" type="submit"/>
+                                         ajax="#{true}" immediate="#{true}" type="submit"/>
                         <p:menuButton value="#{i18n['common.options']}" styleClass="secondary-button">
                             <p:menuitem value="#{i18n['common.cancel']}" 
                                         icon="pi pi-times"
@@ -414,7 +422,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <style>
                     #outerContainer #mainContainer div.toolbar {
                         display: none !important; /* hide PDF viewer toolbar */
-                    }		
+                    }
                 </style>				   	               
                 <iframe id="ifrmReportViewer" src="#{request.contextPath}/fedeServlet/?entity=invoice&amp;id=#{invoiceHome.invoice.uuid}&amp;type=pdf" height="100%" width="100%"></iframe> 
             </p:dialog>

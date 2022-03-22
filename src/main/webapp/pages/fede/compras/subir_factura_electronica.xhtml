@@ -32,11 +32,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     </h:head>
     <h:body>
         <h:form enctype="multipart/form-data" >
-            <p:growl id="messages" showDetail="true" />
+            <p:growl id="messages" showDetail="#{true}" />
             <p:fileUpload fileUploadListener="#{facturaElectronicaHome.handleFileUpload}"
-                          mode="advanced" dragDropSupport="true" auto="true" process="@form"
+                          mode="advanced" dragDropSupport="#{true}" auto="#{true}" process="@form"
                 label="#{i18n['common.choose.file']}" uploadLabel="#{i18n['common.upload']}" cancelLabel="#{i18n['common.cancel']}"
-                multiple="true" update="messages uploadedFiles " sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(xml|zip)$/" />
+                multiple="#{true}" update="messages uploadedFiles " sizeLimit="1048576" fileLimit="34" allowTypes="/(\.|\/)(xml|zip)$/" />
             
             <p:dataTable rendered="false" id="uploadedFiles" var="file" value="#{facturaElectronicaHome.uploadedFiles}">
                 <p:column headerText="#{i18n['common.name']} #{i18n['common.of']} #{i18n['common.file']}">

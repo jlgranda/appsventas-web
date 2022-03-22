@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
                                                          oncomplete="PF('dataTable').unselectAllRows()"
                                                          disabled="#{not generalJournalHome.actionExecutable}"
-                                                         ajax="true" update="@form">
+                                                         ajax="#{true}" update="@form">
                                             <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                         </p:commandButton>
                                     </div>

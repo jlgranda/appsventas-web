@@ -52,12 +52,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
                                     <h2 class="BigTopic">#{i18n['app.document.task.applicant']}</h2>
-                                    <p:autoComplete value="#{tareaHome.solicitante}" effect="fade" 
-                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                    var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
-                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                    <p:autoComplete value="#{tareaHome.solicitante}" var="entidad" 
+                                                    itemLabel="#{entidad.surname} #{entidad.firstname}" itemValue="#{entidad}" 
+                                                    completeMethod="#{subjectHome.find}"
                                                     converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                    forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
+                                                    disabled="#{tareaHome.tarea.persistent}"
+                                                    placeholder="#{i18n['common.find']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                    converterMessage="#{i18n['property.converter.fail']}"
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                                    cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                    required="#{true}">
                                         <p:column>
                                             <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
                                         </p:column>
@@ -68,12 +75,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="Container100  Responsive50">
                                 <h:panelGroup layout="block" class="ContainerIndent">
                                     <h2 class="BigTopic">#{i18n['app.document.task.consignee']}</h2>
-                                    <p:autoComplete value="#{tareaHome.destinatario}" effect="fade" 
-                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                    var="entidad" itemValue="#{entidad}"  itemLabel="#{entidad.surname} #{entidad.firstname}" multiple="false" 
-                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                    <p:autoComplete value="#{tareaHome.destinatario}" var="entidad"
+                                                    itemLabel="#{entidad.surname} #{entidad.firstname}" itemValue="#{entidad}"
+                                                    completeMethod="#{subjectHome.find}"
                                                     converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                    forceSelection="true" required="true">
+                                                    placeholder="#{i18n['common.find']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                    converterMessage="#{i18n['property.converter.fail']}"
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                                    cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                    required="#{true}">
                                         <p:column>
                                             <h:outputText value="#{entidad.surname} #{entidad.firstname}"/>
                                         </p:column>

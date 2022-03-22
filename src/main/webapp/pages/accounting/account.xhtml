@@ -54,13 +54,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
                                         completeMethod="#{accountHome.find}"
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                        converterMessage="El convertidor no responde."
+                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
-                                        forceSelection="true" emptyMessage="No se encontraron resultados."
-                                        cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                        dropdown="false">
+                                        forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{true}">
                             <p:column>
                                 <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
                             </p:column>
@@ -68,13 +69,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:autoComplete>
                     </div>
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
-                                    value="#{accountHome.account.code}" required="true"
+                                    value="#{accountHome.account.code}" required="#{true}"
                                     inlinehelp="#{messages['app.fede.accounting.account.code.inlinehelp']}"
                                     execute="@this save" render="code"/>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <p:outputLabel value="#{i18n['common.name']}" for="@next"/>
                         <p:inputText id="nme" 
-                                     value="#{accountHome.accountName}" required="true">
+                                     value="#{accountHome.accountName}" required="#{true}">
                             <p:ajax event="keyup" listener="#{accountHome.validateAccountNew(accountHome.accountName)}" update="save-button" />
                         </p:inputText>
                     </div>
@@ -91,7 +92,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
                                          actionListener="#{accountHome.save()}" action="#{accountHome.getOutcome()}"
                                          disabled="#{accountHome.validateAccount}"
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <i class="fa fa-bars p-px-2 MarRight10"/>
                         <p:button value="#{i18n['app.fede.accounting.account.child']}" icon="fa fa-plus-square-o" styleClass="primary-button"  style="width: auto !important;"
                                   outcome="/pages/accounting/account.jsf?parentAccountId=#{accountHome.account.id}"
@@ -101,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="primary-button"
                                          actionListener="#{accountHome.closeDialog(null)}" action="#{accountHome.getOutcome()}"
                                          disabled="#{false}" 
-                                         ajax="true" immediate="true"/>
+                                         ajax="#{true}" immediate="#{true}"/>
                     </f:facet>
                 </p:toolbar>
             </div>

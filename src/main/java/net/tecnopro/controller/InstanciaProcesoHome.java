@@ -441,7 +441,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             }
 
         } catch (IOException ex) {
-            addErrorMessage(ex, I18nUtil.getMessages("common.error.uploadfail"));
+            addErrorMessage(ex, I18nUtil.getMessages("common.error.upload"));
         }
     }
 

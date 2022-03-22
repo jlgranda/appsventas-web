@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <f:facet name="right">
                             <p:button value="#{i18n['common.newa']} #{i18n['bussines.entity.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
                             <p:commandButton id="import-button" value="#{i18n['common.import']}" 
-                                             ajax="true" immediate="true" icon="fas fa-file-import"
+                                             ajax="#{true}" immediate="#{true}" icon="fas fa-file-import"
                                              actionListener="#{recordTemplateHome.prepararImportarReglas()}"
                                              update="importarReglasDialog" 
                                              oncomplete="PF('importarReglasDialog').show()"
@@ -96,16 +96,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="popups">
             <!-- Ventanas de dialogo de edición -->
-            <p:dialog id="importarReglasDialog" header="Importa reglas desde" widgetVar="importarReglasDialog" minHeight="40" width="800" showEffect="fade" modal="true">
+            <p:dialog id="importarReglasDialog" header="Importa reglas desde" widgetVar="importarReglasDialog" minHeight="40" width="800" showEffect="fade" modal="#{true}">
                 <h:form id="importarReglasForm">
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12 ui-lg-12 ui-md-12">
                             <p:outputLabel for="organization" value="Organización fuente:" />
                             <p:selectOneMenu id="organization" value="#{recordTemplateHome.organizationFuenteReglas}"
-                                             required="true" immediate="true"> 
+                                             required="#{true}" immediate="#{true}"> 
                                 <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
-                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="true" update="dataTableImport, btn-importar"/>
-                                <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
+                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="#{true}" update="dataTableImport, btn-importar"/>
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="#{true}" itemValue="#{null}"/> 
                                 <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
                             </p:selectOneMenu>
                         </div>

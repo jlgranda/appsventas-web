@@ -105,7 +105,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      styleClass="danger-btn"><!--update=toolbar-close-->
                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                     </p:commandButton>
-                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="#{true}" width="350">
                         <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
                         <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
                     </p:confirmDialog>
@@ -343,7 +343,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                  sortMode="single"
                                                  editable="#{true}">
-                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills @form:panel-breakdown-totals" partialSubmit="true"/> subtotal-bills subtotal-bills
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills @form:panel-breakdown-totals" partialSubmit="#{true}"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                         </f:facet>
@@ -356,7 +356,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="#{true}" 
                                                                styleClass="" required="#{false}">
                                                     </p:spinner>
                                                 </f:facet>
@@ -388,7 +388,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                  sortMode="single"
                                                  editable="#{true}">
-                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="true"/>
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys @form:panel-breakdown-totals" partialSubmit="#{true}"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
                                         </f:facet>
@@ -401,7 +401,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="#{true}" 
                                                                styleClass="" required="#{false}">
                                                     </p:spinner>
                                                 </f:facet>
@@ -456,7 +456,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      styleClass="info-btn" style="width: auto !important"><!--update=toolbar-close-->
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                                     </p:commandButton>
-                                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="#{true}" width="350">
                                         <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
                                         <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
                                     </p:confirmDialog>
@@ -489,17 +489,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:panelGroup id="panel-deposit-detail">
                                 <h:panelGroup class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12"  rendered="#{cashBoxHome.activeSelectDeposit}">
                                     <div class="ui-g ui-panelgrid-cell ui-g-4 ui-md-4">#{i18n['app.fede.payment.cash']}
-                                        <p:inputNumber value="#{cashBoxHome.cashBoxPartial.amountDeposit}" required="true"
+                                        <p:inputNumber value="#{cashBoxHome.cashBoxPartial.amountDeposit}" required="#{true}"
                                                        inputStyle="text-align: right" symbol="$" disabled="#{!cashBoxHome.activeButtonSelectDeposit}"
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                            <p:ajax listener="#{cashBoxHome.validateAmountDeposit()}" update="panel-deposit-detail" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{cashBoxHome.validateAmountDeposit()}" update="panel-deposit-detail" partialSubmit="#{true}"></p:ajax>
                                         </p:inputNumber><!--id="amount-deposit" -->
                                     </div>
                                     <div class="ui-g ui-panelgrid-cell ui-g-8 ui-md-8">#{i18n['app.fede.accounting.accounts.plan']}
                                         <p:selectOneMenu value="#{cashBoxHome.cashBoxPartial.accountDeposit}" style="width: 100%"
-                                                         required="#{true}" immediate="true" disabled="#{cashBoxHome.activeButtonSelectDeposit}"
+                                                         required="#{true}" immediate="#{true}" disabled="#{cashBoxHome.activeButtonSelectDeposit}"
                                                          converter="org.jlgranda.fede.ui.converter.AccountConverter"> 
                                             <f:selectItems value="#{ui.getAccountAsSelectItem(accountHome.getAccounts())}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
                                             <p:ajax update="@this"></p:ajax>
@@ -547,7 +547,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                  sortMode="single"  
                                                  editable="#{true}">
-                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/> subtotal-bills subtotal-bills
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-bills-fund @form:panel-breakdown-totals-fund" partialSubmit="#{true}"/> subtotal-bills subtotal-bills
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.money.bills']}</label>
                                         </f:facet>
@@ -560,7 +560,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="#{true}" 
                                                                styleClass="" required="#{false}">
                                                     </p:spinner>
                                                 </f:facet>
@@ -591,7 +591,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                  sortMode="single"
                                                  editable="#{true}">
-                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys-fund @form:panel-breakdown-totals-fund" partialSubmit="true"/>
+                                        <p:ajax event="rowEdit" listener="#{cashBoxHome.calculateAmount}" update="@form:subtotal-moneys-fund @form:panel-breakdown-totals-fund" partialSubmit="#{true}"/>
                                         <f:facet name="header">
                                             <label class="capital">#{i18n['common.money.moneys']}</label>
                                         </f:facet>
@@ -604,7 +604,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <h:outputText value="#{cashBoxDetail.quantity}"></h:outputText>
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="true" 
+                                                    <p:spinner value="#{cashBoxDetail.quantity}" min="0" immediate="#{true}" 
                                                                styleClass="" required="#{false}">
                                                     </p:spinner>
                                                 </f:facet>
@@ -655,7 +655,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      styleClass="info-btn" style="width: auto !important;" ><!--disabled="#{cashBoxHome.cashBoxPartial.totalCashBreakdown le 0}"--><!--toolbar-close-->
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.partial.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                                     </p:commandButton>
-                                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                    <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="#{true}" width="350">
                                         <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
                                         <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
                                     </p:confirmDialog>
@@ -811,7 +811,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                              style="width: auto !important;">
                                                 <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['app.fede.accounting.close.cash.today.confirm.message']}" icon="fa fa-exclamation-triangle"/>
                                             </p:commandButton>
-                                            <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                            <p:confirmDialog global="false" showEffect="fade" hideEffect="fade" responsive="#{true}" width="350">
                                                 <p:commandButton value="#{i18n['common.no']}" type="button" icon="fa fa-times" styleClass="secondary-button"/>
                                                 <p:commandButton value="#{i18n['common.yes']}" type="button" icon="fa fa-check" styleClass="secondary-button" />
                                             </p:confirmDialog>

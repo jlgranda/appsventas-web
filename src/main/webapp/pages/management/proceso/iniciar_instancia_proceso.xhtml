@@ -37,114 +37,130 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <li>#{instanciaProcesoHome.instanciaProcesoId == null ? i18n['common.new'].concat(' ').concat(i18n['common.process']).concat(' ') : i18n['common.edit'].concat(': ')} #{instanciaProcesoHome.instanciaProceso.name}</li>
         </ui:define>
         <ui:define name="content">
-               <div class="ui-g ui-fluid">
+            <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-lg-12 ui-md-12">
                     <!-- INTANCIA PROCESO -->
                     <h1 class="BigTopic">#{i18n['app.documents.procedures']}</h1>
                     <div class="card">
-                            <!-- Solicitante -->
-                            <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <p:outputLabel for="applicant" value="#{i18n['app.document.task.applicant']}" />
-                            </h:panelGroup>
-                            <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <p:autoComplete id="applicant" value="#{instanciaProcesoHome.solicitante}" effect="fade" 
-                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" multiple="false" 
-                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
-                                    <p:column>
-                                        <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
-                                    </p:column>
-                                </p:autoComplete>
-                            </h:panelGroup>
-                            <!-- //Solicitante -->
-                            
-                            <!-- Cuerpo del mensaje -->
-                            <jlgranda:input id="ip-nme" name="ip-name" type="text" label="#{i18n['app.fede.task.subject']}" 
-                                            execute="@this save" render="ip-nme" value="#{instanciaProcesoHome.instanciaProceso.name}" required="true"
-                                            container="none"/>
+                        <!-- Solicitante -->
+                        <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
+                            <p:outputLabel for="applicant" value="#{i18n['app.document.task.applicant']}" />
+                        </h:panelGroup>
+                        <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
+                            <p:autoComplete id="applicant" 
+                                            value="#{instanciaProcesoHome.solicitante}" var="entidad" 
+                                            itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" itemValue="#{entidad}" 
+                                            completeMethod="#{subjectHome.find}"
+                                            converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                            disabled="#{tareaHome.tarea.persistent}"
+                                            placeholder="#{i18n['common.find']}"
+                                            emptyMessage="#{i18n['app.setting.list.empty']}"
+                                            converterMessage="#{i18n['property.converter.fail']}"
+                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                            multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                            cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                            required="#{true}">
+                                <p:column>
+                                    <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
+                                </p:column>
+                            </p:autoComplete>
+                        </h:panelGroup>
+                        <!-- //Solicitante -->
 
-                            <jlgranda:input id="ip-descrpn" name="ip-descrpn" 
-                                            type="richtext" 
-                                            label="#{i18n['app.document.task.description']}" placeholder="true"
-                                            value="#{instanciaProcesoHome.instanciaProceso.description}" execute="@this save" render="ip-descrpn" 
-                                            required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
-                                            container="none"/>
-                            <!-- TAREA 0 -->
-                            <!-- Destinatario -->
-                            <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                <p:outputLabel for="consignee" value="#{i18n['app.document.task.consignee']}" />
-                            </h:panelGroup>
-                            <h:panelGroup id="consignee-pg" class="ui-panelgrid-cell ui-g-8 ui-md-8">
-                                <p:autoComplete id="consignee" value="#{instanciaProcesoHome.destinatario}" effect="fade" 
-                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" multiple="false" 
-                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
-                                    <p:column>
-                                        <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
-                                    </p:column>
-                                </p:autoComplete>
-                            </h:panelGroup>
-                            <div class="ui-g-4 ui-md-4">
-                                <h:outputText value="#{i18n['app.document.task.consignee.self']}&nbsp;" />
-                                <p:selectBooleanCheckbox value="#{instanciaProcesoHome.usarDestinatarioPorDefecto}">
-                                    <p:ajax update="consignee-pg" listener="#{instanciaProcesoHome.actualizarDestinatarioPorDefecto}" />
-                                </p:selectBooleanCheckbox>
+                        <!-- Cuerpo del mensaje -->
+                        <jlgranda:input id="ip-nme" name="ip-name" type="text" label="#{i18n['app.fede.task.subject']}" 
+                                        execute="@this save" render="ip-nme" value="#{instanciaProcesoHome.instanciaProceso.name}" required="true"
+                                        container="none"/>
+
+                        <jlgranda:input id="ip-descrpn" name="ip-descrpn" 
+                                        type="richtext" 
+                                        label="#{i18n['app.document.task.description']}" placeholder="true"
+                                        value="#{instanciaProcesoHome.instanciaProceso.description}" execute="@this save" render="ip-descrpn" 
+                                        required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
+                                        container="none"/>
+                        <!-- TAREA 0 -->
+                        <!-- Destinatario -->
+                        <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
+                            <p:outputLabel for="consignee" value="#{i18n['app.document.task.consignee']}" />
+                        </h:panelGroup>
+                        <h:panelGroup id="consignee-pg" class="ui-panelgrid-cell ui-g-8 ui-md-8">
+                            <p:autoComplete id="consignee"
+                                            value="#{instanciaProcesoHome.destinatario}" var="entidad" 
+                                            itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" itemValue="#{entidad}"
+                                            completeMethod="#{subjectHome.find}"
+                                            converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                            disabled="#{tareaHome.tarea.persistent}"
+                                            placeholder="#{i18n['common.find']}"
+                                            emptyMessage="#{i18n['app.setting.list.empty']}"
+                                            converterMessage="#{i18n['property.converter.fail']}"
+                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                            multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                            cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                            required="#{true}">
+                                <p:column>
+                                    <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
+                                </p:column>
+                            </p:autoComplete>
+                        </h:panelGroup>
+                        <div class="ui-g-4 ui-md-4">
+                            <h:outputText value="#{i18n['app.document.task.consignee.self']}&nbsp;" />
+                            <p:selectBooleanCheckbox value="#{instanciaProcesoHome.usarDestinatarioPorDefecto}">
+                                <p:ajax update="consignee-pg" listener="#{instanciaProcesoHome.actualizarDestinatarioPorDefecto}" />
+                            </p:selectBooleanCheckbox>
+                        </div>
+                        <!-- //Destinatario -->
+                        <div class="DispBlockDocuments">
+                            <div class="Separator"></div>
+                            <div class="EmptyBox20"></div>
+                            <!-- Aduntos -->
+                            <div class="ui-g ui-fluid">
+                                <h:panelGroup id="documentPanel" layout="block" class="ui-lg-12 ui-md-12">
+                                    <p:dataList id="documentList" value="#{instanciaProcesoHome.tarea.documentos}" var="documento" 
+                                                type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
+                                                paginatorAlwaysVisible="false" rendered="#{not empty instanciaProcesoHome.tarea.documentos}">
+
+                                        <p:commandLink title="#{documento.name}" styleClass="" style="zzdisplay:inline-block"
+                                                       update="@form" immediate="true" actionListener="#{instanciaProcesoHome.editarDocumento(documento)}">
+                                            <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
+                                            &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
+                                        </p:commandLink>
+                                        <p:commandLink update="@form:documentList" ajax="@this" 
+                                                       actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
+                                                       title="#{i18n['common.close']}" styleClass="" style="margin-right:10px;display:inline-block"
+                                                       onclick="if (!confirm('#{i18n['app.document.remove.message']}'))
+                                                                   return false;">
+                                            <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
+                                        </p:commandLink>
+
+                                    </p:dataList>
+                                </h:panelGroup>
                             </div>
-                            <!-- //Destinatario -->
-                            <div class="DispBlockDocuments">
-                                <div class="Separator"></div>
-                                <div class="EmptyBox20"></div>
-                                <!-- Aduntos -->
-                                <div class="ui-g ui-fluid">
-                                    <h:panelGroup id="documentPanel" layout="block" class="ui-lg-12 ui-md-12">
-                                        <p:dataList id="documentList" value="#{instanciaProcesoHome.tarea.documentos}" var="documento" 
-                                                    type="unordered" itemType="none" paginator="false" rows="7" styleClass="paginated"
-                                                    paginatorAlwaysVisible="false" rendered="#{not empty instanciaProcesoHome.tarea.documentos}">
+                        </div>
 
-                                            <p:commandLink title="#{documento.name}" styleClass="" style="zzdisplay:inline-block"
-                                                           update="@form" immediate="true" actionListener="#{instanciaProcesoHome.editarDocumento(documento)}">
-                                                <i class="#{settingHome.getValue(documento.mimeType, 'icon-file')} Fs15 Gray" style="margin-top:5px;"></i>
-                                                &nbsp;<h:outputText value="#{documento.name}" style="display:inline-block"/>
-                                            </p:commandLink>
-                                            <p:commandLink update="@form:documentList" ajax="@this" 
-                                                           actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
-                                                           title="#{i18n['common.close']}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                           onclick="if (!confirm('#{i18n['app.document.remove.message']}'))
-                                                                               return false;">
-                                                <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
-                                            </p:commandLink>
+                        <div class="EmptyBox10"></div>
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton value="#{i18n['common.submit']}" ajax="false" 
+                                                 actionListener="#{instanciaProcesoHome.save()}" disabled="false" 
+                                                 style="width: auto !important;"
+                                                 action="#{instanciaProcesoHome.getOutcome()}" type="submit"/>
 
-                                        </p:dataList>
-                                    </h:panelGroup>
-                                </div>
-                            </div>
+                                <p:commandButton id="addDocumentButton"
+                                                 icon="fa fa-paperclip Fs14 Black" styleClass="GrayButton" 
+                                                 rendered="#{true}" type="button"/>
 
-                            <div class="EmptyBox10"></div>
-                            <p:toolbar>
-                                <f:facet name="left">
-                                    <p:commandButton value="#{i18n['common.submit']}" ajax="false" 
-                                                     actionListener="#{instanciaProcesoHome.save()}" disabled="false" 
-                                                     style="width: auto !important;"
-                                                     action="#{instanciaProcesoHome.getOutcome()}" type="submit"/>
+                                <span class="ui-separator">
+                                    <span class="fa fa-ellipsis-v SoftGray" />
+                                </span>
 
-                                    <p:commandButton id="addDocumentButton"
-                                                     icon="fa fa-paperclip Fs14 Black" styleClass="GrayButton" 
-                                                     rendered="#{true}" type="button"/>
+                            </f:facet>
 
-                                    <span class="ui-separator">
-                                        <span class="fa fa-ellipsis-v SoftGray" />
-                                    </span>
+                            <f:facet name="right">
 
-                                </f:facet>
-
-                                <f:facet name="right">
-
-                                    <p:commandButton ajax="false" action="#{instanciaProcesoHome.getOutcome()}" disabled="false" immediate="true"
-                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                                <p:commandButton ajax="false" action="#{instanciaProcesoHome.getOutcome()}" disabled="false" immediate="true"
+                                                 icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
 
 <!--                                    <p:menuButton value="#{i18n['common.options']}">
                                         <p:menuitem value="Save" icon="fa fa-save" />
@@ -152,40 +168,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:menuitem value="Delete" icon="fa fa-trash" />
                                         <p:menuitem value="Homepage" icon="fa fa-home" />
                                     </p:menuButton>-->
-                                </f:facet>
+                            </f:facet>
 
-                            </p:toolbar>
-                            <p:overlayPanel id="addDocumentOverlayPanel" for="addDocumentButton" widgetVar="overlay" 
-                                            showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
-                                            my="right bottom" at="left bottom">
-                                <p:panelGrid columns="3" layout="grid">
-                                    <jlgranda:input id="documentName" name="documentName" type="text" 
-                                                    placeholder="true" label="#{i18n['common.name']}" 
-                                                    value="#{instanciaProcesoHome.documento.name}" required="false" />
+                        </p:toolbar>
+                        <p:overlayPanel id="addDocumentOverlayPanel" for="addDocumentButton" widgetVar="overlay" 
+                                        showCloseIcon="true" transient="false"  dynamic="true" dismissable="false"
+                                        my="right bottom" at="left bottom">
+                            <p:panelGrid columns="3" layout="grid">
+                                <jlgranda:input id="documentName" name="documentName" type="text" 
+                                                placeholder="true" label="#{i18n['common.name']}" 
+                                                value="#{instanciaProcesoHome.documento.name}" required="false" />
 
-                                    <jlgranda:input id="documentType" name="documentType" type="select" 
-                                                    placeholder="true" label="#{i18n['common.type']}" 
-                                                    value="#{instanciaProcesoHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
-                                                    converter="omnifaces.SelectItemsConverter"
-                                                    required="false" 
-                                                    execute="none" listener="none" render="none"
-                                                    onchange="return;"/>
+                                <jlgranda:input id="documentType" name="documentType" type="select" 
+                                                placeholder="true" label="#{i18n['common.type']}" 
+                                                value="#{instanciaProcesoHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
+                                                converter="omnifaces.SelectItemsConverter"
+                                                required="false" 
+                                                execute="none" listener="none" render="none"
+                                                onchange="return;"/>
 
-                                    <p:fileUpload listener="#{instanciaProcesoHome.handleFileUpload}"
-                                                  mode="advanced" dragDropSupport="true" auto="true" 
-                                                  process="@form" update="documentPanel" 
-                                                  oncomplete="overlay.hide();"
-                                                  immediate="true" multiple="true"
-                                                  label="#{i18n['common.choose']}" uploadLabel="#{i18n['common.upload']}" 
-                                                  cancelLabel="#{i18n['common.cancel']}"
-                                                  sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
-                                                  fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
-                                                  allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc?|xls?|od?)$/"/>
-                                </p:panelGrid>
-                            </p:overlayPanel >
-                        </div>
+                                <p:fileUpload listener="#{instanciaProcesoHome.handleFileUpload}"
+                                              mode="advanced" dragDropSupport="true" auto="true" 
+                                              process="@form" update="documentPanel" 
+                                              oncomplete="overlay.hide();"
+                                              immediate="true" multiple="true"
+                                              label="#{i18n['common.choose']}" uploadLabel="#{i18n['common.upload']}" 
+                                              cancelLabel="#{i18n['common.cancel']}"
+                                              sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
+                                              fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
+                                              allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc?|xls?|od?)$/"/>
+                            </p:panelGrid>
+                        </p:overlayPanel >
                     </div>
                 </div>
+            </div>
             <!--/.panel-body -->
 
         </ui:define>

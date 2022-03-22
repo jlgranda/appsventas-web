@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-lg-12 ui-md-12">
                     <div class="ui-g ui-lg-12">
-                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="true"
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="#{true}"
                                         value="#{facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.code}" 
                                         validator="#{'rucValidator'}" maxlength="13"
                                         required="#{!facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.persistent}" 
@@ -76,7 +76,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                  type="submit"/>
                             </f:facet>
                             <f:facet name="right">
-                                <p:commandButton ajax="true" disabled="false" immediate="true"
+                                <p:commandButton ajax="#{true}" disabled="false" immediate="#{true}"
                                                  actionListener="#{facturaElectronicaGastoHome.closeDialog(facturaElectronicaGastoHome.subjectAdminHome.subjectEdit)}"
                                                  action="#{facturaElectronicaGastoHome.redirect}"
                                                  icon="pi pi-undo" styleClass="GrayButton" type="submit"

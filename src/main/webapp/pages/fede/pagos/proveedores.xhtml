@@ -44,14 +44,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <f:facet name="left">
                         <p:outputLabel class="Gray" value="#{i18n['common.find']} #{i18n['common.supplier']}:&nbsp;" for="@next"/>
                         <!-- Lista de personas, decidir si es proveedor al seleccionar el item -->
-                        <p:autoComplete id="customer" value="#{proveedorHome.proveedor.owner}" effect="fade" 
-                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                        <p:autoComplete id="customer" 
+                                        value="#{proveedorHome.proveedor.owner}" var="entidad" 
+                                        itemLabel="#{entidad.code} #{entidad.fullName}" itemValue="#{entidad}"
                                         completeMethod="#{subjectHome.find}"
-                                        var="entidad" itemValue="#{entidad}"  itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
-                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        placeholder="Buscar.."
                                         converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                        forceSelection="true">
+                                        placeholder="#{i18n['common.find']}"
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{false}">
                             <p:column>
                                 <h:outputText value="#{ui.renderer('', entidad)}"/>
                             </p:column>
@@ -60,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton id="button-change-customer"
                                          icon="fa fa-user-plus" styleClass="primary-button"
                                          actionListener="#{proveedorHome.mostrarFormularioProfile()}"
-                                         ajax="true" immediate="true">
+                                         ajax="#{true}" immediate="#{true}">
                             <p:ajax event="dialogReturn" update="@form"
                                     listener="#{proveedorHome.handleReturn}">
                             </p:ajax>
@@ -107,7 +112,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:outputText value="#{proveedor.name}" />
                         </p:column>
                         <p:column id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}"
-                                   styleClass="text-right">
+                                  styleClass="text-right">
                             <h:outputText value="#{proveedor.activationTime}">
                                 <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
@@ -116,7 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:commandButton id="go-button"
                                              icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
                                              actionListener="#{proveedorHome.editarFormularioProfile(proveedor.id)}"
-                                             ajax="true" immediate="true">
+                                             ajax="#{true}" immediate="#{true}">
                                 <p:ajax event="dialogReturn" update="@form"
                                         listener="#{proveedorHome.handleReturn}">
                                 </p:ajax>
@@ -176,7 +181,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      title="#{i18n['common.back']}"
                                                      actionListener="#{proveedorHome.closeDialog(null)}" action="proveedores"
                                                      disabled="#{false}" 
-                                                     ajax="true" immediate="true" type="submit"/>
+                                                     ajax="#{true}" immediate="#{true}" type="submit"/>
                                 </f:facet>
 
                             </p:toolbar>

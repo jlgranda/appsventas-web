@@ -45,15 +45,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12">
                 <h1 class="BigTopic">#{i18n['common.supplier']} </h1>
-                <p:autoComplete id="customer" value="#{proveedorHome.proveedor.owner}" effect="fade" 
-                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                <p:autoComplete id="customer"
+                                value="#{proveedorHome.proveedor.owner}" var="entidad" 
+                                itemLabel="#{entidad.code} #{entidad.fullName}" itemValue="#{entidad}" 
                                 completeMethod="#{subjectHome.find}"
-                                var="entidad" itemValue="#{entidad}" 
-                                itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
-                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                 converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                forceSelection="true" required="true"
-                                placeholder="#{i18n['app.fede.sales.invoice.header']}">
+                                placeholder="#{i18n['app.fede.sales.invoice.header']}"
+                                emptyMessage="#{i18n['app.setting.list.empty']}"
+                                converterMessage="#{i18n['property.converter.fail']}"
+                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                required="#{true}">
                     <p:column>
                         <h:outputText value="#{ui.renderer('', entidad)}"/>
                     </p:column>

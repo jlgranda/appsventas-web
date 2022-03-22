@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.inventory']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/inventory/items.jsf">#{i18n['common.products']}</p:link></li>
+            <li><p:link outcome="/pages/inventory/items.jsf">#{i18n['app.fede.inventory.products']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -128,7 +128,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.product.type']}" sortBy="#{product.productType}"
+                            <p:column headerText="#{i18n['app.fede.inventory.product.type']}" sortBy="#{product.productType}"
                                       styleClass="text-right">
                                 <h:outputText value="#{product.productType}"/>
                             </p:column>

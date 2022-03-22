@@ -46,16 +46,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:ajax listener="#{facturaElectronicaGastoHome.clear()}" />
                             </p:inputText>  -->
                             <label class="Gray">#{i18n['common.supplier']}:&nbsp;</label>
-                            <p:autoComplete id="supplier" value="#{facturaElectronicaGastoHome.facturaElectronica.author}" effect="fade" 
-                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                            var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
-                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                            <p:autoComplete id="supplier" 
+                                            value="#{facturaElectronicaGastoHome.facturaElectronica.author}" var="entidad" 
+                                            itemLabel="#{entidad.fullName}" itemValue="#{entidad}" 
+                                            completeMethod="#{subjectHome.find}"
                                             converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                            forceSelection="true" required="#{false}" disabled="#{facturaElectronicaGastoHome.useDefaultSupplier}">
+                                            disabled="#{facturaElectronicaGastoHome.useDefaultSupplier}"
+                                            placeholder="#{i18n['common.find']}"
+                                            emptyMessage="#{i18n['app.setting.list.empty']}"
+                                            converterMessage="#{i18n['property.converter.fail']}"
+                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                            multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                            cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                            required="#{false}">
                                 <p:column>
                                     <h:outputText value="#{entidad.fullName}"/>
                                 </p:column>
-                                <p:ajax update="btn-buscar" partialSubmit="true"></p:ajax>
+                                <p:ajax update="btn-buscar" partialSubmit="#{true}"></p:ajax>
                             </p:autoComplete>
                             <h:panelGroup id="controles-busqueda-avanzada"  style="padding-right: 0.2rem">
                                 <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
@@ -75,7 +83,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              value="#{i18n['common.find']}"
                                              icon="pi pi-search" styleClass="help-btn" 
                                              actionListener="#{facturaElectronicaGastoHome.clear()}"
-                                             ajax="false" immediate="true">
+                                             ajax="false" immediate="#{true}">
                             </p:commandButton>
                         </p:toolbarGroup>
                         <p:toolbarGroup align="right" style="display: inline-table;">

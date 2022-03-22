@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div class="Container50 Responsive100">
                                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
                                                     value="#{securityGroupUserHome.subject.code}" validator="ciValidator"
-                                                    required="#{!securityGroupUserHome.subject.persistent}" placeholder="true" execute="@this save" render="code"
+                                                    required="#{!securityGroupUserHome.subject.persistent}" placeholder="#{true}" execute="@this save" render="code"
                                                     /><!--mode="read"-->
                                     <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.name']}" 
                                                     value="#{securityGroupUserHome.subject.firstname}" required="#{!securityGroupUserHome.subject.persistent}" 
@@ -65,7 +65,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                     <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                                     value="#{securityGroupUserHome.subject.email}" validator="emailValidator"
-                                                    required="#{!securityGroupUserHome.subject.persistent}" placeholder="true" 
+                                                    required="#{!securityGroupUserHome.subject.persistent}" placeholder="#{true}" 
                                                     execute="@this save" render="email"/><!--mode="read"-->
                                 </div>
                                 <div class="Separator"></div>
@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </div>
                                     <div class="Container10 TexAlRight">
                                         <p:commandButton onclick="PF('dlgSeleccionarGrupo').show();"
-                                                         disabled="false" immediate="true"
+                                                         disabled="false" immediate="#{true}"
                                                          icon="fa fa-plus Fs14" styleClass="RedButton" type="submit"/>
                                     </div>
                                 </div>
@@ -101,7 +101,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     </p:column> 
                                     <p:column headerText="#{i18n['common.remove']} #{i18n['property.group']}" >
                                         <p:commandButton  onclick="if (!confirm('#{i18n['property.group.remove.message']}'))
-                                                    return false;" update="@form:dataTable" actionListener="#{securityGroupUserHome.removerUserFromGroup(group)}"  disabled="false" immediate="true"
+                                                    return false;" update="@form:dataTable" actionListener="#{securityGroupUserHome.removerUserFromGroup(group)}"  disabled="false" immediate="#{true}"
                                                           icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                     </p:column> 
                                 </p:dataTable>
@@ -109,13 +109,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                         <p:dialog id="dlgSeleccionarGrupo" width="400"  widgetVar="dlgSeleccionarGrupo" 
                                   header="#{i18n['property.groups.users.asigned']}" 
-                                  modal="true" draggable="true" position="center" closable="false" >
+                                  modal="#{true}" draggable="#{true}" position="center" closable="false" >
                             <div class="Container100">
                                 <div class="ContainerIndent">
-                                    <p:autoComplete id="menu" value="#{securityGroupUserHome.selectedGroups}" 
+                                    <p:autoComplete id="menu" 
+                                                    value="#{securityGroupUserHome.selectedGroups}" var="grupo" 
+                                                    itemLabel="#{grupo.name}" itemValue="#{grupo}"
                                                     completeMethod="#{securityGroupUserHome.completeGroup}"
-                                                    var="grupo" itemLabel="#{grupo.name}"
-                                                    converter="org.jlgranda.fede.ui.converter.GroupConverter" multiple="true">
+                                                    converter="org.jlgranda.fede.ui.converter.GroupConverter" 
+                                                    multiple="#{true}"
+                                                    placeholder="#{i18n['common.find']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                    converterMessage="#{i18n['property.converter.fail']}"
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    forceSelection="#{true}" dropdown="#{false}"
+                                                    cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                    required="#{false}">
                                         <p:ajax event="itemSelect" listener="#{securityGroupUserHome.selectListener}" />
                                         <p:ajax event="itemUnselect" />
                                         <p:ajax event="itemSelect" listener="#{securityGroupUserHome.onItemSelect}"  />
@@ -124,7 +134,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </p:column>
                                     </p:autoComplete>
     <!--                                <p:selectCheckboxMenu id="menu" value="#{securityGroupUserHome.gruposSeleccionados}"  label="#{i18n['common.choose.groups']}"
-                                                          converter="org.jlgranda.fede.ui.converter.GroupConverter"   filter="true" 
+                                                          converter="org.jlgranda.fede.ui.converter.GroupConverter"   filter="#{true}" 
                                                           filterMatchMode="startsWith" scrollHeight="100">
                                         <f:selectItems var="group" itemValue="#{group.name}" itemLabel="#{group.name}" value="#{securityGroupUserHome.grupos}" />
                                     </p:selectCheckboxMenu>-->
@@ -135,12 +145,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:commandButton  actionListener="#{securityGroupUserHome.asignarGruposUsuarios()}"  
                                                               update="@form"
                                                               icon="fa fa-group Fs14 " value="#{i18n['common.accept']}" onclick="PF('dlgSeleccionarGrupo').hide()"
-                                                              immediate="true"
+                                                              immediate="#{true}"
                                                               styleClass="BlueButton" />
                                         </f:facet>
                                         <f:facet name="right">
                                             <p:commandButton onclick="PF('dlgSeleccionarGrupo').hide()" 
-                                                             value="#{i18n['common.cancel']}" type="submit"  immediate="true"
+                                                             value="#{i18n['common.cancel']}" type="submit"  immediate="#{true}"
                                                              icon="fa fa-arrow-left Fs14 Black" styleClass="RedButton" />
                                         </f:facet>
                                     </p:toolbar>

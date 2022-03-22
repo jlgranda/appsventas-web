@@ -68,7 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:treeNode>
                                 <p:ajax event="select" listener="#{accountHome.onAccountSelect}"
                                         update="form:dataTable-record-details form:panel-detail-accountSelected form:btn-search-account-details form:panel-account-fund
-                                        form:radio-report-range form:fund-old-accountSelected" partialSubmit="true"/>
+                                        form:radio-report-range form:fund-old-accountSelected" partialSubmit="#{true}"/>
                             </p:tree>
                             <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="fa fa-arrow-up" />
                         </p:scrollPanel>
@@ -80,27 +80,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:facet name="left">
                                         <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
                                         <p:datePicker id="date-start" value="#{accountHome.start}" class="input-sm MarRight10"
-                                                      monthNavigator="true" yearNavigator="true" showWeek="false">
+                                                      monthNavigator="#{true}" yearNavigator="#{true}" showWeek="false">
                                             <p:ajax event="dateSelect" oncomplete="this"/>
                                         </p:datePicker>
                                         <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
                                         <p:datePicker id="date-end" value="#{accountHome.end}" class="input-sm MarRight10"
-                                                      monthNavigator="true" yearNavigator="true" showWeek="false">
+                                                      monthNavigator="#{true}" yearNavigator="#{true}" showWeek="false">
                                             <p:ajax event="dateSelect" oncomplete="this"/>
                                         </p:datePicker>
                                         <p:commandButton id="btn-search-account-details" 
                                                          value="#{i18n['common.find']}" icon="fa fa-search"  styleClass="help-btn"
                                                          disabled="#{empty accountHome.accountSelected}" actionListener="#{accountHome.chargeListDetailsforAccount()}"
                                                          update="dataTable-record-details panel-message-date radio-report-range fund-old-accountSelected"
-                                                         ajax="true" immediate="true">
+                                                         ajax="#{true}" immediate="#{true}">
                                         </p:commandButton>
                                     </f:facet>
                                     <f:facet name="right">
-                                        <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="true"  disabled="#{empty accountHome.accountSelected}">
+                                        <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="#{true}"  disabled="#{empty accountHome.accountSelected}">
                                             <f:selectItem itemLabel="#{i18n['common.lasta']} #{i18n['common.week']}" itemValue="0"/>
                                             <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.month']}" itemValue="1"/>
                                             <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.year']}" itemValue="2"/>
-                                            <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" update="date-start date-end dataTable-record-details form:panel-message-date fund-old-accountSelected" partialSubmit="true"></p:ajax> 
+                                            <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" update="date-start date-end dataTable-record-details form:panel-message-date fund-old-accountSelected" partialSubmit="#{true}"></p:ajax> 
                                         </p:selectOneRadio>
                                     </f:facet>
                                 </p:toolbar>
@@ -187,7 +187,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:commandButton id="button-detail" 
                                                          title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
                                                          actionListener="#{accountHome.editarFormularioRecord(recordDetail.record.id)}" 
-                                                         ajax="true" immediate="true">
+                                                         ajax="#{true}" immediate="#{true}">
                                             <p:ajax event="dialogReturn" update="@form"
                                                     listener="#{accountHome.handleReturn}">
                                             </p:ajax>

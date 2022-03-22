@@ -47,11 +47,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="card">
                     <h:outputLabel class="BigTopic">#{i18n['app.fede.accounting.journal'].toUpperCase()}</h:outputLabel>
                     <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
-                                    value="#{generalJournalHome.journal.code}" required="true"
+                                    value="#{generalJournalHome.journal.code}" required="#{true}"
                                     inlinehelp="#{messages['common.code.UUID.inlinehelp']}"
                                     execute="@this save" render="code"/>
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.label']}/#{i18n['common.name']}"
-                                    value="#{generalJournalHome.journal.name}" required="true"
+                                    value="#{generalJournalHome.journal.name}" required="#{true}"
                                     inlinehelp="#{messages['app.fede.accounting.journal.name.inlinehelp']}"
                                     execute="@this save" render="nme"/>
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.observation']}"
@@ -64,13 +64,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
                                              actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
                                              disabled="#{false}"
-                                             ajax="true" type="submit"/>
+                                             ajax="#{true}" type="submit"/>
                             <i class="fa fa-bars p-px-2"/>
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="primary-button"
                                              actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
-                                             ajax ="true" immediate="true"/>                          
+                                             ajax="#{true}" immediate="#{true}"/>                          
                         </f:facet>
                     </p:toolbar>
                 </div>
@@ -86,7 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:commandButton id="button-record-add" 
                                              value="#{i18n['common.new']}" icon="fa fa-plus-square" styleClass="danger-btn"
                                              actionListener="#{generalJournalHome.mostrarFormularioRecord()}"
-                                             ajax="true" immediate="true" >
+                                             ajax="#{true}" immediate="#{true}" >
                                 <p:ajax event="dialogReturn" update="@form"
                                         listener="#{generalJournalHome.handleReturn}">
                                 </p:ajax>
@@ -120,7 +120,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:commandButton id="button-detail" 
                                              title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
                                              actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" 
-                                             ajax="true" immediate="true">
+                                             ajax="#{true}" immediate="#{true}">
                                 <p:ajax event="dialogReturn" update="@form"
                                         listener="#{generalJournalHome.handleReturn}">
                                 </p:ajax>
@@ -149,7 +149,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
                                                  oncomplete="PF('dataTable-records').unselectAllRows()"
                                                  disabled="#{not generalJournalHome.actionExecutable}"
-                                                 ajax="true" update="@form"><!-- type="submit"-->
+                                                 ajax="#{true}" update="@form"><!-- type="submit"-->
                                     <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                 </p:commandButton>
                             </f:facet>

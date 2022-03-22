@@ -64,7 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p:outputLabel for="@next" value="#{i18n['common.type']}"/>
                 <p:selectOneMenu id="tipo"
                                  value="#{reporteHome.report.tipo}"
-                                 required="true" immediate="true">
+                                 required="#{true}" immediate="#{true}">
                     <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = " " /> 
                     <f:selectItems value="#{ui.reportTypeAsSelectItem}" var="tipo" itemLabel="#{tipo.label}"  itemValue="#{tipo.label}"/>
                 </p:selectOneMenu>

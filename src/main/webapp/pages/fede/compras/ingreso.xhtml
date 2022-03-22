@@ -53,23 +53,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:outputLabel value="#{i18n['common.supplier']}" for="@next"/>
                             <div class="ui-g-12" style="display: inline-flex; padding: 0rem">
                                 <p:autoComplete id="supplier" 
-                                                value="#{facturaElectronicaIngresoHome.supplier}"  var="entidad"
+                                                value="#{facturaElectronicaIngresoHome.supplier}" var="entidad"
                                                 itemLabel="#{entidad.fullName.toUpperCase()}" itemValue="#{entidad}"
                                                 completeMethod="#{proveedorHome.find}"
                                                 converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                converterMessage="El convertidor no responde."
+                                                disabled="#{facturaElectronicaIngresoHome.useDefaultSupplier or not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
+                                                placeholder="#{i18n['common.find']}"
+                                                emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                converterMessage="#{i18n['property.converter.fail']}"
                                                 minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                 maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                placeholder="#{i18n['common.find']}"
-                                                forceSelection="true" emptyMessage="No se encontraron resultados."
-                                                cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                                disabled="#{facturaElectronicaIngresoHome.useDefaultSupplier or not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
-                                                required="true"
-                                                dropdown="true">
+                                                multiple="#{false}" forceSelection="#{true}" dropdown="#{true}"
+                                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                required="#{true}">
                                     <p:column>
                                         <h:outputText value="#{entidad.fullName.toUpperCase()}"/>
                                     </p:column>
-                                    <p:ajax update="rcdd-btn-add" partialSubmit="true"></p:ajax>
+                                    <p:ajax update="rcdd-btn-add" partialSubmit="#{true}"></p:ajax>
                                 </p:autoComplete>
                                 <h:outputText value="#{i18['common.supplier.invoce.none']}" />
                                 <p:selectBooleanCheckbox value="#{facturaElectronicaIngresoHome.useDefaultSupplier}"
@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  icon="fa fa-user-plus" styleClass="primary-button"
                                                  actionListener="#{facturaElectronicaIngresoHome.mostrarFormularioProfile()}" 
                                                  disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
-                                                 ajax="true" immediate="true">
+                                                 ajax="#{true}" immediate="#{true}">
                                     <p:ajax event="dialogReturn" update="@form"
                                             listener="#{facturaElectronicaIngresoHome.handleReturn}">
                                     </p:ajax>
@@ -92,8 +92,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <p:selectOneMenu id="emissionType"
                                                                      value="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType}"
                                                                      disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.id}"
-                                                                     immediate="true"
-                                                                     required="true"> 
+                                                                     immediate="#{true}"
+                                                                     required="#{true}"> 
                                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                         <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                         <p:ajax update="@this tittle days date-title" />
@@ -104,8 +104,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:calendar id="fechaEmision" 
                                         value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaEmision}"
                                         disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.payments}"
-                                        immediate="true"
-                                        required="true">
+                                        immediate="#{true}"
+                                        required="#{true}">
                                 <!--<p:ajax event="dateSelect" listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="days fechaVencimiento" />-->
                             </p:calendar>
                         </div>
@@ -118,13 +118,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                    disabled="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
                                                                    rendered="#{empty facturaElectronicaIngresoHome.facturaElectronica.id}"
                                                                    immediate="false">
-                                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="true"></p:ajax>
+                                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="#{true}"></p:ajax>
                                                         </p:spinner>
                                                         <p:calendar id="fechaVencimiento" 
                                                                     value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaVencimiento}" 
-                                                                    disabled="true"
+                                                                    disabled="#{true}"
                                                                     immediate="false" 
-                                                                    required="true">
+                                                                    required="#{true}">
                                                         </p:calendar>
                                                     </div>
                                                 </div>-->
@@ -132,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}" for="@next"/>
                             <p:selectOneMenu id="documentType"
                                              value="#{facturaElectronicaIngresoHome.facturaElectronica.documentType}"
-                                             immediate="true"
+                                             immediate="#{true}"
                                              required="#{true}"> 
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.getDocumentFacturaTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
@@ -144,7 +144,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             value="#{facturaElectronicaIngresoHome.facturaElectronica.code}" 
                                             render="code" execute="@this save"
                                             inlinehelp="#{messages['common.code.inlinehelp']}"
-                                            required="true"/>
+                                            required="#{true}"/>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><p:separator style="color: #EFEFEF"/></div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -203,20 +203,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;" 
                                              actionListener="#{facturaElectronicaIngresoHome.save()}" action="#{facturaElectronicaIngresoHome.getOutcome()}"
                                              disabled="#{not empty facturaElectronicaIngresoHome.facturaElectronica.payments or empty facturaElectronicaIngresoHome.record.recordDetails}"
-                                             ajax="true" type="submit"/>
+                                             ajax="#{true}" type="submit"/>
                             <i class="fa fa-bars p-px-2"/>
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton title="#{i18n['common.home']}" icon="pi pi-undo" styleClass="primary-button"
                                              actionListener="#{invoiceHome.closeDialog(null)}" action="#{facturaElectronicaIngresoHome.redirect()}"
-                                             ajax ="true" type="submit"/>                   
+                                             ajax ="#{true}" type="submit"/>                   
                         </f:facet>
                     </p:toolbar>
                 </div>
             </div>
             <p:dialog id="rcdd-dlg" widgetVar="rcdd-dlg"
                       header="Agregar Detalle" 
-                      minHeight="50" width="400" showEffect="fade" modal="true" closable="false">
+                      minHeight="50" width="400" showEffect="fade" modal="#{true}" closable="false">
                 <p:separator style="color: #EFEFEF"/>
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12" style="padding-left: 0.5rem; padding-right: 0.5rem;">
@@ -226,13 +226,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
                                         completeMethod="#{accountHome.find}"
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                        converterMessage="El convertidor no responde."
+                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
-                                        forceSelection="true" emptyMessage="No se encontraron resultados."
-                                        cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                        dropdown="false">
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{false}">
                             <p:column>
                                 <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
                             </p:column>
@@ -242,24 +243,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <jlgranda:input id="rcdd-amount" name="rcdd-amount" type="decimal" label="#{i18n['common.money.letter']}"
                                     render="rcdd-amount" value="#{facturaElectronicaIngresoHome.recordDetail.amount}" 
-                                    required="true" requiredMessage="#{i18n['common.money.letter']}"
+                                    required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
                                     placeholder="false"
                                     decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                     thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                     decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                    container="none" rendered="true"/>
+                                    container="none" rendered="#{true}"/>
                     <div class="ui-g-12" style="display: inline-flex; padding: 0.5rem 0 0 0">
                         <p:commandButton id="rcdd-btn-save" 
                                          value="#{i18n['common.add']}" icon="fa fa-check" styleClass="danger-btn" 
                                          actionListener="#{facturaElectronicaIngresoHome.recordDetailAdd('save')}"
                                          disabled="#{empty facturaElectronicaIngresoHome.recordDetail.account}"
                                          update="rcdd-btn-save rcdd-dlg rcdd-dtb pay-pnl amountPending fct-btn-save"
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <p:commandButton title="#{i18n['common.cancel']}" icon="fa fa-times" styleClass="secondary-button"
                                          actionListener="#{facturaElectronicaIngresoHome.recordDetailAdd('cancel')}"
                                          onclick="PF('rcdd-dlg').hide()"
                                          update="rcdd-dlg"
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                     </div>
                 </div>
             </p:dialog>
@@ -285,8 +286,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:selectOneMenu id="pay-method"
                                                          value="#{facturaElectronicaIngresoHome.payment.method}"
                                                          disabled="#{facturaElectronicaIngresoHome.payableTotal}"
-                                                         immediate="true"
-                                                         required="true" style="width: 100%"> 
+                                                         immediate="#{true}"
+                                                         required="#{true}" style="width: 100%"> 
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                             <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                             <p:ajax update="@this pay-method-pnl"/>
@@ -298,8 +299,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:selectOneMenu id="accountPaymentSelected"
                                                              value="#{facturaElectronicaIngresoHome.accountPaymentSelected}"
                                                              converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                             immediate="true"
-                                                             required="true" style="width: 100%"> 
+                                                             immediate="#{true}"
+                                                             required="#{true}" style="width: 100%"> 
                                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                 <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <p:ajax update="@this"/>
@@ -316,8 +317,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularMontoAbonado()}" update="pay-amount pay-cash" partialSubmit="true"></p:ajax>
-                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-amount pay-change" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularMontoAbonado()}" update="pay-amount pay-cash" partialSubmit="#{true}"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-amount pay-change" partialSubmit="#{true}"></p:ajax>
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -329,8 +330,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularMontoAbonado()}" update="pay-cash" partialSubmit="true"></p:ajax>
-                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularMontoAbonado()}" update="pay-cash" partialSubmit="#{true}"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="#{true}"></p:ajax>
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -342,7 +343,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaIngresoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="#{true}"></p:ajax>
                                         </p:inputNumber>
                                     </div>
                                     <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -435,7 +436,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
     </ui:define>
     <ui:define name="popups">
-        <p:dialog id="myDialogID" widgetVar="myDialogVar" modal="true" closable="false" width="400px" style="text-align: -webkit-center;">
+        <p:dialog id="myDialogID" widgetVar="myDialogVar" modal="#{true}" closable="false" width="400px" style="text-align: -webkit-center;">
             <span> El asiento contable no se registró debido a que las cuentas intervinientes no coinciden o no se encuentran dentro del Plan de Cuentas.! 
             </span>
             <h4 style="text-align: center"> ¡Por favor verífique e inténte el registro del asiento manualmente.!</h4>

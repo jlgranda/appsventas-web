@@ -23,12 +23,12 @@
             <h:form id="form" enctype="multipart/form-data" >
                 <div class="Container100">
                     <div class="ContainerIndent">
-                        <p:messages id="messages" showDetail="true" closable="true" >
+                        <p:messages id="messages" showDetail="#{true}" closable="#{true}" >
                             <p:autoUpdate></p:autoUpdate>
                         </p:messages>
                         <div class="Card ShadowEffect ui-fluid">
                             <jlgranda:input id="name" name="name" type="text" label="#{i18n['common.name']}"
-                                            value="#{securityGroupHome.group.name}" render="name" required="true" 
+                                            value="#{securityGroupHome.group.name}" render="name" required="#{true}" 
                                             execute="@this save" container="none"/>
                             <p:toolbar>
                                 <f:facet name="left">
@@ -38,7 +38,7 @@
 
                                 <f:facet name="right">
 
-                                    <p:commandButton ajax="false" action="#{securityGroupHome.getOutcome()}" disabled="false" immediate="true"
+                                    <p:commandButton ajax="false" action="#{securityGroupHome.getOutcome()}" disabled="false" immediate="#{true}"
                                                      title="#{i18n['common.cancel']}" icon="fa fa-arrow-left Fs14 Black" styleClass="GrayButton" type="submit"/>
 
 <!--                                    <p:menuButton value="#{i18n['common.options']}">

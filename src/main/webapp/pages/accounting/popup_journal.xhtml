@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12">
                     <p:dataView id="records" var="record" value="#{recordHome.recordPorGeneralJournal}"
-                                rows="5" paginator="true" rowsPerPageTemplate="5,10,20" 
+                                rows="5" paginator="#{true}" rowsPerPageTemplate="5,10,20" 
                                 gridIcon="pi pi-th-large" listIcon="pi pi-bars">
                         <f:facet name="header">
                             <p:outputLabel class="Fs18 FontBold" style="text-transform: uppercase;" value="#{recordHome.generalJournal.name }"/>

@@ -89,13 +89,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                         itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
                                                         completeMethod="#{accountHome.find}"
                                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                        converterMessage="El convertidor no responde."
+                                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                        converterMessage="#{i18n['property.converter.fail']}"
                                                         minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                         maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
-                                                        forceSelection="true" emptyMessage="No se encontraron resultados."
-                                                        cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                                        dropdown="false">
+                                                        forceSelection="#{true}" dropdown="#{false}"
+                                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                        required="#{false}">
                                             <p:column>
                                                 <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
                                             </p:column>
@@ -106,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
                                                      actionListener="#{accountHome.execute()}" action="#{accountHome.getOutcome()}"
                                                      disabled="#{not accountHome.actionExecutable}"
-                                                     ajax="true" update="@form">
+                                                     ajax="#{true}" update="@form">
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                     </p:commandButton>
                                 </f:facet>

@@ -75,11 +75,13 @@ public class AggregationHome extends FedeController implements Serializable {
     private Long aggregationId;
     private Aggregation aggregation;
     private AggregationDetail detail;
-    
+
     /**
      * Auxiliares.
      */
     private LazyAggregationDataModel lazyDataModel;
+    private List<Aggregation> productosAgregaciones;
+    private List<ProductAggregations> productoAgregaciones;
 
     @PostConstruct
     private void init() {
@@ -89,7 +91,7 @@ public class AggregationHome extends FedeController implements Serializable {
 
     public Aggregation getAggregation() {
         if (this.aggregationId != null && this.aggregation != null && !this.aggregation.isPersistent()) {
-            this.aggregation = aggregationService.find(aggregationId);
+            this.aggregation = aggregationService.find(this.aggregationId);
         }
         return this.aggregation;
     }
@@ -120,6 +122,22 @@ public class AggregationHome extends FedeController implements Serializable {
 
     public void setLazyDataModel(LazyAggregationDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
+    }
+
+    public List<Aggregation> getProductosAgregaciones() {
+        return productosAgregaciones;
+    }
+
+    public void setProductosAgregaciones(List<Aggregation> productosAgregaciones) {
+        this.productosAgregaciones = productosAgregaciones;
+    }
+
+    public List<ProductAggregations> getProductoAgregaciones() {
+        return productoAgregaciones;
+    }
+
+    public void setProductoAgregaciones(List<ProductAggregations> productoAgregaciones) {
+        this.productoAgregaciones = productoAgregaciones;
     }
 
     public List<Product> filterProducts(String query) {

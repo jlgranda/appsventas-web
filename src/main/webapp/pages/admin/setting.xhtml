@@ -98,7 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </p:dataTable>
                     <div class="EmptyBox10"/>
 <!--                    <p:commandButton value="#{i18n['common.add']}"  style="margin-bottom:10px; width: 100%" 
-                                     actionListener="#{settingHome.crear()}" update=":form:pnlEditar" immediate="true"
+                                     actionListener="#{settingHome.crear()}" update=":form:pnlEditar" immediate="#{true}"
                                      styleClass="danger-btn">
                     </p:commandButton>-->
                     <p:button value="#{i18n['common.add']}" styleClass="danger-btn" outcome="/pages/admin/setting.jsf"/>
@@ -114,17 +114,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             label="#{i18n['common.label']}" 
                                             value="#{settingHome.setting.label}"
                                             execute="@this save" render="lbl" 
-                                            required="true" container="none"/>
+                                            required="#{true}" container="none"/>
                             <jlgranda:input id="nme" name="name" type="text" 
                                             label="#{i18n['common.name']}" 
                                             value="#{settingHome.setting.name}"
                                             execute="@this save" render="nme" 
-                                            required="true" container="none"/>
+                                            required="#{true}" container="none"/>
                             <jlgranda:input id="value" name="value" type="text" 
                                             label="#{i18n['common.value']}" 
                                             value="#{settingHome.setting.value}"
                                             execute="@this save" render="value" 
-                                            required="true" container="none"/>
+                                            required="#{true}" container="none"/>
                             <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                             value="#{settingHome.setting.description}" execute="@this save" render="descrpn" 
                                             inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
@@ -144,7 +144,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                                 <f:facet name="right">
 
-                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                    <p:commandButton ajax="#{true}" disabled="false" immediate="#{true}"
                                                      actionListener="#{settingHome.cancelar()}" 
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                                      update="@form:pnlEditar"/>
@@ -154,7 +154,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                      icon="fa fa-undo Fs14 Black"/>
                                     <!--                                <p:menuButton value="{i18n['common.options']}">
                                                                         <p:menuitem value="{i18n['common.restore']}" action="{settingHome.restaurar()}"
-                                                                                    ajax="true"  update="@form:pnlEditar" rendered="{settingHome.setting.persistent}"
+                                                                                    ajax="#{true}"  update="@form:pnlEditar" rendered="{settingHome.setting.persistent}"
                                                                                     icon="fa fa-undo" />
                                                                     </p:menuButton>-->
                                 </f:facet>

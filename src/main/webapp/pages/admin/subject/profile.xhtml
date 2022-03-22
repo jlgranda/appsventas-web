@@ -74,11 +74,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                     <p:panel rendered="#{!subjectAdminHome.subjectEdit.persistent}">
                         <jlgranda:input id="clave" name="clave" type="password" label="#{i18n['common.password']}" 
-                                        value="#{subjectAdminHome.clave}"  placeholder="true"
+                                        value="#{subjectAdminHome.clave}"  placeholder="#{true}"
                                         execute="@this save" render="clave">
                         </jlgranda:input>
                         <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['app.signin.password.confirm']}" 
-                                        value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="true"
+                                        value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="#{true}"
                                         execute="@this save" render="confirmar-clave"/>
                     </p:panel>
                 </div>
@@ -90,7 +90,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:panel rendered="#{subjectAdminHome.subjectEdit.photo==null}"> 
                         <i class="fa fa-user Fs50 BoldGray DispBlock"></i>
                     </p:panel>
-                    <p:fileUpload mode="advanced" dragDropSupport="true" auto="true"
+                    <p:fileUpload mode="advanced" dragDropSupport="#{true}" auto="#{true}"
                                   process="@form" update="photo"   
                                   sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
                                   fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
@@ -102,34 +102,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:commandButton id="save"
                                              value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
                                              actionListener="#{subjectAdminHome.saveValidado()}" action="#{subjectAdminHome.getOutcome()}"
-                                             ajax="true" type="submit"/>
+                                             ajax="#{true}" type="submit"/>
                         </f:facet>
                         <f:facet name="right">
                             <p:commandButton icon="pi pi-replay" styleClass="primary-button"
                                              title="#{i18n['common.back']}"
                                              action="#{subjectAdminHome.getOutcome()}"
-                                             ajax="true" immediate="true"/>
+                                             ajax="#{true}" immediate="#{true}"/>
                             <p:menuButton value="#{i18n['common.options']}">
                                 <p:menuitem value="#{i18n['app.signin.password.change']}" icon="fa fa-key"
                                             onclick="PF('dlgCambiarClave').show()"
                                             rendered="#{subjectAdminHome.subjectEdit.persistent}"
-                                            immediate="true"/>
+                                            immediate="#{true}"/>
                                 <p:menuitem icon="fa fa-group" value="#{i18n['app.signin.setting.roles']}"
                                             onclick="PF('dlgConfigurarRoles').show()"
                                             actionListener="#{subjectAdminHome.loadRoles()}"
                                             rendered="#{subjectAdminHome.subjectEdit.persistent}"
-                                            immediate="true"/>
+                                            immediate="#{true}"/>
                                 <p:menuitem value="#{i18n['common.submit']} #{i18n['common.message']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(false)}" icon="fa fa-magic" 
-                                            immediate="true" rendered="#{!subjectAdminHome.subjectEdit.confirmed}"/>
+                                            immediate="#{true}" rendered="#{!subjectAdminHome.subjectEdit.confirmed}"/>
                                 <p:menuitem value="#{i18n['common.force']} #{i18n['common.confirmation']}" action="#{subjectAdminHome.confirm(true)}" icon="fa fa-magic" 
-                                            immediate="true" rendered="#{subjectAdminHome.subjectEdit.confirmed}"/>
+                                            immediate="#{true}" rendered="#{subjectAdminHome.subjectEdit.confirmed}"/>
                             </p:menuButton>
                         </f:facet>
                     </p:toolbar>
                 </div>
             </div>
             <p:dialog id="dlgConfigurarRoles" widgetVar="dlgConfigurarRoles" 
-                      modal="true" draggable="true" position="center" closeOnEscape="true">
+                      modal="#{true}" draggable="#{true}" position="center" closeOnEscape="#{true}">
                 <f:facet name="header">
                     <i class="fa fa-fw fa fa-group"></i>
                     <h:outputText value="#{i18n['app.signin.setting.roles']}"/>
@@ -141,8 +141,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             itemLabel="#{rol.name}" itemValue="#{rol}"
                             addLabel="Añadir" addAllLabel="Añadir todos"
                             removeLabel="Quitar" removeAllLabel="Quitar todos"
-                            showTargetControls="true" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
-                            style="text-align:center;" responsive="true">
+                            showTargetControls="#{true}" showSourceFilter="#{true}" showTargetFilter="#{true}" filterMatchMode="contains"
+                            style="text-align:center;" responsive="#{true}">
                     <f:facet name="sourceCaption"><h:outputLabel value="NO ASIGNADOS"/></f:facet>
                     <f:facet name="targetCaption"><h:outputLabel value="ASIGNADOS"/></f:facet>
                     <p:ajax event="transfer" listener="#{subjectAdminHome.onTransfer}" update="@this"/>
@@ -157,19 +157,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </p:dialog>
             <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
                       header="#{i18n['app.signin.password.change']}" 
-                      modal="true" draggable="true" position="center" closable="false" >
+                      modal="#{true}" draggable="#{true}" position="center" closable="false" >
                 <div class="Container100">
-                    <p:messages id="messagesDlg" showDetail="true" closable="true" >
+                    <p:messages id="messagesDlg" showDetail="#{true}" closable="#{true}" >
                         <p:autoUpdate></p:autoUpdate>
                     </p:messages>
                     <div class="ContainerIndent">
                         <div class="Card ShadowEffect ui-fluid">
                             <jlgranda:input id="password" name="password" type="password" label="#{i18n['common.password']}" 
-                                            value="#{subjectAdminHome.clave}"  placeholder="true"
+                                            value="#{subjectAdminHome.clave}"  placeholder="#{true}"
                                             execute="@this save" render="password">
                             </jlgranda:input>
                             <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['app.signin.password.confirm']}" 
-                                            value="#{subjectAdminHome.confirmarClave}"  placeholder="true"
+                                            value="#{subjectAdminHome.confirmarClave}"  placeholder="#{true}"
                                             execute="@this save" render="confirmar-password"/>
                             <div class="EmptyBox10"></div>
                             <div class="Wid50 Fleft Responsive">

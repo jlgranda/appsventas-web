@@ -85,12 +85,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <label style="padding-top: 5px"><b>#{i18n['common.supplier']}:</b></label>
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-10">
-                                    <p:autoComplete id="supplier" value="#{facturaElectronicaHome.facturaElectronica.author}" effect="blind" 
-                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                    var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.fullName}" multiple="false" 
-                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                    <p:autoComplete id="supplier" 
+                                                    value="#{facturaElectronicaHome.facturaElectronica.author}" var="entidad"
+                                                    itemLabel="#{entidad.fullName}" itemValue="#{entidad}"
+                                                    completeMethod="#{subjectHome.find}"
                                                     converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                    forceSelection="true" required="#{true}" disabled="#{facturaElectronicaHome.useDefaultSupplier}">
+                                                    disabled="#{facturaElectronicaHome.useDefaultSupplier}"
+                                                    placeholder="#{i18n['common.find']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                    converterMessage="#{i18n['property.converter.fail']}"
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                                    cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                    required="#{true}">
                                         <p:column>
                                             <h:outputText value="#{entidad.fullName}"/>
                                         </p:column>
@@ -321,11 +329,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <h:panelGroup rendered="#{!facturaElectronicaHome.activePanelProduct}">
                                 <div class="ui-g-8">
                                     <h4>#{i18n['common.detail']}:</h4>
-                                    <p:autoComplete id="auto-complete-product" value="#{facturaElectronicaHome.facturaElectronicaDetail.product}" effect="blind"
-                                                    minQueryLength="2" completeMethod="#{facturaElectronicaHome.completeProduct}"
-                                                    var="entidad" itemLabel="#{entidad.name}" multiple="false" maxResults="7" itemValue="#{entidad}" 
-                                                    converter="org.jlgranda.fede.ui.converter.ProductComprasConverter" forceSelection="false"
-                                                    placeholder="#{i18n['common.product.find']}">
+                                    <p:autoComplete id="auto-complete-product"
+                                                    value="#{facturaElectronicaHome.facturaElectronicaDetail.product}" var="entidad"
+                                                    itemLabel="#{entidad.name}" itemValue="#{entidad}" 
+                                                    completeMethod="#{facturaElectronicaHome.completeProduct}"
+                                                    converter="org.jlgranda.fede.ui.converter.ProductComprasConverter" 
+                                                    placeholder="#{i18n['app.fede.inventory.product.find']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                    converterMessage="#{i18n['property.converter.fail']}"
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    multiple="#{false}" forceSelection="#{false}" dropdown="#{false}"
+                                                    cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                    required="#{false}">
                                         <p:column>
                                             <h:outputText value="#{entidad.name} [$ #{entidad.priceCost}]"/>
                                         </p:column>
@@ -335,7 +351,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <div class="ui-g-4">
                                     <div class="EmptyBox20"/>
-                                    <p:commandButton id="btn-new-product" value="#{i18n['common.product']}" icon="fa fa-plus"
+                                    <p:commandButton id="btn-new-product" value="#{i18n['app.fede.inventory.product']}" icon="fa fa-plus"
                                                      actionListener="#{facturaElectronicaHome.openPanelProduct()}"
                                                      disabled="#{not empty facturaElectronicaHome.facturaElectronicaDetail.product.id}"
                                                      update="btn-new-product panel-new-product panel-facturaElectronicaDetail-add auto-complete-product"
@@ -380,7 +396,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <h:panelGroup id="panel-new-product" class="ui-g ui-panelgrid-cell ui-g-12 ui-md-12" >
                             <h:panelGroup rendered="#{facturaElectronicaHome.activePanelProduct}">
                                 <div class="ui-g-12">
-                                    <h4 class="BigTopic">#{i18n['common.name']} #{i18n['common.of']} #{i18n['common.product']}&nbsp;</h4>
+                                    <h4 class="BigTopic">#{i18n['common.name']} #{i18n['common.of']} #{i18n['app.fede.inventory.product']}&nbsp;</h4>
                                     <p:inputText id="nme" value="#{facturaElectronicaHome.productNew.name}" required="#{false}">
                                         <p:ajax listener="#{facturaElectronicaHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
                                     </p:inputText>

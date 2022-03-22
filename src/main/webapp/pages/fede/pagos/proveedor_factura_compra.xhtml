@@ -63,18 +63,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:outputLabel value="#{i18n['common.supplier']}" for="@next"/>
                             <div class="ui-g-12" style="display: inline-flex; padding: 0rem">
                                 <p:autoComplete id="supplier" 
-                                                value="#{facturaElectronicaCompraHome.facturaElectronica.author}"  var="entidad"
+                                                value="#{facturaElectronicaCompraHome.facturaElectronica.author}" var="entidad"
                                                 itemLabel="#{entidad.fullName.toUpperCase()}" itemValue="#{entidad}"
                                                 completeMethod="#{proveedorHome.find}"
                                                 converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                converterMessage="El convertidor no responde."
+                                                disabled="#{true}"
+                                                placeholder="#{i18n['common.find']}"
+                                                emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                converterMessage="#{i18n['property.converter.fail']}"
                                                 minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                 maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                placeholder="#{i18n['common.find']}"
-                                                forceSelection="true" emptyMessage="No se encontraron resultados."
-                                                cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                                disabled="#{true}"
-                                                required="true">
+                                                multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                required="#{true}">
                                     <p:column>
                                         <h:outputText value="#{entidad.fullName.toUpperCase()}"/>
                                     </p:column>
@@ -89,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  icon="fa fa-user-plus" styleClass="primary-button"
                                                  actionListener="#{facturaElectronicaCompraHome.mostrarFormularioProfile()}" 
                                                  disabled="#{true}"
-                                                 ajax="true" immediate="true">
+                                                 ajax="#{true}" immediate="#{true}">
                                     <p:ajax event="dialogReturn" update="@form"
                                             listener="#{facturaElectronicaCompraHome.handleReturn}">
                                     </p:ajax>
@@ -294,7 +295,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <span>(Si el producto no se encuentra en la lista, puede crearlo)</span>
                             <p:commandButton id="btn-new-product" 
                                              icon="fa fa-plus" styleClass="help-btn"
-                                             value="Crear #{i18n['common.product']}"
+                                             value="Crear #{i18n['app.fede.inventory.product']}"
                                              actionListener="#{facturaElectronicaCompraHome.openPanelProduct()}"
                                              update="btn-new-product panel-new-product panel-facturaElectronicaDetail-add auto-complete-product btn-facturaElectronicaDetail-save"
                                              disabled="#{not empty facturaElectronicaCompraHome.facturaElectronicaDetail.product.id or facturaElectronicaCompraHome.activePanelProduct}"/>
@@ -305,17 +306,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="ui-fluid">
                                     <p:outputLabel value="#{i18n['common.detail']}" for="@next"/>
                                     <p:autoComplete id="auto-complete-product" 
-                                                    value="#{facturaElectronicaCompraHome.facturaElectronicaDetail.product}"  var="entidad"
+                                                    value="#{facturaElectronicaCompraHome.facturaElectronicaDetail.product}" var="entidad"
                                                     itemLabel="#{entidad.name.toUpperCase()}" itemValue="#{entidad}"
                                                     completeMethod="#{facturaElectronicaCompraHome.completeProduct}"
                                                     converter="org.jlgranda.fede.ui.converter.ProductComprasConverter" 
-                                                    converterMessage="El convertidor no responde."
+                                                    placeholder="#{i18n['app.fede.inventory.product.find']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                    converterMessage="#{i18n['property.converter.fail']}"
                                                     minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
                                                     maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                    placeholder="Buscar producto existente..."
-                                                    forceSelection="true" emptyMessage="No se encontraron resultados."
-                                                    cache="true" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                                    required="false">
+                                                    multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                                    cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                    required="#{false}">
                                         <p:column>
                                             <h:outputText value="#{entidad.name.toUpperCase()} [$ #{entidad.priceCost}]"/>
                                         </p:column>
