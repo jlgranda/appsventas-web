@@ -354,7 +354,7 @@
         
         <!--       jlgranda.com dependencies-->
         <dependency>
-            <groupId>net.tecnopro</groupId>
+            <groupId>org.jlgranda</groupId>
             <artifactId>appsventas-ejb</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
