@@ -76,8 +76,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                     <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12">
                         <jlgranda:input id="emissionon" name="emissionon" type="calendar" label="#{i18n['common.date.emission']}" 
-                                        render="board_number" value="#{invoiceHome.invoice.emissionOn}" 
-                                        required="true" requiredMessage="#{i18n['common.date.emission.required']}"
+                                        render="board_number" value="#{invoiceHome.emissionOn}" 
+                                        required="#{true}" requiredMessage="#{i18n['common.date.emission.required']}"
                                         placeholder="false"
                                         decimalPlaces="0" container="none" rendered="true"/>
                     </div>

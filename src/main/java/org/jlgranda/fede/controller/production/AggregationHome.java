@@ -84,6 +84,7 @@ public class AggregationHome extends FedeController implements Serializable {
      * UX.
      */
     private List<AggregationData> aggregations;
+    private AggregationDetail aggregationDetailSelected;
 
     @PostConstruct
     private void init() {
@@ -127,6 +128,14 @@ public class AggregationHome extends FedeController implements Serializable {
 
     public void setAggregations(List<AggregationData> aggregations) {
         this.aggregations = aggregations;
+    }
+
+    public AggregationDetail getAggregationDetailSelected() {
+        return aggregationDetailSelected;
+    }
+
+    public void setAggregationDetailSelected(AggregationDetail aggregationDetailSelected) {
+        this.aggregationDetailSelected = aggregationDetailSelected;
     }
 
     /**
@@ -175,9 +184,15 @@ public class AggregationHome extends FedeController implements Serializable {
         if (this.aggregation.getId() == null) {//Guardar primero la agregación
             saveAggregation();
         }
+        this.aggregationDetail.setOwner(this.subject);
         addAggregationDetail(this.aggregationDetail);
         saveAggregation();
+
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.aggregationDetail.getProduct().getName()));
+
+        //Encerar el registro
         this.aggregationDetail = aggregationDetailService.createInstance();
+        this.aggregationDetailSelected = null;
     }
 
     private void addAggregationDetail(AggregationDetail aggd) {
@@ -221,10 +236,8 @@ public class AggregationHome extends FedeController implements Serializable {
     }
 
     public void onRowSelectAggregationDetail(SelectEvent<AggregationDetail> event) {
-        this.aggregationDetail = this.aggregation.getAggregationDetails().stream()
-                .filter(aggd -> event.getObject().getId().equals(aggd.getId()))
-                .findAny()
-                .orElse(aggregationDetail);
+        this.aggregationDetail = event.getObject();
+        addInfoMessage(I18nUtil.getMessages("action.sucessfully"), "Registro seleccionado: " + this.aggregationDetail.getProduct().getName());
     }
 
     @Override

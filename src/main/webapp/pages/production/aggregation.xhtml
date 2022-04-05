@@ -135,10 +135,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          paginatorPosition="bottom" resizableColumns="#{true}" rowKey="#{aggregationDetail.id}"
                                          rows="25" scrollRows="25"
                                          value="#{aggregationHome.aggregation.aggregationDetails}" var="aggregationDetail"
-                                         selection="#{aggregationHome.selectedBussinesEntities}"
+                                         selection="#{aggregationHome.aggregationDetailSelected}" 
                                          editable="#{false}">
-                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panel-aggregation"/>
-                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update="@form"/>
+                                <!--<p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
                                 <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregationDetail.product.name}">
                                     <h:outputText value="#{aggregationDetail.product.name.toUpperCase()}"/>
                                 </p:column>

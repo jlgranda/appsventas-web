@@ -157,17 +157,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                              sortMode="single"
                                              editable="#{false}">
-                                    <p:column headerText="#{i18n['common.date']}" class="Wid10">
-                                        <h:outputText value="#{recordDetail.createdOn}">
+                                    <p:column headerText="#{i18n['common.date.emission']}" class="Wid10">
+                                        <h:outputText value="#{recordDetail.record.emissionDate}">
                                             <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
                                         </h:outputText>
                                     </p:column>
                                     <p:column headerText="Razón">
                                         <h:outputText value="#{recordDetail.record.description}" />
                                     </p:column>
-                                    <p:column headerText="REF" class="Wid10">
+<!--                                    <p:column headerText="REF" class="Wid10">
                                         <h:outputText value="#{recordDetail.record.deleted}"/>
-                                    </p:column>
+                                    </p:column>-->
                                     <p:column headerText="#{i18n['common.debe']}" class="Wid20">
                                         <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>

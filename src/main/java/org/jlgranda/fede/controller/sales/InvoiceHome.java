@@ -115,22 +115,22 @@ import org.primefaces.model.chart.LineChartSeries;
 @ViewScoped
 @Named
 public class InvoiceHome extends FedeController implements Serializable {
-
+    
     private static final long serialVersionUID = 115507468383355922L;
-
+    
     Logger logger = LoggerFactory.getLogger(InvoiceHome.class);
-
+    
     @EJB
     AccountCache accountCache;
-
+    
     @Inject
     private Subject subject;
-
+    
     private Subject customer;
-
+    
     @Inject
     private SettingHome settingHome;
-
+    
     @Inject
     private SubjectHome subjectHome;
 
@@ -138,140 +138,142 @@ public class InvoiceHome extends FedeController implements Serializable {
      * Para almacemar la cantidad en el formulario de pedido rápido
      */
     private Long amount;
-
+    
     private Invoice invoice = null;
-
+    
     private Invoice lastInvoice;
-
+    
     private Invoice lastPreInvoice;
-
+    
     private Long invoiceId;
-
+    
     private Detail candidateDetail;
-
+    
     private List<Detail> candidateDetails = new ArrayList<>();
-
+    
     private Set<Product> recents = new HashSet<>();
-
+    
     private Payment payment;
-
+    
     @EJB
     private GroupService groupService;
-
+    
     @EJB
     private InvoiceService invoiceService;
-
+    
     @EJB
     private SubjectService subjectService;
-
+    
     @EJB
     private DetailService detailService;
-
+    
     @EJB
     private PaymentService paymentService;
-
+    
     @EJB
     private ProductCache productCache;
-
+    
     @EJB
     private EmployeeService employeeService;
-
+    
     @Inject
     private InventoryHome inventoryHome;
-
+    
     private LazyInvoiceDataModel lazyDataModel;
-
+    
     private DocumentType documentType;
-
+    
     private boolean useDefaultCustomer;
-
+    
     private boolean useDefaultEmail;
-
+    
     private boolean nonnative;
-
+    
     private boolean busquedaAvanzada;
-
+    
     private boolean busquedaEjecutada;
 
     //Resumenes rápidos
     private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
-
+    
     private List<Invoice> myPendinglastPreInvoices = new ArrayList<>();
     private List<Invoice> myOverduelastPreInvoices = new ArrayList<>();
     private List<Invoice> myLastlastInvoices = new ArrayList<>();
     private List<Invoice> myAllInvoices = new ArrayList<>(); // --
     private List<Invoice> filteredInvoices = new ArrayList<>(); // --
     private List<Invoice> myLastCourtesies = new ArrayList<>();
-
+    
     @Inject
     private FacturaElectronicaHome facturaElectronicaHome;
-
+    
     @Inject
     private TemplateHome templateHome;
-
+    
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar clientes en factura
 
     private boolean orderByCode;
-
+    
     private String sortOrder = "DESCENDING";
-
+    
     private Long interval; //Intervalo de tiempo
 
     private BigDecimal totalOverdues;
-
+    
     @Inject
     private OrganizationData organizationData;
-
+    
     @EJB
     private KardexService kardexService;
-
+    
     @EJB
     private KardexDetailService kardexDetailService;
-
+    
     @EJB
     private RecordService recordService;
-
+    
     @EJB
     private GeneralJournalService generalJournalService;
-
+    
     @EJB
     private AccountService accountService;
-
+    
     @EJB
     private RecordTemplateService recordTemplateService;
-
+    
     private List<FilterMeta> filterBy;
-
+    
     protected List<Invoice> selectedInvoices;
-
+    
     private boolean recordCompleto;
-
+    
     private Account accountPaymentSelected;
-
+    
+    private Date emissionOn;
+    
     @PostConstruct
     private void init() {
-
+        
         initializeDateInterval();
-
+        
         setAmount(0L); //Sólo si se establece un valor
         setInvoice(invoiceService.createInstance());
         setCandidateDetail(detailService.createInstance(1));
         setPayment(paymentService.createInstance());
-
+        
         setDocumentType(DocumentType.PRE_INVOICE); //Listar prefacturas por defecto
         setUseDefaultCustomer(true); //Usar consumidor final por defecto
         setUseDefaultEmail(false); //Usar consumidor final por ahora
         setNonnative(false); //Es extrangero
         setBusquedaEjecutada(!Strings.isNullOrEmpty(getKeyword()));
         updateDefaultEmail();
-
+        
         getSubjectAdminHome().setOutcome(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().getVistaVenta() : "invoice");
-
+        
         setOrderByCode(false);
-
+        
         setBusquedaAvanzada(true);
-
+        
         filterBy = new ArrayList<>();
 
 //        filterBy.add(FilterMeta.builder()
@@ -290,27 +292,27 @@ public class InvoiceHome extends FedeController implements Serializable {
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
         setOutcome(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().getVistaVentas() : "preinvoices");
-
+        
     }
-
+    
     public Long getInvoiceId() {
         return invoiceId;
     }
-
+    
     public void setInvoiceId(Long invoiceId) {
         this.invoiceId = invoiceId;
     }
-
+    
     public DocumentType getDocumentType() {
         return documentType;
     }
-
+    
     public void setDocumentType(DocumentType documentType) {
         this.documentType = documentType;
     }
-
+    
     public Invoice getInvoice() {
-
+        
         if (invoiceId != null && !this.invoice.isPersistent()) {
             this.invoice = invoiceService.find(invoiceId);
             loadCandidateDetails(this.invoice.getDetails());
@@ -331,11 +333,11 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return invoice;
     }
-
+    
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
-
+    
     public Invoice getLastInvoice() {
         if (lastInvoice == null) {
             List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.INVOICE, true, getStart(), getEnd());
@@ -343,19 +345,19 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return lastInvoice;
     }
-
+    
     public Long getAmount() {
         return amount;
     }
-
+    
     public void setAmount(Long amount) {
         this.amount = amount;
     }
-
+    
     public void setLastInvoice(Invoice lastInvoice) {
         this.lastInvoice = lastInvoice;
     }
-
+    
     public Invoice getLastPreInvoice() {
         if (lastPreInvoice == null) {
             List<Invoice> obs = invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", 1, DocumentType.PRE_INVOICE, true, getStart(), getEnd());
@@ -363,58 +365,58 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return lastPreInvoice;
     }
-
+    
     public void setLastPreInvoice(Invoice lastPreInvoice) {
         this.lastPreInvoice = lastPreInvoice;
     }
-
+    
     public Detail getCandidateDetail() {
         return candidateDetail;
     }
-
+    
     public void setCandidateDetail(Detail candidateDetail) {
         this.candidateDetail = candidateDetail;
     }
-
+    
     public List<Detail> getCandidateDetails() {
         return this.candidateDetails;
     }
-
+    
     public void setCandidateDetails(List<Detail> candidateDetails) {
         this.candidateDetails = candidateDetails;
     }
-
+    
     public Set<Product> getRecents() {
         return recents;
     }
-
+    
     public void setRecents(Set<Product> recents) {
         this.recents = recents;
     }
-
+    
     public Payment getPayment() {
         return payment;
     }
-
+    
     public void setPayment(Payment payment) {
         this.payment = payment;
     }
-
+    
     public Subject getCustomer() {
         if (customer == null && isUseDefaultCustomer()) {
             setCustomer(subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", "consumidorfinal"));
         }
         return customer;
     }
-
+    
     public void updateDefaultCustomer() {
         this.customer = null;
     }
-
+    
     public void updateCustomer() {
         this.customer = null;
     }
-
+    
     public void updatePrintAlias() {
         String alias = settingHome.getValue("app.fede.sales.invoice.defaultprintalias", "Alimentación");
         if (Strings.isNullOrEmpty(invoice.getPrintAliasSummary())) {
@@ -423,7 +425,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             invoice.setPrintAliasSummary("");
         }
     }
-
+    
     public void updateDefaultEmail() {
         if (isUseDefaultEmail()) {
             this.subjectAdminHome.getSubjectEdit().setEmail(this.subjectAdminHome.getSubjectEdit().getCode().replaceAll("^\\s*", "") + "@emporiolojano.com");
@@ -431,76 +433,76 @@ public class InvoiceHome extends FedeController implements Serializable {
             this.subjectAdminHome.getSubjectEdit().setEmail("@");
         }
     }
-
+    
     public void updateNonnative() {
         this.subjectAdminHome.getSubjectEdit().setNonnative(nonnative);
     }
-
+    
     public void setCustomer(Subject customer) {
         this.customer = customer;
     }
-
+    
     public boolean isUseDefaultCustomer() {
         return useDefaultCustomer;
     }
-
+    
     public void setUseDefaultCustomer(boolean useDefaultCustomer) {
         this.useDefaultCustomer = useDefaultCustomer;
     }
-
+    
     public boolean isUseDefaultEmail() {
         return useDefaultEmail;
     }
-
+    
     public void setUseDefaultEmail(boolean useDefaultEmail) {
         this.useDefaultEmail = useDefaultEmail;
     }
-
+    
     public boolean isNonnative() {
         return nonnative;
     }
-
+    
     public void setNonnative(boolean nonnative) {
         this.nonnative = nonnative;
     }
-
+    
     public boolean isBusquedaAvanzada() {
         return busquedaAvanzada;
     }
-
+    
     public void setBusquedaAvanzada(boolean busquedaAvanzada) {
         this.busquedaAvanzada = busquedaAvanzada;
     }
-
+    
     public boolean isBusquedaEjecutada() {
         return busquedaEjecutada;
     }
-
+    
     public void setBusquedaEjecutada(boolean busquedaEjecutada) {
         this.busquedaEjecutada = busquedaEjecutada;
     }
-
+    
     public String getSortOrder() {
         return sortOrder;
     }
-
+    
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
     }
-
+    
     public Long getInterval() {
         return interval;
     }
-
+    
     public void setInterval(Long interval) {
         this.interval = interval;
         initializeDateInterval();
     }
-
+    
     public BigDecimal getTotalOverdues() {
         return totalOverdues;
     }
-
+    
     public void setTotalOverdues(BigDecimal totalOverdues) {
         this.totalOverdues = totalOverdues;
     }
@@ -516,7 +518,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return myLastlastPreInvoices;
     }
-
+    
     public List<Invoice> getMyLastlastInvoices() {
         return getMyLastlastInvoices(true);
     }
@@ -529,20 +531,20 @@ public class InvoiceHome extends FedeController implements Serializable {
      */
     public List<Invoice> getMyLastlastInvoicesByOwner() {
         List<Invoice> invoices = getMyLastlastInvoices(false);
-
+        
         if (invoices == null) {
             return new ArrayList<>();
         }
-
+        
         invoices.forEach((_invoice) -> {
             _invoice.getDetails().forEach((detail) -> {
                 detail.setShowAmountInSummary(false);
             });
         });
         return invoices;
-
+        
     }
-
+    
     protected List<Invoice> getMyLastlastInvoices(boolean byAuthor) {
         if (myLastlastInvoices != null && myLastlastInvoices.isEmpty()) {
             if (byAuthor) {
@@ -553,7 +555,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return myLastlastInvoices;
     }
-
+    
     public List<Invoice> getMyPendingPreInvoices() {
         Date _end = Dates.addDays(getEnd(), -1); //Desde ayer
         Date _start = Dates.addDays(_end, -30); //Hasta 30 días atras
@@ -570,34 +572,34 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return myAllInvoices;
     }
-
+    
     public void setMyLastlastPreInvoices(List<Invoice> myLastlastPreInvoices) {
         this.myLastlastPreInvoices = myLastlastPreInvoices;
     }
-
+    
     public void setMyLastlastInvoices(List<Invoice> myLastlastInvoices) {
         this.myLastlastInvoices = myLastlastInvoices;
     }
-
+    
     public List<Invoice> getMyOverduelastPreInvoices() {
         if (myOverduelastPreInvoices.isEmpty()) {
             myOverduelastPreInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.OVERDUE);
         }
         return myOverduelastPreInvoices;
     }
-
+    
     public void setMyOverduelastPreInvoices(List<Invoice> myOverduelastPreInvoices) {
         this.myOverduelastPreInvoices = myOverduelastPreInvoices;
     }
-
+    
     public List<Invoice> getMyLastCourtesies() {
         return getMyLastCourtesies(true);
     }
-
+    
     public void setMyLastCourtesies(List<Invoice> myLastCourtesies) {
         this.myLastCourtesies = myLastCourtesies;
     }
-
+    
     protected List<Invoice> getMyLastCourtesies(boolean byAuthor) {
         if (myLastCourtesies != null && myLastCourtesies.isEmpty()) {
             if (byAuthor) {
@@ -608,23 +610,23 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return myLastCourtesies;
     }
-
+    
     @Override
     public void handleReturn(SelectEvent event) {
         setCustomer((Subject) event.getObject());
     }
-
+    
     public boolean showInvoiceForm() {
         String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
         String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
         super.openDialog(settingHome.getValue("app.fede.sales.invoice.popup", "/pages/fede/sales/popup_invoice"), width, height, true);
         return true;
     }
-
+    
     public SubjectAdminHome getSubjectAdminHome() {
         return subjectAdminHome;
     }
-
+    
     public void setSubjectAdminHome(SubjectAdminHome subjectAdminHome) {
         this.subjectAdminHome = subjectAdminHome;
     }
@@ -761,14 +763,14 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return getOutcome();
     }
-
+    
     public String print() {
         //try {
         collect(StatusType.PRINTED.toString());
         //Forzar actualizar invoice para generación correcta del reporte
         setInvoice(invoiceService.createInstance());
         getInvoice(); //recargar la instancia actual
-        
+
 //        //Imprimir reporte via el sistema general de reportes
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("invoiceId", this.invoice.getId().intValue());
@@ -790,14 +792,13 @@ public class InvoiceHome extends FedeController implements Serializable {
         //settings.put("app.fede.report.invoice.fontName", settingHome.getValue("app.fede.report.invoice.fontName", "Epson1"));
         settings.put("app.fede.report.invoice.fontSize", settingHome.getValue("app.fede.report.invoice.fontSize", "9"));
         settings.put("app.fede.report.invoice.fontStyle", settingHome.getValue("app.fede.report.invoice.fontStyle", "plain"));
-
-        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(getInvoice(), settings);
         
+        AdhocCustomizerReport adhocCustomizerReport = new AdhocCustomizerReport(getInvoice(), settings);
+
         //InvoiceDesign invoiceDesign = new InvoiceDesign(getInvoice(), settings);
         //Invocar Servlet en nueva ventana del navegador
 //            redirectTo("/fedeServlet/?entity=invoice&id=" + getInvoice().getSequencial() + "&type=odt");
         //redirectTo("/fedeServlet/?entity=invoice&id=" + getInvoice().getSequencial() + "&type=pdf");
-
         //} catch (IOException ex) {
         //    java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
         //}
@@ -833,7 +834,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getInvoice().setExpirationTime(Dates.now()); //Fecha de cierre de servicio
             save(true);
         }
-
+        
         return outcome;
     }
 
@@ -866,6 +867,9 @@ public class InvoiceHome extends FedeController implements Serializable {
                 getInvoice().setDocumentTypeSource(DocumentType.PRE_INVOICE); //Mantener como preinvoice
                 getPayment().setAmount(getInvoice().getTotal()); //Registrar el total a cobrarse
                 getInvoice().addPayment(getPayment());
+                if (getEmissionOn() != null) {
+                    getInvoice().setEmissionOn(getEmissionOn());
+                }
                 setOutcome("preinvoices");
                 setOutcome(save(false));
             } else {
@@ -875,7 +879,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return getOutcome();
     }
-
+    
     public String save(boolean force) {
         List<Detail> details = new ArrayList<>();
         candidateDetails.forEach(d -> {//Quitar los detalles en amount 0
@@ -903,11 +907,11 @@ public class InvoiceHome extends FedeController implements Serializable {
                         d.setAmount(this.getAmount().compareTo(0L) == 0 ? d.getAmount() : BigDecimal.valueOf(this.getAmount())); //Almacenar el valor del datalle, si no es vía el formulario rápido
                         d.setProduct(null);
                         getInvoice().addDetail(d);
-
+                        
                     }
                 }
             });
-
+            
             getInvoice().setLastUpdate(Dates.now()); //Forzar pues no se realiza ningun cambio en el objeto maestro
             invoiceService.save(getInvoice().getId(), getInvoice());
             this.addDefaultSuccessMessage();
@@ -917,13 +921,13 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return "failed";
     }
-
+    
     public void saveCustomer() {
         boolean success = false;
         if (!getSubjectAdminHome().getSubjectEdit().isPersistent()) {
             getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
             getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
-
+            
             getSubjectAdminHome().setValidated(true); //La validación se realiza en pantalla
             success = !"failed".equalsIgnoreCase(getSubjectAdminHome().save());
         } else {
@@ -934,7 +938,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             setCustomer(getSubjectAdminHome().getSubjectEdit());
             closeFormularioProfile(getCustomer());
         }
-
+        
     }
 
     /**
@@ -952,7 +956,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         //Para realizar una nueva búsqueda
         this.lazyDataModel = null;
     }
-
+    
     public BigDecimal calculeTotal(List<Invoice> list) {
         BigDecimal subtotal = new BigDecimal(0);
         BigDecimal discount = new BigDecimal(0);
@@ -966,13 +970,13 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return subtotal.subtract(discount, MathContext.UNLIMITED);
     }
-
+    
     public BigDecimal calculeIva(BigDecimal subTotal) {
         BigDecimal iva = new BigDecimal(BigInteger.ZERO);
         iva = subTotal.multiply(BigDecimal.valueOf(invoice.IVA));
         return iva;
     }
-
+    
     public void calculeChange() {
         BigDecimal subtotal = calculeCandidateDetailTotal();
         subtotal = subtotal.subtract(getPayment().getDiscount());
@@ -985,40 +989,40 @@ public class InvoiceHome extends FedeController implements Serializable {
         getInvoice().setStatus(StatusType.OPEN.toString());
         //Valores Impresos
     }
-
+    
     public LazyInvoiceDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
     }
-
+    
     public void setLazyDataModel(LazyInvoiceDataModel lazyDataModel) {
         this.lazyDataModel = lazyDataModel;
     }
-
+    
     public void filter() {
         //Todos los documentos, independientemente del cajero
         filter(null, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.documentType, getKeyword(), getTags());
     }
-
+    
     public void filter(Subject _subject, Date _start, Date _end, DocumentType _documentType, String _keyword, String _tags) {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyInvoiceDataModel(invoiceService);
         }
-
+        
         if (_start != null) {
             lazyDataModel.setStart(getStart());
         }
         if (_end != null) {
             lazyDataModel.setEnd(getEnd());
         }
-
+        
         if (_subject != null) {
             lazyDataModel.setAuthor(_subject);
         }
-
+        
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
         lazyDataModel.setDocumentType(_documentType);
-
+        
         if (!Strings.isNullOrEmpty(_keyword) && _keyword.startsWith("table:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
@@ -1036,7 +1040,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             lazyDataModel.setFilterValue(_keyword); //Buscar por code, name, description
         }
     }
-
+    
     public void onRowSelect(SelectEvent event) {
         try {
             //Redireccionar a RIDE de objeto seleccionado
@@ -1048,20 +1052,20 @@ public class InvoiceHome extends FedeController implements Serializable {
             java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     public void onRowUnselect(UnselectEvent event) {
         FacesMessage msg = new FacesMessage(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
-
+        
         FacesContext.getCurrentInstance().addMessage(null, msg);
         this.selectedBussinesEntities.remove((Invoice) event.getObject());
         logger.info(I18nUtil.getMessages("BussinesEntity") + " " + I18nUtil.getMessages("common.unselected"), ((BussinesEntity) event.getObject()).getName());
     }
-
+    
     @Override
     public Group getDefaultGroup() {
         return null; //las facturas no se etiquetan aún
     }
-
+    
     private void loadCandidateDetails(List<Detail> details) {
         if (details != null) {
             this.candidateDetails.clear();
@@ -1070,7 +1074,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             });
         }
     }
-
+    
     public boolean addCandidateDetail() {
         Product p = candidateDetail.getProduct();
         if (touch(p)) {
@@ -1079,7 +1083,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return true;
     }
-
+    
     public boolean touch(Product product) {
         if (product == null) {
             addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.requiredMessage"));
@@ -1103,7 +1107,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         setCandidateDetail(detailService.createInstance(1));
         return true;
     }
-
+    
     public boolean touch(String command) {
         for (String id : command.split(",")) {
 //            touch(productService.find(Long.valueOf(id)));
@@ -1111,7 +1115,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return true;
     }
-
+    
     public String macro(String command) {
         for (String id : command.split(",")) {
 //            touch(productService.find(Long.valueOf(id)));
@@ -1119,7 +1123,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return save(true);
     }
-
+    
     public boolean addAndSaveCandidateDetail() {
         this.invoice.addDetail(candidateDetail); //Marcar detail como parte del objeto invoice
         boolean flag = addCandidateDetail();
@@ -1128,7 +1132,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return flag;
     }
-
+    
     public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
         if (author == null) { //retornar todas
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentType", limit, documentType, true, start, end);
@@ -1136,7 +1140,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndAuthor", limit, documentType, author, true, start, end);
         }
     }
-
+    
     public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end, boolean ordeByCode) {
         if (ordeByCode == false) { //retornar todas
             return findInvoices(author, documentType, limit, start, end);
@@ -1144,39 +1148,47 @@ public class InvoiceHome extends FedeController implements Serializable {
             return invoiceService.findByNamedQueryWithLimit("Invoice.findByDocumentTypeAndAuthorOrderByCode", limit, documentType, author, true, start, end);
         }
     }
-
+    
     @Override
     public List<Group> getGroups() {
         if (this.groups.isEmpty()) {
             //Todos los grupos para el modulo actual
             setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "invoice", "invoice"), Group.Type.LABEL));
         }
-
+        
         return this.groups;
     }
-
+    
     public List<Invoice> getSelectedInvoices() {
         return selectedInvoices;
     }
-
+    
     public void setSelectedInvoices(List<Invoice> selectedInvoices) {
         this.selectedInvoices = selectedInvoices;
     }
-
+    
     public boolean isRecordCompleto() {
         return recordCompleto;
     }
-
+    
     public void setRecordCompleto(boolean recordCompleto) {
         this.recordCompleto = recordCompleto;
     }
-
+    
     public Account getAccountPaymentSelected() {
         return accountPaymentSelected;
     }
-
+    
     public void setAccountPaymentSelected(Account accountPaymentSelected) {
         this.accountPaymentSelected = accountPaymentSelected;
+    }
+    
+    public Date getEmissionOn() {
+        return emissionOn;
+    }
+    
+    public void setEmissionOn(Date emissionOn) {
+        this.emissionOn = emissionOn;
     }
 
     /**
@@ -1207,9 +1219,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         super.openDialog(SettingNames.POPUP_FORMULARIO_PROFILE, width, height, left, top, true, params);
         return true;
     }
-
+    
     public boolean mostrarFormularioProfile() {
-
+        
         setUseDefaultCustomer(false); //Implica que se agregará un nuevo usuario
         if (getCustomer() != null
                 && getCustomer().isPersistent()
@@ -1218,15 +1230,15 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return mostrarFormularioProfile(null);
     }
-
+    
     public void closeFormularioProfile(Object data) {
         removeSessionParameter("KEYWORD");
         removeSessionParameter("CUSTOMER");
         super.closeDialog(data);
     }
-
+    
     public void loadSessionParameters() {
-
+        
         if (existsSessionParameter("CUSTOMER")) {
             this.subjectAdminHome.setSubjectEdit((Subject) getSessionParameter("CUSTOMER"));
         } else if (existsSessionParameter("KEYWORD")) {
@@ -1235,27 +1247,27 @@ public class InvoiceHome extends FedeController implements Serializable {
             this.subjectAdminHome.setSubjectEdit(_subject);
         }
     }
-
+    
     public boolean isOrderByCode() {
         return orderByCode;
     }
-
+    
     public void setOrderByCode(boolean orderByCode) {
         this.orderByCode = orderByCode;
     }
-
+    
     public List<Invoice> getFilteredInvoices() {
         return filteredInvoices;
     }
-
+    
     public void setFilteredInvoices(List<Invoice> filteredInvoices) {
         this.filteredInvoices = filteredInvoices;
     }
-
+    
     public List<FilterMeta> getFilterBy() {
         return filterBy;
     }
-
+    
     public void setFilterBy(List<FilterMeta> filterBy) {
         this.filterBy = filterBy;
     }
@@ -1264,25 +1276,25 @@ public class InvoiceHome extends FedeController implements Serializable {
     // Chart data model
     /////////////////////////////////////////////////////////////////////////
     private LineChartModel balanceLineChartModel;
-
+    
     public LineChartModel getBalanceLineChartModel() {
         if (balanceLineChartModel == null) {
             setBalanceLineChartModel(createLineChartModel());
         }
         return balanceLineChartModel;
     }
-
+    
     public void cleanChartModels() {
         setBalanceLineChartModel(null);
     }
-
+    
     public void setBalanceLineChartModel(LineChartModel balanceLineChartModel) {
         this.balanceLineChartModel = balanceLineChartModel;
     }
-
+    
     private LineChartModel createLineChartModel() {
         LineChartModel areaModel = new LineChartModel();
-
+        
         boolean fillSeries = true;
 //        
 //        LineChartSeries fixedCosts = new LineChartSeries();
@@ -1294,15 +1306,15 @@ public class InvoiceHome extends FedeController implements Serializable {
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(fillSeries);
         sales.setLabel(I18nUtil.getMessages("app.fede.sales.net"));
-
+        
         LineChartSeries purchases = new LineChartSeries();
         purchases.setFill(fillSeries);
         purchases.setLabel(I18nUtil.getMessages("app.fede.inventory.purchases"));
-
+        
         LineChartSeries profits = new LineChartSeries();
         profits.setFill(fillSeries);
         profits.setLabel(I18nUtil.getMessages("common.profit"));
-
+        
         Date _start = getStart();
         if (Dates.calculateNumberOfDaysBetween(getStart(), getEnd()) <= 1) {
             int range = Integer.parseInt(settingHome.getValue("app.fede.chart.range", "7"));
@@ -1317,7 +1329,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             label = Strings.toString(_step, Calendar.DAY_OF_WEEK) + ", " + Dates.get(_step, Calendar.DAY_OF_MONTH);
             salesTotal = calculeTotal(findInvoices(subject, DocumentType.INVOICE, 0, Dates.minimumDate(_step), Dates.maximumDate(_step)));
             sales.set(label, salesTotal);
-
+            
             facturaElectronicaHome.setStart(Dates.minimumDate(_step));
             facturaElectronicaHome.setEnd(Dates.maximumDate(_step));
             purchasesTotal = facturaElectronicaHome.calculeTotal(facturaElectronicaHome.getResultList());
@@ -1328,7 +1340,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
             _step = Dates.addDays(_step, 1); //Siguiente día
         }
-
+        
         areaModel.addSeries(sales);
         areaModel.addSeries(purchases);
         areaModel.addSeries(profits);
@@ -1340,17 +1352,17 @@ public class InvoiceHome extends FedeController implements Serializable {
         //areaModel.setExtender("chartExtender");
         areaModel.setAnimate(false);
         areaModel.setShowPointLabels(false);
-
+        
         Axis xAxis = new CategoryAxis(I18nUtil.getMessages("common.day"));
         areaModel.getAxes().put(AxisType.X, xAxis);
         Axis yAxis = areaModel.getAxis(AxisType.Y);
         yAxis.setLabel(I18nUtil.getMessages("common.dollars"));
         yAxis.setMin(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.min", "-500")));
         yAxis.setMax(Integer.valueOf(settingHome.getValue("app.fede.barchart.scale.max", "500")));
-
+        
         return areaModel;
     }
-
+    
     public BigDecimal calculeCandidateDetailTotal() {
         BigDecimal total = new BigDecimal(BigInteger.ZERO);
         for (Detail d : getCandidateDetails()) {
@@ -1358,13 +1370,13 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
         return total;
     }
-
+    
     public BarChartModel buildProductTopBarChartModel() {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
         inventoryHome.setEnd(Dates.maximumDate(getEnd()));
         return inventoryHome.getTopBarChartModel();
     }
-
+    
     public LineChartModel buildProductLineBarChartModel() {
         inventoryHome.setStart(Dates.minimumDate(getStart()));
         inventoryHome.setEnd(Dates.maximumDate(getEnd()));
@@ -1383,7 +1395,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 subject, this.organizationData.getOrganization(),
                 KardexDetail.OperationType.VENTA);
     }
-
+    
     @Override
     protected void initializeDateInterval() {
         int range = 0; //Rango de fechas para visualiar lista de entidades
@@ -1400,7 +1412,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             range = 1;
         }
     }
-
+    
     public boolean globalFilterFunction(Object value, Object filter, Locale locale) {
         String filterText = (filter == null) ? null : filter.toString().trim().toLowerCase();
         if (Strings.isNullOrEmpty(filterText)) {
@@ -1416,32 +1428,32 @@ public class InvoiceHome extends FedeController implements Serializable {
      * Enviar agradecimiento de compra
      */
     public void sendNotification() {
-        if (this.invoice.isPersistent() 
-                && this.invoice.getOwner() != null 
+        if (this.invoice.isPersistent()
+                && this.invoice.getOwner() != null
                 && !"consumidorfinal@fede.com".equalsIgnoreCase(this.invoice.getOwner().getEmail())
                 && !this.invoice.getOwner().getEmail().contains("@emporiolojano.com")
                 && !this.invoice.getOwner().getEmail().contains("@fede")) {
             //Agradecimiento compra
             String url = this.organizationData.getOrganization().getUrl();
             String url_title = this.organizationData.getOrganization().getName();
-
+            
             Map<String, Object> values = new HashMap<>();
             values.put("firstname", this.invoice.getOwner().getFirstname());
             values.put("fullname", this.invoice.getOwner().getFullName());
             values.put("organization", this.organizationData.getOrganization().getInitials()); //Nombre comercial
             values.put("url", url);
             values.put("url_title", url_title);
-
+            
             this.sendNotification(templateHome, settingHome, this.invoice.getOwner(), values, "app.mail.template.invoice.thanks", true);
         }
     }
-
+    
     private List<Detailable> makeDetailableList(List<Detail> details) {
         List<Detailable> datailables = new ArrayList<>();
         details.forEach(d -> {
             datailables.add((Detailable) d);
         });
-
+        
         return datailables;
     }
 
@@ -1491,7 +1503,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             }*/
         }
     }
-
+    
     public boolean isActionExecutable() {
         if ("collect".equalsIgnoreCase(this.selectedAction)) {
             return true;
@@ -1502,13 +1514,13 @@ public class InvoiceHome extends FedeController implements Serializable {
         }*/
         return false;
     }
-
+    
     private void initializeActions() {
         this.actions = new ArrayList<>();
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         actions.add(item);
-
+        
         item = new SelectItem("collect", I18nUtil.getMessages("common.collect"));
         actions.add(item);
 
@@ -1518,21 +1530,21 @@ public class InvoiceHome extends FedeController implements Serializable {
 //        item = new SelectItem("changeto", "Cambiar tipo a");
 //        actions.add(item);
     }
-
+    
     public void calculateTotalOverdue() {
         this.totalOverdues = BigDecimal.ZERO;
         for (Invoice p : this.getSelectedInvoices()) {
             this.totalOverdues = this.totalOverdues.add(p.getTotal().subtract(p.getPaymentsDiscount()));
         }
     }
-
+    
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         Payment _instance = (Payment) fuenteDatos;
-
+        
         RecordTemplate _recordTemplate = this.recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
-
+        
         if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
             record = recordService.createInstance();
             RuleRunner ruleRunner1 = new RuleRunner();
@@ -1554,14 +1566,14 @@ public class InvoiceHome extends FedeController implements Serializable {
                             _instance.getInvoice().getOwner().getFullName(), _instance.getInvoice().getSummary(), Strings.format(_instance.getInvoice().getTotal().doubleValue(), "$ #0.##")));
                 }
             }
-
+            
         }
         //El registro casí listo para agregar al journal
         return record;
     }
-
+    
     public void registerRecordInJournal() {
-
+        
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro de ventas
@@ -1602,7 +1614,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                     }
                 }
             }
-
+            
             List<Record> records = new ArrayList<>();
             getReglas().forEach(regla -> {
                 Record r = aplicarReglaNegocio(regla, getPayment());
@@ -1610,7 +1622,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                     records.add(r);
                 }
             });
-
+            
             if (!records.isEmpty()) {
                 //La regla compiló bien
                 String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", I18nUtil.getMessages("app.fede.accounting.journal"));
@@ -1621,12 +1633,12 @@ public class InvoiceHome extends FedeController implements Serializable {
                 if (generalJournal != null) {
                     for (Record rcr : records) {
                         this.recordCompleto = Boolean.TRUE;
-
+                        
                         rcr.setCode(UUID.randomUUID().toString());
-
+                        
                         rcr.setOwner(this.subject);
                         rcr.setAuthor(this.subject);
-
+                        
                         rcr.setGeneralJournalId(generalJournal.getId());
 
                         //Corregir objetos cuenta en los detalles

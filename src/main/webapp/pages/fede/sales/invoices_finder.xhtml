@@ -85,28 +85,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:ajax event="rowSelectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities" />
                         <p:ajax event="rowUnselectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities"/>
                         <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
-                        <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid30">
+                        <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid10">
                             <h:outputText value="#{invoice.code}"/>
                         </p:column>
-                        <p:column  id="boardNumber"  headerText="#{i18n['app.fede.sales.invoice.board.number']}" 
-                                   sortBy="#{invoice.boardNumber}" sortOrder="desc"
-                                   style="width:96px;text-align:left">
+                        <p:column  id="boardNumber" headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{invoice.boardNumber}" sortOrder="desc" class="Wid10">
                             <h:outputText value="#{invoice.boardNumber}">
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}"
-                                  style="width:20%;text-align:left">
+                        <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}">
                             <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
                         </p:column>
-                        <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains">
+                        <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains" class="Wid30">
                             <h:outputText value="#{invoice.summary}" />
                         </p:column>
-                        <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{invoice.total}" class="Wid30">
+                        <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{invoice.total}" class="Wid10">
                             <h:outputText value="#{invoice.total}" class="Fright">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{invoice.paymentsDiscount}" class="Wid30">
+                        <p:column headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{invoice.paymentsDiscount}" class="Wid10">
                             <h:outputText value="#{invoice.paymentsDiscount}" class="Fright">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
