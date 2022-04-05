@@ -78,12 +78,11 @@ and open the template in the editor.
                                      id="dataTable" widgetVar="dataTable_wv" lazy="true">
                            
                             <!--<p:ajax event="rowSelect"  listener="{tareaHome.onRowSelect}"/>-->
-                           <!-- <p:column selectionMode="single" style="width:16px;text-align:center"/>-->
+                           <!-- <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
                             <!--<p:column headerText="#{i18n['common.nr']}" sortBy="#{entity.code}">
                                 <h:outputText value="#{entity.code}" />
                             </p:column>-->
-                            <p:column headerText="#{i18n['app.document.task.tittle']}" sortBy="#{entity.name}"
-                                      styleClass="text-right">
+                            <p:column headerText="#{i18n['app.document.task.tittle']}" sortBy="#{entity.name}">
                                 <h:outputText value="#{entity.name}"/>
                             </p:column>
                             <p:column headerText="#{i18n['app.fede.task.departamento']}" sortBy="#{entity.departamento}">
@@ -92,8 +91,7 @@ and open the template in the editor.
                             <p:column headerText="#{i18n['app.document.task.consignee.data']}" sortBy="#{entity.owner}">
                                 <h:outputText value="#{entity.owner.fullName}" />
                             </p:column>
-                            <p:column  id="createdOn"  headerText="#{i18n['common.created.in']}" sortBy="#{entity.createdOn}"
-                                       styleClass="text-right">
+                            <p:column  id="createdOn"  headerText="#{i18n['common.created.in']}" sortBy="#{entity.createdOn}">
                                 <h:outputText value="#{entity.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

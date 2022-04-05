@@ -35,158 +35,86 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <li><p:link outcome="aggregations">#{i18n['app.fede.production.aggregations']}</p:link></li>
         </ui:define>
         <ui:define name="content">
-            <div class="card product">
-                <h:form id="form">
-                    <p:dataView var="prodAgg" value="#{aggregationHome.productosAgregaciones}"
-                                rows="10" rowsPerPageTemplate="5,10,20" paginator="true"
-                                gridIcon="fa fa-th-large" listIcon="fa fa-bars">
-                        <f:facet name="header">
-                            <p:button value="#{i18n['common.newa']} #{i18n['app.fede.production.aggregation']}"
-                                      icon="pi pi-clone" styleClass="danger-btn"
-                                      outcome="aggregation"/>
-                        </f:facet>
-                        <p:dataViewGridItem>
-                            <div class="product-grid-item card border-1">
-                                <div class="product-grid-item-top">
-                                    <div>
-                                        <i class="pi pi-tag product-category-icon"/>
-                                        <span class="product-category">Nº Elem: #{prodAgg.agregaciones.size()}</span>
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <h:form id="form">
+                        <p:dataView var="aggregation" value="#{aggregationHome.aggregations}"
+                                    rows="10" rowsPerPageTemplate="5,10,20" paginator="true"
+                                    layout="grid" gridIcon="fa fa-th-large" listIcon="fa fa-bars">
+                            <f:facet name="header">
+                                <p:button value="#{i18n['common.newa']}"
+                                          icon="pi pi-plus" styleClass="danger-btn"
+                                          outcome="aggregation"/>
+                            </f:facet>
+                            <p:dataViewListItem>
+                                <div class="ui-g">
+                                    <div class="ui-g-1 ui-md-1 ui-lg-1 ui-sm-1 TexAlCenter" style="background: #dff0fe; padding: 0rem">
+                                        <p:commandButton value="Elem: #{aggregation.aggregationDetails.size().toString()}"
+                                                         actionListener="#{aggregationHome.onItemAggregation(aggregation)}"
+                                                         ajax="#{false}" immediate="#{true}"
+                                                         styleClass="ui-button-none">
+                                        </p:commandButton>
+                                        <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
                                     </div>
-                                    <span class="product-badge status-#{prodAgg.producto.productType}">#{prodAgg.producto.productType == 'PRODUCT' ? 'PRODUCTO' : prodAgg.producto.productType}</span>
+                                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4">
+                                        <h2 class="TexUppercase">#{aggregation.productName}</h2>
+                                        <span class="TexAlRight">#{aggregation.description}</span>
+                                    </div>
+                                    <div class="ui-g-7 ui-md-7 ui-lg-7 ui-sm-7">
+                                        <div class="ui-g">
+                                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlRight">
+                                                <h:outputText value="#{aggregation.costTotal}" class="BigTopic Fs16">
+                                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                                </h:outputText>
+                                            </div>
+                                            <p:repeat value="#{aggregation.aggregationDetails}" var="aggregationDetail">
+                                                <div class="ui-g-10 ui-md-10 ui-lg-10 ui-sm-10 TexAlRight">
+                                                    <span class="TexUppercase"> #{aggregationDetail.elementName}</span>
+                                                </div>
+                                                <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 TexAlRight">
+                                                    <h:outputText value="#{aggregationDetail.cost}">
+                                                        <f:convertNumber currencySymbol="$" type="currency"/>
+                                                    </h:outputText>
+                                                </div>
+                                            </p:repeat>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="product-grid-item-content">
-                                    <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
-                                    <div class="product-name">#{prodAgg.producto.name.toUpperCase()}</div>
-                                    <div class="product-description">#{prodAgg.producto.description}</div>
-                                </div>
-                                <div class="product-grid-item-bottom">
-                                    <div>
-                                        <h5>Costo:</h5>
-                                        <h:outputText value="#{prodAgg.costoTotal}" styleClass="product-price">
+                            </p:dataViewListItem>
+                            <p:dataViewGridItem>
+                                <div class="ui-g">
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter" style="background: #dff0fe; padding: 0rem">
+                                        <p:commandButton value="Elem: #{aggregation.aggregationDetails.size().toString()}"
+                                                         actionListener="#{aggregationHome.onItemAggregation(aggregation)}"
+                                                         ajax="#{false}" immediate="#{true}"
+                                                         styleClass="ui-button-none">
+                                        </p:commandButton>
+                                        <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
+                                    </div>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter">
+                                        <h2 class="TexUppercase">#{aggregation.productName}</h2>
+                                        <span class="TexAlRight">#{aggregation.description}</span>
+                                    </div>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter">
+                                        <h:outputText value="#{aggregation.costTotal}" class="BigTopic Fs16">
                                             <f:convertNumber currencySymbol="$" type="currency"/>
                                         </h:outputText>
                                     </div>
-                                    <p:commandButton type="button" icon="fa fa-pencil"
-                                                     value="#{i18n['common.edition']}"
-                                                     action="#{aggregationHome.handleReturn(event)}"
-                                                     update="@form"/>
                                 </div>
-                            </div>
-                        </p:dataViewGridItem>
-                        <p:dataViewListItem>
-                            <div class="product-list-item">
-                                <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
-                                <div class="product-list-detail">
-                                    <div class="product-name">#{prodAgg.producto.name.toUpperCase()}</div>
-                                    <div class="product-description">#{prodAgg.producto.description}</div>
-                                </div>
-                            </div>
-                            <!--                            <h:panelGrid columns="3" style="width:100%" columnClasses="logo,detail">
-                                                            <p:outputPanel>
-                                                                <h:panelGrid columns="2" cellpadding="5">
-                                                                    <h:outputText value="Id:" />
-                                                                    <h:outputText value="#{prodAgg.producto.name}" style="font-weight: bold"/>
-                            
-                                                                    <h:outputText value="Year:" />
-                                                                    <h:outputText value="#{prodAgg}" style="font-weight: bold"/>
-                            
-                                                                    <h:outputText value="Color:" />
-                                                                    <h:outputText value="#{prodAgg}" style="font-weight: bold"/>
-                                                                </h:panelGrid>
-                                                            </p:outputPanel>
-                            
-                                                        </h:panelGrid>-->
-                        </p:dataViewListItem>
-                    </p:dataView>
-                </h:form>
+                            </p:dataViewGridItem>
+                        </p:dataView>
+                    </h:form>
+                </div>
             </div>
         </ui:define>
         <ui:define name="style">
             <style type="text/css">
-/*                .product-badge {
-                    border-radius: 2px;
-                    padding: .25em .5rem;
-                    text-transform: uppercase;
-                    font-weight: 700;
-                    font-size: 12px;
-                    letter-spacing: .3px; }
-                .product-badge.status-PRODUCT {
-                    background: #C8E6C9;
-                    color: #256029; }
-                .product-badge.status-RAW_MATERIAL {
-                    background: #FFCDD2;
-                    color: #C63737; }
-                .product-badge.status-DEPRECATED {
-                    background: #FEEDAF;
-                    color: #8A5340; }
-                .product-badge.status-SERVICE {
-                    background:#B3E5FC;
-                    color: #23547B; }
-                .product .product-grid-item.border-1 {
-                    border: 1px solid var(--surface-d);
+                .ui-dataview .ui-dataview-header {
+                    display: contents;
                 }
-                .product .product-grid-item .product-grid-item-top, .product .product-grid-item .product-grid-item-bottom {
-                    display: -ms-flexbox;
-                    display: flex;
-                    -ms-flex-align: center;
-                    align-items: center;
-                    -ms-flex-pack: justify;
-                    justify-content: space-between;
+                .ui-dataview-list .ui-dataview-row {
+                    padding: 0.25rem;
                 }
-                .product .product-category-icon {
-                    vertical-align: middle;
-                    margin-right: 0.5rem;
-                }
-                .product .product-category {
-                    font-weight: 600;
-                    vertical-align: middle;
-                }
-                .product .product-grid-item .product-grid-item-content {
-                    text-align: center;
-                }
-                .product .product-grid-item img {
-                    width: 25%;
-                }
-                .product .product-name {
-                    font-size: 0.75rem;
-                    font-weight: 700;
-                }
-                .product .product-description {
-                    margin: 0 0 1rem 0;
-                }
-                .product .product-grid-item .ui-rating {
-                    margin: 0 0 1rem 0;
-                }
-                .product .product-grid-item .product-grid-item-bottom {
-                    margin-top: 0.5rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                }
-                .product .product-grid-item .product-price {
-                    font-size: 1rem;
-                    font-weight: 600;
-                }
-                body .ui-button {
-                    background: #2196F3;
-                    color: #ffffff;
-                    border: 1px solid #2196F3;
-                    margin: 0;
-                    outline: 0 none;
-                    border-radius: 4px;
-                    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-                }
-                .product .product-list-item {
-                    display: flex;
-                    align-items: center;
-                    padding: 1rem;
-                }
-                .product .product-list-item .product-list-detail {
-                    flex: 1 1 0;
-                }
-                .product .product-list-item .ui-rating {
-                    margin: 0 0 0.5rem 0;
-                }*/
             </style>
         </ui:define>
     </ui:composition>

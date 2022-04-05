@@ -61,15 +61,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                      sortMode="single">
                             <p:ajax event="rowSelect" listener="#{templateHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                                                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{_template.code}">
                                 <h:outputText value="#{_template.code}" />
                             </p:column>
                             <p:column headerText="#{i18n['app.mail.template.title']}" sortBy="#{_template.title}">
                                 <h:outputText value="#{_template.title}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_template.createdOn}"
-                                       styleClass="text-right">
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_template.createdOn}">
                                 <h:outputText value="#{_template.createdOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

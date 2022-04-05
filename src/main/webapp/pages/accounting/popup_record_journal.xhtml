@@ -153,7 +153,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                          sortMode="single">
                                                 <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectRecord}" update="@form"/>
                                                 <p:ajax event="rowUnselect" listener="#{generalJournalHome.onRowUnselectRecord}" update="@form"/>
-                                                <p:column headerText="#{i18n['app.fede.accounting.account']}" style="width: 20rem">
+                                                <p:column headerText="#{i18n['app.fede.accounting.account']}" class="Wid40">
                                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                                 </p:column>
                                                 <p:column headerText="#{i18n['common.debe']}">

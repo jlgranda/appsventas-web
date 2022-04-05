@@ -55,18 +55,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      propagateSelectionUp="#{false}" propagateSelectionDown="#{false}"
                                      style="padding-left: 0.8rem; padding-right: 0.8rem;">
                             <p:ajax event="select" update=":form:panelSelectedToolBar"/>
-                            <p:column headerText="#{i18n['common.code']}" filterBy="#{account.code}" filterMatchMode="contains" style="width: 10rem">
+                            <p:column headerText="#{i18n['common.code']}" filterBy="#{account.code}" filterMatchMode="contains" class="Wid20">
                                 <h:outputText value="#{account.code}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.name']}" filterBy="#{account.name}" filterMatchMode="contains">
                                 <h:outputText value="#{account.name}"/>
                             </p:column>
-                            <p:column  headerText="#{i18n['common.date.created']}" style="width: 10rem">
+                            <p:column  headerText="#{i18n['common.date.created']}" class="Wid20">
                                 <h:outputText value="#{account.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column style="width: 5rem">
+                            <p:column class="Wid20">
                                 <p:button title="#{i18n['common.edit']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
                                           outcome="/pages/accounting/account.jsf?accountId=#{account.id}"/>
                                 <p:button icon="fa fa-plus-square-o" title="Añadir subcuenta" styleClass="primary-button rounded-btn"

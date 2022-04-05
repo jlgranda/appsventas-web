@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="params">
         <f:metadata>
             <f:viewParam name="aggregationId" value="#{aggregationHome.aggregationId}"/>
-            <!--<f:viewAction action="" />-->
+            <!--            <f:viewAction action="" />-->
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12">
                 <div class="ui-fluid">
-                    <h1>#{aggregationHome.aggregation.id ? 'AGREGACIÓN DE ' : 'NUEVA AGREGACIÓN'} #{aggregationHome.aggregation.code}</h1>
+                    <h1 class="TexUppercase">#{not empty aggregationHome.aggregation.id ? 'AGREGACIÓN DE ' : 'NUEVA AGREGACIÓN'} #{aggregationHome.aggregation.product.name}</h1>
                     <p:panel id="panel-product-main" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" 
                              rendered="#{empty aggregationHome.aggregation.id}">
                         <p:outputLabel class="BigTopic" value="#{i18n['app.fede.inventory.product.main']}" for="@next"/>
@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                                 forceSelection="#{true}" dropdown="#{true}"
                                                 cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                                required="#{true}">
+                                                required="#{false}">
                                     <p:column>
                                         <h:outputText class="TexUppercase" value="#{product.name} [$ #{product.priceCost}]"/>
                                     </p:column>
@@ -105,18 +105,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 type="decimal" decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
                                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                                required="#{true}" requiredMessage="#{i18n['common.money.letter']}"/>
+                                                required="#{false}" requiredMessage="#{i18n['common.money.letter']}"/>
                             </div>
                             <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6"  style="padding: 0rem">
                                 <jlgranda:input id="price" name="price" render="price" container="none"
-                                                value="#{aggregationHome.priceUnit}" 
+                                                value="#{aggregationHome.aggregationDetail.priceUnit}" 
                                                 rendered="#{true}"
                                                 disabled="#{empty aggregationHome.aggregation.product}"
                                                 label="#{i18n['common.price.unit']}"
                                                 type="decimal" decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
                                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                                required="#{true}" requiredMessage="#{i18n['common.money.letter']}"/>
+                                                required="#{false}" requiredMessage="#{i18n['common.money.letter']}"/>
                             </div>
                             <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12"  style="align-self: center; margin-top: 1.2rem">
                                 <p:commandButton id="btnAggAdd"
@@ -137,17 +137,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          value="#{aggregationHome.aggregation.aggregationDetails}" var="aggregationDetail"
                                          selection="#{aggregationHome.selectedBussinesEntities}"
                                          editable="#{false}">
-                                <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panel-aggregation"/>
+                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                                 <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregationDetail.product.name}">
                                     <h:outputText value="#{aggregationDetail.product.name.toUpperCase()}"/>
                                 </p:column>
-                                <p:column headerText="#{i18n['common.quantity']}">
-                                    <h:outputText value="#{aggregationDetail.quantity}">
+                                <p:column headerText="#{i18n['common.quantity']}" class="Wid20">
+                                    <h:outputText value="#{aggregationDetail.quantity}" class="Fright"> 
                                         <f:convertNumber type="number"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:column headerText="#{i18n['common.cost']}">
-                                    <h:outputText value="#{aggregationDetail.cost}">
+                                <p:column headerText="#{i18n['common.cost']}" class="Wid20">
+                                    <h:outputText value="#{aggregationDetail.cost}" class="Fright">
                                         <f:convertNumber type="currency" currencySymbol="$"/>
                                     </h:outputText>
                                 </p:column>

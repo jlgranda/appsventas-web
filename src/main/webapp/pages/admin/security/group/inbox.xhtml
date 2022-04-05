@@ -166,7 +166,7 @@
                             <p:ajax event="rowSelectCheckbox" update="@form"/>
                             <p:ajax event="rowUnselectCheckbox" update="@form"/>
                             <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                             <p:column headerText="#{i18n['property.group.name']}" sortBy="#{group.name}">
                                 <h:outputText value="#{group.name}" />
                             </p:column>

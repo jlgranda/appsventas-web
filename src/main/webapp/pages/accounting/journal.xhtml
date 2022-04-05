@@ -107,8 +107,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                        <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.emission']}" style="width: 10rem;">
+                        <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                        <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.emission']}" class="Wid20">
                             <h:outputText value="#{record.createdOn}">
                                 <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                             </h:outputText>
@@ -116,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:column headerText="#{i18n['common.description']}" sortBy="#{record.description}">
                             <h:outputText value="#{record.description}" />
                         </p:column>
-                        <p:column id="report" style="width: 5rem; text-align: center">
+                        <p:column id="report" class="Wid20 TexAlCenter">
                             <p:commandButton id="button-detail" 
                                              title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
                                              actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" 

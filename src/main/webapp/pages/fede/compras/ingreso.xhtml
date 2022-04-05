@@ -167,7 +167,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['app.fede.accounting.account']}">
                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                 </p:column>
-                                <p:column headerText="#{i18n['common.value']}" style="width: 10rem;">
+                                <p:column headerText="#{i18n['common.value']}" class="Wid20">
                                     <h:outputText value="#{recordDetail.amount}" style="float: right;">
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>
@@ -381,15 +381,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                          sortMode="single"
                                          editable="#{false}">
-                                <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" style="width: 15%" styleClass="text-right">
+                                <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid20">
                                     <h:outputText value="#{payment.createdOn}">
                                         <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.payment.cash.paid']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.cash.paid']}">
                                     <p:cellEditor>
                                         <f:facet name="output">
-                                            <h:outputText value="#{payment.amount}">
+                                            <h:outputText value="#{payment.amount}" class="Fright">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
                                         </f:facet>
@@ -398,10 +398,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </f:facet>
                                     </p:cellEditor>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.payment.discount']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.discount']}">
                                     <p:cellEditor>
                                         <f:facet name="output">
-                                            <h:outputText value="#{payment.discount}">
+                                            <h:outputText value="#{payment.discount}" class="Fright">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
                                         </f:facet>
@@ -410,10 +410,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </f:facet>
                                     </p:cellEditor>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.payment.cash.received']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.cash.received']}">
                                     <p:cellEditor>
                                         <f:facet name="output">
-                                            <h:outputText value="#{payment.cash}">
+                                            <h:outputText value="#{payment.cash}" class="Fright">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
                                         </f:facet>
@@ -422,10 +422,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </f:facet>
                                     </p:cellEditor>
                                 </p:column>
-                                <p:column headerText="#{i18n['app.fede.payment.method']}" styleClass="text-right">
+                                <p:column headerText="#{i18n['app.fede.payment.method']}">
                                     <h:outputText value="#{payment.method}"></h:outputText>
                                 </p:column>
-                                <p:column style="width: 8%" rendered="#{false}">
+                                <p:column rendered="#{false}" class="Wid10">
                                     <p:rowEditor editTitle="#{i18n['common.edit']} #{i18n['common.payment']}" cancelTitle="#{i18n['common.cancel']} #{i18n['common.changes']}" saveTitle="#{i18n['common.save']} #{i18n['common.changes']}"/>
                                 </p:column>
                             </p:dataTable>

@@ -121,11 +121,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                      sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaIngresoHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                             <p:column id="code" headerText="Nº Documento">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.company.name']}" style="width:12rem;">
+                            <p:column headerText="#{i18n['common.company.name']}" class="Wid20">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
                             <p:column headerText="#{i18n['app.fede.payment.amount.total']}">

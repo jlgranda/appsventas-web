@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  selection="#{proveedorHome.selectedBussinesEntities}"
                                  sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                         <p:ajax event="rowSelect" listener="#{proveedorHome.onRowSelectFactura}"/>
-                        <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                        <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                         <p:column id="code" headerText="#{i18n['common.code']}"
                                   style="width:96px;text-align:left">
                             <h:outputText value="#{facturaElectronica.code}" />

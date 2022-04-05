@@ -87,49 +87,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            <p:column headerText="#{i18n['common.name']}" sortBy="#{product.name}" style="width: 30%">
-                                <h:outputText value="#{product.name}" />
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column headerText="#{i18n['common.name']}" sortBy="#{product.name}" class="Wid30">
+                                <h:outputText value="#{product.name}"/>
                             </p:column>
                             <p:column headerText="#{i18n['app.fede.inventory.category']}" sortBy="#{product.category}">
                                 <h:outputText value="#{product.category.name}" />
                             </p:column>
-                            <p:column headerText="P.V.P A" sortBy="#{product.price}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{product.price}">
+                            <p:column headerText="P.V.P A" sortBy="#{product.price}">
+                                <h:outputText value="#{product.price}" class="Fright">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="P.V.P B" sortBy="#{product.priceB}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{product.priceB}">
+                            <p:column headerText="P.V.P B" sortBy="#{product.priceB}">
+                                <h:outputText value="#{product.priceB}" class="Fright">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="P.V.P C" sortBy="#{product.priceC}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{product.priceC}">
+                            <p:column headerText="P.V.P C" sortBy="#{product.priceC}">
+                                <h:outputText value="#{product.priceC}" class="Fright">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}" sortBy="#{product.priceCost}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{product.priceCost}">
+                            <p:column headerText="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}" sortBy="#{product.priceCost}">
+                                <h:outputText value="#{product.priceCost}" class="Fright">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.tax']}" sortBy="#{product.taxType}"
-                                      styleClass="text-right">
+                            <p:column headerText="#{i18n['common.tax']}" sortBy="#{product.taxType}">
                                 <h:outputText value="#{product.taxType}"/>
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}"
-                                       styleClass="text-right" style="width: auto">
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}">
                                 <h:outputText value="#{product.createdOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['app.fede.inventory.product.type']}" sortBy="#{product.productType}"
-                                      styleClass="text-right">
+                            <p:column headerText="#{i18n['app.fede.inventory.product.type']}" sortBy="#{product.productType}">
                                 <h:outputText value="#{product.productType}"/>
                             </p:column>
                         </p:dataTable>

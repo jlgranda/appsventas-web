@@ -127,7 +127,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              sortMode="single">
                                     <p:ajax event="rowSelect" listener="#{recordHome.onRowSelect}" update="@form"/>
                                     <p:ajax event="rowUnselect" listener="#{recordHome.onRowUnselect}" update="@form"/>
-                                    <p:column headerText="#{i18n['app.fede.accounting.account']}"  style="width: 20rem">
+                                    <p:column headerText="#{i18n['app.fede.accounting.account']}"  class="Wid40">
                                         <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                     </p:column>
                                     <p:column headerText="#{i18n['common.debe']}">
@@ -182,42 +182,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
     </ui:composition>
 </html>
-<!--                <div class="ui-g-12 ui-md-6 ui-lg-4">
-                                    <div class="card p-shadow-1 ui-fluid"  style="height: 600px; max-height: 600px">
-                                        <p:outputLabel class="Fs18 FontBold" style="text-transform: uppercase;" value="Historial de Asientos Contables"/>
-                                        <p:dataView id="records" var="record" value="#{recordHome.recordPorCreatedOn}"
-                                                    rows="10" paginator="#{true}" rowsPerPageTemplate="5,10,20" 
-                                                    gridIcon="pi pi-th-large" listIcon="pi pi-bars">
-                                            <p:dataViewListItem>
-                                                <div class="ui-g">
-                                                    <div class="ui-g-12 ui-md-6 ui-lg-6 list-detail">
-                                                        <div class="product-name"> <h:outputText value="#{record.emissionDate}">
-                                                                <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
-                                                            </h:outputText></div>
-                                                        <div class="product-description">#{record.description}</div>
-                                                        <i class="pi pi-hashtag product-category-icon"/><span
-                                                            class="product-category">#{record.id}</span>
-                                                    </div>
-                                                    <div class="ui-g-12 ui-md-6 ui-lg-6 list-action">
-                                                        <span class="product-badge status-#{record.deleted}">#{record.deleted == true ? 'Eliminado' : 'Activo'}</span>
-                                                        <div style="width: 8rem; text-align: -webkit-center;">
-                                                            <p:commandButton id="btnRecordDetails"
-                                                                             icon="pi pi-list"  styleClass="secondary-button p-mr-2"
-                                                                             actionListener="#{recordHome.handleReturn(event)}"
-                                                                             type="button" immediate="#{true}"
-                                                                             update="form:@form records"/>
-                                                            <p:commandButton id="btnRecordDelete"
-                                                                             icon="pi pi-trash"  styleClass="danger-btn p-mr-2"
-                                                                             actionListener="#{recordHome.confirmRecordDelete(record)}"
-                                                                             type="submit" immediate="#{true}"
-                                                                             update="form:@form records"
-                                                                             disabled="#{record.deleted}">
-                                                                <p:confirm header="#{i18n['common.confirmation']}" message="¿Está seguro de eliminar este registro?" icon="pi pi-exclamation-triangle"/>
-                                                            </p:commandButton>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </p:dataViewListItem>
-                                        </p:dataView>
-                                    </div>
-                                </div>-->

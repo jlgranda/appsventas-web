@@ -61,15 +61,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                  id="dataTable" widgetVar="dataTable_wv" lazy="true">
                         <p:ajax event="rowSelect" listener="#{employeeHome.onRowSelect}"/>
-                        <p:column selectionMode="single" style="width:64px;text-align:center"/>
+                        <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                         <p:column headerText="#{i18n['common.names.full']}" sortBy="#{employee.owner.fullName}">
                             <h:outputText value="#{employee.owner.fullName}" />
                         </p:column>
                         <p:column headerText="#{i18n['app.fede.talentohumano.role']}" sortBy="#{employee.role.name}">
                             <h:outputText value="#{employee.role.name}" />
                         </p:column>
-                        <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{employee.activationTime}"
-                                   styleClass="text-right">
+                        <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{employee.activationTime}">
                             <h:outputText value="#{employee.activationTime}">
                                 <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>

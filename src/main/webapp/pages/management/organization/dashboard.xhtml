@@ -82,7 +82,7 @@
 <!--                                                    <p:ajax event="rowSelectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
                                                     <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
                                                     <p:ajax event="rowSelect" listener="#{organizationHome.onRowSelect}"/>
-                                                    <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                                                    <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                                                     <p:column headerText="#{i18n['common.ruc']}" sortBy="#{entity.ruc}">
                                                         <h:outputText value="#{entity.ruc}" />
                                                     </p:column>
@@ -95,8 +95,7 @@
                                                     <p:column headerText="#{i18n['common.company.initials']}" sortBy="#{entity.initials}">
                                                         <h:outputText value="#{entity.initials}" />
                                                     </p:column>
-                                                    <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}"
-                                                               styleClass="text-right">
+                                                    <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}">
                                                         <h:outputText value="#{entity.createdOn}">
                                                             <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                                         </h:outputText>

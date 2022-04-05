@@ -76,8 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      sortMode="single">
                             <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
                             <p:ajax event="toggleSelect"  listener="#{recordTemplateHome.onRowSelect}"/>
-
-                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
 <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
                                 <h:outputText value="#{recordTemplate.code}" />
                             </p:column>-->
@@ -119,10 +118,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          draggableColumns="#{true}" reflow="#{true}" 
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                          sortMode="single">
-                                <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-        <!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
-                                    <h:outputText value="#{recordTemplate.code}" />
-                                </p:column>-->
+                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
+    <h:outputText value="#{recordTemplate.code}" />
+</p:column>-->
                                 <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                     <h:outputText value="#{recordTemplate.name}" />
                                 </p:column>

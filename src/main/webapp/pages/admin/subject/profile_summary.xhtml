@@ -92,7 +92,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <!--                                <p:ajax event="rowSelectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>
                                                                     <p:ajax event="rowUnselectCheckbox" update=":form:toolbar :form:hiddenCommandShowRIDE"/>-->
                                     <!--                                <p:ajax event="rowSelect" listener="#{securityGroupHome.onRowSelect}"/>
-                                                                    <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>-->
+                                                                                                    <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
                                     <p:column headerText="#{i18n['property.group.name']}" sortBy="#{group.name}">
                                         <h:outputText value="#{group.name}" />
                                     </p:column>
@@ -129,7 +129,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:ajax event="itemSelect" listener="#{securityGroupUserHome.selectListener}" />
                                         <p:ajax event="itemUnselect" />
                                         <p:ajax event="itemSelect" listener="#{securityGroupUserHome.onItemSelect}"  />
-                                        <p:column style="width:10%">
+                                        <p:column  class="Wid10">
                                             <h:outputText value="#{grupo.name}" />
                                         </p:column>
                                     </p:autoComplete>

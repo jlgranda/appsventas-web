@@ -84,7 +84,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </div>
         <p:dialog widgetVar="dlgTblPurchases" class="Container100 Responsive50" closeOnEscape="true"
                   fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
-                  style="text-align: right" height="500" width="800">
+                 height="500" width="800" class="Fright">
             <p:outputPanel id="panel-dataTable"> 
                 <p:dataTable id="dataTable-purchases" lazy="false" liveResize="true"
                              liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
@@ -95,19 +95,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <f:facet name="header">
                         <h:outputText value="#{i18n['app.fede.smart.purchases.summary']}"></h:outputText>
                     </f:facet>
-                    <p:column id="nme" headerText="#{i18n['common.supplier']}" sortBy="#{purchases[0]}" style="width:60%; text-align: left">
+                    <p:column id="nme" headerText="#{i18n['common.supplier']}" sortBy="#{purchases[0]}" class="Wid60">
                         <h:outputText value="#{purchases[0]}"/>
                     </p:column>
-                    <p:column id="amount" headerText="#{i18n['common.value']} #{i18n['common.money.letter']}" sortBy="#{purchases[1]}"  style="width: auto">
+                    <p:column id="amount" headerText="#{i18n['common.value']} #{i18n['common.money.letter']}" sortBy="#{purchases[1]}">
                         <h:outputText value="#{purchases[1]}">
                             <f:convertNumber type="currency" currencySymbol="$"/>
                         </h:outputText>
                     </p:column>
                     <p:columnGroup type="footer" >
                         <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                            <span class="ui-g-10" style=" font-weight: bolder; text-align: right">#{i18n['app.fede.inventory.purchases.totals']}: </span>
+                            <span class="ui-g-10 Fright" style=" font-weight: bolder;">#{i18n['app.fede.inventory.purchases.totals']}: </span>
                             <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
-                                <h:outputText value="#{summaryHome.getListPurchasesTotal()}" style="text-align: right">
+                                <h:outputText value="#{summaryHome.getListPurchasesTotal()}" class="Fright">
                                     <f:convertNumber type="currency" currencySymbol="$"/>
                                 </h:outputText>
                             </span>

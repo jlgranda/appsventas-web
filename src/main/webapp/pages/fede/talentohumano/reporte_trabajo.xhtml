@@ -133,21 +133,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{journal.name}">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
-                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.record.time']}" sortBy="#{journal.beginTime}"
-                                       styleClass="text-right">
-
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.record.time']}" sortBy="#{journal.beginTime}">
                                 <h:outputText value="#{journal.beginTime}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm']}" sortBy="#{journal.beginTime}"
-                                       styleClass="text-right">
+                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm']}" sortBy="#{journal.beginTime}">
                                 <h:outputText value="#{journal.beginTime}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                 </h:outputText>
                             </p:column>                    
-                            <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm.reglamento']}" sortBy="#{journal.endTime}"
-                                       styleClass="text-right">
+                            <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm.reglamento']}" sortBy="#{journal.endTime}">
                                 <h:outputText value="#{journal.endTime}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                 </h:outputText>

@@ -64,14 +64,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      selection="#{groupInventoryHome.selectedBussinesEntities}"
                                      sortBy="#{group.createdOn}">
                             <p:ajax event="rowSelect" listener="#{groupInventoryHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:4rem;text-align:center"/>
-                            <p:column headerText="#{i18n['common.name']}" sortBy="#{group.name}" styleClass="text-right">
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column headerText="#{i18n['common.name']}" sortBy="#{group.name}">
                                 <h:outputText value="#{group.name}"/>                            
                             </p:column>
-                            <p:column headerText="#{i18n['common.description']}" sortBy="#{group.descripcion}" styleClass="text-right">
+                            <p:column headerText="#{i18n['common.description']}" sortBy="#{group.descripcion}">
                                 <h:outputText value="#{group.description}"/>                            
                             </p:column>
-                            <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{group.createdOn}" styleClass="text-right">
+                            <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{group.createdOn}">
                                 <h:outputText value="#{group.createdOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

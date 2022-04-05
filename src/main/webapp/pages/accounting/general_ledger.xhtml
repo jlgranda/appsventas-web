@@ -157,33 +157,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                              sortMode="single"
                                              editable="#{false}">
-                                    <p:column headerText="#{i18n['common.date']}" style="width: 10%">
+                                    <p:column headerText="#{i18n['common.date']}" class="Wid10">
                                         <h:outputText value="#{recordDetail.createdOn}">
                                             <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
                                         </h:outputText>
                                     </p:column>
-                                    <p:column headerText="Razón" style="width: auto">
+                                    <p:column headerText="Razón">
                                         <h:outputText value="#{recordDetail.record.description}" />
                                     </p:column>
-                                    <p:column headerText="REF" style="width: 10%">
+                                    <p:column headerText="REF" class="Wid10">
                                         <h:outputText value="#{recordDetail.record.deleted}"/>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.debe']}" style="width: 15%;">
+                                    <p:column headerText="#{i18n['common.debe']}" class="Wid20">
                                         <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                         </h:outputText>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.haber']}" style="width: 15%;">
+                                    <p:column headerText="#{i18n['common.haber']}" class="Wid20">
                                         <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                         </h:outputText>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.fund']}" style="width: 15%;">
+                                    <p:column headerText="#{i18n['common.fund']}" class="Wid20">
                                         <h:outputText class="container-right" value="#{recordDetail.accumulatedBalance}" style="#{recordDetail.accumulatedBalance lt 0 ? 'color: #e53935;': ''}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                         </h:outputText>
                                     </p:column>
-                                    <p:column id="report" style="width: 5rem; text-align: center">
+                                    <p:column id="report" class="Wid20 TexAlCenter">
                                         <p:commandButton id="button-detail" 
                                                          title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
                                                          actionListener="#{accountHome.editarFormularioRecord(recordDetail.record.id)}" 

@@ -100,8 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                         <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-
-                        <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                        <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                         <p:column headerText="#{i18n['common.dni.ruc']}" sortBy="#{proveedor.owner.fullName}">
                             <h:outputText value="#{proveedor.owner.code}" />
                         </p:column>
@@ -111,13 +110,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:column headerText="#{i18n['common.alias']}" sortBy="#{proveedor.owner.fullName}">
                             <h:outputText value="#{proveedor.name}" />
                         </p:column>
-                        <p:column id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}"
-                                  styleClass="text-right">
+                        <p:column id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}">
                             <h:outputText value="#{proveedor.activationTime}">
                                 <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
                         </p:column>
-                        <p:column style="width: 5rem">
+                        <p:column class="Wid20">
                             <p:commandButton id="go-button"
                                              icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
                                              actionListener="#{proveedorHome.editarFormularioProfile(proveedor.id)}"

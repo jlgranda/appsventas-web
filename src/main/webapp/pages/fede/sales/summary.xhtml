@@ -147,7 +147,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </div>
             <p:dialog widgetVar="dlgTblDiscounts" class="Container100 Responsive50" closeOnEscape="true"
                       fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
-                      style="text-align: right" height="600" width="800">
+                      height="600" width="800" class="Fright">
                 <p:outputPanel id="panel-dataTable"> 
                     <p:dataTable id="dataTable-sales-discounts" draggableColumns="true" lazy="false" liveResize="true"
                                  liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
@@ -179,9 +179,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:column>
                         <p:columnGroup type="footer" >
                             <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                                <span class="ui-g-8" style=" font-weight: bolder; text-align: right">#{i18n['common.total.discounts']}: </span>
+                                <span class="ui-g-8 Fright" style=" font-weight: bolder;">#{i18n['common.total.discounts']}: </span>
                                 <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
-                                    <h:outputText value="#{summaryHome.getListDiscountTotal()}" style="text-align: right">
+                                    <h:outputText value="#{summaryHome.getListDiscountTotal()}" class="Fright">
                                         <f:convertNumber type="currency" currencySymbol="$"/>
                                     </h:outputText>
                                 </span>

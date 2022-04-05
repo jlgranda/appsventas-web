@@ -20,9 +20,10 @@ import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.production.AggregationDetailService;
 import com.jlgranda.fede.ejb.production.AggregationService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
+import java.awt.Event;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -35,13 +36,12 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.primefaces.event.SelectEvent;
-import org.jlgranda.appsventas.data.ProductAggregations;
+import org.jlgranda.appsventas.data.AggregationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.production.Aggregation;
 import org.jlgranda.fede.model.production.AggregationDetail;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
-import org.jlgranda.fede.ui.model.LazyAggregationDataModel;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.slf4j.Logger;
@@ -83,16 +83,14 @@ public class AggregationHome extends FedeController implements Serializable {
     /**
      * UX.
      */
-    private LazyAggregationDataModel lazyDataModel;
-    private BigDecimal priceUnit;
-    private List<Aggregation> productosAgregaciones;
-    private List<ProductAggregations> productoAgregaciones;
+    private List<AggregationData> aggregations;
 
     @PostConstruct
     private void init() {
         setAggregation(aggregationService.createInstance());
         setAggregationDetail(aggregationDetailService.createInstance());
-        setPriceUnit(BigDecimal.ZERO);
+        setAggregations(aggregationService.buildDatafindByOrganization(this.organizationData.getOrganization()));
+        setOutcome("aggregations");
     }
 
     public Long getAggregationId() {
@@ -106,6 +104,7 @@ public class AggregationHome extends FedeController implements Serializable {
     public Aggregation getAggregation() {
         if (this.aggregationId != null && this.aggregation != null && !this.aggregation.isPersistent()) {
             this.aggregation = aggregationService.find(this.aggregationId);
+            this.aggregation.setAggregationDetails(aggregationDetailService.findByAggregation(this.aggregation));
         }
         return this.aggregation;
     }
@@ -122,20 +121,12 @@ public class AggregationHome extends FedeController implements Serializable {
         this.aggregationDetail = aggregationDetail;
     }
 
-    public LazyAggregationDataModel getLazyDataModel() {
-        return lazyDataModel;
+    public List<AggregationData> getAggregations() {
+        return aggregations;
     }
 
-    public void setLazyDataModel(LazyAggregationDataModel lazyDataModel) {
-        this.lazyDataModel = lazyDataModel;
-    }
-
-    public BigDecimal getPriceUnit() {
-        return priceUnit;
-    }
-
-    public void setPriceUnit(BigDecimal priceUnit) {
-        this.priceUnit = priceUnit;
+    public void setAggregations(List<AggregationData> aggregations) {
+        this.aggregations = aggregations;
     }
 
     /**
@@ -143,16 +134,16 @@ public class AggregationHome extends FedeController implements Serializable {
      */
     public void aggregationDetailAdd() {
         if (this.aggregation.getProduct() != null) {
-            if (this.aggregationDetail.getProduct() != null && this.aggregationDetail.getQuantity() != null && this.priceUnit != null) {
-                if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getQuantity()) == -1 && BigDecimal.ZERO.compareTo(this.aggregationDetail.getProduct().getPriceCost()) == -1) {
-                    this.aggregationDetail.setCost(this.aggregationDetail.getQuantity().multiply(this.priceUnit));
+            if (this.aggregationDetail.getProduct() != null && this.aggregationDetail.getQuantity() != null && this.aggregationDetail.getPriceUnit() != null) {
+                if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getQuantity()) == -1 && BigDecimal.ZERO.compareTo(this.aggregationDetail.getPriceUnit()) == -1) {
+                    this.aggregationDetail.setCost(this.aggregationDetail.getQuantity().multiply(this.aggregationDetail.getPriceUnit()));
                 }
-                this.aggregationDetailValid();
+                aggregationDetailValid();
             } else {
-                addWarningMessage(I18nUtil.getMessages("action.warn"), I18nUtil.getMessages("property.required.invalid.form"));
+                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("property.required.invalid.form"));
             }
         } else {
-            addWarningMessage(I18nUtil.getMessages("action.warn"), I18nUtil.getMessages("app.fede.inventory.product.main.required"));
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.product.main.required"));
         }
     }
 
@@ -164,10 +155,9 @@ public class AggregationHome extends FedeController implements Serializable {
             this.aggregation.setOwner(subject);
             this.aggregation.setOrganization(this.organizationData.getOrganization());
         }
-        aggregationService.save(aggregation.getId(), aggregation);
-        //Actualizar la agregación
+        aggregationService.save(this.aggregation.getId(), this.aggregation);
         setAggregationId(this.aggregation.getId());
-        this.getAggregation();
+        getAggregation();
     }
 
     /**
@@ -182,46 +172,59 @@ public class AggregationHome extends FedeController implements Serializable {
     }
 
     private void aggregationDetailValid() {
-        this.aggregationDetail.setAggregation(this.aggregation);
-        System.out.println("AAAA::: " + this.aggregation.getOrganization());
-        System.out.println("AAAA::: " + this.aggregation.getProduct());
-        System.out.println("this.agg::: " + this.aggregationDetail.getProduct());
-        System.out.println("this.agg::: " + this.aggregationDetail.getQuantity());
-        System.out.println("this.agg::: " + this.aggregationDetail.getCost());
-        if (this.aggregation.getAggregationDetails().contains(this.aggregationDetail)) {
-            int index = this.aggregation.getAggregationDetails().indexOf(this.aggregationDetail);
-            this.aggregation.getAggregationDetails().set(index, this.aggregationDetail);
-        } else {
-            this.aggregation.getAggregationDetails().add(this.aggregationDetail);
+        if (this.aggregation.getId() == null) {//Guardar primero la agregación
+            saveAggregation();
         }
-        //Guardar la agregacion
-        System.out.println("this.asdasd::: " + this.aggregation.getAggregationDetails());
-        this.saveAggregation();
+        addAggregationDetail(this.aggregationDetail);
+        saveAggregation();
         this.aggregationDetail = aggregationDetailService.createInstance();
-        this.priceUnit = BigDecimal.ZERO;
+    }
+
+    private void addAggregationDetail(AggregationDetail aggd) {
+        if (aggd.getId() != null) {
+            this.aggregation.addAggregationDetail(aggd);
+        } else {
+            this.aggregation.addAggregationDetail(replaceAggregationDetail(this.aggregation.getAggregationDetails(), aggd));
+        }
+    }
+
+    private AggregationDetail replaceAggregationDetail(List<AggregationDetail> list, AggregationDetail aggd) {
+        AggregationDetail aggdAux = this.aggregation.getAggregationDetails().stream()
+                .filter(d -> aggregationDetail.getProduct().getId().equals(d.getProduct().getId()))
+                .findAny()
+                .orElse(null);
+        if (aggdAux != null && aggdAux.getId() != null) {
+            aggdAux.setQuantity(aggd.getQuantity());
+            aggdAux.setPriceUnit(aggd.getPriceUnit());
+            aggdAux.setCost(aggd.getCost());
+            return aggdAux;
+        } else {
+            return aggd;
+        }
     }
 
     public void calculePriceUnit() {
         if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getProduct().getPriceCost()) == -1) {
-            this.priceUnit = this.aggregationDetail.getProduct().getPriceCost();
+            this.aggregationDetail.setPriceUnit(this.aggregationDetail.getProduct().getPriceCost());
         }
     }
 
-//BORRAR
-    public List<Aggregation> getProductosAgregaciones() {
-        return productosAgregaciones;
+    public void onItemAggregation(AggregationData agg) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (agg != null && agg.getId() != null) {
+                redirectTo("/pages/production/aggregation.jsf?aggregationId=" + agg.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntitsy"), (aggregationId));
+        }
     }
 
-    public void setProductosAgregaciones(List<Aggregation> productosAgregaciones) {
-        this.productosAgregaciones = productosAgregaciones;
-    }
-
-    public List<ProductAggregations> getProductoAgregaciones() {
-        return productoAgregaciones;
-    }
-
-    public void setProductoAgregaciones(List<ProductAggregations> productoAgregaciones) {
-        this.productoAgregaciones = productoAgregaciones;
+    public void onRowSelectAggregationDetail(SelectEvent<AggregationDetail> event) {
+        this.aggregationDetail = this.aggregation.getAggregationDetails().stream()
+                .filter(aggd -> event.getObject().getId().equals(aggd.getId()))
+                .findAny()
+                .orElse(aggregationDetail);
     }
 
     @Override
