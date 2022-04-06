@@ -118,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                 required="#{false}" requiredMessage="#{i18n['common.money.letter']}"/>
                             </div>
-                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12"  ><!--style="align-self: center; margin-top: 1.2rem"-->
+                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12 MarTop1">
                                 <p:commandButton id="btnAggAdd"
                                                  icon="fa fa-check-square" styleClass="warning-btn"
                                                  value="#{i18n['common.add']}"
@@ -160,7 +160,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:column>
                             </p:dataTable>
                             <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:toolbar id="selectedToolBar" class="NoPadding">
+                                <p:toolbar id="selectedToolBar" rendered="#{not empty aggregationHome.selectedAggregationDetails}" class="NoPadding">
                                     <p:toolbarGroup class="DispInlFlex Container100">
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
                                             <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
