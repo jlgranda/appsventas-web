@@ -21,12 +21,14 @@ package org.jlgranda.fede;
  * @author jlgranda
  */
 public class Constantes {
-    
-    
+
     public static String ESPACIO = " ";
     public static String COPIA = "(Copia)";
     public static String JNDI_NAME = "java:/FedeXADS";
     public static String REPORTE_BASE_NAME = "appsventas-report-";
     public static String DIRECTORIO_SALIDA_REPORTES = "/tmp/appsventas/";
-    
+
+    //Módulos
+    public static String MODULE_PROVIDERS = "proveedores";
+    public static String MODULE_SALES = "ventas";
 }

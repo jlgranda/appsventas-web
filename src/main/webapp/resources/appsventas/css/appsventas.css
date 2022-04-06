@@ -1000,6 +1000,13 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Margins */
+.Mar05{
+    margin: 0.5rem;
+}
+.Mar1{
+    margin: 1rem;
+}
+
 .MarTopPerc5{
     margin-top:5%;
 }
