@@ -613,6 +613,14 @@ input[type="text"], input[type="password"], textarea{
     appearance: none;
 }
 
+/* Align */
+.AlignSelfCenter{
+    align-self: center;
+}
+.AlignSelfEnd{
+    align-self: flex-end;
+}
+
 /* Display */
 .DispBlock{
     display:block;
@@ -1016,6 +1024,9 @@ input[type="text"], input[type="password"], textarea{
     margin-right:auto;
 }
 
+.MarTop1{
+    margin-top:1rem;
+}
 .MarTop5{
     margin-top:5px;
 }

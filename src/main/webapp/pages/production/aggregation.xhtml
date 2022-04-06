@@ -96,7 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             listener="#{aggregationHome.calculePriceUnit}" partialSubmit="true"/>
                                 </p:autoComplete>
                             </div>
-                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6"  style="padding: 0rem">
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6 NoPadding">
                                 <jlgranda:input id="quantity" name="quantity" render="quantity" container="none" 
                                                 value="#{aggregationHome.aggregationDetail.quantity}" 
                                                 rendered="#{true}"
@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                 required="#{false}" requiredMessage="#{i18n['common.money.letter']}"/>
                             </div>
-                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6"  style="padding: 0rem">
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6 NoPadding">
                                 <jlgranda:input id="price" name="price" render="price" container="none"
                                                 value="#{aggregationHome.aggregationDetail.priceUnit}" 
                                                 rendered="#{true}"
@@ -118,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                 required="#{false}" requiredMessage="#{i18n['common.money.letter']}"/>
                             </div>
-                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12"  style="align-self: center; margin-top: 1.2rem">
+                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12"  ><!--style="align-self: center; margin-top: 1.2rem"-->
                                 <p:commandButton id="btnAggAdd"
                                                  icon="fa fa-check-square" styleClass="warning-btn"
                                                  value="#{i18n['common.add']}"
@@ -160,7 +160,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:column>
                             </p:dataTable>
                             <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:toolbar id="selectedToolBar">
+                                <p:toolbar id="selectedToolBar" class="NoPadding">
                                     <p:toolbarGroup class="DispInlFlex Container100">
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
                                             <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
@@ -169,10 +169,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <f:ajax render="selectedToolBar"></f:ajax>
                                             </p:selectOneMenu>
                                         </div>
-                                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6"><!--Paneles-->
-                                        </div>
-                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2">
-                                            <!--#{aggregationHome.actionExecutable}-->
+                                        <p:panel id="panelMoverTo" rendered="#{aggregationHome.selectedAction eq 'moveto'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        </p:panel>
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop1">
                                             <p:commandButton id="btnExecute"
                                                              value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
                                                              actionListener="#{aggregationHome.execute()}" action="#{aggregationHome.getOutcome()}"
@@ -188,7 +187,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:panel>
                         </div>
                     </p:panel>
-                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
                         <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.observation']} de la Agregación" 
                                         value="#{aggregationHome.aggregation.description}" 
                                         render="descrpn" execute="@this save" 
