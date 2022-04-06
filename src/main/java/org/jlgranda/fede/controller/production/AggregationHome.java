@@ -157,7 +157,10 @@ public class AggregationHome extends FedeController implements Serializable {
             if (this.aggregationDetail.getProduct() != null && this.aggregationDetail.getQuantity() != null && this.aggregationDetail.getPriceUnit() != null) {
                 if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getQuantity()) == -1 && BigDecimal.ZERO.compareTo(this.aggregationDetail.getPriceUnit()) == -1) {
                     this.aggregationDetail.setCost(this.aggregationDetail.getQuantity().multiply(this.aggregationDetail.getPriceUnit()));
-                    aggregationDetailValid();
+                    if (this.aggregation.getId() == null) {//Guardar primero la agregación, si esta es nula
+                        saveAggregation();
+                    }
+                    saveAggregationDetailValid();
                 }
             } else {
                 addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("property.required.invalid.form"));
@@ -167,17 +170,33 @@ public class AggregationHome extends FedeController implements Serializable {
         }
     }
 
-    public void saveAggregation() {
+    private void saveAggregation() {
         if (this.aggregation.isPersistent()) {
             this.aggregation.setLastUpdate(Dates.now());
         } else {
             this.aggregation.setAuthor(subject);
             this.aggregation.setOwner(subject);
             this.aggregation.setOrganization(this.organizationData.getOrganization());
+            this.aggregation.setName(this.aggregation.getProduct().getName());
         }
         aggregationService.save(this.aggregation.getId(), this.aggregation);
         setAggregationId(this.aggregation.getId());
         getAggregation();
+    }
+
+    private void saveAggregationDetailValid() {
+        if (this.aggregationDetail.isPersistent()) {
+            this.aggregationDetail.setLastUpdate(Dates.now());
+        } else {
+            this.aggregationDetail.setAuthor(subject);
+            this.aggregationDetail.setOwner(subject);
+            this.aggregationDetail.setAggregation(this.aggregation);
+        }
+        aggregationDetailService.save(this.aggregationDetail.getId(), this.aggregationDetail);
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.aggregationDetail.getProduct().getName()));
+        getAggregation();
+        //Encerar el registro
+        this.aggregationDetail = aggregationDetailService.createInstance();
     }
 
     /**
@@ -246,8 +265,6 @@ public class AggregationHome extends FedeController implements Serializable {
     }
 
     public void onRowSelectAggregationDetail(SelectEvent<AggregationDetail> event) {
-        this.aggregationDetail = event.getObject();
-        addInfoMessage(I18nUtil.getMessages("action.sucessfully"), "Registro seleccionado: " + this.aggregationDetail.getProduct().getName());
     }
 
     private void initializeActions() {
@@ -261,8 +278,6 @@ public class AggregationHome extends FedeController implements Serializable {
     }
 
     public boolean isActionExecutable() {
-        System.out.println("\"borrar\".equalsIgnoreCase(this.selectedAction)::: "+("borrar".equalsIgnoreCase(this.selectedAction)));
-        System.out.println("!getSelectedAggregationDetails().isEmpty()::: "+(!getSelectedAggregationDetails().isEmpty()));
         if ("borrar".equalsIgnoreCase(this.selectedAction) && !getSelectedAggregationDetails().isEmpty()) {
             return true;
         }
@@ -274,7 +289,6 @@ public class AggregationHome extends FedeController implements Serializable {
             if ("borrar".equalsIgnoreCase(this.selectedAction)) {
                 for (AggregationDetail instance : getSelectedAggregationDetails()) {
                     instance.setDeleted(Boolean.TRUE);
-//instance.setDeletedOn(Dates.now());
                     aggregationDetailService.save(instance.getId(), instance); //Actualizar la entidad
                 }
                 setOutcome("");
