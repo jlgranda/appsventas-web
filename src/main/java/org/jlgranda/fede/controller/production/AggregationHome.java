@@ -24,9 +24,11 @@ import java.awt.Event;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -84,13 +86,14 @@ public class AggregationHome extends FedeController implements Serializable {
      * UX.
      */
     private List<AggregationData> aggregations;
-    private AggregationDetail aggregationDetailSelected;
+    private List<AggregationDetail> selectedAggregationDetails = new ArrayList<>();
 
     @PostConstruct
     private void init() {
         setAggregation(aggregationService.createInstance());
         setAggregationDetail(aggregationDetailService.createInstance());
         setAggregations(aggregationService.buildDatafindByOrganization(this.organizationData.getOrganization()));
+        this.initializeActions();
         setOutcome("aggregations");
     }
 
@@ -130,12 +133,20 @@ public class AggregationHome extends FedeController implements Serializable {
         this.aggregations = aggregations;
     }
 
-    public AggregationDetail getAggregationDetailSelected() {
-        return aggregationDetailSelected;
+    public List<AggregationDetail> getSelectedAggregationDetails() {
+        return selectedAggregationDetails;
     }
 
-    public void setAggregationDetailSelected(AggregationDetail aggregationDetailSelected) {
-        this.aggregationDetailSelected = aggregationDetailSelected;
+    public void setSelectedAggregationDetails(List<AggregationDetail> selectedAggregationDetails) {
+        this.selectedAggregationDetails = selectedAggregationDetails;
+    }
+
+    public List<SelectItem> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<SelectItem> actions) {
+        this.actions = actions;
     }
 
     /**
@@ -146,8 +157,8 @@ public class AggregationHome extends FedeController implements Serializable {
             if (this.aggregationDetail.getProduct() != null && this.aggregationDetail.getQuantity() != null && this.aggregationDetail.getPriceUnit() != null) {
                 if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getQuantity()) == -1 && BigDecimal.ZERO.compareTo(this.aggregationDetail.getPriceUnit()) == -1) {
                     this.aggregationDetail.setCost(this.aggregationDetail.getQuantity().multiply(this.aggregationDetail.getPriceUnit()));
+                    aggregationDetailValid();
                 }
-                aggregationDetailValid();
             } else {
                 addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("property.required.invalid.form"));
             }
@@ -192,7 +203,6 @@ public class AggregationHome extends FedeController implements Serializable {
 
         //Encerar el registro
         this.aggregationDetail = aggregationDetailService.createInstance();
-        this.aggregationDetailSelected = null;
     }
 
     private void addAggregationDetail(AggregationDetail aggd) {
@@ -238,6 +248,38 @@ public class AggregationHome extends FedeController implements Serializable {
     public void onRowSelectAggregationDetail(SelectEvent<AggregationDetail> event) {
         this.aggregationDetail = event.getObject();
         addInfoMessage(I18nUtil.getMessages("action.sucessfully"), "Registro seleccionado: " + this.aggregationDetail.getProduct().getName());
+    }
+
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+
+        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
+        actions.add(item);
+    }
+
+    public boolean isActionExecutable() {
+        System.out.println("\"borrar\".equalsIgnoreCase(this.selectedAction)::: "+("borrar".equalsIgnoreCase(this.selectedAction)));
+        System.out.println("!getSelectedAggregationDetails().isEmpty()::: "+(!getSelectedAggregationDetails().isEmpty()));
+        if ("borrar".equalsIgnoreCase(this.selectedAction) && !getSelectedAggregationDetails().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    public void execute() {
+        if (this.isActionExecutable()) {
+            if ("borrar".equalsIgnoreCase(this.selectedAction)) {
+                for (AggregationDetail instance : getSelectedAggregationDetails()) {
+                    instance.setDeleted(Boolean.TRUE);
+//instance.setDeletedOn(Dates.now());
+                    aggregationDetailService.save(instance.getId(), instance); //Actualizar la entidad
+                }
+                setOutcome("");
+            }
+        }
     }
 
     @Override

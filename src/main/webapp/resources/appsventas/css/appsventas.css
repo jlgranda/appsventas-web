@@ -578,18 +578,18 @@ h1, h2, h3, h4, h5, h6{
 }
 
 /* make auto of element width and/or height attribute on mobile devices with media queries */
-.WidAutoOnMobile{
+/*.WidAutoOnMobile{
 }
 .HeiAutoOnMobile{
-}
+}*/
 
 /* for responsive mode - if you want any ContainerX element has a responsive fluid abilities with media queries you must add this class to your element*/
-.Responsive{
+/*.Responsive{
 }
 .Responsive50{
 }
 .Responsive100{
-}
+}*/
 
 /* Text Decoration */
 .Underline{
@@ -630,6 +630,9 @@ input[type="text"], input[type="password"], textarea{
 }
 .DispInlBlock{
     display:inline-block;
+}
+.DispInlFlex{
+    display:inline-flex;
 }
 
 /* Position */
@@ -1063,8 +1066,8 @@ input[type="text"], input[type="password"], textarea{
     width:100%;
     float:left;
 }
-.Container96{
-    width:96%;
+.Container95{
+    width:95%;
     float:left;
 }
 .Container90{
@@ -1087,20 +1090,32 @@ input[type="text"], input[type="password"], textarea{
     width:70%;
     float:left;
 }
+.Container65{
+    width:65%;
+    float:left;
+}
 .Container60{
     width:60%;
+    float:left;
+}
+.Container55{
+    width:55%;
     float:left;
 }
 .Container50{
     width:50%;
     float:left;
 }
+.Container45{
+    width:45%;
+    float:left;
+}
 .Container40{
     width:40%;
     float:left;
 }
-.Container33{
-    width:33.3%;
+.Container35{
+    width:35%;
     float:left;
 }
 .Container30{
@@ -1113,6 +1128,10 @@ input[type="text"], input[type="password"], textarea{
 }
 .Container20{
     width:20%;
+    float:left;
+}
+.Container15{
+    width:15%;
     float:left;
 }
 .Container10{
@@ -1350,18 +1369,18 @@ h1, h2, h3, h4, h5, h6{
 }
 
 /* make auto of element width and/or height attribute on mobile devices with media queries */
-.WidAutoOnMobile{
+/*.WidAutoOnMobile{
 }
 .HeiAutoOnMobile{
-}
+}*/
 
 /* for responsive mode - if you want any ContainerX element has a responsive fluid abilities with media queries you must add this class to your element*/
-.Responsive{
+/*.Responsive{
 }
 .Responsive50{
 }
 .Responsive100{
-}
+}*/
 
 /* Text Decoration */
 .Underline{

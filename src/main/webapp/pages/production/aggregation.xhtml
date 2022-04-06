@@ -130,15 +130,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:dataTable id="aggregationDetails" draggableColumns="#{true}" lazy="#{true}" liveResize="#{true}"
-                                         paginator="#{true}" paginatorAlwaysVisible="false"
-                                         paginatorPosition="bottom" resizableColumns="#{true}" rowKey="#{aggregationDetail.id}"
-                                         rows="25" scrollRows="25"
+                            <p:dataTable id="dataTable-aggregationDetails" widgetVar="dataTable_wv" lazy="#{true}"
                                          value="#{aggregationHome.aggregation.aggregationDetails}" var="aggregationDetail"
-                                         selection="#{aggregationHome.aggregationDetailSelected}" 
+                                         selection="#{aggregationHome.selectedAggregationDetails}" 
+                                         rowKey="#{aggregationDetail.id}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single"
                                          editable="#{false}">
-                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update="@form"/>
-                                <!--<p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
+                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panelSelectedToolBar"/>
+                                <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                                <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                                <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                                 <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregationDetail.product.name}">
                                     <h:outputText value="#{aggregationDetail.product.name.toUpperCase()}"/>
                                 </p:column>
@@ -153,6 +159,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </h:outputText>
                                 </p:column>
                             </p:dataTable>
+                            <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                <p:toolbar id="selectedToolBar">
+                                    <p:toolbarGroup class="DispInlFlex Container100">
+                                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
+                                            <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                            <p:selectOneMenu value="#{aggregationHome.selectedAction}">
+                                                <f:selectItems value="#{aggregationHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                                <f:ajax render="selectedToolBar"></f:ajax>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6"><!--Paneles-->
+                                        </div>
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2">
+                                            <!--#{aggregationHome.actionExecutable}-->
+                                            <p:commandButton id="btnExecute"
+                                                             value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                             actionListener="#{aggregationHome.execute()}" action="#{aggregationHome.getOutcome()}"
+                                                             oncomplete="PF('dataTable-aggregationDetails').unselectAllRows()"
+                                                             disabled="#{not aggregationHome.actionExecutable}"
+                                                             ajax="#{true}" immediate="#{true}"
+                                                             update="@form">
+                                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                            </p:commandButton>
+                                        </div>
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+                            </p:panel>
                         </div>
                     </p:panel>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
@@ -186,6 +219,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
+            body .ui-panel .ui-panel-content {
+                padding: 0rem;
+            }
         </style>
     </ui:define>
 </ui:composition>
