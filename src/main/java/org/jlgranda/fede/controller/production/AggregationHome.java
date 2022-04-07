@@ -157,10 +157,12 @@ public class AggregationHome extends FedeController implements Serializable {
         this.selectedAggregationDetails = selectedAggregationDetails;
     }
 
+    @Override
     public List<SelectItem> getActions() {
         return actions;
     }
 
+    @Override
     public void setActions(List<SelectItem> actions) {
         this.actions = actions;
     }
@@ -204,9 +206,30 @@ public class AggregationHome extends FedeController implements Serializable {
         }
         return true;
     }
+    
+    public void editAggregationDetail(AggregationDetail detail){
+        this.aggregationDetail = detail; //En edición
+    }
+    
+    /**
+     * Marcar como borrado
+     * @param detail 
+     */
+    public void deleteAggregationDetail(AggregationDetail detail){
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< !!!" + detail);
+         
+        detail.setDeleted(Boolean.TRUE);
+        detail.setName(Strings.toUpperCase(Constantes.ESTADO_ELIMINADO + Constantes.SEPARADOR + detail.getProduct().getName())); //Registrar el producto que estaba referenciado
+        detail.setDescription(detail.getProduct().toString()); //Registrar el producto que estaba referenciado
+        detail.setProduct(null);
+//                    aggregationDetailService.save(instance.getId(), instance); //Actualizar la entidad
+//                    aggregation.removeAggregationDetail(instance); //Quitar de la vista
+        this.aggregation.addAggregationDetail(detail); //Reemplaza el detalle con el nuevo valor modificado para borrar
+    }
 
     public void saveAggregation() {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< !!!");
+       
         if (this.aggregation.isPersistent()) {
             
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
@@ -317,12 +340,12 @@ public class AggregationHome extends FedeController implements Serializable {
 
     private void initializeActions() {
         this.actions = new ArrayList<>();
-        SelectItem item = null;
-        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-        actions.add(item);
-
-        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
-        actions.add(item);
+//        SelectItem item = null;
+//        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+//        actions.add(item);
+//
+//        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
+//        actions.add(item);
     }
 
     public boolean isActionExecutable() {

@@ -140,11 +140,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                          sortMode="single"
                                          editable="#{false}">
-                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panelSelectedToolBar"/>
+<!--                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panelSelectedToolBar"/>
                                 <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                                 <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                                 <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
                                 <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregationDetail.product.name}">
                                     <h:outputText value="#{empty aggregationDetail.product ? aggregationDetail.name : aggregationDetail.product.name.toUpperCase()}"/>
                                 </p:column>
@@ -153,14 +153,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <f:convertNumber type="number"/>
                                     </h:outputText>
                                 </p:column>
+                                <p:column headerText="#{i18n['common.price.unit']}" class="Wid20">
+                                    <h:outputText value="#{aggregationDetail.priceUnit}" class="Fright">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </h:outputText>
+                                </p:column>
                                 <p:column headerText="#{i18n['common.cost']}" class="Wid20">
                                     <h:outputText value="#{aggregationDetail.cost}" class="Fright">
                                         <f:convertNumber type="currency" currencySymbol="$"/>
                                     </h:outputText>
                                 </p:column>
+                                <p:column headerText="#{i18n['common.actions']}" class="Wid20">
+                                    <p:commandButton id="btnEdit"
+                                                     icon="fa fa-edit" styleClass="secondary-button rounded-btn"
+                                                     actionListener="#{aggregationHome.editAggregationDetail(aggregationDetail)}"
+                                                     ajax="#{true}" immediate="#{true}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                    <p:commandButton id="btnDelete"
+                                                     icon="fa fa-remove" styleClass="danger-btn rounded-btn"
+                                                     actionListener="#{aggregationHome.deleteAggregationDetail(aggregationDetail)}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </p:column>
                             </p:dataTable>
                             <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:toolbar id="selectedToolBar" rendered="#{not empty aggregationHome.selectedAggregationDetails}" class="NoPadding">
+                                <p:toolbar id="selectedToolBar" rendered="#{not empty aggregationHome.selectedAggregationDetails and not empty aggregationHome.actions}" class="NoPadding">
                                     <p:toolbarGroup class="DispInlFlex Container100">
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
                                             <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
