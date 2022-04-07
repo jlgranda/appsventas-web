@@ -122,7 +122,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:commandButton id="btnAggAdd"
                                                  icon="fa fa-check-square" styleClass="warning-btn"
                                                  value="#{i18n['common.add']}"
-                                                 actionListener="#{aggregationHome.aggregationDetailAdd}" 
+                                                 actionListener="#{aggregationHome.addAggregationDetail}" 
                                                  disabled="#{empty aggregationHome.aggregation.product and 
                                                              empty aggregationHome.aggregationDetail.product}"
                                                  ajax="#{true}" immediate="#{true}"
@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
                                 <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                                 <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregationDetail.product.name}">
-                                    <h:outputText value="#{aggregationDetail.product.name.toUpperCase()}"/>
+                                    <h:outputText value="#{empty aggregationDetail.product ? aggregationDetail.name : aggregationDetail.product.name.toUpperCase()}"/>
                                 </p:column>
                                 <p:column headerText="#{i18n['common.quantity']}" class="Wid20">
                                     <h:outputText value="#{aggregationDetail.quantity}" class="Fright"> 
@@ -202,7 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton id="btnAggregationSave"
                                          icon="fa fa-save" styleClass="danger-btn"
                                          value="#{i18n['common.save']}"
-                                         actionListener="#{aggregationHome.saveAggregation}"  action="#{aggregationHome.getOutcome()}"
+                                         actionListener="#{aggregationHome.saveAggregation()}"  action="#{aggregationHome.getOutcome()}"
                                          ajax="#{true}" type="submit"/>
                     </f:facet>
                     <f:facet name="right">

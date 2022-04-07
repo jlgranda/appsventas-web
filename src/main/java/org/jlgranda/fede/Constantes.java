@@ -28,5 +28,7 @@ public class Constantes {
     public static String JNDI_NAME = "java:/FedeXADS";
     public static String REPORTE_BASE_NAME = "appsventas-report-";
     public static String DIRECTORIO_SALIDA_REPORTES = "/tmp/appsventas/";
+    public static String ESTADO_ELIMINADO = "ELIMINADO";
+    public static String SEPARADOR = "_";
     
 }
