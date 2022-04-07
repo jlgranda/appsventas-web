@@ -924,6 +924,8 @@ public class InvoiceHome extends FedeController implements Serializable {
     
     public void saveCustomer() {
         boolean success = false;
+        
+        //Corregir el código, por si aca con un trim
         if (!getSubjectAdminHome().getSubjectEdit().isPersistent()) {
             getSubjectAdminHome().getSubjectEdit().setPassword(UUID.randomUUID().toString());
             getSubjectAdminHome().getSubjectEdit().setConfirmed(false);
@@ -934,6 +936,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             getSubjectAdminHome().update();
             success = true;
         }
+
         if (success) { //Guardar profile
             setCustomer(getSubjectAdminHome().getSubjectEdit());
             closeFormularioProfile(getCustomer());
