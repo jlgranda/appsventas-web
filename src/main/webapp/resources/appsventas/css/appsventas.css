@@ -917,6 +917,16 @@ input[type="text"], input[type="password"], textarea{
     -moz-box-sizing:border-box;
 }
 
+.BordCard{
+    border:solid 1px #dddddd;
+    border-radius: 5px !important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.10);
+    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    padding: 16px !important;
+}
+
 /* Width */
 .Wid100{
     width:100%;
@@ -1000,11 +1010,8 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Margins */
-.Mar05{
-    margin: 0.5rem;
-}
-.Mar1{
-    margin: 1rem;
+.Margin8{
+    margin: 8px;
 }
 
 .MarTopPerc5{
@@ -1031,15 +1038,17 @@ input[type="text"], input[type="password"], textarea{
     margin-right:auto;
 }
 
-.MarTop1{
-    margin-top:1rem;
-}
 .MarTop5{
     margin-top:5px;
 }
 .MarTop10{
     margin-top:10px;
 }
+
+.MarTop15{
+    margin-top:15px;
+}
+
 .MarTop20{
     margin-top:20px;
 }
@@ -1075,8 +1084,14 @@ input[type="text"], input[type="password"], textarea{
 .NoPadding{
     padding:0px !important;
 }
-.PaddingTopPercent10{
-    padding-top: 10%;
+.Padding5{
+    padding: 5px !important;
+}
+.Padding10{
+    padding: 10px !important;
+}
+.Padding15{
+    padding: 15px !important;
 }
 
 /* Containers */
@@ -1852,15 +1867,6 @@ input[type="text"], input[type="password"], textarea{
     margin-right:20px;
 }
 
-
-/* Paddings */
-.NoPadding{
-    padding:0px !important;
-}
-.PaddingTopPercent10{
-    padding-top: 10%;
-}
-
 /* Containers */
 .Container100{
     width:100%;
@@ -2617,7 +2623,7 @@ body .ui-panel .ui-panel-content {
 
 .task-badge {
     border-radius: 2px;
-    padding: 0.25em 0.5rem;
+    padding: 4px 8px;
     text-transform: uppercase;
     font-weight: 700;
     font-size: 12px;
@@ -2637,11 +2643,12 @@ body .ui-panel .ui-panel-content {
     margin-inline-end: 0px;
     font-weight: bold !important;
     color: black;
+    padding: 0px;
 }
 
 .Tag {
     background: #dff0fe;
-    padding: 0.25rem;
+    padding: 4px;
     color: #4788c7;
     border-radius: 3px;
     display: grid;

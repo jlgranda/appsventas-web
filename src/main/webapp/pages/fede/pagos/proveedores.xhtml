@@ -141,14 +141,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <f:ajax render="selectedToolBar"></f:ajax>
                                     </p:selectOneMenu>
                                 </div>
-                                <p:panel id="panelMoverTo" rendered="#{proveedorHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop1">
+                                <p:panel id="panelMoverTo" rendered="#{proveedorHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
                                     <p:selectOneMenu value="#{proveedorHome.selectedReport}">
                                         <f:converter converterId="org.jlgranda.fede.ui.converter.ReporteConverter"  />
                                         <f:selectItems value="#{proveedorHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
                                         <f:ajax render="selectedToolBar"></f:ajax>
                                     </p:selectOneMenu>
                                 </p:panel>
-                                <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop1">
+                                <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop15">
                                     <p:commandButton id="btnExecute"
                                                      value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
                                                      actionListener="#{proveedorHome.execute()}" action="#{proveedorHome.getOutcome()}"
@@ -165,9 +165,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
             <p:panel id="formProveedor" 
                      class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{proveedorHome.formProveedor}">
-                <div class="card Mar05">
+                <div class="card Margin8">
                     <div class="ui-g ui-fluid">
-                        <h1 style="text-transform: uppercase"><strong>#{i18n['common.add']} #{i18n['common.supplier']}: #{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>
+                        <h1 class="TexUppercase"><strong>#{i18n['common.add']} #{i18n['common.supplier']}: #{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.date.pay.prefered']}" 
                                             value="#{proveedorHome.proveedor.fechaPreferidaPago}"

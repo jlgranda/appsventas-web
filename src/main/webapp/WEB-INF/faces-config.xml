@@ -200,6 +200,16 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>cash-close</from-outcome>
+            <to-view-id>/pages/accounting/cash_close.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>cash-close-history</from-outcome>
+            <to-view-id>/pages/accounting/cash_close_history.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>accounts</from-outcome>
             <to-view-id>/pages/accounting/account_items.jsf</to-view-id>
             <redirect />
