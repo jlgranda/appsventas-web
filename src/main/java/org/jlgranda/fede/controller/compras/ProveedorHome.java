@@ -18,11 +18,14 @@ package org.jlgranda.fede.controller.compras;
 
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.FacturaElectronicaService;
+import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.compras.ProveedorService;
+import com.jlgranda.fede.ejb.reportes.ReporteService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import net.sf.jasperreports.engine.JRException;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
@@ -43,16 +47,20 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.compras.Proveedor;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.model.document.FacturaType;
+import org.jlgranda.fede.model.reportes.Reporte;
 import org.jlgranda.fede.ui.model.LazyFacturaElectronicaDataModel;
 import org.jlgranda.fede.ui.model.LazyProveedorDataModel;
 import org.jlgranda.reportes.ReportUtil;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
+import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import static org.jpapi.util.ImageUtil.generarImagen;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.jpapi.util.Strings;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,48 +74,44 @@ import org.slf4j.LoggerFactory;
 public class ProveedorHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -3433960827306269659L;
-
     Logger logger = LoggerFactory.getLogger(ProveedorHome.class);
-
-    private Long proveedorId;
-
-    private Proveedor proveedor;
-
-    @Inject
-    private SettingHome settingHome;
-
-    protected Proveedor selectedProveedor;
-
-    protected List<Proveedor> selectedProveedores;
-
-    private LazyProveedorDataModel lazyDataModel;
-
-    @EJB
-    private ProveedorService proveedorService;
-
-    private LazyFacturaElectronicaDataModel lazyFacturaElectronicaDataModel;
-
-    @EJB
-    private FacturaElectronicaService facturaElectronicaService;
-
-    @EJB
-    private SubjectService subjectService;
 
     @Inject
     private Subject subject;
-
+    @Inject
+    private OrganizationData organizationData;
+    @Inject
+    private SettingHome settingHome;
     @Inject
     private SubjectAdminHome subjectAdminHome; //para administrar clientes en factura
 
-    @Inject
-    private OrganizationData organizationData;
-
-    private boolean formProveedor;
+    @EJB
+    private ProveedorService proveedorService;
+    @EJB
+    private FacturaElectronicaService facturaElectronicaService;
+    @EJB
+    private SubjectService subjectService;
+    @EJB
+    private OrganizationService organizationService;
+    @EJB
+    private ReporteService reporteService;
 
     /**
-     * Instancia <tt>Subject</tt> para registro de proveedor
+     * EDIT OBJECT.
      */
+    private Long proveedorId;
+    private Proveedor proveedor;
     private Subject supplier;
+
+    /**
+     * UX.
+     */
+    protected List<Proveedor> selectedProveedores = new ArrayList<>();
+    private LazyProveedorDataModel lazyDataModel;
+    private LazyFacturaElectronicaDataModel lazyFacturaElectronicaDataModel;
+    private List<Reporte> reports;
+    private Reporte selectedReport;
+    private boolean formProveedor;
 
     @PostConstruct
     private void init() {
@@ -120,10 +124,10 @@ public class ProveedorHome extends FedeController implements Serializable {
         }
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-
         setProveedor(proveedorService.createInstance());
-        setOutcome("proveedores");
+        setReports(reporteService.findByModuloAndOrganization(Constantes.MODULE_PROVIDERS, organizationData.getOrganization()));
         initializeActions();
+        setOutcome("proveedores");
     }
 
     public Long getProveedorId() {
@@ -153,14 +157,6 @@ public class ProveedorHome extends FedeController implements Serializable {
         this.selectedProveedores = selectedProveedores;
     }
 
-    public Proveedor getSelectedProveedor() {
-        return selectedProveedor;
-    }
-
-    public void setSelectedProveedor(Proveedor selectedProveedor) {
-        this.selectedProveedor = selectedProveedor;
-    }
-
     public LazyProveedorDataModel getLazyDataModel() {
         filter();
         return lazyDataModel;
@@ -177,6 +173,22 @@ public class ProveedorHome extends FedeController implements Serializable {
 
     public void setLazyFacturaElectronicaDataModel(LazyFacturaElectronicaDataModel lazyFacturaElectronicaDataModel) {
         this.lazyFacturaElectronicaDataModel = lazyFacturaElectronicaDataModel;
+    }
+
+    public List<Reporte> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Reporte> reports) {
+        this.reports = reports;
+    }
+
+    public Reporte getSelectedReport() {
+        return selectedReport;
+    }
+
+    public void setSelectedReport(Reporte selectedReport) {
+        this.selectedReport = selectedReport;
     }
 
     public SubjectAdminHome getSubjectAdminHome() {
@@ -366,7 +378,6 @@ public class ProveedorHome extends FedeController implements Serializable {
             setProveedorId(null);
             setProveedor(proveedorService.createInstance());
         }
-        System.out.println("is-proveedor::" + this.proveedor);
         if (existsSessionParameter("SUPPLIER")) {
             this.subjectAdminHome.setSubjectEdit((Subject) getSessionParameter("SUPPLIER"));
         } else if (existsSessionParameter("KEYWORD")) {
@@ -500,18 +511,46 @@ public class ProveedorHome extends FedeController implements Serializable {
     }
 
     //Acciones sobre seleccionados
-    public void execute() {
-        if (this.isActionExecutable()) {
-            if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
+    public void execute() throws IOException {
+        if (this.isActionExecutable() && !this.selectedProveedores.isEmpty()) {
+            if ("imprimir".equalsIgnoreCase(this.selectedAction) && this.selectedReport != null) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("organizationId", this.organizationData.getOrganization().getId());
-                params.put("proveedorId", this.selectedProveedores.get(0).getId());
-                try {
-                    ReportUtil.getInstance().generarReporte("/tmp/appsventas/", "/home/opt/appsventas/reportes/proveedor_facturas.jasper", params);
-                } catch (JRException ex) {
-                    java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                System.out.println("organizationId: " + this.organizationData.getOrganization().getId());
+                this.selectedProveedores.forEach(prv -> {
+                    params.put("proveedorId", prv.getId());
+                    System.out.println("proveedorId: " + prv.getId());
+                    byte[] encodedLogo = null;
+                    try {
+                        encodedLogo = generarLogo(prv);
+                    } catch (IOException ex) {
+                        java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    params.put("logo", new String(encodedLogo));
+                    try {
+                        ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, this.selectedReport.getRutaArchivoXml(), params);
+                    } catch (JRException ex) {
+                        java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
                 setOutcome("");
+            }
+        }
+    }
+
+    private byte[] generarLogo(Proveedor proveedor) throws IOException {
+        Organization organization = organizationService.findByOwner(proveedor.getOwner());
+        if (organization != null) {
+            if (organization.getPhoto() != null) {
+                return Base64.getEncoder().encode(organization.getPhoto());
+            } else {
+                return Base64.getEncoder().encode(generarImagen(organization.getInitials()));
+            }
+        } else {
+            if (!Strings.isNullOrEmpty(proveedor.getOwner().getInitials())) {
+                return Base64.getEncoder().encode(generarImagen(proveedor.getOwner().getInitials()));
+            } else {
+                return Base64.getEncoder().encode(generarImagen(proveedor.getOwner().getFullName()));
             }
         }
     }

@@ -100,7 +100,7 @@ public class AggregationHome extends FedeController implements Serializable {
         setAggregation(aggregationService.createInstance());
         setAggregationDetail(aggregationDetailService.createInstance());
         setAggregations(aggregationService.buildDatafindByOrganization(this.organizationData.getOrganization()));
-        this.initializeActions();
+        initializeActions();
         setOutcome("aggregations");
     }
 
