@@ -27,14 +27,10 @@ public class Constantes {
     public static String JNDI_NAME = "java:/FedeXADS";
     public static String REPORTE_BASE_NAME = "appsventas-report-";
     public static String DIRECTORIO_SALIDA_REPORTES = "/tmp/appsventas/";
-<<<<<<< HEAD
+    
     public static String ESTADO_ELIMINADO = "ELIMINADO";
     public static String SEPARADOR = "_";
-    
-=======
-
     //Módulos
     public static String MODULE_PROVIDERS = "proveedores";
     public static String MODULE_SALES = "ventas";
->>>>>>> 91aaaa294e373664f743871d7f21576dde2a846a
 }

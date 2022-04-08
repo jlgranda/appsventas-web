@@ -37,14 +37,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li>/</li>
         <li><p:link outcome="aggregations">#{i18n['app.fede.production.aggregations']}</p:link></li>
         <li>/</li>
-        <li><p:link outcome="aggregation">#{i18n['common.register']} #{i18n['app.fede.production.aggregation']}</p:link></li>
+        <li><p:link outcome="aggregation">#{i18n['common.register']} #{i18n['common.aggregation']}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.production.Aggregation"/>
         <div class="ui-g">
             <div class="ui-g-12 ui-md-12 ui-lg-12">
                 <div class="ui-fluid">
-                    <h1 class="TexUppercase">#{not empty aggregationHome.aggregation.id ? 'AGREGACIÓN DE ' : 'NUEVA AGREGACIÓN'} #{aggregationHome.aggregation.product.name}</h1>
+                    <h1 class="TexUppercase">#{not empty aggregationHome.aggregation.id ? i18n['common.edit'].concat(' ').concat(i18n['common.aggregation']) : i18n['common.newa'].concat(' ').concat(i18n['common.aggregation']) }: #{aggregationHome.aggregation.product.name}</h1>
                     <p:panel id="panel-product-main" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" 
                              rendered="#{empty aggregationHome.aggregation.id}">
                         <p:outputLabel class="BigTopic" value="#{i18n['app.fede.inventory.product.main']}" for="@next"/>
@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:panel id="panel-aggregation" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <h4>Agregar elementos del Producto Principal</h4>
                         <div class="ui-fluid">
-                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12" style="#{aggregationHome.aggregationDetail.persistent ? 'background-color: #e0236414;' : ''}">
                                 <p:outputLabel value="#{i18n['common.element']}" for="@next"/>
                                 <p:autoComplete id="element" 
                                                 value="#{aggregationHome.aggregationDetail.product}" var="product"
@@ -96,7 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             listener="#{aggregationHome.calculePriceUnit}" partialSubmit="true"/>
                                 </p:autoComplete>
                             </div>
-                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6 NoPadding">
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6 NoPadding" style="#{aggregationHome.aggregationDetail.persistent ? 'background-color: #e0236414;' : ''}">
                                 <jlgranda:input id="quantity" name="quantity" render="quantity" container="none" 
                                                 value="#{aggregationHome.aggregationDetail.quantity}" 
                                                 rendered="#{true}"
@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                 required="#{false}" requiredMessage="#{i18n['common.money.letter']}"/>
                             </div>
-                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6 NoPadding">
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6 NoPadding" style="#{aggregationHome.aggregationDetail.persistent ? 'background-color: #e0236414;' : ''}">
                                 <jlgranda:input id="price" name="price" render="price" container="none"
                                                 value="#{aggregationHome.aggregationDetail.priceUnit}" 
                                                 rendered="#{true}"
@@ -120,8 +120,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12 MarTop1">
                                 <p:commandButton id="btnAggAdd"
-                                                 icon="fa fa-check-square" styleClass="warning-btn"
-                                                 value="#{i18n['common.add']}"
+                                                 icon="fa fa-check-square" styleClass="#{aggregationHome.aggregationDetail.persistent ? 'primary-btn' : 'warning-btn'}"
+                                                 value="#{aggregationHome.aggregationDetail.persistent ? i18n['common.apply'] : i18n['common.add']}"
                                                  actionListener="#{aggregationHome.addAggregationDetail}" 
                                                  disabled="#{empty aggregationHome.aggregation.product and 
                                                              empty aggregationHome.aggregationDetail.product}"
@@ -227,10 +227,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton id="btnRecordCancel"
-                                         icon="pi pi-home" styleClass="primary-button p-mr-2"
-                                         value="#{i18n['common.home']}"
+                                         icon="pi pi-times" styleClass="primary-button p-mr-2"
+                                         value="#{i18n['common.cancel']}"
                                          action="#{aggregationHome.getOutcome()}" 
-                                         type="button"/>
+                                         type="submit"/>
                     </f:facet>
                 </p:toolbar>
             </div>

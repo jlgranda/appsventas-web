@@ -37,73 +37,65 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <h:form id="form">
-                        <p:dataView var="aggregation" value="#{aggregationHome.aggregations}"
-                                    rows="10" rowsPerPageTemplate="5,10,20" paginator="true"
-                                    layout="grid" gridIcon="fa fa-th-large" listIcon="fa fa-bars">
-                            <f:facet name="header">
-                                <p:button value="#{i18n['common.newa']}"
-                                          icon="pi pi-plus" styleClass="danger-btn"
-                                          outcome="aggregation"/>
-                            </f:facet>
-                            <p:dataViewListItem>
-                                <div class="ui-g">
-                                    <div class="ui-g-1 ui-md-1 ui-lg-1 ui-sm-1 TexAlCenter" style="background: #dff0fe; padding: 0rem">
-                                        <p:commandButton value="Elem: #{aggregation.aggregationDetails.size().toString()}"
-                                                         actionListener="#{aggregationHome.onItemAggregation(aggregation)}"
-                                                         ajax="#{false}" immediate="#{true}"
-                                                         styleClass="ui-button-none">
-                                        </p:commandButton>
-                                        <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
-                                    </div>
-                                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4">
-                                        <h2 class="TexUppercase">#{aggregation.productName}</h2>
-                                        <span class="TexAlRight">#{aggregation.description}</span>
-                                    </div>
-                                    <div class="ui-g-7 ui-md-7 ui-lg-7 ui-sm-7">
-                                        <div class="ui-g">
-                                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlRight">
-                                                <h:outputText value="#{aggregation.costTotal}" class="BigTopic Fs16">
-                                                    <f:convertNumber currencySymbol="$" type="currency"/>
-                                                </h:outputText>
-                                            </div>
-                                            <p:repeat value="#{aggregation.aggregationDetails}" var="aggregationDetail">
-                                                <div class="ui-g-10 ui-md-10 ui-lg-10 ui-sm-10 TexAlRight">
-                                                    <span class="TexUppercase"> #{aggregationDetail.elementName}</span>
-                                                </div>
-                                                <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 TexAlRight">
-                                                    <h:outputText value="#{aggregationDetail.cost}">
-                                                        <f:convertNumber currencySymbol="$" type="currency"/>
-                                                    </h:outputText>
-                                                </div>
-                                            </p:repeat>
-                                        </div>
-                                    </div>
+                    <p:dataTable id="dataTable-aggregations" widgetVar="dataTable_wv" lazy="#{true}"
+                                 value="#{aggregationHome.aggregations}" var="aggregation"
+                                 rowKey="#{aggregation.id}"
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single"
+                                 editable="#{false}">
+<!--                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panelSelectedToolBar"/>
+                        <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                        <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
+                        <p:column headerText="#{i18n['common.element']}" sortBy="#{aggregation.productName}">
+                            <h:outputText value="#{aggregation.productName.toUpperCase()}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.elements']}" class="Wid20">
+                            <h:outputText value="#{aggregation.aggregationDetails.size()}" class="Fright">
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.cost']}" class="Wid20">
+                            <h:outputText value="#{aggregation.costTotal}" class="Fright"> 
+                                <f:convertNumber type="number"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.actions']}" class="Wid20">
+                            <p:commandButton id="btnEdit"
+                                             icon="fa fa-edit" styleClass="secondary-button rounded-btn"
+                                             actionListener="#{aggregationHome.onItemAggregation(aggregation)}"
+                                             ajax="#{true}">
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:toolbar id="selectedToolBar" rendered="#{false and not empty aggregationHome.actions}" class="NoPadding">
+                            <p:toolbarGroup class="DispInlFlex Container100">
+                                <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
+                                    <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                    <p:selectOneMenu value="#{aggregationHome.selectedAction}">
+                                        <f:selectItems value="#{aggregationHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                        <f:ajax render="selectedToolBar"></f:ajax>
+                                    </p:selectOneMenu>
                                 </div>
-                            </p:dataViewListItem>
-                            <p:dataViewGridItem>
-                                <div class="ui-g">
-                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter" style="background: #dff0fe; padding: 0rem">
-                                        <p:commandButton value="Elem: #{aggregation.aggregationDetails.size().toString()}"
-                                                         actionListener="#{aggregationHome.onItemAggregation(aggregation)}"
-                                                         ajax="#{false}" immediate="#{true}"
-                                                         styleClass="ui-button-none">
-                                        </p:commandButton>
-                                        <p:graphicImage name="images/icons8-product-40.png" library="appsventas"/>
-                                    </div>
-                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter">
-                                        <h2 class="TexUppercase">#{aggregation.productName}</h2>
-                                        <span class="TexAlRight">#{aggregation.description}</span>
-                                    </div>
-                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter">
-                                        <h:outputText value="#{aggregation.costTotal}" class="BigTopic Fs16">
-                                            <f:convertNumber currencySymbol="$" type="currency"/>
-                                        </h:outputText>
-                                    </div>
+                                <p:panel id="panelMoverTo" rendered="#{aggregationHome.selectedAction eq 'moveto'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                </p:panel>
+                                <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop1">
+                                    <p:commandButton id="btnExecute"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                     actionListener="#{aggregationHome.execute()}" action="#{aggregationHome.getOutcome()}"
+                                                     oncomplete="PF('dataTable-aggregationDetails').unselectAllRows()"
+                                                     disabled="#{not aggregationHome.actionExecutable}"
+                                                     ajax="#{true}" immediate="#{true}"
+                                                     update="@form">
+                                    </p:commandButton>
                                 </div>
-                            </p:dataViewGridItem>
-                        </p:dataView>
-                    </h:form>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:panel>
                 </div>
             </div>
         </ui:define>

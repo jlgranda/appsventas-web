@@ -57,7 +57,7 @@ public abstract class FedeController {
 
     public static final String KEY_SEPARATOR = ",";
 
-    String outcome = "home";
+    String outcome = "agregaciones";
     
     private String tags;
 
