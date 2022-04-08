@@ -160,6 +160,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>inventory-raw-inbox</from-outcome>
+            <to-view-id>/pages/inventory/raws.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>product</from-outcome>
             <to-view-id>/pages/inventory/product.jsf</to-view-id>
             <redirect />
@@ -323,6 +328,11 @@
         <navigation-case>
             <from-outcome>signin</from-outcome>
             <to-view-id>/signin.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>aggregations</from-outcome>
+            <to-view-id>/pages/production/aggregation_items.jsf</to-view-id>
             <redirect />
         </navigation-case>
     </navigation-rule>

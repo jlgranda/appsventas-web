@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <!--<f:viewParam name="" value="" />-->
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.inventory']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/inventory/items.jsf">#{i18n['app.fede.inventory.products']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar id="topToolBar">
+                        <f:facet name="left">
+                            <p:outputLabel class="Gray" value="#{i18n['app.fede.inventory.category']}:&nbsp;" for="@next"/>
+                            <p:selectOneMenu class="MarRight10"
+                                             value="#{inventoryRawHome.groupSelected}"
+                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"
+                                             immediate="true"> 
+                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel class="Gray" value="#{i18n['common.type']}:&nbsp;" for="@next"/>
+                            <p:selectOneMenu class="MarRight10"
+                                             value="#{inventoryRawHome.productType}"
+                                             immediate="true"
+                                             required="#{false}">
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel class="Gray" value="#{i18n['common.keyword']}:&nbsp;" for="@next"/>
+                            <p:inputText class="input-sm MarRight10" value="#{inventoryRawHome.keyword}">
+                            </p:inputText>
+                            <p:commandButton value="#{i18n['common.find']}"
+                                             icon="pi pi-search" styleClass="help-btn"
+                                             actionListener="#{inventoryRawHome.clear()}" 
+                                             ajax="false">
+                            </p:commandButton>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:button value="#{i18n['common.new']}"
+                                      icon="pi pi-plus-circle" styleClass="danger-btn"
+                                      disabled="#{empty organizationData.organization}"
+                                      outcome="product"/>
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <div class="card">
+                        <p:dataTable id="dataTable-products" style="padding-left: 0.8rem; padding-right: 0.8rem;"
+                                     draggableColumns="true" lazy="true" liveResize="true"
+                                     paginator="true" paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom" resizableColumns="true" rowKey="#{product.id}"
+                                     rows="25" scrollRows="25"
+                                     value="#{inventoryRawHome.lazyDataModel}" var="product"
+                                     selection="#{inventoryRawHome.selectedProducts}"
+                                     sortBy="#{product.createdOn}">
+                            <p:ajax event="rowSelect" listener="#{inventoryRawHome.onRowSelect}" />
+                            <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar"/>
+                            <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar"/>
+                            <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column headerText="#{i18n['common.name']}" sortBy="#{product.name}" class="Wid30">
+                                <h:outputText value="#{product.name}"/>
+                            </p:column>
+                            <p:column headerText="#{i18n['app.fede.inventory.category']}" sortBy="#{product.category}">
+                                <h:outputText value="#{product.category.name}" />
+                            </p:column>
+                            <p:column headerText="P.V.P A" sortBy="#{product.price}">
+                                <h:outputText value="#{product.price}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="P.V.P B" sortBy="#{product.priceB}">
+                                <h:outputText value="#{product.priceB}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="P.V.P C" sortBy="#{product.priceC}">
+                                <h:outputText value="#{product.priceC}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}" sortBy="#{product.priceCost}">
+                                <h:outputText value="#{product.priceCost}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.tax']}" sortBy="#{product.taxType}">
+                                <h:outputText value="#{product.taxType}"/>
+                            </p:column>
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{product.createdOn}">
+                                <h:outputText value="#{product.createdOn}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['app.fede.inventory.product.type']}" sortBy="#{product.productType}">
+                                <h:outputText value="#{product.productType}"/>
+                            </p:column>
+                        </p:dataTable>
+                        <p:panel id="panelSelectedToolBar">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty inventoryRawHome.selectedProducts}">
+                                <f:facet name="left">
+                                    <p:outputLabel class="Gray" value="#{i18n['common.withselected']}&nbsp;" for="@next"/>
+                                    <div class="ui-g">
+                                        <div style="align-self: center;">
+                                            <p:selectOneMenu value="#{inventoryRawHome.selectedAction}">
+                                                <f:selectItems value="#{inventoryRawHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                                <f:ajax render="selectedToolBar"></f:ajax>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <p:panel id="panelMoverTo" rendered="#{inventoryRawHome.selectedAction eq 'moveto'}">
+                                            <p:selectOneMenu value="#{inventoryRawHome.groupSelected}"
+                                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"
+                                                             immediate="true"> 
+                                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                <f:ajax render="selectedToolBar"></f:ajax>
+                                            </p:selectOneMenu>
+                                        </p:panel>
+                                        <p:panel id="panelChangeTo" rendered="#{inventoryRawHome.selectedAction eq 'changeto'}">
+                                            <p:selectOneMenu value="#{inventoryRawHome.productType}"
+                                                             immediate="true"
+                                                             required="#{true}">
+                                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                <p:ajax update="selectedToolBar"/>
+                                            </p:selectOneMenu>
+                                        </p:panel>
+                                        <p:commandButton id="go-button"
+                                                         value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                         actionListener="#{inventoryRawHome.execute()}" action="#{inventoryRawHome.getOutcome()}"
+                                                         disabled="#{not inventoryRawHome.actionExecutable}"
+                                                         ajax="false" update="@form">
+                                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                        </p:commandButton>
+                                    </div>
+                                </f:facet>
+                            </p:toolbar>
+                        </p:panel>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+        <ui:define name="script">
+        </ui:define>
+    </ui:composition>
+</html>

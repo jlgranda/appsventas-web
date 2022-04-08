@@ -119,7 +119,7 @@ public class ProveedorHome extends FedeController implements Serializable {
         try {
             range = Integer.valueOf(settingHome.getValue(SettingNames.PRODUCT_TOP_RANGE, "7"));
         } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
+            //nfe.printStackTrace();
             range = 7;
         }
         setEnd(Dates.maximumDate(Dates.now()));

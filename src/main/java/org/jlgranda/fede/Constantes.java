@@ -27,8 +27,8 @@ public class Constantes {
     public static String JNDI_NAME = "java:/FedeXADS";
     public static String REPORTE_BASE_NAME = "appsventas-report-";
     public static String DIRECTORIO_SALIDA_REPORTES = "/tmp/appsventas/";
-    public static String MODULE_PROVIDERS = "proveedores";
-    public static String MODULE_SALES = "ventas";
     public static String ESTADO_ELIMINADO = "ELIMINADO";
     public static String SEPARADOR = "_";
+    public static String MODULE_PROVIDERS = "proveedores";
+    public static String MODULE_SALES = "ventas";
 }
