@@ -122,70 +122,89 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:commandButton id="btnAggAdd"
                                                  icon="fa fa-check-square" styleClass="warning-btn"
                                                  value="#{i18n['common.add']}"
-                                                 actionListener="#{aggregationHome.aggregationDetailAdd}" 
+                                                 actionListener="#{aggregationHome.addAggregationDetail}" 
                                                  disabled="#{empty aggregationHome.aggregation.product and 
                                                              empty aggregationHome.aggregationDetail.product}"
                                                  ajax="#{true}" immediate="#{true}"
                                                  update="@form"/>
                             </div>
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:dataTable id="dataTable-aggregationDetails" widgetVar="dataTable_wv" lazy="#{true}"
-                                             value="#{aggregationHome.aggregation.aggregationDetails}" var="aggregationDetail"
-                                             selection="#{aggregationHome.selectedAggregationDetails}" 
-                                             rowKey="#{aggregationDetail.id}"
-                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
-                                             paginator="#{true}" paginatorPosition="bottom" 
-                                             draggableColumns="#{true}" reflow="#{true}" 
-                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
-                                             sortMode="single"
-                                             editable="#{false}">
-                                    <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panelSelectedToolBar"/>
-                                    <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
-                                    <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
-                                    <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
-                                    <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
-                                    <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregationDetail.product.name}">
-                                        <h:outputText value="#{aggregationDetail.product.name.toUpperCase()}"/>
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.quantity']}" class="Wid20">
-                                        <h:outputText value="#{aggregationDetail.quantity}" class="Fright"> 
-                                            <f:convertNumber type="number"/>
-                                        </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.cost']}" class="Wid20">
-                                        <h:outputText value="#{aggregationDetail.cost}" class="Fright">
-                                            <f:convertNumber type="currency" currencySymbol="$"/>
-                                        </h:outputText>
-                                    </p:column>
-                                </p:dataTable>
-                                <!--Herramientas con seleccionados -->
-                                <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                    <p:toolbar id="selectedToolBar" rendered="#{not empty aggregationHome.selectedAggregationDetails}" class="NoPadding">
-                                        <p:toolbarGroup class="DispInlFlex Container100">
-                                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
-                                                <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
-                                                <p:selectOneMenu value="#{aggregationHome.selectedAction}">
-                                                    <f:selectItems value="#{aggregationHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
-                                                    <f:ajax render="selectedToolBar"></f:ajax>
-                                                </p:selectOneMenu>
-                                            </div>
-                                            <p:panel id="panelMoverTo" rendered="#{aggregationHome.selectedAction eq 'moveto'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                            </p:panel>
-                                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop15">
-                                                <p:commandButton id="btnExecute"
-                                                                 value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
-                                                                 actionListener="#{aggregationHome.execute()}" action="#{aggregationHome.getOutcome()}"
-                                                                 oncomplete="PF('dataTable-aggregationDetails').unselectAllRows()"
-                                                                 disabled="#{not aggregationHome.actionExecutable}"
-                                                                 ajax="#{true}" immediate="#{true}"
-                                                                 update="@form">
-                                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                                </p:commandButton>
-                                            </div>
-                                        </p:toolbarGroup>
-                                    </p:toolbar>
-                                </p:panel>
-                            </div>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:dataTable id="dataTable-aggregationDetails" widgetVar="dataTable_wv" lazy="#{true}"
+                                         value="#{aggregationHome.aggregation.aggregationDetails}" var="aggregationDetail"
+                                         selection="#{aggregationHome.selectedAggregationDetails}" 
+                                         rowKey="#{aggregationDetail.id}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single"
+                                         editable="#{false}">
+<!--                                <p:ajax event="rowSelect" listener="#{aggregationHome.onRowSelectAggregationDetail}" update=":form:panelSelectedToolBar"/>
+                                <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                                <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                                <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
+                                <p:column headerText="#{i18n['common.elements']}" sortBy="#{aggregationDetail.product.name}">
+                                    <h:outputText value="#{empty aggregationDetail.product ? aggregationDetail.name : aggregationDetail.product.name.toUpperCase()}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.quantity']}" class="Wid20">
+                                    <h:outputText value="#{aggregationDetail.quantity}" class="Fright"> 
+                                        <f:convertNumber type="number"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.price.unit']}" class="Wid20">
+                                    <h:outputText value="#{aggregationDetail.priceUnit}" class="Fright">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.cost']}" class="Wid20">
+                                    <h:outputText value="#{aggregationDetail.cost}" class="Fright">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.actions']}" class="Wid20">
+                                    <p:commandButton id="btnEdit"
+                                                     icon="fa fa-edit" styleClass="secondary-button rounded-btn"
+                                                     actionListener="#{aggregationHome.editAggregationDetail(aggregationDetail)}"
+                                                     ajax="#{true}" immediate="#{true}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                    <p:commandButton id="btnDelete"
+                                                     icon="fa fa-remove" styleClass="danger-btn rounded-btn"
+                                                     actionListener="#{aggregationHome.deleteAggregationDetail(aggregationDetail)}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                            <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                <p:toolbar id="selectedToolBar" rendered="#{not empty aggregationHome.selectedAggregationDetails and not empty aggregationHome.actions}" class="NoPadding">
+                                    <p:toolbarGroup class="DispInlFlex Container100">
+                                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
+                                            <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                            <p:selectOneMenu value="#{aggregationHome.selectedAction}">
+                                                <f:selectItems value="#{aggregationHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                                <f:ajax render="selectedToolBar"></f:ajax>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <p:panel id="panelMoverTo" rendered="#{aggregationHome.selectedAction eq 'moveto'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                                        </p:panel>
+                                        <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop1">
+                                            <p:commandButton id="btnExecute"
+                                                             value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                             actionListener="#{aggregationHome.execute()}" action="#{aggregationHome.getOutcome()}"
+                                                             oncomplete="PF('dataTable-aggregationDetails').unselectAllRows()"
+                                                             disabled="#{not aggregationHome.actionExecutable}"
+                                                             ajax="#{true}" immediate="#{true}"
+                                                             update="@form">
+                                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                            </p:commandButton>
+                                        </div>
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+                            </p:panel>
                         </div>
                     </p:panel>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
@@ -203,7 +222,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:commandButton id="btnAggregationSave"
                                          icon="fa fa-save" styleClass="danger-btn"
                                          value="#{i18n['common.save']}"
-                                         actionListener="#{aggregationHome.saveAggregation}"  action="#{aggregationHome.getOutcome()}"
+                                         actionListener="#{aggregationHome.saveAggregation()}"  action="#{aggregationHome.getOutcome()}"
                                          ajax="#{true}" type="submit"/>
                     </f:facet>
                     <f:facet name="right">

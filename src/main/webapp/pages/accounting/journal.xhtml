@@ -93,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:commandButton>
                         </f:facet>
                     </p:toolbar>
-                    <p:dataTable id="dataTable-records" widgetVar="dataTable_wv" lazy="#{true}"
+                    <p:dataTable id="dataTable-records" widgetVar="dataTable-records" lazy="#{true}"
                                  value="#{generalJournalHome.journal.records}" var="record"
                                  selection="#{generalJournalHome.selectedRecords}"
                                  rowKey="#{record.id}"

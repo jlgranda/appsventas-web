@@ -152,7 +152,7 @@
             <div class="Container100 Responsive100">
                 <div class="Card ShadowEffect">
                     <div class="dataTable_wrapper">
-                        <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}"
+                        <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{true}"
                                      value="#{securityGroupHome.lazyDataModel}" var="group"
                                      selection="#{securityGroupHome.selectedGroups}"
                                      rowKey="#{group.id}" 
@@ -196,21 +196,21 @@
                 $(document).ready(function () {
 
                     $("#globalFilter").keyup(function () {
-                        //onkeyup="PF('dataTable_wv').filter()" 
-                        //var dataTable = $('#dataTable_wv').dataTable();
+                        //onkeyup="PF('dataTable').filter()" 
+                        //var dataTable = $('#dataTable').dataTable();
                         //dataTable.fnFilter(this.value);
-                        var dataTable = PF('dataTable_wv');
+                        var dataTable = PF('dataTable');
                         dataTable.filter();
                     });
 
                     $("#pagination-next").click(function () {
-                        var dataTable = PF('dataTable_wv');
+                        var dataTable = PF('dataTable');
                         dataTable.getPaginator().nextLink.click();
                         //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
                     });
 
                     $("#pagination-previous").click(function () {
-                        var dataTable = PF('dataTable_wv');
+                        var dataTable = PF('dataTable');
                         dataTable.getPaginator().prevLink.click();
                         //$('#pagination-info').html(dataTable.page.info().start  + '-' + dataTable.page.info().end + ' de ' + dataTable.page.info().recordsTotal);
                     });

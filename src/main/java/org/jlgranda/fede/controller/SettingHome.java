@@ -19,6 +19,7 @@ package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.SettingService;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class SettingHome extends FedeController implements Serializable {
     private List<Setting> overwritableSettings = new ArrayList<>();
 
     private Map<String, String> cache = new HashMap<>();
-    
+
     @Inject
     private OrganizationData organizationData;
 
@@ -93,7 +94,7 @@ public class SettingHome extends FedeController implements Serializable {
             return cache.get(name);
         }
 
-        Setting s =this.getSetting(name, subject, this.organizationData.getOrganization());
+        Setting s = this.getSetting(name, subject, this.organizationData.getOrganization());
         if (s == null) { //No existe configuración de usuario, tomar la configuración global, sino el valor por defecto
             String value = getGlobalValue(name, defaultValue);
             cache.put(name, value);
@@ -118,7 +119,7 @@ public class SettingHome extends FedeController implements Serializable {
         QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
-    
+
     /**
      * Obtener todas las configuraciones del usuario
      *
@@ -131,7 +132,7 @@ public class SettingHome extends FedeController implements Serializable {
         QueryData<Setting> queryData = settingService.find(-1, -1, "label", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
-    
+
     /**
      * Obtener todas las configuraciones del usuario con raíz
      *
@@ -153,13 +154,13 @@ public class SettingHome extends FedeController implements Serializable {
     public void save() {
         try {
             settingService.save(getSetting().getId(), getSetting());
-            
+
             //Actualizar el cache
             this.cache.put(getSetting().getName(), getSetting().getValue());
-            
+
             //vaciar objeto en edición
             setSetting(settingService.createInstance());
-            
+
             addDefaultSuccessMessage();
 
         } catch (Exception e) {
@@ -180,13 +181,14 @@ public class SettingHome extends FedeController implements Serializable {
 
     /**
      * Retorna la configuración global para la organización
+     *
      * @param name
      * @param defaultValue
-     * @return 
+     * @return
      */
     public String getGlobalValue(String name, String defaultValue) {
         Long organizationId = null;
-        if (this.organizationData.getOrganization() != null){
+        if (this.organizationData.getOrganization() != null) {
             organizationId = this.organizationData.getOrganization().getId();
         }
         Setting s = settingService.findByNameAndOrganization(name, subject, organizationId);
@@ -196,14 +198,30 @@ public class SettingHome extends FedeController implements Serializable {
         }
         return s.getValue();
     }
-    
+
     protected List<Setting> findByCodeType(CodeType codeType) {
         Map<String, Object> filters = new HashMap<>();
         filters.put("codeType", codeType);
         QueryData<Setting> queryData = settingService.find(-1, -1, "category,value", QuerySortOrder.DESC, filters);
         return queryData.getResult();
     }
-    
+
+    public List<Setting> getDenominations(CodeType codeType) {
+        List<Setting> denominations = this.findByCodeType(codeType);
+        Collections.sort(denominations, (Setting sett, Setting other) -> sett.getCategory().compareTo(other.getCategory())); //Ordenar la lista de denominaciones según su tipo
+        for (int i = (denominations.size() - 1); i >= 0; i--) {
+            for (int j = 1; j <= i; j++) {
+                if ((new BigDecimal(denominations.get(j - 1).getValue())).compareTo(new BigDecimal(denominations.get(j).getValue())) == -1
+                        && denominations.get(j - 1).getCategory().equals(denominations.get(j).getCategory())) {
+                    Setting temp = denominations.get(j - 1);
+                    denominations.set((j - 1), denominations.get(j));
+                    denominations.set(j, temp);
+                }
+            }
+        }
+        return denominations;
+    }
+
     //<editor-fold defaultstate="collapsed" desc="SET Y GET">
     public List<Setting> getSettings() {
         return settings;
@@ -220,16 +238,16 @@ public class SettingHome extends FedeController implements Serializable {
             if (test != null) {
                 //El objeto configuración de usuario
                 this.setting = test;
-            } 
+            }
         } else if (settingId != null && this.setting == null) {
             //Cargar objeto setting por id, carga el objeto directamente.
             this.setting = settingService.find(settingId);
         }
         return this.setting;
     }
-    
+
     private Setting getSetting(String settingName, Subject subject, Organization organization) {
-        
+
         Setting settingRetornar = null;
         if (!Strings.isNullOrEmpty(settingName) && this.setting == null) {
             //Cargar objeto setting por nombre
@@ -248,7 +266,7 @@ public class SettingHome extends FedeController implements Serializable {
                     settingRetornar = buildSettingFrom(settingService.findByNameAndOrganization(settingName, null, null));
                 }
             }
-        } 
+        }
         return settingRetornar;
     }
 
@@ -301,7 +319,7 @@ public class SettingHome extends FedeController implements Serializable {
     public void setOverwritableSettings(List<Setting> overwritableSettings) {
         this.overwritableSettings = overwritableSettings;
     }
-    
+
     public void addOverwritableSettings(List<Setting> settings) {
         this.overwritableSettings.addAll(settings);
     }

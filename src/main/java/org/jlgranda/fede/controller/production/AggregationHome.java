@@ -23,6 +23,7 @@ import com.jlgranda.fede.ejb.sales.ProductCache;
 import java.awt.Event;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,8 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.math3.stat.interval.AgrestiCoullInterval;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.model.accounting.Record;
@@ -39,6 +42,7 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.primefaces.event.SelectEvent;
 import org.jlgranda.appsventas.data.AggregationData;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.production.Aggregation;
 import org.jlgranda.fede.model.production.AggregationDetail;
@@ -46,6 +50,7 @@ import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +86,8 @@ public class AggregationHome extends FedeController implements Serializable {
     private Long aggregationId;
     private Aggregation aggregation;
     private AggregationDetail aggregationDetail;
+    
+    private List<AggregationDetail> candidateAggregationDetail = new ArrayList<>();
 
     /**
      * UX.
@@ -108,7 +115,6 @@ public class AggregationHome extends FedeController implements Serializable {
     public Aggregation getAggregation() {
         if (this.aggregationId != null && this.aggregation != null && !this.aggregation.isPersistent()) {
             this.aggregation = aggregationService.find(this.aggregationId);
-            this.aggregation.setAggregationDetails(aggregationDetailService.findByAggregation(this.aggregation));
         }
         return this.aggregation;
     }
@@ -133,6 +139,16 @@ public class AggregationHome extends FedeController implements Serializable {
         this.aggregations = aggregations;
     }
 
+
+    public List<AggregationDetail> getCandidateAggregationDetail() {
+        return candidateAggregationDetail;
+    }
+
+    public void setCandidateAggregationDetail(List<AggregationDetail> candidateAggregationDetail) {
+        this.candidateAggregationDetail = candidateAggregationDetail;
+    }
+
+    
     public List<AggregationDetail> getSelectedAggregationDetails() {
         return selectedAggregationDetails;
     }
@@ -141,47 +157,102 @@ public class AggregationHome extends FedeController implements Serializable {
         this.selectedAggregationDetails = selectedAggregationDetails;
     }
 
+    @Override
     public List<SelectItem> getActions() {
         return actions;
     }
 
+    @Override
     public void setActions(List<SelectItem> actions) {
         this.actions = actions;
     }
 
     /**
      * METHODS.
+     * @throws java.lang.IllegalAccessException
+     * @throws java.lang.reflect.InvocationTargetException
      */
-    public void aggregationDetailAdd() {
-        if (this.aggregation.getProduct() != null) {
-            if (this.aggregationDetail.getProduct() != null && this.aggregationDetail.getQuantity() != null && this.aggregationDetail.getPriceUnit() != null) {
-                if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getQuantity()) == -1 && BigDecimal.ZERO.compareTo(this.aggregationDetail.getPriceUnit()) == -1) {
-                    this.aggregationDetail.setCost(this.aggregationDetail.getQuantity().multiply(this.aggregationDetail.getPriceUnit()));
-                    if (this.aggregation.getId() == null) {//Guardar primero la agregación, si esta es nula
-                        saveAggregation();
-                    }
-                    saveAggregationDetailValid();
-                }
-            } else {
-                addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("property.required.invalid.form"));
+    public boolean addAggregationDetail() throws IllegalAccessException, InvocationTargetException {
+        if (this.aggregationDetail.getProduct() == null) {
+            addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("common.requiredMessage"));
+            logger.error(I18nUtil.getMessages("common.selected.product.none"));
+            return false;
+        }
+        
+        if ( this.aggregationDetail.getQuantity() != null 
+                && this.aggregationDetail.getPriceUnit() != null ) {
+
+            if (BigDecimal.ZERO.compareTo(this.aggregationDetail.getQuantity()) == -1 && BigDecimal.ZERO.compareTo(this.aggregationDetail.getPriceUnit()) == -1) {
+                
+                AggregationDetail detail =  aggregationDetailService.createInstance();
+                detail.setProductId(this.aggregationDetail.getProduct().getId());
+                detail.setProduct(this.aggregationDetail.getProduct()); 
+                detail.setQuantity(this.aggregationDetail.getQuantity());
+                detail.setPriceUnit(this.aggregationDetail.getPriceUnit());
+                detail.setCost(this.aggregationDetail.getQuantity().multiply(this.aggregationDetail.getPriceUnit()));
+                
+                this.aggregation.addAggregationDetail(detail); //Agrega a la lista de detalles
+
+                this.aggregationDetail = aggregationDetailService.createInstance(); //Listo para nueva selección
+//                    if (!this.aggregation.isPersistent()) {//Guardar primero la agregación, si esta es nula
+//                        aggregationService.save(aggregation);
+//                    } else {
+//                        aggregationService.save(aggregation.getId(), aggregation);
+//                    }
+                //saveAggregationDetailValid();
             }
         } else {
-            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.inventory.product.main.required"));
+            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("property.required.invalid.form"));
         }
+        return true;
+    }
+    
+    public void editAggregationDetail(AggregationDetail detail){
+        this.aggregationDetail = detail; //En edición
+    }
+    
+    /**
+     * Marcar como borrado
+     * @param detail 
+     */
+    public void deleteAggregationDetail(AggregationDetail detail){
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< !!!" + detail);
+         
+        detail.setDeleted(Boolean.TRUE);
+        detail.setName(Strings.toUpperCase(Constantes.ESTADO_ELIMINADO + Constantes.SEPARADOR + detail.getProduct().getName())); //Registrar el producto que estaba referenciado
+        detail.setDescription(detail.getProduct().toString()); //Registrar el producto que estaba referenciado
+        detail.setProduct(null);
+//                    aggregationDetailService.save(instance.getId(), instance); //Actualizar la entidad
+//                    aggregation.removeAggregationDetail(instance); //Quitar de la vista
+        this.aggregation.addAggregationDetail(detail); //Reemplaza el detalle con el nuevo valor modificado para borrar
     }
 
-    private void saveAggregation() {
+    public void saveAggregation() {
+       
         if (this.aggregation.isPersistent()) {
+            
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+            System.out.println("GUARDANDO OBJETO PERSISTENTE: " + this.aggregation.getId());
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<");
+            //Recargar el objecto para actualizar
             this.aggregation.setLastUpdate(Dates.now());
+            aggregationService.save(this.aggregation.getId(), this.aggregation);
         } else {
             this.aggregation.setAuthor(subject);
             this.aggregation.setOwner(subject);
             this.aggregation.setOrganization(this.organizationData.getOrganization());
             this.aggregation.setName(this.aggregation.getProduct().getName());
+            //Remover la referencia a dettached entity
+            this.aggregation.getAggregationDetails().forEach(agd -> {
+                agd.setProduct(null);
+            });
+            aggregationService.save(this.aggregation);
         }
-        aggregationService.save(this.aggregation.getId(), this.aggregation);
-        setAggregationId(this.aggregation.getId());
-        getAggregation();
+        
+        //setAggregationId(this.aggregation.getId());
+        //getAggregation();
     }
 
     private void saveAggregationDetailValid() {
@@ -269,12 +340,12 @@ public class AggregationHome extends FedeController implements Serializable {
 
     private void initializeActions() {
         this.actions = new ArrayList<>();
-        SelectItem item = null;
-        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-        actions.add(item);
-
-        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
-        actions.add(item);
+//        SelectItem item = null;
+//        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+//        actions.add(item);
+//
+//        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
+//        actions.add(item);
     }
 
     public boolean isActionExecutable() {
@@ -289,7 +360,12 @@ public class AggregationHome extends FedeController implements Serializable {
             if ("borrar".equalsIgnoreCase(this.selectedAction)) {
                 for (AggregationDetail instance : getSelectedAggregationDetails()) {
                     instance.setDeleted(Boolean.TRUE);
-                    aggregationDetailService.save(instance.getId(), instance); //Actualizar la entidad
+                    instance.setName(Strings.toUpperCase(Constantes.ESTADO_ELIMINADO + Constantes.SEPARADOR + instance.getProduct().getName())); //Registrar el producto que estaba referenciado
+                    instance.setDescription(instance.getProduct().toString()); //Registrar el producto que estaba referenciado
+                    instance.setProduct(null);
+//                    aggregationDetailService.save(instance.getId(), instance); //Actualizar la entidad
+//                    aggregation.removeAggregationDetail(instance); //Quitar de la vista
+                    this.aggregation.addAggregationDetail(instance); //Reemplaza el detalle con el nuevo valor modificado para borrar
                 }
                 setOutcome("");
             }

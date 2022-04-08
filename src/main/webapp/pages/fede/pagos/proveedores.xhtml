@@ -89,7 +89,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-fluid">
                     <p:panel id="dataProveedor" rendered="#{!proveedorHome.formProveedor}"
                              class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                        <p:dataTable id="dataTable-providers" widgetVar="dataTable_wv" lazy="#{true}"
+                        <p:dataTable id="dataTable-providers" widgetVar="dataTable-providers" lazy="#{true}"
                                      value="#{proveedorHome.lazyDataModel}" var="proveedor"
                                      selection="#{proveedorHome.selectedProveedores}"
                                      rowKey="#{proveedor.id}"

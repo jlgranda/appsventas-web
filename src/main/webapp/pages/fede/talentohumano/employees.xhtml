@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  reflow="true" selection="#{employeeHome.selectedEmployees}" 
                                  rowKey="#{employee.id}" 
                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                 id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                 id="dataTable" widgetVar="dataTable" lazy="true">
                         <p:ajax event="rowSelect" listener="#{employeeHome.onRowSelect}"/>
                         <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                         <p:column headerText="#{i18n['common.names.full']}" sortBy="#{employee.owner.fullName}">

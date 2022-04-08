@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      reflow="true" selection="#{instanciaProcesoHome.selectedBussinesEntities}" 
                                      rowKey="#{instanciaProceso.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                     id="dataTable" widgetVar="dataTable" lazy="true">
                             <p:ajax event="rowSelect" listener="#{instanciaProcesoHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                             <p:column headerText="#{i18n['common.code']}" sortBy="#{instanciaProceso.code}">
