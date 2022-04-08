@@ -15,7 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -36,6 +37,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar id="topToolBar">
+                        <f:facet name="left">
+                            <!--<p:outputLabel class="Gray" value="#{i18n['common.find']} #{i18n['common.supplier']}:&nbsp;" for="@next"/>-->
+                            <!-- Lista de personas, decidir si es proveedor al seleccionar el item -->
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:button value="#{i18n['common.newa']}"
+                                          icon="pi pi-plus" styleClass="danger-btn"
+                                          outcome="aggregation"/>
+                        </f:facet>
+                    </p:toolbar>
+                </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <p:dataTable id="dataTable-aggregations" widgetVar="dataTable_wv" lazy="#{true}"
                                  value="#{aggregationHome.aggregations}" var="aggregation"
