@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/admin/template/template.jsf"/>
                     </div>
                     <div class="card card-w-title">
-                        <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}"
+                        <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{true}"
                                      value="#{templateHome.lazyDataModel}" var="_template" 
                                      selection="#{templateHome.selectedBussinesEntities}" 
                                      rowKey="#{_template.id}" 

@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      reflow="true" selection="#{employeeHome.employee.role}" 
                                      rowKey="#{role.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                     id="dataTable" widgetVar="dataTable" lazy="true">
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.name}" />

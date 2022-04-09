@@ -168,7 +168,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          reflow="true" selection="#{invoiceHome.selectedBussinesEntities}" 
                                          rowKey="#{invoice.id}" 
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                         id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                         id="dataTable" widgetVar="dataTable" lazy="true">
                                 <!--                            <p:ajax event="rowSelectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
                                                             <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
                                 <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>

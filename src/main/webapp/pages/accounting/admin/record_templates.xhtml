@@ -65,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <div class="card">
-                        <p:dataTable id="dataTable" widgetVar="dataTable_wv" lazy="#{true}" 
+                        <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{true}" 
                                      value="#{recordTemplateHome.lazyDataModel}" var="recordTemplate" 
                                      selection="#{recordTemplateHome.selectedRecordTemplates}"
                                      rowKey="#{recordTemplate.id}" 
@@ -109,7 +109,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:selectOneMenu>
                         </div>
                         <div class="ui-g-12 ui-lg-12 ui-md-12">
-                            <p:dataTable id="dataTableImport" widgetVar="dataTable_wvImport" lazy="#{true}" 
+                            <p:dataTable id="dataTableImport" widgetVar="dataTableImport" lazy="#{true}" 
                                          value="#{recordTemplateHome.lazyDataModel}" var="recordTemplate" 
                                          selection="#{recordTemplateHome.selectedRecordTemplates}"
                                          rowKey="#{recordTemplate.id}" 

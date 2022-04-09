@@ -969,6 +969,9 @@ input[type="text"], input[type="password"], textarea{
 .Wid10{
     width:10%;
 }
+.Wid15{
+    width:15%;
+}
 .Wid5{
     width:5%;
 }
@@ -1032,12 +1035,32 @@ input[type="text"], input[type="password"], textarea{
 .MarTopPerc50{
     margin-top:50%;
 }
+.MarRightPerc10{
+    margin-right:10%;
+}
+.MarRightPerc15{
+    margin-right:15%;
+}
+.MarRightPerc20{
+    margin-right:20%;
+}
+.MarRightPerc30{
+    margin-right:30%;
+}
 
 .MarAuto{
     margin-left:auto;
     margin-right:auto;
 }
-
+.MarTop2{
+    margin-top:2px;
+}
+.MarTop3{
+    margin-top:3px;
+}
+.MarTop4{
+    margin-top:4px;
+}
 .MarTop5{
     margin-top:5px;
 }
@@ -1078,7 +1101,6 @@ input[type="text"], input[type="password"], textarea{
 .MarRight20{
     margin-right:20px;
 }
-
 
 /* Paddings */
 .NoPadding{
@@ -1211,6 +1233,16 @@ input[type="text"], input[type="password"], textarea{
 }
 .PadWithBorder10{
     border:solid 10px transparent;
+}
+
+/* Border */
+.NoBorder{
+    border-color: transparent !important;
+}
+
+/* Background */
+.NoBackground{
+    background-color: transparent !important;
 }
 
 /* Box Sizing */
@@ -1804,67 +1836,6 @@ input[type="text"], input[type="password"], textarea{
 }
 .Hei10{
     height:10%;
-}
-
-/* Margins */
-.MarTopPerc5{
-    margin-top:5%;
-}
-.MarTopPerc10{
-    margin-top:10%;
-}
-.MarTopPerc20{
-    margin-top:20%;
-}
-.MarTopPerc30{
-    margin-top:30%;
-}
-.MarTopPerc40{
-    margin-top:40%;
-}
-.MarTopPerc50{
-    margin-top:50%;
-}
-
-.MarAuto{
-    margin-left:auto;
-    margin-right:auto;
-}
-
-.MarTop5{
-    margin-top:5px;
-}
-.MarTop10{
-    margin-top:10px;
-}
-.MarTop20{
-    margin-top:20px;
-}
-.MarTop30{
-    margin-top:30px;
-}
-.MarTop40{
-    margin-top:40px;
-}
-.MarTop50{
-    margin-top:50px;
-}
-
-.MarTopQuarter{
-    margin-top:25%;
-}
-.MarTopHalf{
-    margin-top:50%;
-}
-
-.MarBot10{
-    margin-bottom:10px;
-}
-.MarRight10{
-    margin-right:10px;
-}
-.MarRight20{
-    margin-right:20px;
 }
 
 /* Containers */
