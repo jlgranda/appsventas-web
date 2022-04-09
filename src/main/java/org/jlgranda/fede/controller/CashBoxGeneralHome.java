@@ -16,12 +16,18 @@
  */
 package org.jlgranda.fede.controller;
 
+import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.CashBoxDetailService;
 import com.jlgranda.fede.ejb.CashBoxGeneralService;
 import com.jlgranda.fede.ejb.CashBoxPartialService;
+import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
+import com.jlgranda.fede.ejb.RecordService;
+import com.jlgranda.fede.ejb.RecordTemplateService;
+import com.jlgranda.fede.ejb.accounting.AccountCache;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,6 +35,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -39,10 +47,13 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.CashBoxDetail;
 import org.jlgranda.fede.model.accounting.CashBoxGeneral;
 import org.jlgranda.fede.model.accounting.CashBoxPartial;
+import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
+import org.jlgranda.fede.model.accounting.RecordTemplate;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
@@ -50,8 +61,12 @@ import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import org.jpapi.util.Strings;
+import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -60,6 +75,9 @@ import org.primefaces.event.SelectEvent;
 @Named
 @ViewScoped
 public class CashBoxGeneralHome extends FedeController implements Serializable {
+
+    private static final long serialVersionUID = -1007161141552849702L;
+    Logger logger = LoggerFactory.getLogger(CashBoxHome.class);
 
     @Inject
     private Subject subject;
@@ -80,6 +98,16 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private InvoiceService invoiceService;
     @EJB
     private RecordDetailService recordDetailService;
+    @EJB
+    private AccountService accountService;
+    @EJB
+    AccountCache accountCache;
+    @EJB
+    private GeneralJournalService generalJournalService;
+    @EJB
+    private RecordService recordService;
+    @EJB
+    private RecordTemplateService recordTemplateService;
 
     /**
      * EDIT OBJECT.
@@ -96,15 +124,6 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private BigDecimal salesNet;//Dinero de ventas sólo en efectivo
     private BigDecimal purchasesNet;//Dinero de compras sólo en efectivo
     private BigDecimal transactionNet;//Dinero de otras transacciones sólo en efectivo
-
-    //Calcular el monto y panel de depósito
-    private boolean disabledButtonBreakdown;
-    private boolean activePanelDeposit;
-    private boolean activeSelectDeposit;
-    private boolean activeButtonSelectDeposit;
-    private Account selectedAccount;
-
-    //Calcular el resumen del cierre de caja
     private BigDecimal salesEffective;
     private BigDecimal salesCreditCollect;
 //    private BigDecimal salesCredit;
@@ -114,44 +133,54 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
 //    private BigDecimal purchasesCredit;
     private BigDecimal transactionInput;
     private BigDecimal transactionOutput;
-
-    //Obtener saldo inicial del cierre de caja anterior
+    private Account transactionAccount;
     private BigDecimal cashPrevious; //Saldo de ejercicion anterior
-
-    //Calcular el dinero obtenido del cierre de caja
     private BigDecimal cashCurrent; //Efectivo actual
 
     //Desglosar el efectivo de Caja
     private List<CashBoxDetail> cashBoxBills;
     private List<CashBoxDetail> cashBoxMoneys;
+
+    //Manejo de componentes
+    private boolean disabledButtonBreakdown;
     private boolean activePanelBreakdown;
-
-    //Obtener lista de CashBoxClosed
-    private List<CashBoxPartial> cashBoxsClosed;
-    private List<CashBoxDetail> cashBoxsClosedBills;
-    private List<CashBoxDetail> cashBoxsClosedMoneys;
-    private CashBoxPartial cashBoxOpen;
     private boolean disabledButtonCloseCashBoxGeneral;
+    private boolean cashBoxInit; //Verifica si es el primer cashBoxGeneral de la base
+    private Long cashBoxPartialInitId;
+    private boolean activePanelInit;
+    private boolean recordCompleto;
 
-    //Calcular el dinero restante luego del depósito del Cierre de Caja
-    private BigDecimal saldoCashFund;
-    private boolean activePanelBreakdownFund;
-    private List<CashBoxDetail> cashBoxsInitialBills;
-    private List<CashBoxDetail> cashBoxsInitialMoneys;
-    private List<CashBoxGeneral> cashBoxGeneralInitial;
-    private CashBoxPartial cashBoxInitialFinish;
-    private int activeIndex;
-    private boolean activePanelVerification;
-
+//    private boolean activePanelDeposit;
+//    private boolean activeSelectDeposit;
+//    private boolean activeButtonSelectDeposit;
+    //Obtener lista de CashBoxClosed
+//    private List<CashBoxPartial> cashBoxsClosed;
+//    private List<CashBoxDetail> cashBoxsClosedBills;
+//    private List<CashBoxDetail> cashBoxsClosedMoneys;
+//    private CashBoxPartial cashBoxOpen;
+//
+//    //Calcular el dinero restante luego del depósito del Cierre de Caja
+//    private BigDecimal saldoCashFund;
+//    private boolean activePanelBreakdownFund;
+//    private List<CashBoxDetail> cashBoxsInitialBills;
+//    private List<CashBoxDetail> cashBoxsInitialMoneys;
+//    private List<CashBoxGeneral> cashBoxGeneralInitial;
+//    private CashBoxPartial cashBoxInitialFinish;
+//    private int activeIndex;
+//    private boolean activePanelVerification;
+//
     @PostConstruct
     private void init() {
+        setCashBoxInit(cashBoxGeneralService.isInitialByOrganization(this.organizationData.getOrganization()));
+
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(getEnd()));
 
         setCashBoxGeneral(cashBoxGeneralService.createInstance());
         setCashBoxPartial(cashBoxPartialService.createInstance());
-        getTodayCashBoxGeneralId();
 
+        getTodayCashBoxGeneralId();
+        getCurrentCashBoxPartial();
         initializeVars();
         getCalculeSummaryCash(getStart(), getEnd());
 
@@ -159,14 +188,21 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     }
 
     public void getTodayCashBoxGeneralId() {
-        if (this.cashBoxGeneralId == null) {
+        if (getCashBoxGeneralId() == null) {
             setCashBoxGeneralId(cashBoxGeneralService.findIdByOrganizationAndCreatedOn(this.organizationData.getOrganization(), Dates.now(), Dates.now()));
             getCashBoxGeneral();
         }
     }
 
-    public void getLastCashBoxGeneralTotal() {
-        setCashPrevious(cashBoxGeneralService.findTotalBreakdownFinalByOrganizationAndLastCreatedOn(this.organizationData.getOrganization(), Dates.now()));
+    public void getCurrentCashBoxPartial() {
+        if (!this.cashBoxGeneral.getCashBoxPartials().isEmpty()) {
+            this.cashBoxGeneral.getCashBoxPartials().forEach(partial -> {
+                if (Objects.equals(Boolean.FALSE, partial.getStatusComplete())) {
+                    setCashBoxPartial(cashBoxPartialService.find(partial.getId()));
+                    getBillsMoneysList();
+                }
+            });
+        }
     }
 
     public Long getCashBoxGeneralId() {
@@ -178,6 +214,9 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     }
 
     public CashBoxGeneral getCashBoxGeneral() {
+        if (this.cashBoxGeneralId != null && !this.cashBoxGeneral.isPersistent()) {
+            this.cashBoxGeneral = cashBoxGeneralService.find(this.cashBoxGeneralId);
+        }
         return cashBoxGeneral;
     }
 
@@ -186,9 +225,6 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     }
 
     public CashBoxPartial getCashBoxPartial() {
-        if (this.cashBoxGeneralId != null && !this.cashBoxGeneral.isPersistent()) {
-            this.cashBoxGeneral = cashBoxGeneralService.find(this.cashBoxGeneralId);
-        }
         return cashBoxPartial;
     }
 
@@ -207,13 +243,70 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     /**
      * METHODS.
      */
-    public void saveCashBoxPartial() {
+    public void saveCashBoxGeneral() {
+
+        if (this.cashBoxGeneral.isPersistent()) {
+            this.cashBoxGeneral.setLastUpdate(Dates.now());
+            this.cashBoxGeneral.setAuthor(this.subject); //Actualizar, para saber que sujeto lo cierra por última vez
+        } else {
+            this.cashBoxGeneral.setAuthor(this.subject);
+            this.cashBoxGeneral.setOwner(this.subject);
+            this.cashBoxGeneral.setOrganization(this.organizationData.getOrganization());
+        }
+
+        updateCashBoxPartialProperties();
+
+        this.cashBoxGeneral.addCashBoxPartial(this.cashBoxPartial);//Añadir el cashBoxPartial al cashBoxGeneral
+
+        this.cashBoxGeneral.setCashGeneral(this.cashBoxPartial.getCashPartial());
+        this.cashBoxGeneral.setTotalBreakdown(this.cashBoxPartial.getTotalCashBreakdown());
+        this.cashBoxGeneral.setMissCash(this.cashBoxPartial.getMissCash());
+        this.cashBoxGeneral.setExcessCash(this.cashBoxPartial.getExcessCash());
+        this.cashBoxGeneral.setCashFinally(this.cashBoxPartial.getCashFinally());
+        this.cashBoxGeneral.setName(I18nUtil.getMessages("app.fede.accounting.close.cash.of", "" + this.organizationData.getOrganization().getInitials(), Dates.toDateString(Dates.now())));
+        cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.save.message"));
     }
 
     /**
      * METHODS UTIL.
      */
+    public void closeCashBoxPartial() {
+        this.cashBoxPartial.setStatusComplete(Boolean.TRUE); //Marcar como cerrado/completado el cashBoxPartial
+        saveCashBoxGeneral();
+    }
+
+    public void closeCashBoxPartialInit() {
+        if (Objects.equals(Boolean.TRUE, isCashBoxInit())) { //Enserar en 0 los datos de exceso o faltante
+            this.cashBoxPartial.setStatusComplete(Boolean.TRUE); //Marcar como cerrado/completado el cashBoxPartial
+            this.cashBoxPartial.setExcessCash(BigDecimal.ZERO);
+            this.cashBoxPartial.setMissCash(BigDecimal.ZERO);
+            saveCashBoxGeneral();
+            setCashBoxPartialInitId(this.cashBoxGeneral.getCashBoxPartials().get(0).getId());
+            //Solo para este caso, se realiza el depósito automático
+            this.cashBoxPartial.setAccountDeposit(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA", this.organizationData.getOrganization()));
+            registerRecordInJournal();
+            setCashBoxInit(Boolean.FALSE);
+        }
+    }
+
     public void closeCashBoxGeneral() {
+        updateCashBoxPartialStatusFinally();//Marcar el último parcial como final
+        this.cashBoxGeneral.setStatusComplete(Boolean.TRUE);
+        cashBoxGeneralService.save(this.cashBoxGeneralId, this.cashBoxGeneral);
+        setDisabledButtonCloseCashBoxGeneral(Boolean.TRUE);
+        setDisabledButtonBreakdown(Boolean.TRUE);
+    }
+
+    private void updateCashBoxPartialStatusFinally() {
+        if (!this.cashBoxGeneral.getCashBoxPartials().isEmpty()) {
+            for (int i = 0; i < this.cashBoxGeneral.getCashBoxPartials().size(); i++) {
+                if (this.cashBoxGeneral.getCashBoxPartials().get(i).getPriority().equals(this.cashBoxGeneral.getCashBoxPartials().size() - 1)) {
+                    //Actualizar registro
+                    this.cashBoxGeneral.getCashBoxPartials().get(i).setStatusFinally(Boolean.TRUE);
+                }
+            }
+        }
     }
 
     private void initializeVars() {
@@ -231,14 +324,35 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         setTransactionOutput(BigDecimal.ZERO);
         setCashCurrent(BigDecimal.ZERO);
 
-        setDisabledButtonBreakdown(validActiveButtonBreakdown());
-        setActivePanelBreakdown(Boolean.FALSE); //Iniciar con el panel de desglose oculto
+        setDisabledButtonBreakdown(validDisabledButtonBreakdown());
+        setActivePanelBreakdown(validActivePanelBreakdown());
+        setDisabledButtonCloseCashBoxGeneral(validDisabledButtonCloseCashBoxGeneral());
     }
 
-    private boolean validActiveButtonBreakdown() {
+    private boolean validDisabledButtonBreakdown() {
         if (this.cashBoxPartial.getId() != null
-                && !CashBoxPartial.StatusPriority.FINAL.equals(this.cashBoxPartial.getStatus_priority())
-                && !CashBoxPartial.Status.OPEN.equals(this.cashBoxPartial.getStatusCashBoxPartial())) {
+                && !this.cashBoxPartial.getStatusComplete()) {
+            return true;
+        } else if (this.cashBoxGeneral.getStatusComplete()) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validActivePanelBreakdown() {
+        if (this.cashBoxPartial.getId() != null
+                && !this.cashBoxPartial.getStatusComplete()) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validDisabledButtonCloseCashBoxGeneral() {
+        if (this.cashBoxGeneral.getId() == null || this.cashBoxGeneral.getCashBoxPartials().isEmpty()
+                || (this.cashBoxPartial.getId() != null
+                && !this.cashBoxPartial.getStatusComplete())) {
+            return true;
+        } else if (this.cashBoxGeneral.getStatusComplete()) {
             return true;
         }
         return false;
@@ -251,11 +365,11 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         setActivePanelBreakdown(Boolean.TRUE); //Mostrar el Panel de Detalle de CashBox instanciado
     }
 
-    /**
-     * Calcular el monto de dinero en cada evento.
-     *
-     * @param event
-     */
+    public void initRegister() {
+        asignedCashBoxPartialProperties(); //Cargar la data inicial para el cashBoxPartial
+        setActivePanelInit(Boolean.TRUE); //Mostrar el Panel de Inicio para el primer cashBoxPartial
+    }
+
     public void onRowEditCashBoxDetail(RowEditEvent<CashBoxDetail> event) {
         if (event.getObject() != null) {
             event.getObject().setAmount(event.getObject().getValuer().multiply(BigDecimal.valueOf(event.getObject().getQuantity())));
@@ -264,18 +378,26 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     }
 
     public void onRowCancelCashBoxDetail(RowEditEvent<CashBoxDetail> event) {
-        System.out.println("onRowCancelCashBoxDetail::: " + event);
+    }
+
+    public void updateCashBoxPartialProperties() {
+        if (this.cashBoxPartial.isPersistent()) {
+            this.cashBoxPartial.setLastUpdate(Dates.now());
+        } else {
+            this.cashBoxPartial.setAuthor(this.subject);
+            this.cashBoxPartial.setOwner(this.subject);
+            this.cashBoxPartial.setName(I18nUtil.getMessages("app.fede.accounting.close.cash.of", "" + this.cashBoxPartial.getOwner().getFullName(), Dates.toDateString(Dates.now())));
+        }
     }
 
     public void updateCashBoxDetail(CashBoxDetail updateCashBoxDetail) {
         if (!this.cashBoxPartial.getCashBoxDetails().isEmpty()) {
             for (int i = 0; i < this.cashBoxPartial.getCashBoxDetails().size(); i++) {
-                if (updateCashBoxDetail.getDenomination_type().equals(this.cashBoxPartial.getCashBoxDetails().get(i).getDenomination_type())
+                if (updateCashBoxDetail.getDenominationType().equals(this.cashBoxPartial.getCashBoxDetails().get(i).getDenominationType())
                         && updateCashBoxDetail.getDenomination().equals(this.cashBoxPartial.getCashBoxDetails().get(i).getDenomination())) {
                     //Actualizar registro
                     this.cashBoxPartial.getCashBoxDetails().get(i).setQuantity(updateCashBoxDetail.getQuantity());
                     this.cashBoxPartial.getCashBoxDetails().get(i).setAmount(updateCashBoxDetail.getAmount());
-                    System.out.println("updateCashBoxDetail::: " + this.cashBoxPartial.getCashBoxDetails().get(i));
                     recalculatedTotals();
                 }
             }
@@ -285,24 +407,25 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private void recalculatedTotals() {
         resetVariablesTotals();
         this.cashBoxPartial.setCashPartial(getCashCurrent());//Dinero en efectivo que marca según libros hasta ese momento.
-        this.cashBoxPartial.setTotalcashBills(getSubTotals(this.cashBoxPartial.getCashBoxDetails(), CashBoxDetail.DenominationType.BILL));
-        this.cashBoxPartial.setTotalcashMoneys(getSubTotals(this.cashBoxPartial.getCashBoxDetails(), CashBoxDetail.DenominationType.MONEY));
-        this.cashBoxPartial.setTotalCashBreakdown(this.cashBoxPartial.getTotalcashBills().add(this.cashBoxPartial.getTotalcashMoneys())); //Dinero que ha sido desglosado, existente.
+        this.cashBoxPartial.setTotalCashBills(getSubTotals(this.cashBoxPartial.getCashBoxDetails(), CashBoxDetail.DenominationType.BILL));
+        this.cashBoxPartial.setTotalCashMoneys(getSubTotals(this.cashBoxPartial.getCashBoxDetails(), CashBoxDetail.DenominationType.MONEY));
+        this.cashBoxPartial.setTotalCashBreakdown(this.cashBoxPartial.getTotalCashBills().add(this.cashBoxPartial.getTotalCashMoneys())); //Dinero que ha sido desglosado, existente.
+        this.cashBoxPartial.setCashFinally(this.cashBoxPartial.getTotalCashBreakdown());
         recalculateBalanceCashBoxPartial(this.cashBoxPartial.getCashPartial());
     }
 
     private void resetVariablesTotals() {
-        this.cashBoxPartial.setTotalcashBills(BigDecimal.ZERO);
-        this.cashBoxPartial.setTotalcashMoneys(BigDecimal.ZERO);
+        this.cashBoxPartial.setTotalCashBills(BigDecimal.ZERO);
+        this.cashBoxPartial.setTotalCashMoneys(BigDecimal.ZERO);
         this.cashBoxPartial.setCashPartial(BigDecimal.ZERO);
-        this.cashBoxPartial.setMissCashPartial(BigDecimal.ZERO);
-        this.cashBoxPartial.setExcessCashPartial(BigDecimal.ZERO);
+        this.cashBoxPartial.setMissCash(BigDecimal.ZERO);
+        this.cashBoxPartial.setExcessCash(BigDecimal.ZERO);
     }
 
     private BigDecimal getSubTotals(List<CashBoxDetail> list, CashBoxDetail.DenominationType denominationType) {
         Double subtotal = 0.00;
         subtotal = list.stream()
-                .filter(d -> denominationType.equals(d.getDenomination_type()))
+                .filter(d -> denominationType.equals(d.getDenominationType()))
                 .mapToDouble(d -> d.getAmount().doubleValue())
                 .sum();
         return new BigDecimal(subtotal);
@@ -311,26 +434,25 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private void recalculateBalanceCashBoxPartial(BigDecimal currentCash) {
         switch (this.cashBoxPartial.getTotalCashBreakdown().compareTo(currentCash)) {
             case 0:
-                this.cashBoxPartial.setMissCashPartial(BigDecimal.ZERO);
-                this.cashBoxPartial.setExcessCashPartial(BigDecimal.ZERO);
+                this.cashBoxPartial.setMissCash(BigDecimal.ZERO);
+                this.cashBoxPartial.setExcessCash(BigDecimal.ZERO);
                 break;
             case -1:
-                this.cashBoxPartial.setMissCashPartial(this.cashBoxPartial.getTotalCashBreakdown().subtract(currentCash));
-                this.cashBoxPartial.setExcessCashPartial(BigDecimal.ZERO);
+                this.cashBoxPartial.setMissCash(this.cashBoxPartial.getTotalCashBreakdown().subtract(currentCash));
+                this.cashBoxPartial.setExcessCash(BigDecimal.ZERO);
                 break;
             case 1:
-                this.cashBoxPartial.setMissCashPartial(BigDecimal.ZERO);
-                this.cashBoxPartial.setExcessCashPartial(this.cashBoxPartial.getTotalCashBreakdown().subtract(currentCash));
+                this.cashBoxPartial.setMissCash(BigDecimal.ZERO);
+                this.cashBoxPartial.setExcessCash(this.cashBoxPartial.getTotalCashBreakdown().subtract(currentCash));
                 break;
             default:
                 break;
         }
-        this.cashBoxPartial.setMissCashPartial(this.cashBoxPartial.getMissCashPartial().multiply(BigDecimal.valueOf(-1)));//Guardar valores positivos
+        this.cashBoxPartial.setMissCash(this.cashBoxPartial.getMissCash().multiply(BigDecimal.valueOf(-1)));//Guardar valores positivos
     }
 
     private void asignedCashBoxPartialProperties() {
         this.cashBoxPartial.setPriority(cashBoxPartialService.getPriority(this.cashBoxGeneral));
-        this.cashBoxPartial.setPriority_order(cashBoxPartialService.getPriorityOrder(this.cashBoxPartial));
 
         List<Setting> denominations = settingHome.getDenominations(CodeType.DENOMINATION);
         if (!denominations.isEmpty() && this.cashBoxPartial.getCashBoxDetails().isEmpty()) {
@@ -339,23 +461,17 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
                 return d;
             }).map(d -> {
                 if (d.getCategory().equals(CashBoxDetail.DenominationType.BILL.toString())) {
-                    this.cashBoxDetail.setDenomination_type(CashBoxDetail.DenominationType.BILL);
+                    this.cashBoxDetail.setDenominationType(CashBoxDetail.DenominationType.BILL);
                 } else if (d.getCategory().equals(CashBoxDetail.DenominationType.MONEY.toString())) {
-                    this.cashBoxDetail.setDenomination_type(CashBoxDetail.DenominationType.MONEY);
+                    this.cashBoxDetail.setDenominationType(CashBoxDetail.DenominationType.MONEY);
                 }
                 return d;
             }).map(d -> {
                 this.cashBoxDetail.setDenomination(d.getLabel());
                 return d;
             }).map(d -> {
-                this.cashBoxDetail.setQuantity(0L);
-                return d;
-            }).map(d -> {
                 this.cashBoxDetail.setValuer(new BigDecimal(d.getValue()));
                 return d;
-            }).map(_item -> {
-                this.cashBoxDetail.setAmount(this.cashBoxDetail.getValuer().multiply(BigDecimal.valueOf(this.cashBoxDetail.getQuantity())));
-                return _item;
             }).forEachOrdered(_item -> {
                 this.cashBoxPartial.addCashBoxDetail(this.cashBoxDetail);//Agregar el CashBoxDetail al CashBox instanciado
             });
@@ -365,21 +481,37 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     }
 
     private void getBillsMoneysList() {
-        setCashBoxBills(new ArrayList<>());
-        setCashBoxMoneys(new ArrayList<>());
-        if (!this.cashBoxPartial.getCashBoxDetails().isEmpty()) {
-            this.cashBoxPartial.getCashBoxDetails().forEach(cashboxDetail -> {
-                if (cashboxDetail.getDenomination_type().equals(CashBoxDetail.DenominationType.BILL)) {
-                    getCashBoxBills().add(cashboxDetail);
-                } else if (cashboxDetail.getDenomination_type().equals(CashBoxDetail.DenominationType.MONEY)) {
-                    getCashBoxMoneys().add(cashboxDetail);
+        setCashBoxBills(getCashBoxDetailsByDenominationType(this.cashBoxPartial.getCashBoxDetails(), CashBoxDetail.DenominationType.BILL));
+        setCashBoxMoneys(getCashBoxDetailsByDenominationType(this.cashBoxPartial.getCashBoxDetails(), CashBoxDetail.DenominationType.MONEY));
+    }
+
+    public List<CashBoxDetail> getCashBoxDetailsByDenominationType(List<CashBoxDetail> list, CashBoxDetail.DenominationType denominationType) {
+        List<CashBoxDetail> details = new ArrayList<>();
+        if (denominationType != null && list != null && !list.isEmpty()) {
+            list.forEach(d -> {
+                if (d.getDenominationType().equals(denominationType)) {
+                    details.add(d);
                 }
             });
         }
+        return details;
+    }
+
+    public List<CashBoxPartial> getCashBoxPartialsCompleted(List<CashBoxPartial> list) {
+        List<CashBoxPartial> partials = new ArrayList<>();
+        if (list != null && !list.isEmpty()) {
+            list.forEach(p -> {
+                if (Objects.equals(Boolean.TRUE, p.getStatusComplete())) {
+                    partials.add(p);
+                }
+            });
+        }
+        return partials;
     }
 
     public void getCalculeSummaryCash(Date _start, Date _end) {
-        getLastCashBoxGeneralTotal();
+
+        setCashPrevious(cashBoxGeneralService.findTotalBreakdownFinalByOrganizationAndLastCreatedOn(this.organizationData.getOrganization(), Dates.now()));
 
         List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesSourceMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
         objects.stream().forEach((Object object) -> {
@@ -423,13 +555,14 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
                 setPurchasesCreditPaid((BigDecimal) object);
             }
         });
-        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, this.selectedAccount, RecordDetail.RecordTDetailType.DEBE, _start, _end, this.organizationData.getOrganization());
+        setTransactionAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA DIA", this.organizationData.getOrganization()));
+        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, getTransactionAccount(), RecordDetail.RecordTDetailType.DEBE, _start, _end, this.organizationData.getOrganization());
         objects.stream().forEach((Object object) -> {
             if (object != null) {
                 setTransactionInput((BigDecimal) object);
             }
         });
-        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, this.selectedAccount, RecordDetail.RecordTDetailType.HABER, _start, _end, this.organizationData.getOrganization());
+        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, getTransactionAccount(), RecordDetail.RecordTDetailType.HABER, _start, _end, this.organizationData.getOrganization());
         objects.stream().forEach((Object object) -> {
             if (object != null) {
                 setTransactionOutput((BigDecimal) object);
@@ -440,6 +573,59 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         setTransactionNet(getTransactionInput().subtract(getTransactionOutput()));//Suma de transacciones en caja
         setCashCurrent(getSalesNet().subtract(getPurchasesNet()).add(getTransactionNet())); //Total dinero en efectivo de Caja
         setCashCurrent(getCashCurrent().add(getCashPrevious())); //Aumentar el dinero previo de la caja;
+    }
+
+    private void registerRecordInJournal() {
+        setReglas(new ArrayList<>());
+        setAccountingEnabled(isCashBoxInit());
+        if (isAccountingEnabled()) {
+            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocajadiainicial", "REGISTRO_CAJA_DIA_INICIAL"));
+
+            List<Record> records = new ArrayList<>();
+            getReglas().forEach(regla -> {
+                Record r = aplicarReglaNegocio(regla, this.cashBoxPartial);
+                if (r != null) {
+                    records.add(r);
+                }
+            });
+
+            if (!records.isEmpty()) {
+                //La regla compiló bien
+                String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", I18nUtil.getMessages("app.fede.accounting.journal"));
+                String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+
+                //El General Journal del día
+                if (generalJournal != null) {
+                    for (Record rcr : records) {
+                        setRecordCompleto(Boolean.TRUE);
+
+                        rcr.setCode(UUID.randomUUID().toString());
+
+                        rcr.setOwner(this.subject);
+                        rcr.setAuthor(this.subject);
+
+                        rcr.setGeneralJournalId(generalJournal.getId());
+
+                        //Corregir objetos cuenta en los detalles
+                        rcr.getRecordDetails().forEach(rcrd -> {
+                            rcrd.setLastUpdate(Dates.now());
+                            rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
+                            if (rcrd.getAccount() == null) {
+                                setRecordCompleto(Boolean.FALSE);
+                            }
+                        });
+
+                        //Persistencia
+                        if (Objects.equals(Boolean.TRUE, isRecordCompleto())) {
+                            rcr = recordService.save(rcr);
+                        } else {
+                            this.addSuccessMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("No fue posible actualizar el Efectivo Actual en Caja."));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public BigDecimal getSalesNet() {
@@ -464,38 +650,6 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
 
     public void setDisabledButtonBreakdown(boolean disabledButtonBreakdown) {
         this.disabledButtonBreakdown = disabledButtonBreakdown;
-    }
-
-    public boolean isActivePanelDeposit() {
-        return activePanelDeposit;
-    }
-
-    public void setActivePanelDeposit(boolean activePanelDeposit) {
-        this.activePanelDeposit = activePanelDeposit;
-    }
-
-    public boolean isActiveSelectDeposit() {
-        return activeSelectDeposit;
-    }
-
-    public void setActiveSelectDeposit(boolean activeSelectDeposit) {
-        this.activeSelectDeposit = activeSelectDeposit;
-    }
-
-    public boolean isActiveButtonSelectDeposit() {
-        return activeButtonSelectDeposit;
-    }
-
-    public void setActiveButtonSelectDeposit(boolean activeButtonSelectDeposit) {
-        this.activeButtonSelectDeposit = activeButtonSelectDeposit;
-    }
-
-    public Account getSelectedAccount() {
-        return selectedAccount;
-    }
-
-    public void setSelectedAccount(Account selectedAccount) {
-        this.selectedAccount = selectedAccount;
     }
 
     public BigDecimal getSalesEffective() {
@@ -568,6 +722,14 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.transactionOutput = transactionOutput;
     }
 
+    public Account getTransactionAccount() {
+        return transactionAccount;
+    }
+
+    public void setTransactionAccount(Account transactionAccount) {
+        this.transactionAccount = transactionAccount;
+    }
+
     public BigDecimal getTransactionNet() {
         return transactionNet;
     }
@@ -616,38 +778,6 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.activePanelBreakdown = activePanelBreakdown;
     }
 
-    public List<CashBoxPartial> getCashBoxsClosed() {
-        return cashBoxsClosed;
-    }
-
-    public void setCashBoxsClosed(List<CashBoxPartial> cashBoxsClosed) {
-        this.cashBoxsClosed = cashBoxsClosed;
-    }
-
-    public List<CashBoxDetail> getCashBoxsClosedBills() {
-        return cashBoxsClosedBills;
-    }
-
-    public void setCashBoxsClosedBills(List<CashBoxDetail> cashBoxsClosedBills) {
-        this.cashBoxsClosedBills = cashBoxsClosedBills;
-    }
-
-    public List<CashBoxDetail> getCashBoxsClosedMoneys() {
-        return cashBoxsClosedMoneys;
-    }
-
-    public void setCashBoxsClosedMoneys(List<CashBoxDetail> cashBoxsClosedMoneys) {
-        this.cashBoxsClosedMoneys = cashBoxsClosedMoneys;
-    }
-
-    public CashBoxPartial getCashBoxOpen() {
-        return cashBoxOpen;
-    }
-
-    public void setCashBoxOpen(CashBoxPartial cashBoxOpen) {
-        this.cashBoxOpen = cashBoxOpen;
-    }
-
     public boolean isDisabledButtonCloseCashBoxGeneral() {
         return disabledButtonCloseCashBoxGeneral;
     }
@@ -656,68 +786,36 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.disabledButtonCloseCashBoxGeneral = disabledButtonCloseCashBoxGeneral;
     }
 
-    public BigDecimal getSaldoCashFund() {
-        return saldoCashFund;
+    public boolean isCashBoxInit() {
+        return cashBoxInit;
     }
 
-    public void setSaldoCashFund(BigDecimal saldoCashFund) {
-        this.saldoCashFund = saldoCashFund;
+    public void setCashBoxInit(boolean cashBoxInit) {
+        this.cashBoxInit = cashBoxInit;
     }
 
-    public boolean isActivePanelBreakdownFund() {
-        return activePanelBreakdownFund;
+    public Long getCashBoxPartialInitId() {
+        return cashBoxPartialInitId;
     }
 
-    public void setActivePanelBreakdownFund(boolean activePanelBreakdownFund) {
-        this.activePanelBreakdownFund = activePanelBreakdownFund;
+    public void setCashBoxPartialInitId(Long cashBoxPartialInitId) {
+        this.cashBoxPartialInitId = cashBoxPartialInitId;
     }
 
-    public List<CashBoxDetail> getCashBoxsInitialBills() {
-        return cashBoxsInitialBills;
+    public boolean isActivePanelInit() {
+        return activePanelInit;
     }
 
-    public void setCashBoxsInitialBills(List<CashBoxDetail> cashBoxsInitialBills) {
-        this.cashBoxsInitialBills = cashBoxsInitialBills;
+    public void setActivePanelInit(boolean activePanelInit) {
+        this.activePanelInit = activePanelInit;
     }
 
-    public List<CashBoxDetail> getCashBoxsInitialMoneys() {
-        return cashBoxsInitialMoneys;
+    public boolean isRecordCompleto() {
+        return recordCompleto;
     }
 
-    public void setCashBoxsInitialMoneys(List<CashBoxDetail> cashBoxsInitialMoneys) {
-        this.cashBoxsInitialMoneys = cashBoxsInitialMoneys;
-    }
-
-    public List<CashBoxGeneral> getCashBoxGeneralInitial() {
-        return cashBoxGeneralInitial;
-    }
-
-    public void setCashBoxGeneralInitial(List<CashBoxGeneral> cashBoxGeneralInitial) {
-        this.cashBoxGeneralInitial = cashBoxGeneralInitial;
-    }
-
-    public CashBoxPartial getCashBoxInitialFinish() {
-        return cashBoxInitialFinish;
-    }
-
-    public void setCashBoxInitialFinish(CashBoxPartial cashBoxInitialFinish) {
-        this.cashBoxInitialFinish = cashBoxInitialFinish;
-    }
-
-    public int getActiveIndex() {
-        return activeIndex;
-    }
-
-    public void setActiveIndex(int activeIndex) {
-        this.activeIndex = activeIndex;
-    }
-
-    public boolean isActivePanelVerification() {
-        return activePanelVerification;
-    }
-
-    public void setActivePanelVerification(boolean activePanelVerification) {
-        this.activePanelVerification = activePanelVerification;
+    public void setRecordCompleto(boolean recordCompleto) {
+        this.recordCompleto = recordCompleto;
     }
 
     @Override
@@ -727,7 +825,29 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
 
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CashBoxPartial _instance = (CashBoxPartial) fuenteDatos;
+
+        RecordTemplate _recordTemplate = recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
+        Record record = null;
+
+        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
+            record = recordService.createInstance();
+            RuleRunner ruleRunner1 = new RuleRunner();
+            KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
+            if (kbers != null) { //Contiene errores de compilación
+                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
+                logger.error(kbers.toString());
+                record = null; //Invalidar el record
+            } else {
+                record.setBussinesEntityType(_instance.getClass().getSimpleName());
+                record.setBussinesEntityId(getCashBoxPartialInitId());
+                record.setBussinesEntityHashCode(_instance.hashCode());
+                record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
+                record.setDescription(String.format("REGISTRO INICIAL PARA CIERRES DE CAJA\n %s| \nCuenta acreditada: CAJA DIA,\nCuenta debitada: %s, \nMonto: %s", this.subject.getId(), _instance.getAccountDeposit().getName(), Strings.format(_instance.getCashFinally().doubleValue(), "$ #0.##")));
+            }
+        }
+        //El registro casí listo para agregar al journal
+        return record;
     }
 
     @Override

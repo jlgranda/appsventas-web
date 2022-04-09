@@ -1235,8 +1235,14 @@ input[type="text"], input[type="password"], textarea{
     border:solid 10px transparent;
 }
 
+/* Border */
 .NoBorder{
     border-color: transparent !important;
+}
+
+/* Background */
+.NoBackground{
+    background-color: transparent !important;
 }
 
 /* Box Sizing */
