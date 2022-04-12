@@ -35,25 +35,64 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <li><p:link outcome="cash-initial">#{i18n['app.fede.accounting.close.cash']}</p:link></li>
         </ui:define>
         <ui:define name="content">
+            <div class="layout-dashboard">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <div class="ui-fluid">
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding TexUppercaseAlCenter">
-                            <div class="ui-fluid">
-                                <div class="Fs30">#{i18n['app.fede.accounting.money.current']}</div>
-                                <h:outputText class="BigTopic" 
-                                              value="#{cashBoxGeneralHome.fundAccountMain}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                </h:outputText>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                    <p:panel header="#{i18n['app.fede.accounting.close.cash']}" styleClass="statistics ui-g">
+                        <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
+                            <!--                            <i class="fa fa-level-up"></i>
+                                                        <span class="icon-label">Mejora</span>
+                                                        <span>$ 85,397</span>
+                                                        <div class="statsbar">
+                                                            <div class="statsbar-value" style="width: 50%"></div>
+                                                        </div>-->
+                            <!--30 días-->
+                            <i class="fa fa-usd"></i>
+                            <span class="icon-label">#{i18n['common.last']} #{i18n['app.fede.accounting.close.cash']}</span>
+                            <span>
+                               <h:outputText
+                                        value="#{cashBoxGeneralHome.fundAccountMain}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>   
+                            </span>
+                            <div class="statsbar">
+                                <div class="statsbar-value" style="width: 100%"></div>
+                            </div>
+                            <!--                            <i class="fa fa-history"></i>
+                                                        <span class="icon-label">Tiempo faltante</span>
+                                                        <span>16:01:53</span>
+                                                        <div class="statsbar">
+                                                            <div class="statsbar-value" style="width: 25%"></div>
+                                                        </div>-->
+                        </div>
+                        <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
+                            <!--                            <div>
+                                                            <i class="fa fa-level-up"></i>
+                                                            <span>50%</span>
+                                                            <i class="fa fa-usd"></i>
+                                                            <span>75%</span>
+                                                            <i class="fa fa-history"></i>
+                                                            <span>25%</span>
+                                                        </div>-->
+                            <div class="knob-container">
+                                <div class="knob">
+                                    <h:outputText
+                                        value="#{cashBoxGeneralHome.fundAccountMain}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>   
+                                </div>
+                            </div>
+                            <div class="details">
                                 <p:linkButton outcome="cash-breakdown" rendered="#{request.isUserInRole('CHECKER')}"
-                                              value="#{i18n['common.starte']} #{i18n['app.fede.accounting.ajust.breakdown']}"
+                                              value="#{i18n['common.register']} #{i18n['app.fede.accounting.ajust.breakdown']}"
                                               icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase">
                                 </p:linkButton>
                             </div>
                         </div>
-                    </div>
+                    </p:panel>
                 </div>
             </div>
+        </div>
         </ui:define>
         <ui:define name="style">
         </ui:define>

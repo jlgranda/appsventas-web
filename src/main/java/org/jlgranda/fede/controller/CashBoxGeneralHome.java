@@ -239,6 +239,23 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     public void setFundAccountMain(BigDecimal fundAccountMain) {
         this.fundAccountMain = fundAccountMain;
     }
+    
+    public void editRecordDetail(RecordDetail detail){
+        this.recordDetail = detail; //En edición
+    }
+    
+    /**
+     * Marcar como borrado
+     * @param detail 
+     */
+    public void deleteRecordDetail(RecordDetail detail){
+        
+        detail.setDeleted(Boolean.TRUE);
+        detail.setName(Strings.toUpperCase(Constantes.ESTADO_ELIMINADO + Constantes.SEPARADOR + detail.getName())); //Registrar el producto que estaba referenciado
+        detail.setDescription(detail.toString()); //Registrar el producto que estaba referenciado
+//                    aggregation.removeAggregationDetail(instance); //Quitar de la vista
+        this.record.addRecordDetail(detail); //Reemplaza el detalle con el nuevo valor modificado para borrar
+    }
 
     /**
      * METHODS.

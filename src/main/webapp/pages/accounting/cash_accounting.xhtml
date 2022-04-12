@@ -110,13 +110,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                 container="none" rendered="#{true}"/>
                                             </div>
                                             <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: center; margin-top: 1rem">
-                                                <p:commandButton id="btnRecordAdd"
-                                                                 icon="pi pi-check-square" styleClass="warning-btn"
-                                                                 value="#{i18n['common.add']}"
-                                                                 actionListener="#{cashBoxGeneralHome.recordDetailAdd}" 
-                                                                 disabled="#{empty cashBoxGeneralHome.recordDetail.account}"
-                                                                 ajax="#{true}" immediate="#{true}"
-                                                                 update="@form"/>
+                                                <p:commandButton id="btnAggAdd"
+                                                    icon="fa fa-check-square" styleClass="#{cashBoxGeneralHome.recordDetail.persistent ? 'primary-btn' : 'warning-btn'}"
+                                                    value="#{cashBoxGeneralHome.recordDetail.persistent ? i18n['common.apply'] : i18n['common.add']}"
+                                                    actionListener="#{cashBoxGeneralHome.recordDetailAdd}" 
+                                                    disabled="#{empty cashBoxGeneralHome.recordDetail.account}"
+                                                    ajax="#{true}" immediate="#{true}"
+                                                    update="@form"/>
                                             </div>
                                         </div>
                                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -138,6 +138,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <h:outputText value="#{recordDetail.amount}">
                                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                                     </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="#{i18n['common.actions']}" class="Wid20">
+                                                    <p:commandButton id="btnEdit"
+                                                                     icon="fa fa-edit" styleClass="secondary-button rounded-btn"
+                                                                     actionListener="#{cashBoxGeneralHome.editRecordDetail(recordDetail)}"
+                                                                     ajax="#{true}" immediate="#{true}"
+                                                                     update="@form">
+                                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                                    </p:commandButton>
+                                                    <p:commandButton id="btnDelete"
+                                                                     icon="fa fa-remove" styleClass="danger-btn rounded-btn"
+                                                                     actionListener="#{cashBoxGeneralHome.deleteRecordDetail(recordDetail)}"
+                                                                     update="@form">
+                                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                                    </p:commandButton>
                                                 </p:column>
                                             </p:dataTable>
                                         </div>
