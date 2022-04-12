@@ -125,7 +125,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
      * UX.
      */
     //Calcular resumen
-    private BigDecimal cashCurrent; //Efectivo actual
+    private BigDecimal cashCurrent; //Efectivo actual, desde la cuenta principal
     private BigDecimal cashFinally; //Dinero que va quedando en los registros contables
 
     //Desglosar el efectivo de Caja
@@ -138,21 +138,18 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
 
     //Manejo de componentes
     private boolean recordCompleto;
-    private BigDecimal fundAccountMain;
 
     @PostConstruct
     private void init() {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(getEnd()));
-        setCashFinally(BigDecimal.ZERO);
 
         setCashBoxGeneral(cashBoxGeneralService.createInstance());
         setCashBoxPartial(cashBoxPartialService.createInstance());
 
-        setAccountMain(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA", this.organizationData.getOrganization()));
-
         setRecord(recordService.createInstance());
         setRecordDetail(recordDetailService.createInstance());
+
         initializeVars();
         setOutcome("cash-initial");
     }
@@ -188,7 +185,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     public CashBoxPartial getCashBoxPartial() {
         if (this.cashBoxPartialId != null && !this.cashBoxPartial.isPersistent()) {
             this.cashBoxPartial = cashBoxPartialService.find(this.cashBoxPartialId);
-            setCashFinally(this.cashBoxPartial.getCashFinally());
+            setCashFinally(this.cashBoxPartial.getTotalCashBreakdown());
         }
         return cashBoxPartial;
     }
@@ -229,27 +226,17 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.recordDetail = recordDetail;
     }
 
-    public BigDecimal getFundAccountMain() {
-        if (getAccountMain() != null) {
-            this.fundAccountMain = accountService.mayorizar(getAccountMain(), this.organizationData.getOrganization(), getStart(), getEnd());
-        }
-        return fundAccountMain;
-    }
-
-    public void setFundAccountMain(BigDecimal fundAccountMain) {
-        this.fundAccountMain = fundAccountMain;
-    }
-    
-    public void editRecordDetail(RecordDetail detail){
+    public void editRecordDetail(RecordDetail detail) {
         this.recordDetail = detail; //En edición
     }
-    
+
     /**
      * Marcar como borrado
-     * @param detail 
+     *
+     * @param detail
      */
-    public void deleteRecordDetail(RecordDetail detail){
-        
+    public void deleteRecordDetail(RecordDetail detail) {
+
         detail.setDeleted(Boolean.TRUE);
         detail.setName(Strings.toUpperCase(Constantes.ESTADO_ELIMINADO + Constantes.SEPARADOR + detail.getName())); //Registrar el producto que estaba referenciado
         detail.setDescription(detail.toString()); //Registrar el producto que estaba referenciado
@@ -291,7 +278,6 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
      */
     public void closeCashBoxPartial() {
         updateCashBoxPartialStatusFinally();
-this.cashBoxPartial.setCashPartial(this.fundAccountMain);
         this.cashBoxPartial.setStatusComplete(Boolean.TRUE); //Marcar como cerrado/completado el cashBoxPartial
         saveCashBoxGeneral();
         redirectToAccounting(this.cashBoxPartial.getId());
@@ -310,6 +296,12 @@ this.cashBoxPartial.setCashPartial(this.fundAccountMain);
 
     private void initializeVars() {
         setCashCurrent(BigDecimal.ZERO);
+        setCashFinally(BigDecimal.ZERO);
+
+        setAccountMain(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA DIA", this.organizationData.getOrganization()));
+        if (getAccountMain() != null) {
+            setCashCurrent(accountService.mayorizarTo(getAccountMain(), this.organizationData.getOrganization(), Dates.maximumDate(getEnd())));
+        }
     }
 
     public void onRowEditCashBoxDetail(RowEditEvent<CashBoxDetail> event) {
@@ -510,19 +502,19 @@ this.cashBoxPartial.setCashPartial(this.fundAccountMain);
             this.record.getRecordDetails().forEach(rdd -> {
                 Record newRecord = generateRecordInstance();
                 RecordDetail newRecordDetail = recordDetailService.createInstance();
-                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
+                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
                 newRecordDetail.setAccount(getAccountMain());
                 newRecordDetail.setAmount(rdd.getAmount());
                 newRecord.addRecordDetail(newRecordDetail);
                 newRecordDetail = recordDetailService.createInstance();
-                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
+                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
                 newRecordDetail.setAccount(rdd.getAccount());
                 newRecordDetail.setAmount(rdd.getAmount());
                 newRecord.addRecordDetail(newRecordDetail);
                 newRecord.setBussinesEntityType(this.cashBoxPartial.getClass().getSimpleName());
                 newRecord.setBussinesEntityId(this.cashBoxPartial.getId());
                 newRecord.setBussinesEntityHashCode(this.cashBoxPartial.hashCode());
-                newRecord.setName(String.format("%s: %s[id=%d]", "REGISTRO_CAJA_A_" + rdd.getAccount(), getClass().getSimpleName(), this.cashBoxPartial.getId()));
+                newRecord.setName(String.format("%s: %s[id=%d]", "REGISTRO_CAJA_DIA_A_" + rdd.getAccount(), getClass().getSimpleName(), this.cashBoxPartial.getId()));
                 newRecord.setDescription(String.format("%s \nEnvío de dinero desde: %s, a %s \nMonto: %s", this.subject.getFullName(), getAccountMain().getName(), rdd.getAccount().getName(), Strings.format(rdd.getAmount().doubleValue(), "$ #0.##")));
                 recordService.save(newRecord.getId(), newRecord);
             });

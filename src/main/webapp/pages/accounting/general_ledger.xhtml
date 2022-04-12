@@ -42,209 +42,160 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
-        <div  class="ui-g">
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                <h:panelGroup id="panel-account-fund">
-                    <h1 class="BigTopic capital">#{accountHome.accountSelected.name} #{not empty accountHome.accountSelected ? '|':i18n['app.fede.accounting.ledger']}
-                        <h:outputText value="#{accountHome.fundAccountMain}">
-                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                        </h:outputText>
-                    </h1>
-                </h:panelGroup>
-            </div>
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                <p:splitter layout="horizontal">
-                    <p:splitterPanel size="25" minSize="25">
-                        <p:scrollPanel mode="native" style="min-width: 20rem; min-height: 24rem; padding: 0rem;">
-                            <p:tree id="tree-generalLedger" value="#{accountHome.treeDataModel}" var="node"
-                                    selectionMode="single" style="border: transparent; width: 100%"
-                                    selection="#{accountHome.singleSelectedNode}"
-                                    filterBy="#{[node.name, node.code]}" filterMatchMode="contains" filterMode="lenient">
-                                <p:treeNode type="default" expandedIcon="fa fa-folder-open-o " collapsedIcon="fa fa-folder-o">
-                                    <h:outputText value="#{node.code} #{node.name}"/>
-                                </p:treeNode>
-                                <p:treeNode type="account" icon="fa fa-book">
-                                    <h:outputText value="#{node.code} #{node.name}"/>
-                                </p:treeNode>
-                                <p:ajax event="select" listener="#{accountHome.onAccountSelect}"
-                                        update="form:dataTable-record-details form:panel-detail-accountSelected form:btn-search-account-details form:panel-account-fund
-                                        form:radio-report-range form:fund-old-accountSelected" partialSubmit="#{true}"/>
-                            </p:tree>
-                            <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="fa fa-arrow-up" />
-                        </p:scrollPanel>
-                    </p:splitterPanel>
-                    <p:splitterPanel size="75" minSize="75">
-                        <div class="ui-g">
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0rem">
-                                <p:toolbar id="topToolBar">
-                                    <f:facet name="left">
-                                        <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
-                                        <p:datePicker id="date-start" value="#{accountHome.start}" class="input-sm MarRight10"
-                                                      monthNavigator="#{true}" yearNavigator="#{true}" showWeek="false">
-                                            <p:ajax event="dateSelect" oncomplete="this"/>
-                                        </p:datePicker>
-                                        <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
-                                        <p:datePicker id="date-end" value="#{accountHome.end}" class="input-sm MarRight10"
-                                                      monthNavigator="#{true}" yearNavigator="#{true}" showWeek="false">
-                                            <p:ajax event="dateSelect" oncomplete="this"/>
-                                        </p:datePicker>
-                                        <p:commandButton id="btn-search-account-details" 
-                                                         value="#{i18n['common.find']}" icon="fa fa-search"  styleClass="help-btn"
-                                                         disabled="#{empty accountHome.accountSelected}" actionListener="#{accountHome.chargeListDetailsforAccount()}"
-                                                         update="dataTable-record-details panel-message-date radio-report-range fund-old-accountSelected"
-                                                         ajax="#{true}" immediate="#{true}">
-                                        </p:commandButton>
-                                    </f:facet>
-                                    <f:facet name="right">
-                                        <p:selectOneRadio id="radio-report-range" value="#{accountHome.rangeReport}" unselectable="#{true}"  disabled="#{empty accountHome.accountSelected}">
-                                            <f:selectItem itemLabel="#{i18n['common.lasta']} #{i18n['common.week']}" itemValue="0"/>
-                                            <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.month']}" itemValue="1"/>
-                                            <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.year']}" itemValue="2"/>
-                                            <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" update="date-start date-end dataTable-record-details form:panel-message-date fund-old-accountSelected" partialSubmit="#{true}"></p:ajax> 
-                                        </p:selectOneRadio>
-                                    </f:facet>
-                                </p:toolbar>
-                            </div>
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding: 0rem">
-                                <p:card style="background-color: #EFEFEF">
-                                    <f:facet name="header">
-                                        <div class="container-center"><h1>#{organizationData.organization.initials}</h1></div>
-                                    </f:facet>
-                                    <f:facet name="title">
-                                        <div class="capital container-center"><span>#{organizationData.organization.name}</span></div>
-                                    </f:facet>
-                                    <f:facet name="subtitle">
-                                        <div class="capital container-center">
-                                            <h2>#{i18n['app.fede.accounting.general']}</h2>
-                                        </div>
-                                        <h:panelGroup id="panel-message-date" class="bold-capital container-center">
-                                            <span>Del <h:outputText value = "#{accountHome.start}" >
-                                                    <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
-                                                </h:outputText>
-                                                al <h:outputText value = "#{accountHome.end}" >
-                                                    <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
-                                                </h:outputText>
-                                            </span>
-                                        </h:panelGroup>
-                                        <h:panelGroup id="panel-detail-accountSelected">
-                                            <div class="ui-g">
-                                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><strong>#{i18n['app.fede.accounting.account']}:&nbsp;</strong> #{accountHome.accountSelected.name}</div>
-                                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><strong>#{i18n['common.code']}:&nbsp;</strong> #{accountHome.accountSelected.code}</div>
-                                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><strong>#{i18n['common.fund']} #{i18n['common.total']}:&nbsp;</strong>
-                                                    <h:outputText value="#{accountHome.fundAccountMain}">
-                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                                    </h:outputText>
-                                                </div>
-                                            </div>
-                                        </h:panelGroup>
-                                    </f:facet>
-                                    <div class="ui-g ui-lg-12 ui-md-12" style="background-color: gold">
-                                        <div class="ui-g ui-lg-9 ui-md-9 container-right capital">#{i18n['app.fede.accounting.account.fund.previous']}: </div>
-                                        <div class="ui-g ui-lg-3 ui-md-3 container-right bold-capital" style="padding-right: 5rem">
-                                            <h:outputText id="fund-old-accountSelected" value="#{accountHome.fundOldAccountSelected}">
-                                                <f:convertNumber type="currency" currencySymbol="$"/>
-                                            </h:outputText>
-                                        </div>
+        <div class="ui-g">
+            <p:panel id="panel-account-fund"
+                     class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <h1 class="TexUppercase">#{accountHome.accountSelected.code} #{accountHome.accountSelected.name} #{not empty accountHome.accountSelected ? '|':i18n['app.fede.accounting.ledger']}
+                    <h:outputText value="#{accountHome.fundAccountMain}">
+                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                    </h:outputText>
+                </h1>
+            </p:panel>
+            <p:splitter layout="horizontal" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <p:splitterPanel size="25" minSize="25">
+                    <p:scrollPanel mode="native" class="NoBorder NoPadding">
+                        <p:tree id="tree-generalLedger" value="#{accountHome.treeDataModel}" var="node"
+                                selectionMode="single"
+                                selection="#{accountHome.singleSelectedNode}"
+                                filterBy="#{[node.name, node.code]}" filterMatchMode="contains" filterMode="lenient">
+                            <p:treeNode type="default" expandedIcon="fa fa-folder-open-o " collapsedIcon="fa fa-folder-o">
+                                <h:outputText value="#{node.code} #{node.name}"/>
+                            </p:treeNode>
+                            <p:treeNode type="account" icon="fa fa-book">
+                                <h:outputText value="#{node.code} #{node.name}"/>
+                            </p:treeNode>
+                            <p:ajax event="select" listener="#{accountHome.onAccountSelect}"
+                                    update="form:dataTable-record-details form:panel-detail-accountSelected form:btn-search-account-details form:panel-account-fund
+                                    form:radio-report-range form:fund-old-accountSelected" partialSubmit="#{true}"/>
+                        </p:tree>
+                        <p:scrollTop target="parent" threshold="100" styleClass="custom-scrolltop" icon="fa fa-arrow-up" />
+                    </p:scrollPanel>
+                </p:splitterPanel>
+                <p:splitterPanel size="75" minSize="75">
+                    <p:toolbar id="topToolBar" class="NoBorder">
+                        <p:toolbarGroup>
+                            <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
+                            <p:datePicker id="date-start" value="#{accountHome.start}"
+                                          monthNavigator="#{true}" yearNavigator="#{true}" showWeek="false">
+                                <p:ajax event="dateSelect" oncomplete="this"/>
+                            </p:datePicker>
+                            <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
+                            <p:datePicker id="date-end" value="#{accountHome.end}"
+                                          monthNavigator="#{true}" yearNavigator="#{true}" showWeek="false">
+                                <p:ajax event="dateSelect" oncomplete="this"/>
+                            </p:datePicker>
+                            <p:commandButton id="btn-search-account-details" 
+                                             value="#{i18n['common.find']}" icon="fa fa-search"  styleClass="help-btn"
+                                             disabled="#{empty accountHome.accountSelected}"
+                                             actionListener="#{accountHome.chargeListDetailsforAccount()}"
+                                             ajax="#{true}" immediate="#{true}"
+                                             update="dataTable-record-details panel-message-date radio-report-range fund-old-accountSelected">
+                            </p:commandButton>
+                        </p:toolbarGroup>
+                        <p:toolbarGroup align="right">
+                            <p:selectOneRadio id="radio-report-range" 
+                                              value="#{accountHome.rangeReport}" unselectable="#{true}" 
+                                              disabled="#{empty accountHome.accountSelected}">
+                                <f:selectItem itemLabel="#{i18n['common.lasta']} #{i18n['common.week']}" itemValue="0"/>
+                                <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.month']}" itemValue="1"/>
+                                <f:selectItem itemLabel="#{i18n['common.last']} #{i18n['common.year']}" itemValue="2"/>
+                                <p:ajax event="change" listener="#{accountHome.calculeRangeReport()}" 
+                                        update="date-start date-end dataTable-record-details form:panel-message-date fund-old-accountSelected" partialSubmit="#{true}"></p:ajax> 
+                            </p:selectOneRadio>
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                    <p:card class="BackgroundToolbar TexUppercaseAlCenter">
+                        <f:facet name="header">
+                            <h1>#{organizationData.organization.initials}</h1>
+                        </f:facet>
+                        <f:facet name="title">
+                            <span>#{organizationData.organization.name}</span>
+                        </f:facet>
+                        <f:facet name="subtitle">
+                            <h2>#{i18n['app.fede.accounting.general']}</h2>
+                            <p:panel id="panel-message-date">
+                                <span>Del <h:outputText value="#{accountHome.start}" class="Fs14 FontBold Info">
+                                        <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
+                                    </h:outputText>
+                                    al <h:outputText value="#{accountHome.end}" class="Fs14 FontBold Info">
+                                        <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
+                                    </h:outputText>
+                                </span>
+                            </p:panel>
+                            <p:panel id="panel-detail-accountSelected" class="TexAlLeft">
+                                <div class="ui-g">
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BackgroundInfo Fs14">#{i18n['common.fund']} en el periodo contable hasta el
+                                        <h:outputText value="#{accountHome.end}">
+                                            <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
+                                        </h:outputText>:&nbsp;
+                                        <h:outputText value="#{accountHome.fundAccountMainRange}" class="FontBold Fright MarRightPerc10">
+                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                        </h:outputText>
                                     </div>
-                                </p:card>
-                                <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
-                                             value="#{accountHome.recordDetailsAccount}" var="recordDetail"
-                                             selection="#{generalJournalHome.selectedBussinesEntities}"
-                                             rowKey="#{recordDetail.id}"
-                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
-                                             paginator="#{true}" paginatorPosition="bottom" 
-                                             draggableColumns="#{true}" reflow="#{true}" 
-                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
-                                             sortMode="single"
-                                             editable="#{false}">
-                                    <p:column headerText="#{i18n['common.date.emission']}" class="Wid10">
-                                        <h:outputText value="#{recordDetail.record.emissionDate}">
-                                            <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Fs14">
+                                        #{i18n['app.fede.accounting.account.fund.previous']} al 
+                                        <h:outputText value="#{accountHome.start}">
+                                            <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
+                                        </h:outputText>:&nbsp;
+                                        <h:outputText id="fund-old-accountSelected" class="FontBold Fright MarRightPerc10"
+                                                      value="#{accountHome.fundOldAccountSelected}">
+                                            <f:convertNumber type="currency" currencySymbol="$"/>
                                         </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="Razón">
-                                        <h:outputText value="#{recordDetail.record.description}" />
-                                    </p:column>
-<!--                                    <p:column headerText="REF" class="Wid10">
-                                        <h:outputText value="#{recordDetail.record.deleted}"/>
-                                    </p:column>-->
-                                    <p:column headerText="#{i18n['common.debe']}" class="Wid20">
-                                        <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.haber']}" class="Wid20">
-                                        <h:outputText class="container-right" value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.fund']}" class="Wid20">
-                                        <h:outputText class="container-right" value="#{recordDetail.accumulatedBalance}" style="#{recordDetail.accumulatedBalance lt 0 ? 'color: #e53935;': ''}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </p:column>
-                                    <p:column id="report" class="Wid20 TexAlCenter">
-                                        <p:commandButton id="button-detail" 
-                                                         title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
-                                                         actionListener="#{accountHome.editarFormularioRecord(recordDetail.record.id)}" 
-                                                         ajax="#{true}" immediate="#{true}">
-                                            <p:ajax event="dialogReturn" update="@form"
-                                                    listener="#{accountHome.handleReturn}">
-                                            </p:ajax>
-                                        </p:commandButton>
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
-                        </div>
-                    </p:splitterPanel>
-                </p:splitter>
-            </div>
+                                    </div>
+                                </div>
+                            </p:panel>
+                        </f:facet>
+                    </p:card>
+                    <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
+                                 value="#{accountHome.recordDetailsAccount}" var="recordDetail"
+                                 selection="#{generalJournalHome.selectedBussinesEntities}"
+                                 rowKey="#{recordDetail.id}"
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single"
+                                 editable="#{false}">
+                        <p:column headerText="#{i18n['common.date.emission']}">
+                            <h:outputText value="#{recordDetail.record.emissionDate}">
+                                <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Razón">
+                            <h:outputText value="#{recordDetail.record.description}" class="Fs10"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.debe']}" class="Wid15">
+                            <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='DEBE'}" class="Fright">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.haber']}" class="Wid15">
+                            <h:outputText value="#{recordDetail.amount}" rendered="#{recordDetail.recordDetailType=='HABER'}" class="Fright">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.fund']}" class="Wid15">
+                            <h:outputText value="#{recordDetail.accumulatedBalance}" style="#{recordDetail.accumulatedBalance lt 0 ? 'color: #e53935;': ''}" class="Fright">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column id="report" class="Wid10">
+                            <p:commandButton id="button-detail" 
+                                             title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
+                                             actionListener="#{accountHome.editarFormularioRecord(recordDetail.record.id)}" 
+                                             ajax="#{true}" immediate="#{true}">
+                                <p:ajax event="dialogReturn" update="@form"
+                                        listener="#{accountHome.handleReturn}">
+                                </p:ajax>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:splitterPanel>
+            </p:splitter>
         </div>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
-            .container-center{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            .bold-capital{
-                font-weight: bolder;
-                text-transform: uppercase;
-            }
-            .capital{
-                text-transform: uppercase;
-            }
-            .container-right{
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-            }
-            .container-left{
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-            }
-            .line-separator{
-                color: #FBFCFC !important;
-                border-width: 0.5px;
-            }
-            .custom-scrolltop.ui-scrolltop {
-                width: 2rem;
-                height: 2rem;
-                border-radius: 4px;
-                outline: 0 none;
-                background-color: var(--primary-color);
-            }
-            .custom-scrolltop.ui-scrolltop:hover {
-                background-color: var(--primary-color);
-            }
-
-            .custom-scrolltop.ui-scrolltop .ui-scrolltop-icon {
-                font-size: 1rem;
-                color: var(--primary-color-text);
-            }
         </style>
     </ui:define>
     <ui:define name="script">

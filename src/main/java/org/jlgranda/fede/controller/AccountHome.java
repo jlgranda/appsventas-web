@@ -141,6 +141,10 @@ public class AccountHome extends FedeController implements Serializable {
      */
     private BigDecimal fundAccountMain;
     /**
+     * Valor de la cuenta principal en rango de fecha
+     */
+    private BigDecimal fundAccountMainRange;
+    /**
      * Valor acumulado anterior de la cuenta seleccionada
      */
     private BigDecimal fundOldAccountSelected;
@@ -385,13 +389,24 @@ public class AccountHome extends FedeController implements Serializable {
 
     public BigDecimal getFundAccountMain() {
         if (this.accountSelected != null) {
-            this.fundAccountMain = accountService.mayorizar(this.accountSelected, this.organizationData.getOrganization(), getStart(), getEnd());
+            this.fundAccountMain = accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(Dates.now()));
         }
         return fundAccountMain;
     }
 
     public void setFundAccountMain(BigDecimal fundAccountMain) {
         this.fundAccountMain = fundAccountMain;
+    }
+
+    public BigDecimal getFundAccountMainRange() {
+        if (this.accountSelected != null) {
+            this.fundAccountMainRange = accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(getEnd()));
+        }
+        return fundAccountMainRange;
+    }
+
+    public void setFundAccountMainRange(BigDecimal fundAccountMainRange) {
+        this.fundAccountMainRange = fundAccountMainRange;
     }
 
     public BigDecimal getFundOldAccountSelected() {
@@ -625,13 +640,12 @@ public class AccountHome extends FedeController implements Serializable {
      */
     public void onAccountSelect(NodeSelectEvent event) {
 //        if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
-        if (event != null && event.getTreeNode().getData() != null) {
-            this.accountSelected = (Account) event.getTreeNode().getData();
+        this.accountSelected = (Account) event.getTreeNode().getData();
+        if (this.accountSelected != null) {
 //            if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
             chargeListDetailsforAccount();
 //            }
         } else {
-            this.accountSelected = (Account) event.getTreeNode().getData();
             this.recordDetailsAccount = new ArrayList<>();
 //            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ledger.noleaf"));
         }
@@ -691,6 +705,7 @@ public class AccountHome extends FedeController implements Serializable {
      */
     public void chargeListDetailsforAccount() {
         setRangeReport(-1);
+        setFundAccountMainRange(accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(getEnd())));
         calculateCumulativeOld();
         setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();

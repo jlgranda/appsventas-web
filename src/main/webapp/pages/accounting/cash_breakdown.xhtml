@@ -44,8 +44,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-fluid">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <div class="ui-fluid"><!--Desglose de Caja-->
-                                <div class="TexUppercase TexAlCenter Fs22"> #{i18n['app.fede.accounting.ajust.detail']} de
-                                    <h:outputText value="#{cashBoxGeneralHome.fundAccountMain}">
+                                <div class="TexUppercase TexAlCenter Fs22"> 
+                                    #{i18n['app.fede.accounting.ajust.detail']} #{i18n['common.of']}
+                                    <h:outputText value="#{cashBoxGeneralHome.cashCurrent}" class="FontBold">
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>
                                 </div>

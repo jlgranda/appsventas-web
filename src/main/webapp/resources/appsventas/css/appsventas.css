@@ -640,11 +640,16 @@ input[type="text"], input[type="password"], textarea{
     display:inline-block;
 }
 .DispInlFlex{
-    display:inline-flex;
+    display:inline-flex !important;
     float:left;
 }
+
+.FlexNowRap{
+    flex-wrap: nowrap !important;
+}
+
 .DispInlFlexRight{
-    display:inline-flex;
+    display:inline-flex !important;
     float:right;
 }
 
@@ -971,6 +976,9 @@ input[type="text"], input[type="password"], textarea{
 .Wid20{
     width:20%;
 }
+.Wid15{
+    width:15%;
+}
 .Wid10{
     width:10%;
 }
@@ -1105,6 +1113,9 @@ input[type="text"], input[type="password"], textarea{
 }
 .MarRight20{
     margin-right:20px;
+}
+.MarRight50{
+    margin-right:50px;
 }
 .MarLeft10{
     margin-left:10px;
@@ -1251,6 +1262,22 @@ input[type="text"], input[type="password"], textarea{
 /* Background */
 .NoBackground{
     background-color: transparent !important;
+}
+
+.BackgroundToolbar{
+    background: #EFEFEF !important;
+}
+
+.BackgroundSecondary{
+    background: #DEDEDE !important;
+}
+
+.BackgroundWarning{
+    background: gold !important;
+}
+.BackgroundInfo{
+    background: #007ad9 !important;
+    color: white;
 }
 
 /* Box Sizing */
