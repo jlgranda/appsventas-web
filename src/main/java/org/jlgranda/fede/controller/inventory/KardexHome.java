@@ -41,6 +41,7 @@ import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.sales.Kardex;
 import org.jlgranda.fede.model.sales.KardexDetail;
+import org.jlgranda.fede.model.sales.KardexType;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyKardexDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -265,6 +266,7 @@ public class KardexHome extends FedeController implements Serializable {
                 lazyDataModel = new LazyKardexDataModel(kardexService);
             }
             lazyDataModel.setOrganization(this.organizationData.getOrganization());
+            lazyDataModel.setKardexType(KardexType.COMERCIALIZACION);
             // lazyDataModel.setOwner(this.subject);
             // lazyDataModel.setStart(this.getStart());
             // lazyDataModel.setEnd(this.getEnd());

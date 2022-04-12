@@ -265,7 +265,7 @@ public class UI {
         if ("input".equals(type)) {
             item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL, "INVENTARIO INICIAL");
             items.add(item);
-            item = new SelectItem(KardexDetail.OperationType.PRODUCCION, "PRODUCCIÓN");
+            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO, "PRODUCTO TERMINADO");
             items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
 //        items.add(item);
@@ -278,7 +278,15 @@ public class UI {
 //        items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_COMPRA.toString(), KardexDetail.OperationType.DEVOLUCION_COMPRA.toString());
 //        items.add(item);
-        }
+        } else if ("input-raw".equals(type)) {
+            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_INGRESO_MATERIA_PRIMA, "INGRESO DE MATERIA PRIMA");
+            items.add(item);
+        } else if ("output-raw".equals(type)) {
+//            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO, "PRODUCTO TERMINADO");
+//            items.add(item);
+            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_BAJA_MATERIA_PRIMA, "BAJA DE MATERIA PRIMA");
+            items.add(item);
+        } 
 
         return items;
     }

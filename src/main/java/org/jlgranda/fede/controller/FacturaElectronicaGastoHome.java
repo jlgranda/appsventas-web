@@ -1651,6 +1651,7 @@ public class FacturaElectronicaGastoHome extends FedeController implements Seria
         kardexService.save(
                 makeDetailableList(datails),
                 settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-"),
+                settingHome.getValue("app.inventory.kardex.code.prefix.production", "TK-R-"),
                 subject, this.organizationData.getOrganization(),
                 KardexDetail.OperationType.COMPRA);
     }

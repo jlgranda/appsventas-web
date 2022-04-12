@@ -46,6 +46,7 @@ import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.sales.Kardex;
+import org.jlgranda.fede.model.sales.KardexType;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.ui.model.LazyProductDataModel;
@@ -272,9 +273,28 @@ public class InventoryHome extends FedeController implements Serializable {
                 this.kardex.setProduct(product);
                 this.kardex.setAuthor(this.subject);
                 this.kardex.setOwner(this.subject);
+                this.kardex.setKardexType(KardexType.COMERCIALIZACION);
                 this.kardex.setOrganization(this.organizationData.getOrganization());
                 kardexService.save(this.kardex); //Actualizar el nombre
             }
+        } else if (ProductType.RAW_MATERIAL.equals(this.product.getProductType())) {
+            this.kardex = kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization());
+            if (this.kardex == null) {
+                this.kardex = kardexService.createInstance();
+                this.kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-R-") + (product.getId() != null ? product.getId() : ""));
+                this.kardex.setName(product.getName() != null ? product.getName() : "");
+                this.kardex.setUnitMinimum(BigDecimal.ZERO);
+                this.kardex.setUnitMaximum(BigDecimal.ZERO);
+                this.kardex.setQuantity(BigDecimal.ZERO);
+                this.kardex.setFund(BigDecimal.ZERO);
+                this.kardex.setProduct(product);
+                this.kardex.setAuthor(this.subject);
+                this.kardex.setOwner(this.subject);
+                this.kardex.setKardexType(KardexType.PRODUCCION);
+                this.kardex.setOrganization(this.organizationData.getOrganization());
+                kardexService.save(this.kardex); //Actualizar el nombre
+            }
+            setOutcome("raws");
         } else {
             //Tuvo un kardex
             this.kardex = kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization());

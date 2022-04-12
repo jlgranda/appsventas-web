@@ -1395,7 +1395,9 @@ public class InvoiceHome extends FedeController implements Serializable {
         kardexService.save(
                 makeDetailableList(details),
                 settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-"),
-                subject, this.organizationData.getOrganization(),
+                settingHome.getValue("app.inventory.kardex.code.prefix.production", "TK-R-"),
+                subject, 
+                this.organizationData.getOrganization(), 
                 KardexDetail.OperationType.VENTA);
     }
     

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.sales.Kardex;
+import org.jlgranda.fede.model.sales.KardexType;
 import org.jlgranda.fede.model.sales.Kardex_;
 import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
@@ -58,6 +59,7 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
     private Date end;
     private String filterValue;
     private String tags;
+    private KardexType kardexType;
 
     public LazyKardexDataModel(KardexService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -204,6 +206,8 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         }
         
         _filters.put("deleted", false);
+        
+        _filters.put(Kardex_.kardexType.getName(), this.kardexType);
 
         _filters.putAll(filters);
 
@@ -252,6 +256,10 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
 
         QueryData<Kardex> qData = bussinesEntityService.find(_filters);
         return qData.getTotalResultCount().intValue();
+    }
+
+    public void setKardexType(KardexType kardexType) {
+        this.kardexType =  kardexType;
     }
 
 }

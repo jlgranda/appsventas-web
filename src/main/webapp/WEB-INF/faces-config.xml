@@ -180,6 +180,11 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>inventory-production-kardexs</from-outcome>
+            <to-view-id>/pages/inventory/kardex_items.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>kardex</from-outcome>
             <to-view-id>/pages/inventory/kardex.jsf</to-view-id>
             <redirect />

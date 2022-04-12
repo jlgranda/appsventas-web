@@ -16,18 +16,14 @@
  */
 package org.jlgranda.fede.controller.inventory;
 
-import com.jlgranda.fede.ejb.FacturaElectronicaService;
-import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.KardexDetailService;
 import com.jlgranda.fede.ejb.sales.KardexService;
-import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -43,7 +39,6 @@ import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.sales.Kardex;
 import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.KardexType;
-import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyKardexDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -62,9 +57,9 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @ViewScoped
-public class KardexInventoryHome extends FedeController implements Serializable {
+public class KardexProduccionInventoryHome extends FedeController implements Serializable {
 
-    Logger logger = LoggerFactory.getLogger(KardexInventoryHome.class);
+    Logger logger = LoggerFactory.getLogger(KardexProduccionInventoryHome.class);
 
     @Inject
     private Subject subject;
@@ -99,9 +94,18 @@ public class KardexInventoryHome extends FedeController implements Serializable 
 
     @PostConstruct
     private void init() {
-        setOutcome("inventory-kardexs");
+        setOutcome("inventory-production-kardexs");
         setKardex(kardexService.createInstance());
         setKardexDetail(kardexDetailService.createInstance());
+        
+        this.operationTypesFlowOutput = new ArrayList<>();
+        //this.operationTypesFlowOutput.add(KardexDetail.OperationType.DEVOLUCION_COMPRA);
+        //this.operationTypesFlowOutput.add(KardexDetail.OperationType.VENTA);
+        //this.operationTypesFlowOutput.add(KardexDetail.OperationType.SALIDA_INVENTARIO);
+        //this.operationTypesFlowOutput.add(KardexDetail.OperationType.PRODUCCION_INGRESO_MATERIA_PRIMA);
+        this.operationTypesFlowOutput.add(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO);
+        this.operationTypesFlowOutput.add(KardexDetail.OperationType.PRODUCCION_BAJA_MATERIA_PRIMA);
+        
         initializeActions();
     }
 
@@ -158,10 +162,6 @@ public class KardexInventoryHome extends FedeController implements Serializable 
     }
 
     public String getOperationTypeFlow() {
-        this.operationTypesFlowOutput = new ArrayList<>();
-        this.operationTypesFlowOutput.add(KardexDetail.OperationType.DEVOLUCION_COMPRA);
-        this.operationTypesFlowOutput.add(KardexDetail.OperationType.VENTA);
-        this.operationTypesFlowOutput.add(KardexDetail.OperationType.SALIDA_INVENTARIO);
         return operationTypeFlow;
     }
 
@@ -309,7 +309,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
                 lazyDataModel = new LazyKardexDataModel(kardexService);
             }
             lazyDataModel.setOrganization(this.organizationData.getOrganization());
-            lazyDataModel.setKardexType(KardexType.COMERCIALIZACION);
+            lazyDataModel.setKardexType(KardexType.PRODUCCION);
             if (getKeyword() != null && getKeyword().startsWith("label:")) {
                 String parts[] = getKeyword().split(":");
                 if (parts.length > 1) {
@@ -328,7 +328,7 @@ public class KardexInventoryHome extends FedeController implements Serializable 
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
                 Kardex k = (Kardex) event.getObject();
-                redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
+                redirectTo("/pages/production/kardex_produccion.jsf?kardexId=" + k.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
