@@ -641,6 +641,11 @@ input[type="text"], input[type="password"], textarea{
 }
 .DispInlFlex{
     display:inline-flex;
+    float:left;
+}
+.DispInlFlexRight{
+    display:inline-flex;
+    float:right;
 }
 
 /* Position */
@@ -924,7 +929,7 @@ input[type="text"], input[type="password"], textarea{
     box-sizing:border-box;
     -webkit-box-sizing:border-box;
     -moz-box-sizing:border-box;
-    padding: 16px !important;
+    padding: 8px !important;
 }
 
 /* Width */
@@ -1101,6 +1106,9 @@ input[type="text"], input[type="password"], textarea{
 .MarRight20{
     margin-right:20px;
 }
+.MarLeft10{
+    margin-left:10px;
+}
 
 /* Paddings */
 .NoPadding{
@@ -1119,7 +1127,7 @@ input[type="text"], input[type="password"], textarea{
 /* Containers */
 .Container100{
     width:100%;
-    float:left;
+    display: contents;
 }
 .Container95{
     width:95%;
@@ -1924,6 +1932,16 @@ input[type="text"], input[type="password"], textarea{
     text-transform: uppercase !important;
 }
 
+.TexUppercaseAlCenter{
+    text-transform: uppercase !important;
+    text-align:center;
+}
+
+/*Justify Content*/
+.JustContCenter{
+    justify-content: center
+}
+
 /* Padding With Transparent Border*/
 .PadWithBorder1{
     border:solid 1px transparent;
@@ -2546,6 +2564,10 @@ input[type="text"], input[type="password"], textarea{
     color: red;
     font-weight: 700;
 }
+.Info {
+    color: #007ad9;
+    font-weight: 700;
+}
 .Gray {
     color: gray;
     font-weight: 700;
@@ -2553,12 +2575,10 @@ input[type="text"], input[type="password"], textarea{
 
 
 body .ui-panel .ui-panel-content {
-    border: 0px solid #dedede !important;
-    background-color: #ffffff;
-    color: #333333;
-    /*padding: 0.571em 1em;*/
-    border-top: 0 none;
-    line-height: 1.5;
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    background: transparent !important;
 }
 
 /* row reciente en tablas de registro de tiempos */
