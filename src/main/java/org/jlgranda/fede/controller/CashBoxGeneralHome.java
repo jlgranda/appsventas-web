@@ -36,13 +36,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.CashBoxDetail;
 import org.jlgranda.fede.model.accounting.CashBoxGeneral;
@@ -77,7 +81,7 @@ import org.slf4j.LoggerFactory;
 public class CashBoxGeneralHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -1007161141552849702L;
-    Logger logger = LoggerFactory.getLogger(CashBoxHome.class);
+    Logger logger = LoggerFactory.getLogger(CashBoxGeneralHome.class);
 
     @Inject
     private Subject subject;
@@ -87,15 +91,11 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private SettingHome settingHome;
 
     @EJB
-    private GroupService groupService;
-    @EJB
     private CashBoxGeneralService cashBoxGeneralService;
     @EJB
     private CashBoxPartialService cashBoxPartialService;
     @EJB
     private CashBoxDetailService cashBoxDetailService;
-    @EJB
-    private InvoiceService invoiceService;
     @EJB
     private RecordDetailService recordDetailService;
     @EJB
@@ -114,98 +114,51 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
      */
     private Long cashBoxGeneralId;
     private CashBoxGeneral cashBoxGeneral;
+    private Long cashBoxPartialId;
     private CashBoxPartial cashBoxPartial;
     private CashBoxDetail cashBoxDetail;
+    private GeneralJournal generalJournal;
+    private Record record;
+    private RecordDetail recordDetail;
 
     /**
      * UX.
      */
     //Calcular resumen
-    private BigDecimal salesNet;//Dinero de ventas sólo en efectivo
-    private BigDecimal purchasesNet;//Dinero de compras sólo en efectivo
-    private BigDecimal transactionNet;//Dinero de otras transacciones sólo en efectivo
-    private BigDecimal salesEffective;
-    private BigDecimal salesCreditCollect;
-//    private BigDecimal salesCredit;
-//    private BigDecimal salesDedit;
-    private BigDecimal purchasesCash;
-    private BigDecimal purchasesCreditPaid;
-//    private BigDecimal purchasesCredit;
-    private BigDecimal transactionInput;
-    private BigDecimal transactionOutput;
-    private Account transactionAccount;
-    private BigDecimal cashPrevious; //Saldo de ejercicion anterior
     private BigDecimal cashCurrent; //Efectivo actual
+    private BigDecimal cashFinally; //Dinero que va quedando en los registros contables
 
     //Desglosar el efectivo de Caja
     private List<CashBoxDetail> cashBoxBills;
     private List<CashBoxDetail> cashBoxMoneys;
 
-    //Manejo de componentes
-    private boolean disabledButtonBreakdown;
-    private boolean activePanelBreakdown;
-    private boolean disabledButtonCloseCashBoxGeneral;
-    private boolean cashBoxInit; //Verifica si es el primer cashBoxGeneral de la base
-    private Long cashBoxPartialInitId;
-    private boolean activePanelInit;
-    private boolean recordCompleto;
+    //Manejo de registro contable
+    private Account accountMain;
+    private RecordDetail recordDetailSelected;
 
-//    private boolean activePanelDeposit;
-//    private boolean activeSelectDeposit;
-//    private boolean activeButtonSelectDeposit;
-    //Obtener lista de CashBoxClosed
-//    private List<CashBoxPartial> cashBoxsClosed;
-//    private List<CashBoxDetail> cashBoxsClosedBills;
-//    private List<CashBoxDetail> cashBoxsClosedMoneys;
-//    private CashBoxPartial cashBoxOpen;
-//
-//    //Calcular el dinero restante luego del depósito del Cierre de Caja
-//    private BigDecimal saldoCashFund;
-//    private boolean activePanelBreakdownFund;
-//    private List<CashBoxDetail> cashBoxsInitialBills;
-//    private List<CashBoxDetail> cashBoxsInitialMoneys;
-//    private List<CashBoxGeneral> cashBoxGeneralInitial;
-//    private CashBoxPartial cashBoxInitialFinish;
-//    private int activeIndex;
-//    private boolean activePanelVerification;
-//
+    //Manejo de componentes
+    private boolean recordCompleto;
+    private BigDecimal fundAccountMain;
+
     @PostConstruct
     private void init() {
-        setCashBoxInit(cashBoxGeneralService.isInitialByOrganization(this.organizationData.getOrganization()));
-
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(getEnd()));
+        setCashFinally(BigDecimal.ZERO);
 
         setCashBoxGeneral(cashBoxGeneralService.createInstance());
         setCashBoxPartial(cashBoxPartialService.createInstance());
 
-        getTodayCashBoxGeneralId();
-        getCurrentCashBoxPartial();
+        setAccountMain(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA", this.organizationData.getOrganization()));
+
+        setRecord(recordService.createInstance());
+        setRecordDetail(recordDetailService.createInstance());
         initializeVars();
-        getCalculeSummaryCash(getStart(), getEnd());
-
-        setOutcome("cash-close");
-    }
-
-    public void getTodayCashBoxGeneralId() {
-        if (getCashBoxGeneralId() == null) {
-            setCashBoxGeneralId(cashBoxGeneralService.findIdByOrganizationAndCreatedOn(this.organizationData.getOrganization(), Dates.now(), Dates.now()));
-            getCashBoxGeneral();
-        }
-    }
-
-    public void getCurrentCashBoxPartial() {
-        if (!this.cashBoxGeneral.getCashBoxPartials().isEmpty()) {
-            this.cashBoxGeneral.getCashBoxPartials().forEach(partial -> {
-                if (Objects.equals(Boolean.FALSE, partial.getStatusComplete())) {
-                    setCashBoxPartial(cashBoxPartialService.find(partial.getId()));
-                    getBillsMoneysList();
-                }
-            });
-        }
+        setOutcome("cash-initial");
     }
 
     public Long getCashBoxGeneralId() {
+        setCashBoxGeneralId(cashBoxGeneralService.findIdByOrganizationAndCreatedOn(this.organizationData.getOrganization(), Dates.now(), Dates.now()));
         return cashBoxGeneralId;
     }
 
@@ -224,7 +177,19 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.cashBoxGeneral = cashBoxGeneral;
     }
 
+    public Long getCashBoxPartialId() {
+        return cashBoxPartialId;
+    }
+
+    public void setCashBoxPartialId(Long cashBoxPartialId) {
+        this.cashBoxPartialId = cashBoxPartialId;
+    }
+
     public CashBoxPartial getCashBoxPartial() {
+        if (this.cashBoxPartialId != null && !this.cashBoxPartial.isPersistent()) {
+            this.cashBoxPartial = cashBoxPartialService.find(this.cashBoxPartialId);
+            setCashFinally(this.cashBoxPartial.getCashFinally());
+        }
         return cashBoxPartial;
     }
 
@@ -238,6 +203,41 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
 
     public void setCashBoxDetail(CashBoxDetail cashBoxDetail) {
         this.cashBoxDetail = cashBoxDetail;
+    }
+
+    public GeneralJournal getGeneralJournal() {
+        return generalJournal;
+    }
+
+    public void setGeneralJournal(GeneralJournal generalJournal) {
+        this.generalJournal = generalJournal;
+    }
+
+    public Record getRecord() {
+        return record;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
+
+    public RecordDetail getRecordDetail() {
+        return recordDetail;
+    }
+
+    public void setRecordDetail(RecordDetail recordDetail) {
+        this.recordDetail = recordDetail;
+    }
+
+    public BigDecimal getFundAccountMain() {
+        if (getAccountMain() != null) {
+            this.fundAccountMain = accountService.mayorizar(getAccountMain(), this.organizationData.getOrganization(), getStart(), getEnd());
+        }
+        return fundAccountMain;
+    }
+
+    public void setFundAccountMain(BigDecimal fundAccountMain) {
+        this.fundAccountMain = fundAccountMain;
     }
 
     /**
@@ -264,6 +264,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.cashBoxGeneral.setExcessCash(this.cashBoxPartial.getExcessCash());
         this.cashBoxGeneral.setCashFinally(this.cashBoxPartial.getCashFinally());
         this.cashBoxGeneral.setName(I18nUtil.getMessages("app.fede.accounting.close.cash.of", "" + this.organizationData.getOrganization().getInitials(), Dates.toDateString(Dates.now())));
+
         cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
         this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.ajust.save.message"));
     }
@@ -272,30 +273,11 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
      * METHODS UTIL.
      */
     public void closeCashBoxPartial() {
+        updateCashBoxPartialStatusFinally();
+this.cashBoxPartial.setCashPartial(this.fundAccountMain);
         this.cashBoxPartial.setStatusComplete(Boolean.TRUE); //Marcar como cerrado/completado el cashBoxPartial
         saveCashBoxGeneral();
-    }
-
-    public void closeCashBoxPartialInit() {
-        if (Objects.equals(Boolean.TRUE, isCashBoxInit())) { //Enserar en 0 los datos de exceso o faltante
-            this.cashBoxPartial.setStatusComplete(Boolean.TRUE); //Marcar como cerrado/completado el cashBoxPartial
-            this.cashBoxPartial.setExcessCash(BigDecimal.ZERO);
-            this.cashBoxPartial.setMissCash(BigDecimal.ZERO);
-            saveCashBoxGeneral();
-            setCashBoxPartialInitId(this.cashBoxGeneral.getCashBoxPartials().get(0).getId());
-            //Solo para este caso, se realiza el depósito automático
-            this.cashBoxPartial.setAccountDeposit(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA", this.organizationData.getOrganization()));
-            registerRecordInJournal();
-            setCashBoxInit(Boolean.FALSE);
-        }
-    }
-
-    public void closeCashBoxGeneral() {
-        updateCashBoxPartialStatusFinally();//Marcar el último parcial como final
-        this.cashBoxGeneral.setStatusComplete(Boolean.TRUE);
-        cashBoxGeneralService.save(this.cashBoxGeneralId, this.cashBoxGeneral);
-        setDisabledButtonCloseCashBoxGeneral(Boolean.TRUE);
-        setDisabledButtonBreakdown(Boolean.TRUE);
+        redirectToAccounting(this.cashBoxPartial.getId());
     }
 
     private void updateCashBoxPartialStatusFinally() {
@@ -310,64 +292,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     }
 
     private void initializeVars() {
-        setSalesNet(BigDecimal.ZERO);
-        setSalesEffective(BigDecimal.ZERO);
-        setSalesCreditCollect(BigDecimal.ZERO);
-//        setSalesCredit(BigDecimal.ZERO);
-//        setSalesDedit(BigDecimal.ZERO);
-        setPurchasesNet(BigDecimal.ZERO);
-        setPurchasesCash(BigDecimal.ZERO);
-        setPurchasesCreditPaid(BigDecimal.ZERO);
-//        setPurchasesCredit(BigDecimal.ZERO);
-        setTransactionNet(BigDecimal.ZERO);
-        setTransactionInput(BigDecimal.ZERO);
-        setTransactionOutput(BigDecimal.ZERO);
         setCashCurrent(BigDecimal.ZERO);
-
-        setDisabledButtonBreakdown(validDisabledButtonBreakdown());
-        setActivePanelBreakdown(validActivePanelBreakdown());
-        setDisabledButtonCloseCashBoxGeneral(validDisabledButtonCloseCashBoxGeneral());
-    }
-
-    private boolean validDisabledButtonBreakdown() {
-        if (this.cashBoxPartial.getId() != null
-                && !this.cashBoxPartial.getStatusComplete()) {
-            return true;
-        } else if (this.cashBoxGeneral.getStatusComplete()) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean validActivePanelBreakdown() {
-        if (this.cashBoxPartial.getId() != null
-                && !this.cashBoxPartial.getStatusComplete()) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean validDisabledButtonCloseCashBoxGeneral() {
-        if (this.cashBoxGeneral.getId() == null || this.cashBoxGeneral.getCashBoxPartials().isEmpty()
-                || (this.cashBoxPartial.getId() != null
-                && !this.cashBoxPartial.getStatusComplete())) {
-            return true;
-        } else if (this.cashBoxGeneral.getStatusComplete()) {
-            return true;
-        }
-        return false;
-    }
-
-    public void startBreakdown() {
-        asignedCashBoxPartialProperties(); //Cargar la data inicial para el cashBoxPartial
-        setDisabledButtonBreakdown(Boolean.TRUE); //Deshabilitar el botón de inicio de desglose
-        setDisabledButtonCloseCashBoxGeneral(Boolean.TRUE); //Deshabilitar el botón de finalización de caja del día
-        setActivePanelBreakdown(Boolean.TRUE); //Mostrar el Panel de Detalle de CashBox instanciado
-    }
-
-    public void initRegister() {
-        asignedCashBoxPartialProperties(); //Cargar la data inicial para el cashBoxPartial
-        setActivePanelInit(Boolean.TRUE); //Mostrar el Panel de Inicio para el primer cashBoxPartial
     }
 
     public void onRowEditCashBoxDetail(RowEditEvent<CashBoxDetail> event) {
@@ -451,7 +376,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.cashBoxPartial.setMissCash(this.cashBoxPartial.getMissCash().multiply(BigDecimal.valueOf(-1)));//Guardar valores positivos
     }
 
-    private void asignedCashBoxPartialProperties() {
+    public void asignedCashBoxPartialProperties() {
         this.cashBoxPartial.setPriority(cashBoxPartialService.getPriority(this.cashBoxGeneral));
 
         List<Setting> denominations = settingHome.getDenominations(CodeType.DENOMINATION);
@@ -497,6 +422,117 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         return details;
     }
 
+    private void redirectToAccounting(Long casbBoxPartialId) {
+        if (casbBoxPartialId != null) {
+            setCashBoxPartialId(casbBoxPartialId);
+            try {
+                redirectTo("/pages/accounting/cash_accounting.jsf?cashBoxPartialId=" + (getCashBoxPartialId()));
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(CashBoxGeneralHome.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void onItemAccountSelect(SelectEvent<Account> event) {
+        Account account = event.getObject();
+        if (account.getName().toLowerCase().contains(Constantes.ACCOUNT_DAY)) {
+            this.addErrorMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.close.cash.account.main.noselected"));
+            this.setRecordDetail(recordDetailService.createInstance());
+        } else {
+            Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().equals(account)).findFirst();
+            if (find.isPresent()) {
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> cuenta ya existente!!! ");
+                this.setRecordDetail(find.get());
+            }
+        }
+    }
+
+    public void recordDetailAdd(ActionEvent e) {
+
+        if (validCashFinally()) {
+            this.recordDetail.setOwner(this.subject);
+            this.record.addRecordDetail(this.recordDetail);
+
+            //Restar el cashFinally que va quedando
+            setCashFinally(getCashFinally().subtract(this.recordDetail.getAmount()));
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
+
+            //Encerar el registro
+            this.recordDetail = recordDetailService.createInstance();
+            this.recordDetailSelected = null;
+
+        } else {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.amount.invalid", "" + getCashFinally()));
+        }
+    }
+
+    private Boolean validCashFinally() {
+        if (this.cashFinally.compareTo(this.recordDetail.getAmount()) == -1) {
+            return Boolean.FALSE;
+        } else {
+            return Boolean.TRUE;
+        }
+    }
+
+    public void recordSave() {
+        //Construir los records de cada detail agregado
+        boolean valido = true;
+        if (this.record.getRecordDetails().isEmpty()) {
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
+        }
+        if (getAccountMain() == null) {
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.close.cash.account.main.incorrect"));
+        }
+
+        if (valido) {
+            //Localizar o generar el generalJournal
+            setGeneralJournal(this.buildJournal(Dates.now()));
+
+            this.record.getRecordDetails().forEach(rdd -> {
+                Record newRecord = generateRecordInstance();
+                RecordDetail newRecordDetail = recordDetailService.createInstance();
+                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
+                newRecordDetail.setAccount(getAccountMain());
+                newRecordDetail.setAmount(rdd.getAmount());
+                newRecord.addRecordDetail(newRecordDetail);
+                newRecordDetail = recordDetailService.createInstance();
+                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
+                newRecordDetail.setAccount(rdd.getAccount());
+                newRecordDetail.setAmount(rdd.getAmount());
+                newRecord.addRecordDetail(newRecordDetail);
+                newRecord.setBussinesEntityType(this.cashBoxPartial.getClass().getSimpleName());
+                newRecord.setBussinesEntityId(this.cashBoxPartial.getId());
+                newRecord.setBussinesEntityHashCode(this.cashBoxPartial.hashCode());
+                newRecord.setName(String.format("%s: %s[id=%d]", "REGISTRO_CAJA_A_" + rdd.getAccount(), getClass().getSimpleName(), this.cashBoxPartial.getId()));
+                newRecord.setDescription(String.format("%s \nEnvío de dinero desde: %s, a %s \nMonto: %s", this.subject.getFullName(), getAccountMain().getName(), rdd.getAccount().getName(), Strings.format(rdd.getAmount().doubleValue(), "$ #0.##")));
+                recordService.save(newRecord.getId(), newRecord);
+            });
+
+            //Encerar objetos de pantalla
+            this.recordDetail = recordDetailService.createInstance();
+            this.record = recordService.createInstance();
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
+        }
+    }
+
+    private Record generateRecordInstance() {
+        Record newRecord = recordService.createInstance();
+        record.setOwner(this.subject);
+        if (this.generalJournal != null) {
+            newRecord.setGeneralJournalId(this.generalJournal.getId());
+        }
+
+        return newRecord;
+    }
+
+    private GeneralJournal buildJournal(Date emissionDate) {
+        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+        return generalJournalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+    }
+
     public List<CashBoxPartial> getCashBoxPartialsCompleted(List<CashBoxPartial> list) {
         List<CashBoxPartial> partials = new ArrayList<>();
         if (list != null && !list.isEmpty()) {
@@ -509,249 +545,20 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         return partials;
     }
 
-    public void getCalculeSummaryCash(Date _start, Date _end) {
-
-        setCashPrevious(cashBoxGeneralService.findTotalBreakdownFinalByOrganizationAndLastCreatedOn(this.organizationData.getOrganization(), Dates.now()));
-
-        List<Object[]> objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesSourceMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
-        objects.stream().forEach((Object object) -> {
-            if (object != null) {
-                setSalesEffective((BigDecimal) object);
-            }
-        });
-//        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesSourceMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA DEBITO");
-//        objects.stream().forEach((Object object) -> {
-//            if (object != null) {
-//                setSalesDedit((BigDecimal) object);
-//            }
-//        });
-//        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesSourceMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.INVOICE, StatusType.CLOSE.toString(), _start, _end, "TARJETA CREDITO");
-//        objects.stream().forEach((Object object) -> {
-//            if (object != null) {
-//                setSalesCredit((BigDecimal) object);
-//            }
-//        });
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("Invoice.findTotalInvoiceSalesSourceMethodPaymentDateBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), DocumentType.OVERDUE, StatusType.CLOSE.toString(), _start, _end, "EFECTIVO");
-        objects.stream().forEach((Object object) -> {
-            if (object != null) {
-                setSalesCreditCollect((BigDecimal) object);
-            }
-        });
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CASH);
-        objects.stream().forEach((Object object) -> {
-            if (object != null) {
-                setPurchasesCash((BigDecimal) object);
-            }
-        });
-//        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypeBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CREDIT);
-//        objects.stream().forEach((Object object) -> {
-//            if (object != null) {
-//                setPurchasesCredit((BigDecimal) object);
-//            }
-//        });
-        objects = invoiceService.findObjectsByNamedQueryWithLimit("FacturaElectronica.findTotalByEmissionTypePayBetweenOrg", Integer.MAX_VALUE, this.organizationData.getOrganization(), _start, _end, EmissionType.PURCHASE_CREDIT);
-        objects.stream().forEach((Object object) -> {
-            if (object != null) {
-                setPurchasesCreditPaid((BigDecimal) object);
-            }
-        });
-        setTransactionAccount(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA DIA", this.organizationData.getOrganization()));
-        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, getTransactionAccount(), RecordDetail.RecordTDetailType.DEBE, _start, _end, this.organizationData.getOrganization());
-        objects.stream().forEach((Object object) -> {
-            if (object != null) {
-                setTransactionInput((BigDecimal) object);
-            }
-        });
-        objects = recordDetailService.findObjectsByNamedQueryWithLimit("RecordDetail.findTotalByAccountAndTypeAndNotClassInvoiceFacturaElectronica", Integer.MAX_VALUE, getTransactionAccount(), RecordDetail.RecordTDetailType.HABER, _start, _end, this.organizationData.getOrganization());
-        objects.stream().forEach((Object object) -> {
-            if (object != null) {
-                setTransactionOutput((BigDecimal) object);
-            }
-        });
-        setSalesNet(getSalesEffective().add(getSalesCreditCollect()));//Suma de ventas en caja
-        setPurchasesNet(getPurchasesCash().add(getPurchasesCreditPaid()));//Suma de compras en caja
-        setTransactionNet(getTransactionInput().subtract(getTransactionOutput()));//Suma de transacciones en caja
-        setCashCurrent(getSalesNet().subtract(getPurchasesNet()).add(getTransactionNet())); //Total dinero en efectivo de Caja
-        setCashCurrent(getCashCurrent().add(getCashPrevious())); //Aumentar el dinero previo de la caja;
-    }
-
-    private void registerRecordInJournal() {
-        setReglas(new ArrayList<>());
-        setAccountingEnabled(isCashBoxInit());
-        if (isAccountingEnabled()) {
-            setReglas(settingHome.getValue("app.fede.accounting.rule.registrocajadiainicial", "REGISTRO_CAJA_DIA_INICIAL"));
-
-            List<Record> records = new ArrayList<>();
-            getReglas().forEach(regla -> {
-                Record r = aplicarReglaNegocio(regla, this.cashBoxPartial);
-                if (r != null) {
-                    records.add(r);
-                }
-            });
-
-            if (!records.isEmpty()) {
-                //La regla compiló bien
-                String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", I18nUtil.getMessages("app.fede.accounting.journal"));
-                String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
-                GeneralJournal generalJournal = generalJournalService.find(Dates.now(), this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
-
-                //El General Journal del día
-                if (generalJournal != null) {
-                    for (Record rcr : records) {
-                        setRecordCompleto(Boolean.TRUE);
-
-                        rcr.setCode(UUID.randomUUID().toString());
-
-                        rcr.setOwner(this.subject);
-                        rcr.setAuthor(this.subject);
-
-                        rcr.setGeneralJournalId(generalJournal.getId());
-
-                        //Corregir objetos cuenta en los detalles
-                        rcr.getRecordDetails().forEach(rcrd -> {
-                            rcrd.setLastUpdate(Dates.now());
-                            rcrd.setAccount(accountCache.lookupByName(rcrd.getAccountName(), this.organizationData.getOrganization()));
-                            if (rcrd.getAccount() == null) {
-                                setRecordCompleto(Boolean.FALSE);
-                            }
-                        });
-
-                        //Persistencia
-                        if (Objects.equals(Boolean.TRUE, isRecordCompleto())) {
-                            rcr = recordService.save(rcr);
-                        } else {
-                            this.addSuccessMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("No fue posible actualizar el Efectivo Actual en Caja."));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public BigDecimal getSalesNet() {
-        return salesNet;
-    }
-
-    public void setSalesNet(BigDecimal salesNet) {
-        this.salesNet = salesNet;
-    }
-
-    public BigDecimal getPurchasesNet() {
-        return purchasesNet;
-    }
-
-    public void setPurchasesNet(BigDecimal purchasesNet) {
-        this.purchasesNet = purchasesNet;
-    }
-
-    public boolean isDisabledButtonBreakdown() {
-        return disabledButtonBreakdown;
-    }
-
-    public void setDisabledButtonBreakdown(boolean disabledButtonBreakdown) {
-        this.disabledButtonBreakdown = disabledButtonBreakdown;
-    }
-
-    public BigDecimal getSalesEffective() {
-        return salesEffective;
-    }
-
-    public void setSalesEffective(BigDecimal salesEffective) {
-        this.salesEffective = salesEffective;
-    }
-
-//    public BigDecimal getSalesDedit() {
-//        return salesDedit;
-//    }
-//    
-//    public void setSalesDedit(BigDecimal salesDedit) {
-//        this.salesDedit = salesDedit;
-//    }
-//    
-//    public BigDecimal getSalesCredit() {
-//        return salesCredit;
-//    }
-//    
-//    public void setSalesCredit(BigDecimal salesCredit) {
-//        this.salesCredit = salesCredit;
-//    }
-    public BigDecimal getSalesCreditCollect() {
-        return salesCreditCollect;
-    }
-
-    public void setSalesCreditCollect(BigDecimal salesCreditCollect) {
-        this.salesCreditCollect = salesCreditCollect;
-    }
-
-    public BigDecimal getPurchasesCash() {
-        return purchasesCash;
-    }
-
-    public void setPurchasesCash(BigDecimal purchasesCash) {
-        this.purchasesCash = purchasesCash;
-    }
-
-//    public BigDecimal getPurchasesCredit() {
-//        return purchasesCredit;
-//    }
-//    
-//    public void setPurchasesCredit(BigDecimal purchasesCredit) {
-//        this.purchasesCredit = purchasesCredit;
-//    }
-    public BigDecimal getPurchasesCreditPaid() {
-        return purchasesCreditPaid;
-    }
-
-    public void setPurchasesCreditPaid(BigDecimal purchasesCreditPaid) {
-        this.purchasesCreditPaid = purchasesCreditPaid;
-    }
-
-    public BigDecimal getTransactionInput() {
-        return transactionInput;
-    }
-
-    public void setTransactionInput(BigDecimal transactionInput) {
-        this.transactionInput = transactionInput;
-    }
-
-    public BigDecimal getTransactionOutput() {
-        return transactionOutput;
-    }
-
-    public void setTransactionOutput(BigDecimal transactionOutput) {
-        this.transactionOutput = transactionOutput;
-    }
-
-    public Account getTransactionAccount() {
-        return transactionAccount;
-    }
-
-    public void setTransactionAccount(Account transactionAccount) {
-        this.transactionAccount = transactionAccount;
-    }
-
-    public BigDecimal getTransactionNet() {
-        return transactionNet;
-    }
-
-    public void setTransactionNet(BigDecimal transactionNet) {
-        this.transactionNet = transactionNet;
-    }
-
-    public BigDecimal getCashPrevious() {
-        return cashPrevious;
-    }
-
-    public void setCashPrevious(BigDecimal cashPrevious) {
-        this.cashPrevious = cashPrevious;
-    }
-
     public BigDecimal getCashCurrent() {
         return cashCurrent;
     }
 
     public void setCashCurrent(BigDecimal cashCurrent) {
         this.cashCurrent = cashCurrent;
+    }
+
+    public BigDecimal getCashFinally() {
+        return cashFinally;
+    }
+
+    public void setCashFinally(BigDecimal cashFinally) {
+        this.cashFinally = cashFinally;
     }
 
     public List<CashBoxDetail> getCashBoxBills() {
@@ -770,52 +577,28 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         this.cashBoxMoneys = cashBoxMoneys;
     }
 
-    public boolean isActivePanelBreakdown() {
-        return activePanelBreakdown;
-    }
-
-    public void setActivePanelBreakdown(boolean activePanelBreakdown) {
-        this.activePanelBreakdown = activePanelBreakdown;
-    }
-
-    public boolean isDisabledButtonCloseCashBoxGeneral() {
-        return disabledButtonCloseCashBoxGeneral;
-    }
-
-    public void setDisabledButtonCloseCashBoxGeneral(boolean disabledButtonCloseCashBoxGeneral) {
-        this.disabledButtonCloseCashBoxGeneral = disabledButtonCloseCashBoxGeneral;
-    }
-
-    public boolean isCashBoxInit() {
-        return cashBoxInit;
-    }
-
-    public void setCashBoxInit(boolean cashBoxInit) {
-        this.cashBoxInit = cashBoxInit;
-    }
-
-    public Long getCashBoxPartialInitId() {
-        return cashBoxPartialInitId;
-    }
-
-    public void setCashBoxPartialInitId(Long cashBoxPartialInitId) {
-        this.cashBoxPartialInitId = cashBoxPartialInitId;
-    }
-
-    public boolean isActivePanelInit() {
-        return activePanelInit;
-    }
-
-    public void setActivePanelInit(boolean activePanelInit) {
-        this.activePanelInit = activePanelInit;
-    }
-
     public boolean isRecordCompleto() {
         return recordCompleto;
     }
 
     public void setRecordCompleto(boolean recordCompleto) {
         this.recordCompleto = recordCompleto;
+    }
+
+    public Account getAccountMain() {
+        return accountMain;
+    }
+
+    public void setAccountMain(Account accountMain) {
+        this.accountMain = accountMain;
+    }
+
+    public RecordDetail getRecordDetailSelected() {
+        return recordDetailSelected;
+    }
+
+    public void setRecordDetailSelected(RecordDetail recordDetailSelected) {
+        this.recordDetailSelected = recordDetailSelected;
     }
 
     @Override
@@ -825,27 +608,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
 
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-        CashBoxPartial _instance = (CashBoxPartial) fuenteDatos;
-
-        RecordTemplate _recordTemplate = recordTemplateService.findUniqueByNamedQuery("RecordTemplate.findByCode", nombreRegla, this.organizationData.getOrganization());
         Record record = null;
-
-        if (isAccountingEnabled() && _recordTemplate != null && !Strings.isNullOrEmpty(_recordTemplate.getRule())) {
-            record = recordService.createInstance();
-            RuleRunner ruleRunner1 = new RuleRunner();
-            KnowledgeBuilderErrors kbers = ruleRunner1.run(_recordTemplate, _instance, record); //Armar el registro contable según la regla en recordTemplate
-            if (kbers != null) { //Contiene errores de compilación
-                logger.error(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("bussines.entity.rule.erroroncompile", "" + _recordTemplate.getCode(), _recordTemplate.getName()));
-                logger.error(kbers.toString());
-                record = null; //Invalidar el record
-            } else {
-                record.setBussinesEntityType(_instance.getClass().getSimpleName());
-                record.setBussinesEntityId(getCashBoxPartialInitId());
-                record.setBussinesEntityHashCode(_instance.hashCode());
-                record.setName(String.format("%s: %s[id=%d]", _recordTemplate.getName(), getClass().getSimpleName(), _instance.getId()));
-                record.setDescription(String.format("REGISTRO INICIAL PARA CIERRES DE CAJA\n %s| \nCuenta acreditada: CAJA DIA,\nCuenta debitada: %s, \nMonto: %s", this.subject.getId(), _instance.getAccountDeposit().getName(), Strings.format(_instance.getCashFinally().doubleValue(), "$ #0.##")));
-            }
-        }
         //El registro casí listo para agregar al journal
         return record;
     }

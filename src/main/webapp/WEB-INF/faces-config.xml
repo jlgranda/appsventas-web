@@ -195,23 +195,23 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>close-cash</from-outcome>
-            <to-view-id>/pages/accounting/close_cash.jsf</to-view-id>
+            <from-outcome>cash-partials</from-outcome>
+            <to-view-id>/pages/accounting/cash_partials.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>ajust-cash</from-outcome>
-            <to-view-id>/pages/accounting/cash_ajust.jsf</to-view-id>
+            <from-outcome>cash-initial</from-outcome>
+            <to-view-id>/pages/accounting/cash_initial.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>cash-close</from-outcome>
-            <to-view-id>/pages/accounting/cash_close.jsf</to-view-id>
+            <from-outcome>cash-breakdown</from-outcome>
+            <to-view-id>/pages/accounting/cash_breakdown.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>cash-close-history</from-outcome>
-            <to-view-id>/pages/accounting/cash_close_history.jsf</to-view-id>
+            <from-outcome>cash-acounting</from-outcome>
+            <to-view-id>/pages/accounting/cash_accounting.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

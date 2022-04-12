@@ -17,10 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE html>
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
@@ -133,7 +135,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <p:panel id="panel-button-history-a" rendered="#{not empty cashBoxGeneralHome.cashBoxGeneral.id and cashBoxGeneralHome.activePanelBreakdown}"
                                          class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BordCard TexAlCenter Padding5 MarTop5">
-                                    <p:link outcome="cash-close-history" 
+                                    <p:link outcome="cash-partials" 
                                             value="#{i18n['common.view']} #{i18n['app.fede.accounting.close.cashs.partials']} #{i18n['common.registereds']}">
                                         <f:param name="cashBoxGeneralId" value="#{cashBoxGeneralHome.cashBoxGeneralId}"/>
                                     </p:link>
@@ -285,7 +287,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:panel>
                         <p:panel id="panel-button-history-b" rendered="#{!cashBoxGeneralHome.activePanelBreakdown and not empty cashBoxGeneralHome.cashBoxGeneral.id}"
                                  class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 BordCard MarTop2 BordCard TexAlCenter Padding5 TexUppercase">
-                            <p:link outcome="cash-close-history" 
+                            <p:link outcome="cash-partials" 
                                     value="#{i18n['common.view']} #{i18n['app.fede.accounting.close.cashs.partials']} #{i18n['common.registereds']}">
                                 <f:param name="cashBoxGeneralId" value="#{cashBoxGeneralHome.cashBoxGeneralId}"/>
                             </p:link>
