@@ -106,8 +106,6 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private GeneralJournalService generalJournalService;
     @EJB
     private RecordService recordService;
-    @EJB
-    private RecordTemplateService recordTemplateService;
 
     /**
      * EDIT OBJECT.

@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column>
                                 <h:outputText value="#{ui.renderer('', entidad)}"/>
                             </p:column>
-                            <p:ajax event="itemSelect" listener="#{proveedorHome.clear()}" update="@form" partialSubmit="true"></p:ajax>
+                            <p:ajax event="itemSelect" listener="#{proveedorHome.clear()}" update="@form" partialSubmit="#{true}"></p:ajax>
                         </p:autoComplete>
                         <p:commandButton id="button-change-provider"
                                          icon="fa fa-user-plus" styleClass="primary-button"
@@ -169,10 +169,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g ui-fluid">
                         <h1 class="TexUppercase"><strong>#{i18n['common.add']} #{i18n['common.supplier']}: #{proveedorHome.proveedor.owner.code} - #{proveedorHome.proveedor.owner.fullName}</strong></h1>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" type="calendar" label="#{i18n['app.fede.payments.date.pay.prefered']}" 
-                                            value="#{proveedorHome.proveedor.fechaPreferidaPago}"
-                                            required="#{true}" placeholder="false" 
-                                            render="fecha-preferida-pago"/>
+                            <jlgranda:input id="fecha-preferida-pago" name="fecha-preferida-pago" render="fecha-preferida-pago" container="none" 
+                                            type="calendar" 
+                                            value="#{proveedorHome.proveedor.fechaPreferidaPago}" label="#{i18n['app.fede.payments.date.pay.prefered']}" 
+                                            required="#{true}"
+                                            placeholder="#{false}"/>
                         </div>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:toolbar rendered="#{true}">

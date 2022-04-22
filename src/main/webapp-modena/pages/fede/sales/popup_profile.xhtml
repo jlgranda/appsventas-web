@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
                                 <jlgranda:input id="email" name="email" type="text" label="#{i18n['email']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                                 execute="@this save" render="email"/>
                                 <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['address']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 

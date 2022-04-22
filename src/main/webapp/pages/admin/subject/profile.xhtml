@@ -55,21 +55,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         inlinehelp="#{messages['common.lastname.inlinehelp']}" execute="@this save" render="lstn"/>
 
                         <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                        value="#{subjectAdminHome.subjectEdit.description}" required="false" 
+                                        value="#{subjectAdminHome.subjectEdit.description}" required="#{false}" 
                                         inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
 
                         <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                         value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                        required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                         execute="@this save" render="email"/>
 
                         <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
                                         value="#{subjectAdminHome.subjectEdit.mobileNumber}"
-                                        required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                         execute="@this save" render="mobileNumber"/>
 
                         <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
-                                        value="#{subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
+                                        value="#{subjectAdminHome.subjectEdit.bio}" required="#{false}" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
                                         execute="@this save" render="bio"/>
                     </div>
                     <p:panel rendered="#{!subjectAdminHome.subjectEdit.persistent}">
@@ -78,7 +78,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         execute="@this save" render="clave">
                         </jlgranda:input>
                         <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['app.signin.password.confirm']}" 
-                                        value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="#{true}"
+                                        value="#{subjectAdminHome.confirmarClave}" rendered="#{false}" placeholder="#{true}"
                                         execute="@this save" render="confirmar-clave"/>
                     </p:panel>
                 </div>

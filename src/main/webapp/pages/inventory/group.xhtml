@@ -68,11 +68,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                         inlinehelp="#{messages['common.module.inlinehelp']}"
                                                         execute="@this save" render="module"/>-->
                     <!--                    <jlgranda:input id="colr" name="colr" type="text" label="#{i18n['common.color']}"
-                                                        value="#{groupInventoryHome.group.color}" required="false"
+                                                        value="#{groupInventoryHome.group.color}" required="#{false}"
                                                         inlinehelp="#{messages['common.color.inlinehelp']}"
                                                         execute="@this save" render="colr"/>                    -->
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
-                                    value="#{groupInventoryHome.group.description}" required="false"
+                                    value="#{groupInventoryHome.group.description}" required="#{false}"
                                     inlinehelp="#{messages['app.fede.inventory.group.description.inlinehelp']}"
                                     render="dscrpn"/>
                 </div>

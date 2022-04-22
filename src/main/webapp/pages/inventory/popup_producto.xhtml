@@ -47,10 +47,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
                         
                         <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
-                                        value="#{inventoryHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
+                                        value="#{inventoryHome.product.description}" required="#{false}" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
                         
                         <jlgranda:input id="price" name="price" type="number" label="#{i18n['common.price']}" 
-                                        value="#{inventoryHome.product.price}" required="false" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
+                                        value="#{inventoryHome.product.price}" required="#{false}" inlinehelp="#{messages['app.fede.inventory.product.price.inlinehelp']}" execute="@this save" render="price"/>
                         
                         <div class="Wid50 Fleft Responsive50">
                             <p:commandButton value="#{i18n['common.save']}" ajax="true" 

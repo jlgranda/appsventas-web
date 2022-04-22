@@ -56,14 +56,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         inlinehelp="#{messages['common.lastnames.inlinehelp']}" render="lstn"/>
                         <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
                                         value="#{facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.mobileNumber}"
-                                        required="#{!facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        required="#{!facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                         render="phone"/>
                         <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                         value="#{facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                        required="#{!facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        required="#{!facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                         render="email"/>
                         <jlgranda:input id="description" name="description" type="textarea" label="#{i18n['common.address']}" 
-                                        value="#{facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                        value="#{facturaElectronicaGastoHome.subjectAdminHome.subjectEdit.description}" required="#{false}" 
                                         inlinehelp="#{messages['address.inlinehelp']}" render="description"/>
                     </div>
                     <div class="ui-g ui-lg-12">

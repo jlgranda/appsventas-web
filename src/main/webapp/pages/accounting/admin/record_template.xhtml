@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     class="ui-panelgrid-blank form-group"
                                     container="none"/>
                     <jlgranda:input id="rule" name="rule" type="textarea" label="#{i18n['bussines.entity.rule']}" 
-                                    value="#{recordTemplateHome.recordTemplate.rule}" required="false" 
+                                    value="#{recordTemplateHome.recordTemplate.rule}" required="#{false}" 
                                     inlinehelp="#{messages['bussines.entity.rule']}" render="rule"
                                     class="ui-panelgrid-blank form-group"
                                     rows="#{settingHome.getValue('app.ui.textarea.rows', '32')}" maxlength="#{settingHome.getValue('app.ui.textarea.maxlength', '10240')}"

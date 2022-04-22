@@ -77,7 +77,7 @@
                                                          required="true" immediate="true"
                                                          onchange="submit()"> 
                                             <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
-                                            <p:ajax event="change" listener="#{organizationData.organizationValueChange}" partialSubmit="true"/>
+                                            <p:ajax event="change" listener="#{organizationData.organizationValueChange}" partialSubmit="#{true}"/>
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
                                             <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
                                         </p:selectOneMenu>-->

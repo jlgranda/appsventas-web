@@ -103,7 +103,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}"
                                                                 render="amount" value="#{cashBoxGeneralHome.recordDetail.amount}" 
                                                                 required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
-                                                                placeholder="false"
+                                                                placeholder="#{false}"
                                                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                                 decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 

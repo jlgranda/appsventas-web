@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column>
                                         <h:outputText value="#{entidad.fullName.toUpperCase()}"/>
                                     </p:column>
-                                    <p:ajax update="rcdd-btn-add" partialSubmit="true"></p:ajax>
+                                    <p:ajax update="rcdd-btn-add" partialSubmit="#{true}"></p:ajax>
                                 </p:autoComplete>
                                 <h:outputText value="#{i18['common.supplier.invoce.none']}" />
                                 <p:selectBooleanCheckbox value="#{facturaElectronicaGastoHome.useDefaultSupplier}"
@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                            disabled="#{true}"
                                            rendered="#{empty facturaElectronicaGastoHome.facturaElectronica.id}"
                                            immediate="false">
-                                    <p:ajax listener="#{facturaElectronicaGastoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="true"></p:ajax>
+                                    <p:ajax listener="#{facturaElectronicaGastoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="#{true}"></p:ajax>
                                 </p:spinner>
                                 <p:calendar id="fechaVencimiento" 
                                             value="#{facturaElectronicaGastoHome.facturaElectronica.fechaVencimiento}" 
@@ -250,11 +250,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <jlgranda:input id="rcdd-amount" name="rcdd-amount" type="decimal" label="#{i18n['common.money.letter']}"
                                         render="rcdd-amount" value="#{facturaElectronicaGastoHome.recordDetail.amount}" 
                                         required="true" requiredMessage="#{i18n['common.money.letter']}"
-                                        placeholder="false"
+                                        placeholder="#{false}"
                                         decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                         thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                        container="none" rendered="true"/>
+                                        container="none" rendered="#{true}"/>
                         <div class="ui-g-12" style="display: inline-flex; padding: 0.5rem 0 0 0">
                             <p:commandButton id="rcdd-btn-save" 
                                              value="#{i18n['common.add']}" icon="fa fa-check" styleClass="danger-btn" 
@@ -329,8 +329,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularMontoAbonado()}" update="pay-amount pay-cash" partialSubmit="true"></p:ajax>
-                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularVueltoAbonado()}" update="pay-amount pay-change" partialSubmit="true"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularMontoAbonado()}" update="pay-amount pay-cash" partialSubmit="#{true}"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularVueltoAbonado()}" update="pay-amount pay-change" partialSubmit="#{true}"></p:ajax>
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -342,8 +342,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularMontoAbonado()}" update="pay-cash" partialSubmit="true"></p:ajax>
-                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="true"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularMontoAbonado()}" update="pay-cash" partialSubmit="#{true}"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="#{true}"></p:ajax>
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -355,7 +355,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="true"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaGastoHome.calcularVueltoAbonado()}" update="pay-change" partialSubmit="#{true}"></p:ajax>
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">

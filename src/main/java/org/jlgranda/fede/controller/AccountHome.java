@@ -40,6 +40,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
@@ -165,16 +166,9 @@ public class AccountHome extends FedeController implements Serializable {
         setAccount(accountService.createInstance());
         setParentAccount(accountService.createInstance());
 
-        int range = 0;
-        try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.ACCOUNT_TOP_RANGE, "7"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 7;
-        }
         //Inicialización de variables, objetos, métodos.
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd())-1))));
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
@@ -186,6 +180,7 @@ public class AccountHome extends FedeController implements Serializable {
 
         setRangeReport(-1);
         setFundAccountMain(BigDecimal.ZERO);
+        setFundAccountMainRange(BigDecimal.ZERO);
         setFundOldAccountSelected(BigDecimal.ZERO);
 
         initializeActions();

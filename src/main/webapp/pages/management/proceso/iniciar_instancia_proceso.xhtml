@@ -77,7 +77,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         type="richtext" 
                                         label="#{i18n['app.document.task.description']}" placeholder="true"
                                         value="#{instanciaProcesoHome.instanciaProceso.description}" execute="@this save" render="ip-descrpn" 
-                                        required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
+                                        required="#{false}" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                         container="none"/>
                         <!-- TAREA 0 -->
                         <!-- Destinatario -->
@@ -177,13 +177,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:panelGrid columns="3" layout="grid">
                                 <jlgranda:input id="documentName" name="documentName" type="text" 
                                                 placeholder="true" label="#{i18n['common.name']}" 
-                                                value="#{instanciaProcesoHome.documento.name}" required="false" />
+                                                value="#{instanciaProcesoHome.documento.name}" required="#{false}" />
 
                                 <jlgranda:input id="documentType" name="documentType" type="select" 
                                                 placeholder="true" label="#{i18n['common.type']}" 
                                                 value="#{instanciaProcesoHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
                                                 converter="omnifaces.SelectItemsConverter"
-                                                required="false" 
+                                                required="#{false}" 
                                                 execute="none" listener="none" render="none"
                                                 onchange="return;"/>
 

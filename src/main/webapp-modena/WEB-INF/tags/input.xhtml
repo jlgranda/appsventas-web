@@ -66,7 +66,10 @@ limitations under the License.
                     </p:password>
                 </c:when>
                 <c:when test="#{type == 'java.util.Date' or type == 'calendar'}">
-                    <p:calendar value="#{value}" id="#{name}" navigator="true" label="#{label}" disabled="false" class="#{class}">
+                    <p:calendar value="#{value}" id="#{name}" navigator="#{true}" label="#{label}" 
+                                disabled="false"
+                                pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}"
+                                class="#{class}">
                         <f:validator validatorId="#{validator}"/>        
                         <p:ajax event="dateSelect" update="#{render}" partialSubmit="true"/>
                     </p:calendar>  

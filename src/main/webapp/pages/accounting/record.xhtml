@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <h1 class="TexUppercase">#{i18n['app.fede.accounting.record']}</h1>
                     <div class="ui-fluid">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}"
                                                 render="amount" value="#{recordHome.recordDetail.amount}" 
                                                 required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
-                                                placeholder="false"
+                                                placeholder="#{false}"
                                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                 decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 

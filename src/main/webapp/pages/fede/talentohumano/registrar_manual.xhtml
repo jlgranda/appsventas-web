@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column>
                                 <h:outputText value="#{ui.renderer('', entidad.owner)}"/>
                             </p:column>
-                            <p:ajax event="itemSelect" update="@form" partialSubmit="true" listener="#{journalHome.clear()}"></p:ajax>
+                            <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}" listener="#{journalHome.clear()}"></p:ajax>
                         </p:autoComplete>
                     </div>
                     <div class="ui-g-7">
@@ -90,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g-4">
                                 <label class="Gray">#{i18n['common.month']}&nbsp;</label>
                                 <p:calendar value="#{journalHome.monthSelected}" class="input-sm"
-                                            navigator="true" mode="popup" >
+                                            navigator="#{true}" mode="popup" >
                                     <p:ajax event="dateSelect" listener="#{journalHome.onMonthSelected()}" update="@form" /> 
                                 </p:calendar>
 
@@ -119,7 +119,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
                                 <jlgranda:input id="observation" name="description" type="textarea" label="#{i18n['common.observation']}" 
-                                                value="#{journalHome.journal.description}" required="false" inlinehelp="#{messages['common.observation.inlinehelp']}" 
+                                                value="#{journalHome.journal.description}" required="#{false}" inlinehelp="#{messages['common.observation.inlinehelp']}" 
                                                 render="observation"/>
                                 <p:commandButton id="add-btn" value="#{i18n['Add']}" actionListener="#{journalHome.add()}" 
                                                  icon="fa fa-check" >

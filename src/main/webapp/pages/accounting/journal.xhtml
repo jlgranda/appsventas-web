@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     inlinehelp="#{messages['app.fede.accounting.journal.name.inlinehelp']}"
                                     execute="@this save" render="nme"/>
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.observation']}"
-                                    value="#{generalJournalHome.journal.description}" required="false"
+                                    value="#{generalJournalHome.journal.description}" required="#{false}"
                                     inlinehelp="#{messages['app.fede.accounting.journal.description.inlinehelp']}"
                                     execute="@this save" render="dscrpn"/>
                     <p:toolbar rendered="#{true}">
@@ -139,9 +139,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:selectOneMenu>
                                 </div>
                                 <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}">
-                                    <jlgranda:input id="general-journal-date" name="general-journal-date" type="calendar" label="#{i18n['app.fede.accounting.record.date']}" 
-                                                    update="selectedToolBar" value="#{generalJournalHome.generalJournalDate}" 
-                                                    required="false" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
+                                    <jlgranda:input id="general-journal-date" name="general-journal-date" 
+                                                    type="calendar"
+                                                    value="#{generalJournalHome.generalJournalDate}" label="#{i18n['app.fede.accounting.record.date']}" 
+                                                    required="#{false}" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
+                                                    update="selectedToolBar" 
                                                     container="none"/>
                                 </p:panel>
                                 <p:commandButton id="go-button"

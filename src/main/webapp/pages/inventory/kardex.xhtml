@@ -175,33 +175,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:selectOneMenu id="operationtype-input" value="#{kardexInventoryHome.kardexDetail.operationType}" style="width: 100%;"
                                          required="#{true}">
                             <f:selectItems value="#{ui.getOperationTypesAsSelectItem(kardexInventoryHome.operationTypeFlow)}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                            <p:ajax update="btn-agregar" partialSubmit="true"></p:ajax>
+                            <p:ajax update="btn-agregar" partialSubmit="#{true}"></p:ajax>
                         </p:selectOneMenu>
                         <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}" 
                                         render="quantity" value="#{kardexInventoryHome.kardexDetail.quantity}" 
                                         required="true" requiredMessage="#{i18n['common.quantity']}"
-                                        placeholder="false" minValue="0"
+                                        placeholder="#{false}" minValue="0"
                                         decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                         thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                        container="none" rendered="true"
+                                        container="none" rendered="#{true}"
                                         update="btn-agregar"/>
                         <jlgranda:input id="unit_value" name="unit_value" type="decimal" label="#{i18n['common.price.unit']}" 
                                         render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
                                         required="true" requiredMessage="#{i18n['common.price.unit']}"
-                                        placeholder="false" minValue="0"
+                                        placeholder="#{false}" minValue="0"
                                         decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                         thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                        container="none" rendered="true"
+                                        container="none" rendered="#{true}"
                                         update="btn-agregar"/>
                         <jlgranda:input id="entryon" name="entryon" type="calendar-time" label="#{i18n['common.date.register']}" 
                                         render="entryon" value="#{kardexInventoryHome.kardexDetail.entryOn}" 
-                                        required="false" requiredMessage="#{i18n['common.date.register']}"
+                                        required="#{false}" requiredMessage="#{i18n['common.date.register']}"
                                         container="none"/>
                         <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.vaucher']} #{i18n['common.nr']}" 
                                         render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
-                                        required="false" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
+                                        required="#{false}" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
                                         container="none" 
                                         listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-agregar"/>
                     </div>
@@ -248,7 +248,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <p:column>
                                                         <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
                                                     </p:column>
-                                                    <p:ajax event="itemSelect" update="entradaDialog, kardex-code" partialSubmit="true" listener="#{kardexInventoryHome.generateCode()}"></p:ajax>
+                                                    <p:ajax event="itemSelect" update="entradaDialog, kardex-code" partialSubmit="#{true}" listener="#{kardexInventoryHome.generateCode()}"></p:ajax>
                                                 </p:autoComplete>
                                             </div>
                                             <div class="ui-inputgroup" style="width: 100%">

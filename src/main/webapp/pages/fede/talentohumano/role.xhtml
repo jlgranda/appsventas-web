@@ -47,13 +47,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}" 
                                     value="#{jobRoleHome.jobRole.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
-                                    value="#{jobRoleHome.jobRole.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
+                                    value="#{jobRoleHome.jobRole.description}" required="#{false}" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
 
                     <jlgranda:input id="remuneration" name="remuneration" type="number" label="#{i18n['common.remuneration']}" 
-                                    value="#{jobRoleHome.jobRole.remuneration}" required="false" inlinehelp="#{messages['app.fede.talentohumano.remuneration.inlinehelp']}" execute="@this save" render="remuneration"/>
+                                    value="#{jobRoleHome.jobRole.remuneration}" required="#{false}" inlinehelp="#{messages['app.fede.talentohumano.remuneration.inlinehelp']}" execute="@this save" render="remuneration"/>
                     
                     <jlgranda:input id="dedication" name="dedication" type="number" label="#{i18n['app.fede.talentohumano.dedication']}" 
-                                    value="#{jobRoleHome.jobRole.dedication}" required="false" inlinehelp="#{messages['app.fede.talentohumano.dedication.inlinehelp']}" execute="@this save" render="dedication"/>
+                                    value="#{jobRoleHome.jobRole.dedication}" required="#{false}" inlinehelp="#{messages['app.fede.talentohumano.dedication.inlinehelp']}" execute="@this save" render="dedication"/>
 
                 </div>
                 <div class="EmptyBox10"></div>

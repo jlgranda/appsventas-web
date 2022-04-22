@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                   player="pdf" width="100%" height="250"/>-->
                         <jlgranda:input id="documentNam" name="documentNam" type="text" 
                                         label="#{i18n['common.name']}" 
-                                        value="#{tareaHome.documentoAceptar.name}" required="false" 
+                                        value="#{tareaHome.documentoAceptar.name}" required="#{false}" 
                                         execute="@this save" render="documentNam"
                                         />
                         <h:panelGrid columns="2" cellpadding="10">
@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         container="default"/>
                         <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.document.number']}" 
                                         value="#{tareaHome.documentoAceptar.numeroRegistro}" render="numReg" 
-                                        execute="@this save" required="false"  />
+                                        execute="@this save" required="#{false}"  />
 
                         <div class="Wid33 Fleft Responsive">
                             <p:commandButton value="#{i18n['common.accept']}"

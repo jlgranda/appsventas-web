@@ -112,7 +112,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:selectOneRadio id="recordDetailType" 
                                                               value="#{generalJournalHome.recordDetail.recordDetailType}" 
                                                               layout="responsive" columns="3"
-                                                              required="false" style="width: 20rem;">
+                                                              required="#{false}" style="width: 20rem;">
                                                 <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
                                                                itemLabel="#{recordDetailType.label}" itemValue="#{recordDetailType}"/>
                                                 <p:ajax process="@this"/>
@@ -122,8 +122,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="padding: 0rem">
                                             <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}"
                                                             render="amount" value="#{generalJournalHome.recordDetail.amount}" 
-                                                            required="false" requiredMessage="#{i18n['common.money.letter']}"
-                                                            placeholder="false"
+                                                            required="#{false}" requiredMessage="#{i18n['common.money.letter']}"
+                                                            placeholder="#{false}"
                                                             decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                             thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                             decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 

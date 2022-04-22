@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="content">
             <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="true"
+                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="#{true}"
                                     value="#{proveedorHome.subjectAdminHome.subjectEdit.code}" 
                                     validator="#{'rucValidator'}" maxlength="13"
                                     disabled="#{proveedorHome.subjectAdminHome.subjectEdit.persistent}"
@@ -59,14 +59,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     inlinehelp="#{messages['common.name.inlinehelp']}" render="alias"/>
                     <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
                                     value="#{proveedorHome.subjectAdminHome.subjectEdit.mobileNumber}"
-                                    required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                    required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                     render="phone"/>
                     <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                     value="#{proveedorHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                    required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                    required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                     render="email"/>
                     <jlgranda:input id="description" name="description" type="textarea" label="#{i18n['common.address']}" 
-                                    value="#{proveedorHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                    value="#{proveedorHome.subjectAdminHome.subjectEdit.description}" required="#{false}" 
                                     inlinehelp="#{messages['address.inlinehelp']}" render="description"/>
                 </div>
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">

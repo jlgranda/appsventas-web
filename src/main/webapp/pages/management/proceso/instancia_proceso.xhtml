@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </ui:repeat>
 
                         <!-- responder/redireccionar -->
-                        <h:panelGroup id="responsePanel" layout="block" class="ui-g ui-fluid" rendered="true">
+                        <h:panelGroup id="responsePanel" layout="block" class="ui-g ui-fluid" rendered="#{true}">
 
                             <div class="Separator"></div>
                             <div class="EmptyBox20"></div>
@@ -185,7 +185,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                                 <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                                 value="#{instanciaProcesoHome.tarea.description}" execute="@this save" render="descrpn" 
-                                                required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
+                                                required="#{false}" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                                 container="none"/>
 
                                 <div class="DispBlockDocuments">
@@ -254,13 +254,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:panelGrid columns="3" layout="grid">
                                         <jlgranda:input id="documentName" name="documentName" type="text" 
                                                         placeholder="true" label="#{i18n['common.name']}" 
-                                                        value="#{instanciaProcesoHome.documento.name}" required="false" />
+                                                        value="#{instanciaProcesoHome.documento.name}" required="#{false}" />
 
                                         <jlgranda:input id="documentType" name="documentType" type="select" 
                                                         placeholder="true" label="#{i18n['common.type']}" 
                                                         value="#{instanciaProcesoHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
                                                         converter="omnifaces.SelectItemsConverter"
-                                                        required="false" 
+                                                        required="#{false}" 
                                                         execute="none" listener="none" render="none"
                                                         onchange="return;"/>
 

@@ -52,13 +52,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="EmptyBox10"></div>
                             <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}" 
                                             value="#{templateHome.template.code}"
-                                            required="#{!templateHome.template.persistent}" placeholder="false" render="code"/>
+                                            required="#{!templateHome.template.persistent}" placeholder="#{false}" render="code"/>
                             <jlgranda:input id="title" name="title" type="text" label="#{i18n['app.mail.template.title']}" 
                                             value="#{templateHome.template.title}"
-                                            required="#{!templateHome.template.persistent}" placeholder="false" render="title"/>
+                                            required="#{!templateHome.template.persistent}" placeholder="#{false}" render="title"/>
                             <jlgranda:input id="body" name="body" type="richtext" label="#{i18n['app.mail.template.body']}" 
                                             value="#{templateHome.template.body}" render="body" 
-                                            required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
+                                            required="#{false}" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                             container="none"/>
 
                             <div class="EmptyBox10"></div>

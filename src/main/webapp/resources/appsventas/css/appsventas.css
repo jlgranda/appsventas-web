@@ -614,6 +614,9 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Align */
+.AlignItemsCenter{
+    align-items: center;
+}
 .AlignSelfCenter{
     align-self: center;
 }
@@ -644,8 +647,14 @@ input[type="text"], input[type="password"], textarea{
     float:left;
 }
 
+
+
 .FlexNowRap{
     flex-wrap: nowrap !important;
+}
+
+.FlexColumn{
+    flex-flow: column;
 }
 
 .DispInlFlexRight{
@@ -987,6 +996,9 @@ input[type="text"], input[type="password"], textarea{
 }
 .Wid5{
     width:5%;
+}
+.WidAuto{
+    width: auto;
 }
 
 .MaxWid500{

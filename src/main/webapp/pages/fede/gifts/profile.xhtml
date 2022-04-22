@@ -58,24 +58,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         class="ui-panelgrid-blank form-group"
                                         container="none"/>
                         <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                        value="#{subjectHome.signup.description}" required="false" 
+                                        value="#{subjectHome.signup.description}" required="#{false}" 
                                         inlinehelp="#{messages['address.inlinehelp']}" render="addrs"
                                         class="ui-panelgrid-blank form-group"
                                         container="none"/>
                         <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                         value="#{subjectHome.signup.email}" validator="emailValidator"
-                                        required="#{!subjectHome.signup.persistent}" placeholder="false" 
+                                        required="#{!subjectHome.signup.persistent}" placeholder="#{false}" 
                                         execute="@this save" render="email"
                                         class="ui-panelgrid-blank form-group"
                                         container="none"/>
                         <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
                                         value="#{subjectHome.signup.mobileNumber}"
-                                        required="#{!subjectHome.signup.persistent}" placeholder="false" 
+                                        required="#{!subjectHome.signup.persistent}" placeholder="#{false}" 
                                         execute="@this save" render="mobileNumber"
                                         class="ui-panelgrid-blank form-group"
                                         container="none"/>
                         <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
-                                        value="#{subjectHome.signup.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
+                                        value="#{subjectHome.signup.bio}" required="#{false}" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
                                         render="bio"
                                         class="ui-panelgrid-blank form-group"
                                         container="none"/>

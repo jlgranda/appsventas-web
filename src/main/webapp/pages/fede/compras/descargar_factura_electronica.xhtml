@@ -45,7 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ui-g ui-fluid">
                     <div class="ui-g ui-g-12">
                         <jlgranda:input id="url" name="url" type="text" label="#{i18n['common.URL']} al ZIP o XML de la factura electrónica" 
-                                        value="#{facturaElectronicaHome.url}" required="false" inlinehelp="#{messages['url.inlinehelp']}" execute="@this save" render="url"/>
+                                        value="#{facturaElectronicaHome.url}" required="#{false}" inlinehelp="#{messages['url.inlinehelp']}" execute="@this save" render="url"/>
 
                         <p:commandButton rendered="#{true}" value="#{i18n['common.add']}" ajax="#{true}" update="@parent" 
                                          actionListener="#{facturaElectronicaHome.addURL()}" disabled="false" />

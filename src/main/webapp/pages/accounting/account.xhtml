@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:inputText>
                     </div>
                     <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
-                                    value="#{accountHome.account.description}" required="false"
+                                    value="#{accountHome.account.description}" required="#{false}"
                                     inlinehelp="#{messages['app.fede.accounting.account.description.inlinehelp']}"
                                     execute="@this save" render="dscrpn"/>
                 </div>
