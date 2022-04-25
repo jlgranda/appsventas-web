@@ -78,7 +78,9 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
 
     private Account accountSelected;
     private BigDecimal accountSelectedFundTotal;//Saldo de la cuenta seleccionada desde el 1 registro hasta hoy
-    private BigDecimal accountSelectedFundPartial;//Saldo de la cuenta seleccionada desde el 1 registro hasta la fecha end
+    private BigDecimal accountSelectedDebePartial;//Saldo de la cuenta seleccionada desde el 1 registro hasta la fecha end
+    private BigDecimal accountSelectedHaberPartial;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha end
+    private BigDecimal accountSelectedFundPartial;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha end
     private BigDecimal accountSelectedFundPrevious;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha start
     private List<RecordDetail> accountSelectedRecords;
 
@@ -164,13 +166,10 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
     public void getSummaryRecordByAccount() {
         setRangeId(-1);
         initVariablesSummary();
-        System.out.println("\n\n");
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>><<<<");
-        System.out.println("\ngetStart:: "+getStart());
-        System.out.println("\ngetEnd:: "+getEnd());
-        System.out.println("\n\n");
-        setAccountSelectedFundTotal(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(getEnd())));
-        setAccountSelectedFundPartial(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(getEnd())));
+        setAccountSelectedFundTotal(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.now())));
+        setAccountSelectedDebePartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.DEBE, getAccountSelected(), this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
+        setAccountSelectedHaberPartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.HABER, getAccountSelected(), this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
+        setAccountSelectedFundPartial(getAccountSelectedDebePartial().subtract(getAccountSelectedHaberPartial()));
         setAccountSelectedFundPrevious(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.addDays(getStart(), -1 * 1))));
         setAccountSelectedRecords(recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", getAccountSelected(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
@@ -178,8 +177,9 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
 
     private void initVariablesSummary() {
         setAccountSelectedFundTotal(BigDecimal.ZERO);
+        setAccountSelectedDebePartial(BigDecimal.ZERO);
+        setAccountSelectedHaberPartial(BigDecimal.ZERO);
         setAccountSelectedFundPartial(BigDecimal.ZERO);
-        setAccountSelectedFundPrevious(BigDecimal.ZERO);
         setAccountSelectedRecords(new ArrayList<>());
     }
 
@@ -266,6 +266,22 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
 
     public void setAccountSelectedFundTotal(BigDecimal accountSelectedFundTotal) {
         this.accountSelectedFundTotal = accountSelectedFundTotal;
+    }
+
+    public BigDecimal getAccountSelectedDebePartial() {
+        return accountSelectedDebePartial;
+    }
+
+    public void setAccountSelectedDebePartial(BigDecimal accountSelectedDebePartial) {
+        this.accountSelectedDebePartial = accountSelectedDebePartial;
+    }
+
+    public BigDecimal getAccountSelectedHaberPartial() {
+        return accountSelectedHaberPartial;
+    }
+
+    public void setAccountSelectedHaberPartial(BigDecimal accountSelectedHaberPartial) {
+        this.accountSelectedHaberPartial = accountSelectedHaberPartial;
     }
 
     public BigDecimal getAccountSelectedFundPartial() {

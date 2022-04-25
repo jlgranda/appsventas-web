@@ -89,15 +89,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
                                     </h:outputText>
                                 </div>
-                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BackgroundInfo Fs14">
-                                    #{i18n['common.fund']} en el periodo contable hasta el
-                                    <h:outputText value="#{generalLedgerHome.end}">
-                                        <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
-                                    </h:outputText>:&nbsp;
-                                    <h:outputText value="#{generalLedgerHome.accountSelectedFundPartial}" class="FontBold">
-                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                    </h:outputText>
-                                </div>
                             </p:toolbarGroup>
                         </p:toolbar>
                         <p:toolbar id="topToolBar" class="NoBorder FlexColumn">
@@ -136,17 +127,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:selectOneRadio>
                             </p:toolbarGroup>
                         </p:toolbar>
-<!--                        <p:toolbar id="topToolBarFundPrevious" class="NoBorder NoPadding">
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                #{i18n['app.fede.accounting.account.fund.previous']} al 
-                                <h:outputText value="#{generalLedgerHome.start}">
-                                    <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
-                                </h:outputText>:&nbsp;
-                                <h:outputText value="#{generalLedgerHome.accountSelectedFundPrevious}" class="FontBold">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                </h:outputText>
-                            </div>
-                        </p:toolbar>-->
                         <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
                                      value="#{generalLedgerHome.accountSelectedRecords}" var="recordDetail"
                                      selection="#{generalJournalHome.selectedBussinesEntities}"
@@ -157,6 +137,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                      sortMode="single"
                                      editable="#{false}">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column rowspan="2" colspan="2" class="BackgroundWarning NoBorder TexUppercase">
+                                        <f:facet name="header">
+                                            <span> #{i18n['common.fund']} en el periodo contable del </span>
+                                            <h:outputText value="#{generalLedgerHome.start}" class="Info">
+                                                <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
+                                            </h:outputText>&nbsp;
+                                            <span> al </span>
+                                            <h:outputText value="#{generalLedgerHome.end}" class="Info">
+                                                <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
+                                            </h:outputText>&nbsp;
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column headerText="#{i18n['common.debe']}" class="BackgroundWarning NoBorder TexUppercase"/>
+                                    <p:column headerText="#{i18n['common.haber']}" class="BackgroundWarning NoBorder TexUppercase"/>
+                                    <p:column headerText="#{i18n['common.fund']}" class="BackgroundWarning NoBorder TexUppercase"/>
+                                    <p:column class="BackgroundWarning NoBorder TexUppercase"/>
+                                </p:row>
+                                <p:row>
+                                    <p:column class="BackgroundWarning NoBorder">
+                                        <f:facet name="header" >
+                                            <h:outputText value="#{generalLedgerHome.accountSelectedDebePartial}" class="Fright">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column class="BackgroundWarning NoBorder">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{generalLedgerHome.accountSelectedHaberPartial}" class="Fright">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column class="BackgroundWarning NoBorder">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{generalLedgerHome.accountSelectedFundPartial}" class="Fright" 
+                                                          style="#{generalLedgerHome.accountSelectedFundPartial lt 0 ? 'color: #e91224': ''}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column class="BackgroundWarning NoBorder"/>
+                                </p:row>
+                                <p:row>
+                                    <p:column headerText="#{i18n['common.date.emission']}"/>
+                                    <p:column headerText="Razón"/>
+                                    <p:column headerText="#{i18n['common.debe']}"/>
+                                    <p:column headerText="#{i18n['common.haber']}"/>
+                                    <p:column headerText="#{i18n['common.fund']}"/>
+                                    <p:column/>
+                                </p:row>
+                            </p:columnGroup>
                             <p:column headerText="#{i18n['common.date.emission']}">
                                 <h:outputText value="#{recordDetail.record.emissionDate}">
                                     <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
@@ -176,7 +209,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="#{i18n['common.fund']}" class="Wid15">
-                                <h:outputText value="#{recordDetail.accumulatedBalance}" style="#{recordDetail.accumulatedBalance lt 0 ? 'color: #e53935;': ''}" class="Fright">
+                                <h:outputText value="#{recordDetail.accumulatedBalance}" class="Fright"
+                                              style="#{recordDetail.accumulatedBalance lt 0 ? 'color: #e91224': ''}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>

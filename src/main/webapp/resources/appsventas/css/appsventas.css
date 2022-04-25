@@ -1269,6 +1269,8 @@ input[type="text"], input[type="password"], textarea{
 /* Border */
 .NoBorder{
     border-color: transparent !important;
+    border-width: 0px !important;
+    border: none;
 }
 
 /* Background */
@@ -1277,7 +1279,7 @@ input[type="text"], input[type="password"], textarea{
 }
 
 .BackgroundToolbar{
-    background: #EFEFEF !important;
+    background: #efefef !important;
 }
 
 .BackgroundSecondary{
@@ -1392,7 +1394,7 @@ input[type="text"], input[type="password"], textarea{
     font-weight:bold;
 }
 .FontLight{
-    font-weight:lighter;
+    font-weight:lighter !important;
 }
 .FontNormal{
     font-weight:normal;
@@ -2101,7 +2103,7 @@ input[type="text"], input[type="password"], textarea{
     font-weight:bold;
 }
 .FontLight{
-    font-weight:lighter;
+    font-weight:lighter !important;
 }
 .FontNormal{
     font-weight:normal;
@@ -2611,7 +2613,10 @@ input[type="text"], input[type="password"], textarea{
     color: gray;
     font-weight: 700;
 }
-
+.White {
+    color: white;
+    font-weight: 700;
+}
 
 body .ui-panel .ui-panel-content {
     padding: 0px;

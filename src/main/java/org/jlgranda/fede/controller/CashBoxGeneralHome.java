@@ -183,7 +183,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     public CashBoxPartial getCashBoxPartial() {
         if (this.cashBoxPartialId != null && !this.cashBoxPartial.isPersistent()) {
             this.cashBoxPartial = cashBoxPartialService.find(this.cashBoxPartialId);
-            setCashFinally(this.cashBoxPartial.getTotalCashBreakdown());
+            setCashFinally(this.cashBoxPartial.getTotalCashBreakdown() != null ? this.cashBoxPartial.getTotalCashBreakdown() : BigDecimal.ZERO);
         }
         return cashBoxPartial;
     }
