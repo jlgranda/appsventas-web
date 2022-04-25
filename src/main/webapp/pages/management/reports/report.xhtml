@@ -84,7 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          icon="fa fa-save" styleClass="danger-btn"
                                          value="#{i18n['common.save']}"
                                          actionListener="#{reporteHome.saveReport}"  action="#{reporteHome.getOutcome()}"
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                     </f:facet>
                     <f:facet name="right">
                         <p:commandButton id="btnRecordCancel"

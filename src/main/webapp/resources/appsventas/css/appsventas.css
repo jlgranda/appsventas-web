@@ -642,6 +642,9 @@ input[type="text"], input[type="password"], textarea{
 .DispInlBlock{
     display:inline-block;
 }
+.DispInlGrid{
+    display:inline-grid !important;
+}
 .DispInlFlex{
     display:inline-flex !important;
     float:left;
@@ -1042,6 +1045,10 @@ input[type="text"], input[type="password"], textarea{
     margin: 8px;
 }
 
+.Margin16{
+    margin: 16px;
+}
+
 .MarTopPerc5{
     margin-top:5%;
 }
@@ -1145,6 +1152,10 @@ input[type="text"], input[type="password"], textarea{
 }
 .Padding15{
     padding: 15px !important;
+}
+
+.NoPaddingTop{
+    padding-top:0px !important;
 }
 
 /* Containers */

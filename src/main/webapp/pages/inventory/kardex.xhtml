@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          actionListener="#{kardexInventoryHome.activePanelKardex()}"
                                          update="editarKardexDialog"
                                          oncomplete="PF('editarKardexDialog').show()"
-                                         immediate="false">
+                                         immediate="#{false}">
                         </p:commandButton>
                         <i class="fa fa-bars p-px-2"/>
                     </f:facet>
@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
                                          disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
-                                         immediate="false">
+                                         immediate="#{false}">
                         </p:commandButton>
                         <p:commandButton id="btn-kardexDetail-output"
                                          value="#{i18n['common.exitd']}" icon="fa fa-minus" styleClass="warning-btn" style="width: auto !important;"
@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
                                          disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
-                                         immediate="false">
+                                         immediate="#{false}">
                         </p:commandButton>
                         <p:button value="#{i18n['common.newa']}" icon="fa fa-cart-plus" styleClass="danger-btn" style="width: auto !important;" 
                                   outcome="compra"/>
@@ -270,7 +270,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-inputgroup">
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.minimun']}</span>
                                 <p:spinner value="#{kardexInventoryHome.kardex.unitMinimum}" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"
-                                           min="1" immediate="false" styleClass="" required="#{true}">
+                                           min="1" immediate="#{false}" styleClass="" required="#{true}">
                                     <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@form:unit_maximun"></p:ajax>
                                 </p:spinner>
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.maximum']}</span>

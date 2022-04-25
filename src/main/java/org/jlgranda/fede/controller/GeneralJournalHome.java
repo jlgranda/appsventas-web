@@ -137,26 +137,16 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     
     @PostConstruct
     private void init() {
-        int range = 0;
-        try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_TOP_RANGE, "7"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 7;
-        }
-        
-        setBusquedaAvanzada(true);
-        
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
+
         setJournal(journalService.createInstance());//Instancia de Cuenta
-        setOutcome("journals");
         filter();
-        
-        this.record = recordService.createInstance();
-        this.recordDetail = recordDetailService.createInstance();
-        
+        setRecord(recordService.createInstance());
+        setRecordDetail(recordDetailService.createInstance());
         this.initializeActions();
+
+        setOutcome("journals");
     }
     
     @Override
@@ -478,7 +468,7 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     
     public void validateNewReloadJournal() throws IOException {
         if (this.journalId == null) {
-            this.journal = buildJournal();
+            setJournal(buildJournal());
         }
     }
 

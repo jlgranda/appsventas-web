@@ -115,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:inputText value="#{facturaElectronicaHome.payment.discount}" placeholder="#{i18n['app.fede.sales.payment.discount']}"></p:inputText>
                                         <p:inputText value="#{facturaElectronicaHome.payment.cash}" placeholder="#{i18n['app.fede.payment.cash.received']}"></p:inputText>
                                         <p:inputText value="#{facturaElectronicaHome.payment.change}" placeholder="#{i18n['app.fede.payment.change']}"></p:inputText>
-                                        <p:commandButton id="add-payment" value="#{i18n['Add']}" ajax="true" 
+                                        <p:commandButton id="add-payment" value="#{i18n['Add']}" ajax="#{true}" 
                                                          actionListener="#{facturaElectronicaHome.addPayment()}" immediate="true"
                                                          update="paymentsDataTable"
                                              disabled="#{false}" 
@@ -154,7 +154,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="EmptyBox10"></div>
                     <p:toolbar rendered="#{true}">
                         <f:facet name="left">
-                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}" 
                                              actionListener="#{facturaElectronicaHome.save()}" action="#{facturaElectronicaHome.redirect()}" 
                                              disabled="#{false}" 
                                              style="width: auto !important;"
@@ -166,7 +166,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         <f:facet name="right">
 
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                            <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                              action="home"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"

@@ -116,13 +116,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                            value="#{facturaElectronicaGastoHome.days}" min="1" 
                                            disabled="#{true}"
                                            rendered="#{empty facturaElectronicaGastoHome.facturaElectronica.id}"
-                                           immediate="false">
+                                           immediate="#{false}">
                                     <p:ajax listener="#{facturaElectronicaGastoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="#{true}"></p:ajax>
                                 </p:spinner>
                                 <p:calendar id="fechaVencimiento" 
                                             value="#{facturaElectronicaGastoHome.facturaElectronica.fechaVencimiento}" 
                                             disabled="#{true}"
-                                            immediate="false" 
+                                            immediate="#{false}" 
                                             required="true">
                                 </p:calendar>
                             </div>
@@ -210,7 +210,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;" 
                                              actionListener="#{facturaElectronicaGastoHome.save()}" action="#{facturaElectronicaGastoHome.getOutcome()}"
                                              disabled="#{true}"
-                                             ajax="true" type="submit"/>
+                                             ajax="#{true}" type="submit"/>
                             <i class="fa fa-bars p-px-2"/>
                         </f:facet>
                         <f:facet name="right">
@@ -261,12 +261,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              actionListener="#{facturaElectronicaGastoHome.recordDetailAdd('save')}"
                                              disabled="#{true}"
                                              update="rcdd-btn-save rcdd-dlg rcdd-dtb pay-pnl amountPending fct-btn-save"
-                                             ajax="true" type="submit"/>
+                                             ajax="#{true}" type="submit"/>
                             <p:commandButton title="#{i18n['common.cancel']}" icon="fa fa-times" styleClass="secondary-button"
                                              actionListener="#{facturaElectronicaGastoHome.recordDetailAdd('cancel')}"
                                              onclick="PF('rcdd-dlg').hide()"
                                              update="rcdd-dlg"
-                                             ajax="true" type="submit"/>
+                                             ajax="#{true}" type="submit"/>
                         </div>
                     </div>
                 </p:dialog>

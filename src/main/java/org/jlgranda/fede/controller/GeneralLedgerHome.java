@@ -90,6 +90,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
     private void init() {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
+
         setRangeId(1);
         initVariablesSummary();
         setAccountsCatalogue(accountCache.filterByOrganization(this.organizationData.getOrganization()));

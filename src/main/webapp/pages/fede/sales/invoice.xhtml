@@ -80,57 +80,57 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ui-fluid">
                     <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
                         <ui:repeat value="#{inventoryHome.findTop()}" var="product">  
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
                                              icon="#{product.icon}" styleClass="success-btn" title="#{product.name}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
                         </ui:repeat>
                         <c:if test="organizationData.organization.id eq 216944">
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('80,101')}" disabled="#{false}"
                                              icon="flaticon-empanada-cafe" styleClass="warning-btn" title="#{i18n['app.phrase.order.emp.coff']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('80,87')}" disabled="#{false}"
                                              icon="flaticon-empanada-chocolate" styleClass="raised-btn" title="#{i18n['app.phrase.order.emp.choco']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('80,78')}" disabled="#{false}"
                                              icon="flaticon-capuchino" styleClass="warning-btn" title="#{i18n['app.phrase.order.emp.capp']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
 
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('370,101')}" disabled="#{false}"
                                              icon="flaticon-pizza-cafe" styleClass="help-btn raised-btn" title="#{i18n['app.phrase.order.empz.coff']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('370,87')}" disabled="#{false}"
                                              icon="flaticon-pizza-chocolate" styleClass="help-btn" title="#{i18n['app.phrase.order.empz.choco']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('370,78')}" disabled="#{false}"
                                              icon="flaticon-capuchino" styleClass="help-btn" title="#{i18n['app.phrase.order.empz.capp']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
 
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('101,6660')}" disabled="#{false}"
                                              icon="flaticon-tamal" styleClass="warning-btn" title="#{i18n['app.phrase.order.tam.coff']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('101,6846')}" disabled="#{false}"
                                              icon="flaticon-humitas" styleClass="warning-btn" title="#{i18n['app.phrase.order.hum.coff']}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
 
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch('100494,100558')}" disabled="#{false}"
                                              icon="flaticon-almuerzo" styleClass="help-btn" title="#{i18n['app.phrase.order.lunch.avo']}"
                                              style="width:36px; height: 36px;">
@@ -157,7 +157,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     listener="#{invoiceHome.addCandidateDetail()}" partialSubmit="#{true}"></p:ajax>
                         </p:autoComplete>
                         <ui:repeat value="#{invoiceHome.recents.toArray()}" var="product"> 
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch(product)}" disabled="#{false}"
                                              icon="#{product.icon}" styleClass="danger-btn" title="#{product.name}"
                                              style="width:36px; height: 36px;">
@@ -334,7 +334,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          icon="pi pi-save" styleClass="danger-btn"
                                          actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" 
                                          disabled="#{empty invoiceHome.candidateDetails}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-replay" styleClass="primary-button"
@@ -358,26 +358,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
                                          disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <p:commandButton id="overdue-button"
                                          value="#{i18n['common.overdue']}"
                                          icon="pi pi-credit-card" styleClass="help-btn"
                                          actionListener="#{invoiceHome.overdue()}" action="#{invoiceHome.redirect}"
                                          disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <p:commandButton id="courtesy-button"
                                          value="#{i18n['common.courtesy']}"
                                          icon="pi pi-star-fill" styleClass="success-btn"
                                          actionListener="#{invoiceHome.courtesy()}" action="#{invoiceHome.redirect}"
                                          disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <p:commandButton  value="#{i18n['common.save']}" 
                                           icon="pi pi-save" styleClass="primary-button"
                                           actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}"
                                           disabled="false" 
-                                          ajax="true" type="submit"/>
+                                          ajax="#{true}" type="submit"/>
                         <i class="pi pi-bars p-px-2 MarRight10"/>
                         <p:commandButton id="print-button" 
                                          value="#{i18n['common.print']}" 
@@ -385,7 +385,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          actionListener="#{invoiceHome.print()}" 
                                          disabled="#{not (invoiceHome.payment.cash > 0 and invoiceHome.payment.change >= 0)}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" process="@this" oncomplete="PF('reportViewer').show();"/>
+                                         ajax="#{true}" process="@this" oncomplete="PF('reportViewer').show();"/>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"

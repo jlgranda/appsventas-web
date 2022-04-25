@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="EmptyBox10"></div><!--Separador de sección-->
                 <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}"
                                          actionListener="#{groupInventoryHome.save()}" action="#{groupInventoryHome.getOutcome()}"
                                          disabled="#{false}"
                                          style="width: auto !important;"

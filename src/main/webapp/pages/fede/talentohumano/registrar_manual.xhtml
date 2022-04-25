@@ -133,7 +133,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <div class="ui-g-12">
                         <p:commandButton value="#{i18n['common.refresh']}" id="check-btn" 
-                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="true"
+                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="#{true}"
                                          update="@form:dataTableJournal">
                         </p:commandButton>
                     </div>
@@ -185,7 +185,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:setPropertyActionListener value="#{journal}" target="#{journalHome.journalEgress}" />
                                 </p:commandButton>
                                 <p:commandButton value="#{i18n['common.delete']}" id="delete-btn" 
-                                                 actionListener="#{journalHome.delete(journal)}" icon="fa fa-eraser " ajax="true"
+                                                 actionListener="#{journalHome.delete(journal)}" icon="fa fa-eraser " ajax="#{true}"
                                                  update="@form" class="danger-btn">
                                     <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                 </p:commandButton>
@@ -202,7 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 showHour="true" showMinute="true" showSecond="false">
                                     </p:calendar>
                                     <p:commandButton value="#{i18n['common.save']}" id="put-btn-access" 
-                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
+                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="#{true}"
                                                      update="@form" class="danger-btn" onclick="PF('addJournalAcces').hide()">
                                         <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                     </p:commandButton>
@@ -220,7 +220,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 showHour="true" showMinute="true" showSecond="false">
                                     </p:calendar>
                                     <p:commandButton value="#{i18n['common.save']}" id="put-btn-egress" 
-                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
+                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="#{true}"
                                                      update="@form" class="danger-btn" onclick="PF('addJournalEgress').hide()">
                                         <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                     </p:commandButton>

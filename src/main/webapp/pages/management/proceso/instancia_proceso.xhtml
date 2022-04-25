@@ -90,19 +90,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="ui-g-2 ui-lg-2">
                                                 <!-- Responder/Reenviar -->
                                                 <p:panel id="accionesRespuesta" rendered="#{tarea.checkStatus(EstadoTipo.ESPERA)}">
-                                                    <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
+                                                    <p:commandButton ajax="#{true}" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_RESPONDER, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.owner ==  subject}"
                                                                      icon="fa fa-mail-reply-all" styleClass="success-btn" title="#{i18n['app.document.task.reply']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
-                                                    <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
+                                                    <p:commandButton ajax="#{true}" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_REDIRECCIONAR, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.owner ==  subject}"
                                                                      icon="fa fa-mail-forward" styleClass="success-btn" title="#{i18n['common.forward']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
-                                                    <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
+                                                    <p:commandButton ajax="#{true}" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_FINALIZAR, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.instanciaProceso.owner ==  subject}"
                                                                      icon="fa fa-hourglass-end" styleClass="danger-btn" title="#{i18n['common.finish']}"

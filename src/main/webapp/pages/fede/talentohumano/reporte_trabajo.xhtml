@@ -99,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h1>#{journalHome.employeeSelected.owner.id} #{journalHome.employeeSelected.owner.fullName}</h1>
                     <div class="ui-g-12">
                         <p:commandButton value="#{i18n['common.refresh']}" id="check-btn" 
-                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="true"
+                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="#{true}"
                                          update="@form:dataTableJournal">
                         </p:commandButton>
                         <h:commandLink>

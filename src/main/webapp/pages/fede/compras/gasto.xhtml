@@ -118,14 +118,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                            value="#{facturaElectronicaGastoHome.days}" min="1" 
                                            disabled="#{empty facturaElectronicaGastoHome.facturaElectronica.fechaEmision or facturaElectronicaGastoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
                                            rendered="#{empty facturaElectronicaGastoHome.facturaElectronica.id}"
-                                           immediate="false">
+                                           immediate="#{false}">
                                     <p:ajax listener="#{facturaElectronicaGastoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="#{true}"></p:ajax>
                                 </p:spinner>
                                 <p:calendar id="fechaVencimiento" 
                                             value="#{facturaElectronicaGastoHome.facturaElectronica.fechaVencimiento}" 
                                             pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}"
                                             disabled="#{true}"
-                                            immediate="false" 
+                                            immediate="#{false}" 
                                             required="#{true}">
                                 </p:calendar>
                             </div>

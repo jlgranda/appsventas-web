@@ -112,7 +112,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:selectBooleanCheckbox>
                                     <p:commandButton id="button-change-customer"
                                                      icon="fa fa-user-plus" styleClass="primary-button"
-                                                     actionListener="#{facturaElectronicaHome.mostrarFormularioProfile()}" ajax="true"
+                                                     actionListener="#{facturaElectronicaHome.mostrarFormularioProfile()}" ajax="#{true}"
                                                      immediate="true"
                                                      styleClass="RedButton" style="width:30px">
                                         <p:ajax event="dialogReturn" update="@form"
@@ -171,7 +171,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="ui-g ui-lg-12 ui-md-12">
                                     <div class="ui-g-4 ui-lg-4 ui-md-4">
                                         <label class="Gray">Días Plazo</label>
-                                        <p:spinner id="days-expired" value="#{facturaElectronicaHome.days}" min="1" immediate="false" styleClass="" 
+                                        <p:spinner id="days-expired" value="#{facturaElectronicaHome.days}" min="1" immediate="#{false}" styleClass="" 
                                                    disabled="#{facturaElectronicaHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}">
                                             <p:ajax listener="#{facturaElectronicaHome.calculateDateExpired()}" update="date-expired" partialSubmit="#{true}"></p:ajax>
                                         </p:spinner>
@@ -308,7 +308,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <p:toolbar class="Container100" rendered="#{true}">
                         <f:facet name="left">
-                            <p:commandButton id="btn-save" value="#{i18n['common.save']}" ajax="true"
+                            <p:commandButton id="btn-save" value="#{i18n['common.save']}" ajax="#{true}"
                                              actionListener="#{facturaElectronicaHome.save()}" action="#{facturaElectronicaHome.redirect()}"
                                              disabled="#{not empty facturaElectronicaHome.facturaElectronica.payments or empty facturaElectronicaHome.facturaElectronica.facturaElectronicaDetails}"
                                              style="width: auto !important;" styleClass="danger-btn"
@@ -413,7 +413,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="ui-g-4">
                                     <h4 class="BigTopic">#{i18n['common.tax']}&nbsp;</h4>
                                     <p:selectOneMenu value="#{facturaElectronicaHome.productNew.taxType}"
-                                                     required="#{false}" immediate="false"> 
+                                                     required="#{false}" immediate="#{false}"> 
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this" />
@@ -532,7 +532,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                             </p:selectOneMenu>
                         </div>
-                        <p:commandButton id="add-payment" value="#{i18n['common.add']} #{i18n['common.payment']}" ajax="true" 
+                        <p:commandButton id="add-payment" value="#{i18n['common.add']} #{i18n['common.payment']}" ajax="#{true}" 
                                          icon="fa fa-plus"
                                          actionListener="#{facturaElectronicaHome.addPayment()}" immediate="true"
                                          update="dataTable-payments-credit fund-request add-payment total discount cash change btn-save"

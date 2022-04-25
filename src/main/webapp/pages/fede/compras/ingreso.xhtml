@@ -117,13 +117,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                    value="#{facturaElectronicaIngresoHome.days}" min="1" 
                                                                    disabled="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
                                                                    rendered="#{empty facturaElectronicaIngresoHome.facturaElectronica.id}"
-                                                                   immediate="false">
+                                                                   immediate="#{false}">
                                                             <p:ajax listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="#{true}"></p:ajax>
                                                         </p:spinner>
                                                         <p:calendar id="fechaVencimiento" 
                                                                     value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaVencimiento}" 
                                                                     disabled="#{true}"
-                                                                    immediate="false" 
+                                                                    immediate="#{false}" 
                                                                     required="#{true}">
                                                         </p:calendar>
                                                     </div>

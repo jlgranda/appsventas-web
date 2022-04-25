@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </p:autoComplete>
                 <p:commandButton id="button-change-customer" 
                                  icon="fa fa-user-plus" styleClass="primary-button"
-                                 actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="true"
+                                 actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="#{true}"
                                  immediate="true"
                                  styleClass="RedButton" style="width:30px">
                     <p:ajax event="dialogReturn" update="@form"
@@ -101,7 +101,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}" 
                                          actionListener="#{employeeHome.save()}" action="#{employeeHome.redirect()}" 
                                          disabled="#{false}" 
                                          style="width: auto !important;"
@@ -113,7 +113,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <f:facet name="right">
 
-                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                        <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                          actionListener="#{employeeHome.closeDialog(null)}" 
                                          action="home"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"

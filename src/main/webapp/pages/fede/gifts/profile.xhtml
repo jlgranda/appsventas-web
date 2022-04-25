@@ -116,7 +116,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:commandButton id="save" 
                                                  value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
                                                  actionListener="#{subjectHome.save()}" action="#{subjectHome.getOutcome()}"
-                                                 ajax="true" type="submit"/>
+                                                 ajax="#{true}" type="submit"/>
                             </f:facet>
                             <f:facet name="right">
                                 <p:menuButton value="#{i18n['common.options']}">

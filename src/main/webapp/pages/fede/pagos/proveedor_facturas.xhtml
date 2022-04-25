@@ -100,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
         <p:toolbar rendered="#{true}">
             <f:facet name="left">
-                <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}" 
                                  actionListener="#{proveedorHome.save()}" action="#{proveedorHome.redirect()}" 
                                  disabled="#{false}" 
                                  style="width: auto !important;"
@@ -112,7 +112,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
             <f:facet name="right">
 
-                <p:commandButton ajax="true" disabled="false" immediate="true"
+                <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                  actionListener="#{proveedorHome.closeDialog(null)}" 
                                  action="#{proveedorHome.redirect}"
                                  icon="pi pi-undo" styleClass="GrayButton" type="submit"
