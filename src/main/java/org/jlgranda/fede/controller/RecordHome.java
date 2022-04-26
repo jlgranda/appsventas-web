@@ -73,7 +73,7 @@ public class RecordHome extends FedeController implements Serializable {
     private GeneralJournal generalJournal;
     private Long generalJournalId;
     private Record record;
-    private List<Record> recordPorCreatedOn;
+//    private List<Record> recordPorCreatedOn;
     private List<Record> recordPorGeneralJournal;
     private RecordDetail recordDetail;
     private RecordDetail recordDetailSelected;
@@ -82,23 +82,12 @@ public class RecordHome extends FedeController implements Serializable {
     private void init() {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
-
+        setGeneralJournal(generalJournalService.createInstance());
         setRecord(recordService.createInstance());
-        getRecord().setEmissionDate(null);
+        this.record.setEmissionDate(this.generalJournal.getEmissionDate());
         setRecordDetail(recordDetailService.createInstance());
-        setRecordPorCreatedOn(recordService.findByNamedQuery("Record.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()), this.organizationData.getOrganization()));
+//        setRecordPorCreatedOn(recordService.findByNamedQuery("Record.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()), this.organizationData.getOrganization()));
         setOutcome("journals");
-    }
-
-    public GeneralJournal getGeneralJournal() {
-        if (this.generalJournalId != null) {
-            return generalJournalService.find(this.generalJournalId);
-        }
-        return generalJournal;
-    }
-
-    public void setGeneralJournal(GeneralJournal generalJournal) {
-        this.generalJournal = generalJournal;
     }
 
     public Long getGeneralJournalId() {
@@ -109,14 +98,24 @@ public class RecordHome extends FedeController implements Serializable {
         this.generalJournalId = generalJournalId;
     }
 
-    public List<Record> getRecordPorCreatedOn() {
-        return recordPorCreatedOn;
+    public GeneralJournal getGeneralJournal() {
+        if (this.generalJournalId != null) {
+            this.generalJournal = generalJournalService.find(this.generalJournalId);
+        }
+        return generalJournal;
     }
 
-    public void setRecordPorCreatedOn(List<Record> recordPorCreatedOn) {
-        this.recordPorCreatedOn = recordPorCreatedOn;
+    public void setGeneralJournal(GeneralJournal generalJournal) {
+        this.generalJournal = generalJournal;
     }
 
+//    public List<Record> getRecordPorCreatedOn() {
+//        return recordPorCreatedOn;
+//    }
+//
+//    public void setRecordPorCreatedOn(List<Record> recordPorCreatedOn) {
+//        this.recordPorCreatedOn = recordPorCreatedOn;
+//    }
     public List<Record> getRecordPorGeneralJournal() {
         return recordPorGeneralJournal;
     }
@@ -126,10 +125,16 @@ public class RecordHome extends FedeController implements Serializable {
     }
 
     public Record getRecord() {
+        if (this.getGeneralJournal().getId() != null) {
+            this.record.setEmissionDate(this.generalJournal.getEmissionDate());
+        }
         return record;
     }
 
     public void setRecord(Record record) {
+//        if (this.generalJournal.getId() != null) {
+//            this.record.setEmissionDate(this.generalJournal.getEmissionDate());
+//        }
         this.record = record;
     }
 
@@ -243,7 +248,7 @@ public class RecordHome extends FedeController implements Serializable {
                     //Encerar objetos de pantalla
                     setRecordDetail(recordDetailService.createInstance());
                     setRecord(recordService.createInstance());
-                    getRecord().setEmissionDate(null);
+                    this.record.setEmissionDate(lastEmissionDate);
 
                     this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
                     //this.generalJournal = generalJournalService.createInstance();
@@ -297,7 +302,7 @@ public class RecordHome extends FedeController implements Serializable {
     public void loadSessionParameters() {
         if (existsSessionParameter("generalJournalId")) {
             this.setGeneralJournalId((Long) getSessionParameter("generalJournalId"));
-            this.setGeneralJournal(this.getGeneralJournal()); //Carga el objeto persistente
+            this.setGeneralJournal(this.generalJournal); //Carga el objeto persistente
             if (this.generalJournal != null && this.generalJournal.getId() != null) {
                 this.recordPorGeneralJournal = recordService.findByNamedQuery("Record.findByJournalId", this.generalJournal.getId());
             }

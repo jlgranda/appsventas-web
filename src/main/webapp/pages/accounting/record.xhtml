@@ -29,8 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
-            <f:metadata>
-                <!--<f:viewParam name="" value="" />-->
+                <f:metadata>
+                    <f:viewParam name="generalJournalId" value="#{recordHome.generalJournalId}"/>
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">

@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfCenter" rendered="#{request.isUserInRole('CHECKER')}">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfCenter" rendered="#{request.isUserInRole('ACCOUNTING')}">
                     <p:panel id="panel-head" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <h1 class="TexUppercase">
                             #{generalLedgerHome.accountSelected.code} #{generalLedgerHome.accountSelected.name} #{not empty generalLedgerHome.accountSelected ? '| TOTAL ': i18n['app.fede.accounting.ledger']} 

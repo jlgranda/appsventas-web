@@ -785,12 +785,6 @@ public class AccountHome extends FedeController implements Serializable {
         return this.record.getBussinesEntityId() == null;
     }
 
-    public void messageEditableRecord() {
-        if (!isRecordOfReferen()) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.not.editable.message", " " + this.record.getBussinesEntityType()));
-        }
-    }
-
     /**
      * Agrega un detalle al Record
      */

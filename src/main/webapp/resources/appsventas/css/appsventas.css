@@ -951,7 +951,7 @@ input[type="text"], input[type="password"], textarea{
 
 /* Width */
 .Wid100{
-    width:100%;
+    width: -webkit-fill-available !important;
 }
 .Wid90{
     width:90%;
@@ -1285,6 +1285,9 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Background */
+.NoColor{
+    color: transparent !important;
+}
 .NoBackground{
     background-color: transparent !important;
 }
@@ -1532,6 +1535,9 @@ input[type="text"], input[type="password"], textarea{
 /* Display */
 .DispBlock{
     display:block;
+}
+.DispVerticalTop{
+    vertical-align:top;
 }
 .DispTable{
     display:table;
@@ -1824,7 +1830,7 @@ input[type="text"], input[type="password"], textarea{
 
 /* Width */
 .Wid100{
-    width:100%;
+    width: -webkit-fill-available !important;
 }
 .Wid90{
     width:90%;

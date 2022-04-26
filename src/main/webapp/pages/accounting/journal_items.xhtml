@@ -45,13 +45,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:inputText class="input-sm MarRight10" value="#{generalJournalHome.keyword}">
                             </p:inputText>
                             <h:panelGroup id="controles-busqueda-avanzada" style="padding-right: 0.2rem">
-                                <h:panelGroup rendered="#{generalJournalHome.busquedaAvanzada}">
+                                <h:panelGroup>
                                     <p:outputLabel class="Gray" value="#{i18n['common.from']}:&nbsp;" for="@next"/>
                                     <p:calendar value="#{generalJournalHome.start}" class="input-sm">
                                         <p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
                                     </p:calendar>
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{generalJournalHome.busquedaAvanzada}">
+                                <h:panelGroup>
                                     <p:outputLabel class="Gray" value="#{i18n['common.to']}:&nbsp;" for="@next"/>
                                     <p:calendar value="#{generalJournalHome.end}" class="input-sm">
                                         <p:ajax event="dateSelect" listener="#{generalJournalHome.clear()}" /> 
@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="card">
                         <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{true}"
                                      value="#{generalJournalHome.lazyDataModel}" var="journal" 
-                                     selection="#{generalJournalHome.selectedGeneralJournals}"
+                                     selection="#{generalJournalHome.journalsSelected}"
                                      rowKey="#{journal.id}"
                                      rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                      paginator="#{true}" paginatorPosition="bottom" 
@@ -101,7 +101,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:dataTable>
                         <!--Herramientas con seleccionados -->
                         <p:panel id="panelSelectedToolBar">
-                            <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.selectedGeneralJournals}">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.journalsSelected}">
                                 <f:facet name="left">
                                     <p:outputLabel class="Gray" value="#{i18n['common.withselected']}&nbsp;" for="@next"/>
                                     <div class="ui-g">

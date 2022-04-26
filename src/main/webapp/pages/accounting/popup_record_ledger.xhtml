@@ -39,35 +39,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-4 ui-md-4 ui-lg-4 BackgroundToolbar">
-                    <span class="Fs16" style="font-weight: 700;"> Asiento <i class="pi pi-hashtag"/>#{accountHome.record.id}</span>
-                    <div style="margin: 0.5rem 0 0 0;"><strong>CONCEPTO:</strong> #{accountHome.record.description}</div>
-                </div>
-                <div class="ui-g-8 ui-md-8 ui-lg-8" style="padding: 0rem">
-                    <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
-                                 value="#{accountHome.record.recordDetails}" var="recordDetail"
-                                 rowKey="#{recordDetail.id}"
-                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
-                                 paginator="#{true}" paginatorPosition="bottom" 
-                                 draggableColumns="#{true}" reflow="#{true}" 
-                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
-                                 sortMode="single">
-                        <p:column headerText="#{i18n['app.fede.accounting.account']}">
-                            <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
-                        </p:column>
-                        <p:column headerText="#{i18n['common.debe']}">
-                            <h:outputText value="#{recordDetail.amount}"
-                                          rendered="#{recordDetail.recordDetailType=='DEBE'}">
-                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BackgroundToolbar" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid TexAlRight FontBold">
+                            <h:outputText value="#{accountHome.record.emissionDate}">
+                                <f:convertDateTime dateStyle="long" timeZone="#{ui.timeZone}" type="date"/>
                             </h:outputText>
-                        </p:column>
-                        <p:column headerText="#{i18n['common.haber']}">
-                            <h:outputText value="#{recordDetail.amount}"
-                                          rendered="#{recordDetail.recordDetailType=='HABER'}">
-                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:dataTable>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid">
+                            <strong class="FontBold">#{i18n['common.concept']}</strong>
+                            #{accountHome.record.description}
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
+                        <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
+                                     value="#{accountHome.record.recordDetails}" var="recordDetail"
+                                     rowKey="#{recordDetail.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.short', '10')}"
+                                     paginator="#{false}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
+                            <p:column headerText="#{i18n['app.fede.accounting.account']}">
+                                <h:outputText value="#{recordDetail.account.name.toUpperCase()}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.debe']}">
+                                <h:outputText value="#{recordDetail.amount}"
+                                              rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.haber']}">
+                                <h:outputText value="#{recordDetail.amount}"
+                                              rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
                 </div>
             </div>
         </ui:define>
