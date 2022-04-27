@@ -81,6 +81,7 @@ public class RecordHome extends FedeController implements Serializable {
      */
     private RecordDetail recordDetail;
     private RecordDetail recordDetailSelected;
+    private Date emissionDate;
 
     @PostConstruct
     private void init() {
@@ -89,7 +90,7 @@ public class RecordHome extends FedeController implements Serializable {
 
         setGeneralJournal(generalJournalService.createInstance());
         setRecord(recordService.createInstance());
-        this.record.setEmissionDate(this.generalJournal.getEmissionDate());
+        setEmissionDate(this.generalJournal.getEmissionDate());
         setRecordDetail(recordDetailService.createInstance());
 
         setOutcome("journals");
@@ -100,6 +101,15 @@ public class RecordHome extends FedeController implements Serializable {
      */
     public void save() {
         boolean valido = true;
+        //Localizar o generar el generalJournal
+        if (this.generalJournal == null || this.generalJournal.getId() == null) {
+            this.generalJournal = this.buildJournal(this.record.getEmissionDate());
+        }
+        if (this.generalJournal == null || this.generalJournal.getId() == null) {
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), "Error interno relacionado con el libro diario.");
+        }
+
         if (this.record.getRecordDetails().isEmpty()) {
             valido = false;
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
@@ -122,27 +132,22 @@ public class RecordHome extends FedeController implements Serializable {
                     .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
 
             if (debe == haber) {
-                //Localizar o generar el generalJournal
-                if (this.generalJournal == null || this.generalJournal.getId() == null) {
-                    this.generalJournal = this.buildJournal(this.record.getEmissionDate());
-                }
-                if (this.generalJournal != null && this.generalJournal.getId() != null) {
 
-                    this.record.setGeneralJournalId(this.generalJournal.getId());
-                    this.record.getEmissionDate().setHours(Dates.now().getHours());
-                    this.record.getEmissionDate().setMinutes(Dates.now().getMinutes());
-                    this.record.getEmissionDate().setSeconds(Dates.now().getSeconds());
-                    this.record.setOwner(subject);
+                this.record.setOwner(subject);
+                this.record.setGeneralJournalId(this.generalJournal.getId());
+                this.record.setEmissionDate(this.generalJournal.getEmissionDate());
+                this.record.getEmissionDate().setHours(Dates.now().getHours());
+                this.record.getEmissionDate().setMinutes(Dates.now().getMinutes());
+                this.record.getEmissionDate().setSeconds(Dates.now().getSeconds());
 
-                    recordService.save(record.getId(), record);
+                recordService.save(record.getId(), record);
 
-                    //Encerar objetos de pantalla
-                    setRecordDetail(recordDetailService.createInstance());
-                    setRecord(recordService.createInstance());
-                    this.record.setEmissionDate(lastEmissionDate);
+                //Encerar objetos de pantalla
+                setRecordDetail(recordDetailService.createInstance());
+                setRecord(recordService.createInstance());
+                setEmissionDate(lastEmissionDate);
 
-                    this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
-                }
+                this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
             } else {
                 this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
             }
@@ -223,9 +228,6 @@ public class RecordHome extends FedeController implements Serializable {
     }
 
     public Record getRecord() {
-        if (this.getGeneralJournal().getId() != null) {
-            this.record.setEmissionDate(this.generalJournal.getEmissionDate());
-        }
         return record;
     }
 
@@ -247,6 +249,17 @@ public class RecordHome extends FedeController implements Serializable {
 
     public void setRecordDetailSelected(RecordDetail recordDetailSelected) {
         this.recordDetailSelected = recordDetailSelected;
+    }
+
+    public Date getEmissionDate() {
+        if (this.getGeneralJournal().getId() != null) {
+            setEmissionDate(this.generalJournal.getEmissionDate());
+        }
+        return emissionDate;
+    }
+
+    public void setEmissionDate(Date emissionDate) {
+        this.emissionDate = emissionDate;
     }
 
     @Override

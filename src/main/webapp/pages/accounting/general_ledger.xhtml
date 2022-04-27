@@ -129,7 +129,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:toolbar>
                         <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
                                      value="#{generalLedgerHome.accountSelectedRecordsDetails}" var="recordDetail"
-                                     selection="#{generalJournalHomeBase.selectedBussinesEntities}"
+                                     selection="#{generalJournalHome.selectedBussinesEntities}"
                                      rowKey="#{recordDetail.id}"
                                      rows="#{settingHome.getValue('fede.inbox.list.length.short', '10')}"
                                      paginator="#{true}" paginatorPosition="bottom" 
@@ -191,7 +191,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </p:row>
                             </p:columnGroup>
                             <p:column headerText="#{i18n['common.date.emission']}">
-                                <h:outputText value="#{recordDetail.record.emissionDate}">
+                                <h:outputText value="#{recordDetail.record.journal.emissionDate}">
                                     <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
                                 </h:outputText>
                             </p:column>

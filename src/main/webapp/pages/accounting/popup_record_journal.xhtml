@@ -29,14 +29,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <f:viewAction action="#{generalJournalHomeBase.loadSessionParameters}" />
-                <f:viewAction action="#{generalJournalHomeBase.orderRecordDetails}" />
+                <f:viewAction action="#{generalJournalHome.loadSessionParameters}" />
+                <f:viewAction action="#{generalJournalHome.orderRecordDetails}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting.journal']}</li>
             <li>/</li>
-            <li>#{generalJournalHomeBase.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHomeBase.record.id}</li>
+            <li>#{generalJournalHome.record.id == null ? i18n['common.new'].concat(' ').concat(i18n['app.fede.accounting.record']) : i18n['common.edit'].concat(' ').concat(i18n['app.fede.accounting.record']).concat(' # ')} #{generalJournalHome.record.id}</li>
         </ui:define>
         <ui:define name="content">
             <p:messages id="messages" showDetail="#{true}" closable="#{true}" >
@@ -44,14 +44,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </p:messages>
             <div class="ui-g">
                 <p:panel id="record-view"
-                         class="ui-g-12 ui-md-12 ui-lg-12" rendered="#{!generalJournalHomeBase.recordOfReferen}">
+                         class="ui-g-12 ui-md-12 ui-lg-12" rendered="#{!generalJournalHome.recordOfReferen}">
                     <div class="ui-g-4 ui-md-4 ui-lg-4 BackgroundToolbar">
-                        <span class="Fs16" style="font-weight: 700;"> Asiento <i class="pi pi-hashtag"/>#{generalJournalHomeBase.record.id}</span>
-                        <div style="margin: 0.5rem 0 0 0;"><strong>CONCEPTO:</strong> #{generalJournalHomeBase.record.description}</div>
+                        <span class="Fs16" style="font-weight: 700;"> Asiento <i class="pi pi-hashtag"/>#{generalJournalHome.record.id}</span>
+                        <div style="margin: 0.5rem 0 0 0;"><strong>CONCEPTO:</strong> #{generalJournalHome.record.description}</div>
                     </div>
                     <div class="ui-g-8 ui-md-8 ui-lg-8"  style="padding: 0rem">
                         <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
-                                     value="#{generalJournalHomeBase.record.recordDetails}" var="recordDetail"
+                                     value="#{generalJournalHome.record.recordDetails}" var="recordDetail"
                                      rowKey="#{recordDetail.id}"
                                      rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                      paginator="#{true}" paginatorPosition="bottom" 
@@ -77,7 +77,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </div>
                 </p:panel>
                 <p:panel id="record-edit"
-                         class="ui-g-12 ui-md-12 ui-lg-12" rendered="#{generalJournalHomeBase.recordOfReferen}">
+                         class="ui-g-12 ui-md-12 ui-lg-12" rendered="#{generalJournalHome.recordOfReferen}">
                     <h:form>
                         <div class="ui-g" style="padding: 0rem">
                             <div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0rem">
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
                                             <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                                             <p:autoComplete id="account" 
-                                                            value="#{generalJournalHomeBase.recordDetail.account}" var="account"
+                                                            value="#{generalJournalHome.recordDetail.account}" var="account"
                                                             itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
                                                             completeMethod="#{accountHome.filterAccounts}"
                                                             converter="org.jlgranda.fede.ui.converter.AccountConverter"
@@ -109,7 +109,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
                                             <p:outputLabel value="Seleccione el tipo:" for="@next"/>
                                             <p:selectOneRadio id="recordDetailType" 
-                                                              value="#{generalJournalHomeBase.recordDetail.recordDetailType}" 
+                                                              value="#{generalJournalHome.recordDetail.recordDetailType}" 
                                                               layout="responsive" columns="3"
                                                               required="#{false}" style="width: 20rem;">
                                                 <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
@@ -120,7 +120,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         </div>
                                         <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="padding: 0rem">
                                             <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}"
-                                                            render="amount" value="#{generalJournalHomeBase.recordDetail.amount}" 
+                                                            render="amount" value="#{generalJournalHome.recordDetail.amount}" 
                                                             required="#{false}" requiredMessage="#{i18n['common.money.letter']}"
                                                             placeholder="#{false}"
                                                             decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -132,9 +132,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <p:commandButton id="btnRecordAdd"
                                                              icon="pi pi-check-square" styleClass="warning-btn"
                                                              value="#{i18n['common.add']}"
-                                                             actionListener="#{generalJournalHomeBase.recordDetailAdd}" 
+                                                             actionListener="#{generalJournalHome.recordDetailAdd}" 
                                                              ajax="#{true}" immediate="#{true}"
-                                                             disabled="#{empty generalJournalHomeBase.recordDetail.account or empty generalJournalHomeBase.recordDetail.recordDetailType}"
+                                                             disabled="#{empty generalJournalHome.recordDetail.account or empty generalJournalHome.recordDetail.recordDetailType}"
                                                              update="@form"/>
                                         </div>
                                     </div>
@@ -142,16 +142,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                                             <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
-                                                         value="#{generalJournalHomeBase.record.recordDetails}" var="recordDetail" 
-                                                         selection="#{generalJournalHomeBase.recordDetailSelected}" 
+                                                         value="#{generalJournalHome.record.recordDetails}" var="recordDetail" 
+                                                         selection="#{generalJournalHome.recordDetailSelected}" 
                                                          rowKey="#{recordDetail.account}"
                                                          rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                                          paginator="#{true}" paginatorPosition="bottom" 
                                                          draggableColumns="#{true}" reflow="#{true}" 
                                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                          sortMode="single">
-                                                <p:ajax event="rowSelect" listener="#{generalJournalHomeBase.onRowSelectRecord}" update="@form"/>
-                                                <p:ajax event="rowUnselect" listener="#{generalJournalHomeBase.onRowUnselectRecord}" update="@form"/>
+                                                <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectRecord}" update="@form"/>
+                                                <p:ajax event="rowUnselect" listener="#{generalJournalHome.onRowUnselectRecord}" update="@form"/>
                                                 <p:column headerText="#{i18n['app.fede.accounting.account']}" class="Wid40">
                                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                                 </p:column>
@@ -172,7 +172,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                                             <p:outputLabel value="Concepto" for="@next"/>
                                             <p:inputTextarea  class="BigTopic" style="font-weight: bold" 
-                                                              value="#{generalJournalHomeBase.record.description}" 
+                                                              value="#{generalJournalHome.record.description}" 
                                                               rows="3" cols="30" autoResize="false"
                                                               required="#{true}">
                                                 <p:ajax process="@this"/>
@@ -187,8 +187,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:facet name="left">
                                         <p:commandButton id="btnRecordSave"
                                                          value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
-                                                         actionListener="#{generalJournalHomeBase.recordSave()}"
-                                                         disabled="#{empty generalJournalHomeBase.record.recordDetails or empty generalJournalHomeBase.record.description}"
+                                                         actionListener="#{generalJournalHome.recordSave()}"
+                                                         disabled="#{empty generalJournalHome.record.recordDetails or empty generalJournalHome.record.description}"
                                                          ajax="#{true}" immediate="#{true}"
                                                          update="@form"/>
                                         <i class="pi pi-bars p-px-2"/>
@@ -196,7 +196,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:facet name="right">
                                         <p:commandButton id="btnRecordCancel"
                                                          title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="primary-button"
-                                                         actionListener="#{generalJournalHomeBase.closeDialog(generalJournalHomeBase.journal.id)}" action="#{generalJournalHomeBase.getOutcome()}" 
+                                                         actionListener="#{generalJournalHome.closeDialog(generalJournalHome.journal.id)}" action="#{generalJournalHome.getOutcome()}" 
                                                          ajax="#{true}" immediate="#{true}"/>
                                     </f:facet>
                                 </p:toolbar>

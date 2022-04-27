@@ -48,13 +48,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <p:panel id="panel-msg"
                              class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
-                        <p:staticMessage rendered="#{empty recordHome.record.emissionDate}"
+                        <p:staticMessage rendered="#{empty recordHome.emissionDate}"
                                          severity="warn" summary="#{i18n['action.warning']}" detail="Por favor seleccione la fecha de registro del asiento." style="width: 100%"/>
                     </p:panel>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
                         <jlgranda:input id="emissionDate" name="emissionDate" render="emissionDate" container="none"
                                         type="calendar" 
-                                        value="#{recordHome.record.emissionDate}" label="Fecha de Registro del Asiento:&nbsp;" 
+                                        value="#{recordHome.emissionDate}" label="Fecha de Registro del Asiento:&nbsp;" 
                                         required="#{true}" 
                                         placeholder="#{false}"
                                         rendered="#{true}"
@@ -64,12 +64,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Padding5 ui-fluid">
                         <p:linkButton outcome="journal"
                                       value="#{i18n['common.view']} #{i18n['app.fede.accounting.journal']}"
-                                      disabled="#{empty recordHome.record.emissionDate}"
+                                      disabled="#{empty recordHome.emissionDate}"
                                       icon="pi pi-book" iconPos="left" styleClass="help-btn rounded-btn TexUppercase">
                             <f:param name="journalId" value="#{recordHome.generalJournalIdByEmisionDate}"/>
                         </p:linkButton>
                     </div>
-                    <p:panel id="panel-record" rendered="#{not empty recordHome.record.emissionDate}"
+                    <p:panel id="panel-record" rendered="#{not empty recordHome.emissionDate}"
                              class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd">
                             <h3>Agregar cuenta al asiento contable</h3>
@@ -125,7 +125,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  value="#{i18n['common.add']}"
                                                  actionListener="#{recordHome.recordDetailAdd}" 
                                                  ajax="#{true}" immediate="#{true}"
-                                                 disabled="#{empty recordHome.record.emissionDate or empty recordHome.recordDetail.account or empty recordHome.recordDetail.recordDetailType or recordHome.recordDetail.amount le 0}"
+                                                 disabled="#{empty recordHome.emissionDate or empty recordHome.recordDetail.account or empty recordHome.recordDetail.recordDetailType or recordHome.recordDetail.amount le 0}"
                                                  update="@form"/>
                             </div>
                         </div>
