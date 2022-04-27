@@ -24,9 +24,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -80,18 +82,18 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
     private BigDecimal accountSelectedFundPartial;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha end
     private BigDecimal accountSelectedFundPrevious;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha start
     private List<RecordDetail> accountSelectedRecordsDetails;
+    private List<RecordDetail> accountSelectedRecordsDetailsFiltered;
     private int rangeId;
+    private Date dateDay;
 
     @PostConstruct
     private void init() {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
-
         setRangeId(1);
         initVariablesSummary();
         setAccountsCatalogue(accountCache.filterByOrganization(this.organizationData.getOrganization()));
         setTreeDataModel(getAccountsCatalogueTree());
-
         setOutcome("general-ledger");
     }
 
@@ -161,6 +163,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
     }
 
     public void getSummaryRecordByAccount() {
+        setDateDay(null);
         setRangeId(-1);
         initVariablesSummary();
         setAccountSelectedFundTotal(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.now())));
@@ -169,6 +172,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         setAccountSelectedFundPartial(getAccountSelectedDebePartial().subtract(getAccountSelectedHaberPartial()));
         setAccountSelectedFundPrevious(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.addDays(getStart(), -1 * 1))));
         setAccountSelectedRecordsDetails(recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", getAccountSelected(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
+        setAccountSelectedRecordsDetailsFiltered(getAccountSelectedRecordsDetails());
         calculateBalance();
     }
 
@@ -178,6 +182,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         setAccountSelectedHaberPartial(BigDecimal.ZERO);
         setAccountSelectedFundPartial(BigDecimal.ZERO);
         setAccountSelectedRecordsDetails(new ArrayList<>());
+        setAccountSelectedRecordsDetailsFiltered(getAccountSelectedRecordsDetails());
     }
 
     private void calculateBalance() {
@@ -207,6 +212,13 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
                 break;
         }
         getSummaryRecordByAccount();
+    }
+
+    public void onDateSelect() {
+        if (this.dateDay != null) {
+            this.accountSelectedRecordsDetailsFiltered = this.accountSelectedRecordsDetails.stream().filter(d -> (Dates.isInRange(Dates.minimumDate(this.dateDay), Dates.maximumDate(this.dateDay), d.getRecord().getJournal().getEmissionDate()))).collect(Collectors.toList());
+        }
+
     }
 
     public boolean editarFormularioRecord(Long recordId) {
@@ -305,12 +317,28 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         this.accountSelectedRecordsDetails = accountSelectedRecordsDetails;
     }
 
+    public List<RecordDetail> getAccountSelectedRecordsDetailsFiltered() {
+        return accountSelectedRecordsDetailsFiltered;
+    }
+
+    public void setAccountSelectedRecordsDetailsFiltered(List<RecordDetail> accountSelectedRecordsDetailsFiltered) {
+        this.accountSelectedRecordsDetailsFiltered = accountSelectedRecordsDetailsFiltered;
+    }
+
     public int getRangeId() {
         return rangeId;
     }
 
     public void setRangeId(int rangeId) {
         this.rangeId = rangeId;
+    }
+
+    public Date getDateDay() {
+        return dateDay;
+    }
+
+    public void setDateDay(Date dateDay) {
+        this.dateDay = dateDay;
     }
 
     @Override

@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                             </p:toolbarGroup>
                         </p:toolbar>
-                        <p:toolbar id="topToolBar" class="NoBorder FlexColumn">
+                        <p:toolbar id="topToolBar" class="NoBorder">
                             <p:toolbarGroup>
                                 <jlgranda:input id="date-start" name="date-start" render="date-start" container="none"
                                                 type="calendar" 
@@ -113,6 +113,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  update="form:panel-summary">
                                 </p:commandButton>
                             </p:toolbarGroup>
+                            <p:toolbarGroup align="rigth">
+                                <jlgranda:input type="calendar" id="date-filter" name="date-filter" render="date-filter" container="none"
+                                                value="#{generalLedgerHome.dateDay}" label="Filtrar por #{i18n['common.day.min']}:&nbsp;" 
+                                                required="#{false}" 
+                                                maxdate="#{generalLedgerHome.end}" mindate="#{generalLedgerHome.start}"
+                                                placeholder="#{false}"
+                                                rendered="#{not empty generalLedgerHome.accountSelectedRecordsDetails and not empty generalJournalHome.start and not empty generalJournalHome.end}"
+                                                listener="#{generalLedgerHome.onDateSelect()}" update="form:panel-summary"
+                                                execute="@this">
+                                </jlgranda:input>
+                            </p:toolbarGroup>
                         </p:toolbar>
                         <p:toolbar id="topToolBarRadio" class="NoBorder NoPadding FlexColumn">
                             <p:toolbarGroup class="Container100">
@@ -128,7 +139,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:toolbarGroup>
                         </p:toolbar>
                         <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
-                                     value="#{generalLedgerHome.accountSelectedRecordsDetails}" var="recordDetail"
+                                     value="#{generalLedgerHome.accountSelectedRecordsDetailsFiltered}" var="recordDetail"
                                      selection="#{generalJournalHome.selectedBussinesEntities}"
                                      rowKey="#{recordDetail.id}"
                                      rows="#{settingHome.getValue('fede.inbox.list.length.short', '10')}"

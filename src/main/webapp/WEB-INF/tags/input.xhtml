@@ -137,9 +137,12 @@ limitations under the License.
                                         pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}"
                                         class="#{class}"
                                         showOn="button">
-                                <f:validator validatorId="#{validator}"/>        
+                                <!--<f:validator validatorId="#{validator}"/>-->        
                                 <c:if test="#{not empty update }">
                                     <p:ajax event="dateSelect" update="#{update}" partialSubmit="#{true}"/>
+                                </c:if>
+                                <c:if test="#{not empty listener and not empty update }">
+                                    <p:ajax event="dateSelect" listener="#{listener}" update="#{update}" partialSubmit="#{true}" process="@this"/>
                                 </c:if>
                             </p:calendar>  
                         </c:when>
@@ -153,7 +156,7 @@ limitations under the License.
                                         pattern="#{settingHome.getValue('fede.date.hour.pattern', 'dd-MM-yyyy HH:mm:ss')}"
                                         class="#{class}"
                                         showOn="button">
-                                <f:validator validatorId="#{validator}"/>        
+                                <!--<f:validator validatorId="#{validator}"/>-->        
                                 <c:if test="#{not empty update }">
                                     <p:ajax event="dateSelect" update="#{update}" partialSubmit="#{true}"/>
                                 </c:if>
