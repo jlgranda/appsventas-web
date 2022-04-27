@@ -650,8 +650,6 @@ input[type="text"], input[type="password"], textarea{
     float:left;
 }
 
-
-
 .FlexNowRap{
     flex-wrap: nowrap !important;
 }
@@ -950,6 +948,10 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Width */
+.MinWidFull{
+    min-width: -webkit-fill-available;
+}
+
 .Wid100{
     width: -webkit-fill-available !important;
 }
@@ -1000,8 +1002,8 @@ input[type="text"], input[type="password"], textarea{
 .Wid5{
     width:5%;
 }
-.WidAuto{
-    width: auto;
+.WidAuto {
+    width: auto !important;
 }
 
 .MaxWid500{
@@ -1124,6 +1126,9 @@ input[type="text"], input[type="password"], textarea{
     margin-top:50%;
 }
 
+.MarBot4{
+    margin-bottom:4px;
+}
 .MarBot10{
     margin-bottom:10px;
 }
@@ -1143,6 +1148,9 @@ input[type="text"], input[type="password"], textarea{
 /* Paddings */
 .NoPadding{
     padding:0px !important;
+}
+.Padding2{
+    padding: 2px !important;
 }
 .Padding5{
     padding: 5px !important;
@@ -1533,6 +1541,9 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Display */
+.DispContents{
+    display: contents;
+}
 .DispBlock{
     display:block;
 }
