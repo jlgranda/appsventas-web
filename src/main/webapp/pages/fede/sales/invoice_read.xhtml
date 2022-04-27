@@ -256,7 +256,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      disabled="#{true}"
                                                      immediate="true"
                                                      required="true" style="width: 100%"> 
-                                        <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                        <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this"/>
                                     </p:selectOneMenu>
                                 </h:panelGroup>

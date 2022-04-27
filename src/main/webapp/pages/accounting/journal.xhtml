@@ -30,8 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <f:viewParam name="journalId" value="#{generalJournalHome.journalId}"/>
-                <f:viewAction action="#{generalJournalHome.validateNewReloadJournal()}"/>
+                <f:viewParam name="journalId" value="#{generalJournalHomeBase.journalId}"/>
+                <f:viewAction action="#{generalJournalHomeBase.validateNewReloadJournal()}"/>
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -39,8 +39,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <li>/</li>
             <li><p:link outcome="journals">#{i18n['app.fede.accounting.journals']}</p:link></li>
             <li>/</li>
-            <li><p:link outcome="journal">#{not empty generalJournalHome.journalId ? i18n['common.edit'] : i18n['common.new']} #{i18n['app.fede.accounting.journal']}
-                    <f:param name="journalId" rendered="#{not empty generalJournalHome.journalId}" value="#{generalJournalHome.journalId}"/>
+            <li><p:link outcome="journal">#{not empty generalJournalHomeBase.journalId ? i18n['common.edit'] : i18n['common.new']} #{i18n['app.fede.accounting.journal']}
+                    <f:param name="journalId" rendered="#{not empty generalJournalHomeBase.journalId}" value="#{generalJournalHomeBase.journalId}"/>
                 </p:link>
             </li>
         </ui:define>
@@ -54,29 +54,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
                         <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
-                                        value="#{generalJournalHome.journal.code}" required="#{true}"
+                                        value="#{generalJournalHomeBase.journal.code}" required="#{true}"
                                         inlinehelp="#{messages['common.code.UUID.inlinehelp']}"
                                         execute="@this save" render="code"/>
                         <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.label']}/#{i18n['common.name']}"
-                                        value="#{generalJournalHome.journal.name}" required="#{true}"
+                                        value="#{generalJournalHomeBase.journal.name}" required="#{true}"
                                         inlinehelp="#{messages['app.fede.accounting.journal.name.inlinehelp']}"
                                         execute="@this save" render="nme"/>
                         <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.observation']}"
-                                        value="#{generalJournalHome.journal.description}" required="#{false}"
+                                        value="#{generalJournalHomeBase.journal.description}" required="#{false}"
                                         inlinehelp="#{messages['app.fede.accounting.journal.description.inlinehelp']}"
                                         execute="@this save" render="dscrpn"/>
                         <p:toolbar class="NoBorder">
                             <p:toolbarGroup class="DispInlFlex">
                                 <p:commandButton id="save-button" 
                                                  value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn TexUppercase"
-                                                 actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
+                                                 actionListener="#{generalJournalHomeBase.save()}" action="#{generalJournalHomeBase.getOutcome()}"
                                                  disabled="#{false}"
                                                  ajax="#{false}" immediate="#{false}"
                                                  type="submit"/>
                             </p:toolbarGroup>
                             <p:toolbarGroup align="right" class="DispInlFlexRight">
                                 <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="secondary-button rounded-btn"
-                                                 actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
+                                                 actionListener="#{generalJournalHomeBase.closeDialog(null)}" action="#{generalJournalHomeBase.getOutcome()}"
                                                  ajax="#{true}" immediate="#{true}"/>                          
                             </p:toolbarGroup>
                         </p:toolbar>
@@ -84,8 +84,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid"><p:separator style="color: #EFEFEF"/></div>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
                         <p:dataTable id="dataTable-records" widgetVar="dataTable-records" lazy="#{true}"
-                                     value="#{generalJournalHome.journal.records}" var="record"
-                                     selection="#{generalJournalHome.recordsSelected}"
+                                     value="#{generalJournalHomeBase.journal.records}" var="record"
+                                     selection="#{generalJournalHomeBase.recordsSelected}"
                                      rowKey="#{record.id}"
                                      rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                      paginator="#{true}" paginatorPosition="bottom" 
@@ -93,16 +93,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                      sortMode="single"
                                      editable="#{false}">
-                            <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectAsRecord}" update=":form:panelSelectedToolBar"/>
+                            <p:ajax event="rowSelect" listener="#{generalJournalHomeBase.onRowSelectAsRecord}" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
                             <f:facet name="header">
                                 <p:linkButton outcome="record-register"
                                               value="#{i18n['common.new']}"
-                                              disabled="#{empty generalJournalHome.journalId}"
+                                              disabled="#{empty generalJournalHomeBase.journalId}"
                                               icon="fa fa-plus-square" iconPos="left" styleClass="info-btn rounded-btn TexUppercase">
-                                    <f:param name="generalJournalId" value="#{generalJournalHome.journalId}"/>
+                                    <f:param name="generalJournalId" value="#{generalJournalHomeBase.journalId}"/>
                                 </p:linkButton>
                             </f:facet>
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter DispVerticalTop"/>
@@ -144,14 +144,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column colspan="3" class="BackgroundToolbar"/>
                                     <p:column class="BackgroundToolbar">
                                         <f:facet name="footer">
-                                            <h:outputText value="#{generalJournalHome.subtotalDebe}" class="FontBold Fright">
+                                            <h:outputText value="#{generalJournalHomeBase.subtotalDebe}" class="FontBold Fright">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
                                     <p:column class="BackgroundToolbar">
                                         <f:facet name="footer">
-                                            <h:outputText value="#{generalJournalHome.subtotalHaber}" class="FontBold Fright">
+                                            <h:outputText value="#{generalJournalHomeBase.subtotalHaber}" class="FontBold Fright">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
                                         </f:facet>
@@ -161,31 +161,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:dataTable>
                         <!--Herramientas con seleccionados--> 
                         <p:panel id="panelSelectedToolBar">
-                            <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.recordsSelected}" class="AlignSelfEnd NoPadding">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHomeBase.recordsSelected}" class="AlignSelfEnd NoPadding">
                                 <p:toolbarGroup class="DispInlFlex Container100">
                                     <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
                                         <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
-                                        <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
-                                            <f:selectItems value="#{generalJournalHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                        <p:selectOneMenu value="#{generalJournalHomeBase.selectedAction}">
+                                            <f:selectItems value="#{generalJournalHomeBase.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
                                             <f:ajax render="selectedToolBar"></f:ajax>
                                         </p:selectOneMenu>
                                     </div>
-                                    <p:panel id="panelMoverTo" rendered="#{generalJournalHome.selectedAction eq 'moveto'}" class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4">
+                                    <p:panel id="panelMoverTo" rendered="#{generalJournalHomeBase.selectedAction eq 'moveto'}" class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4">
                                         <jlgranda:input id="general-journal-date" name="general-journal-date" render="general-journal-date" container="none"
                                                         type="calendar" 
-                                                        value="#{generalJournalHome.generalJournalDate}" label="#{i18n['app.fede.accounting.record.date']}:&nbsp;" 
+                                                        value="#{generalJournalHomeBase.generalJournalDate}" label="#{i18n['app.fede.accounting.record.date']}:&nbsp;" 
                                                         required="#{false}" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
                                                         placeholder="#{false}"
                                                         rendered="#{true}"
-                                                        update="selectedToolBar">
+                                                        update="selectedToolBar"
+                                                        class="DispInlGrid BackgroundWarning">
                                         </jlgranda:input> 
                                     </p:panel>
                                     <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop15">
                                         <p:commandButton id="go-button"
                                                          value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button" style="width: auto !important;"
-                                                         actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
+                                                         actionListener="#{generalJournalHomeBase.execute()}" action="#{generalJournalHomeBase.getOutcome()}"
                                                          oncomplete="PF('dataTable-records').unselectAllRows()"
-                                                         disabled="#{not generalJournalHome.actionExecutable}"
+                                                         disabled="#{not generalJournalHomeBase.actionExecutable}"
                                                          ajax="#{true}"
                                                          update="@form"><!-- type="submit"-->
                                             <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
@@ -222,8 +223,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <!--
 <p:dataTable id="dataTable-records" widgetVar="dataTable-records" lazy="#{true}"
-                                                                                                                                                                                                        value="#{generalJournalHome.journal.records}" var="record"
-                                     selection="#{generalJournalHome.recordsSelected}"
+                                                                                                                                                                                                        value="#{generalJournalHomeBase.journal.records}" var="record"
+                                     selection="#{generalJournalHomeBase.recordsSelected}"
                                      rowKey="#{record.id}"
                                      rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                      paginator="#{true}" paginatorPosition="bottom" 
@@ -231,17 +232,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                      sortMode="single"
                                      editable="#{false}">
-                            <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelectAsRecord}" update=":form:panelSelectedToolBar"/>
+                            <p:ajax event="rowSelect" listener="#{generalJournalHomeBase.onRowSelectAsRecord}" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
                             <f:facet name="header">
                                 <p:commandButton id="button-record-add" 
                                                  value="#{i18n['common.new']}" icon="fa fa-plus-square" styleClass="info-btn TexUppercase"
-                                                 actionListener="#{generalJournalHome.mostrarFormularioRecord()}"
+                                                 actionListener="#{generalJournalHomeBase.mostrarFormularioRecord()}"
                                                  ajax="#{true}" immediate="#{true}" >
                                     <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{generalJournalHome.handleReturn}">
+                                            listener="#{generalJournalHomeBase.handleReturn}">
                                     </p:ajax>
                                 </p:commandButton>
                             </f:facet>
@@ -257,10 +258,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column id="report" class="Wid20 TexAlCenter">
                                 <p:commandButton id="button-detail" 
                                                  title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
-                                                 actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" 
+                                                 actionListener="#{generalJournalHomeBase.editarFormularioRecord(record.id)}" 
                                                  ajax="#{true}" immediate="#{true}">
                                     <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{generalJournalHome.handleReturn}">
+                                            listener="#{generalJournalHomeBase.handleReturn}">
                                     </p:ajax>
                                 </p:commandButton>
                             </p:column>

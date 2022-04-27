@@ -128,8 +128,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:toolbarGroup>
                         </p:toolbar>
                         <p:dataTable id="dataTable-record-details" widgetVar="dataTable-record-details" lazy="#{false}"
-                                     value="#{generalLedgerHome.accountSelectedRecords}" var="recordDetail"
-                                     selection="#{generalJournalHome.selectedBussinesEntities}"
+                                     value="#{generalLedgerHome.accountSelectedRecordsDetails}" var="recordDetail"
+                                     selection="#{generalJournalHomeBase.selectedBussinesEntities}"
                                      rowKey="#{recordDetail.id}"
                                      rows="#{settingHome.getValue('fede.inbox.list.length.short', '10')}"
                                      paginator="#{true}" paginatorPosition="bottom" 

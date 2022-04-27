@@ -58,11 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @ViewScoped
-public class GeneralJournalHome extends FedeController implements Serializable {
-
-    private static final long serialVersionUID = -1007161141552849702L;
-
-    Logger logger = LoggerFactory.getLogger(GeneralJournalHome.class);
+public class GeneralJournalHomeBase extends FedeController implements Serializable {
 
     @Inject
     private Subject subject;

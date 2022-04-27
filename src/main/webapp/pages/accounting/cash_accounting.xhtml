@@ -86,7 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:autoComplete id="account" 
                                                                 value="#{cashBoxGeneralHome.recordDetail.account}" var="account"
                                                                 itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                                                completeMethod="#{recordHome.filterAccounts}"
+                                                                completeMethod="#{accountHome.filterAccounts}"
                                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                                 placeholder="#{i18n['app.fede.accounting.account.find']}"
                                                                 emptyMessage="#{i18n['app.setting.list.empty']}"

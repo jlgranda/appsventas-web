@@ -21,25 +21,18 @@ import com.jlgranda.fede.ejb.CashBoxDetailService;
 import com.jlgranda.fede.ejb.CashBoxGeneralService;
 import com.jlgranda.fede.ejb.CashBoxPartialService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
-import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
-import com.jlgranda.fede.ejb.RecordTemplateService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
-import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
@@ -54,19 +47,13 @@ import org.jlgranda.fede.model.accounting.CashBoxPartial;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
-import org.jlgranda.fede.model.accounting.RecordTemplate;
-import org.jlgranda.fede.model.document.DocumentType;
-import org.jlgranda.fede.model.document.EmissionType;
-import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
-import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.util.Strings;
-import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -80,9 +67,6 @@ import org.slf4j.LoggerFactory;
 @ViewScoped
 public class CashBoxGeneralHome extends FedeController implements Serializable {
 
-    private static final long serialVersionUID = -1007161141552849702L;
-    Logger logger = LoggerFactory.getLogger(CashBoxGeneralHome.class);
-
     @Inject
     private Subject subject;
     @Inject
@@ -91,21 +75,21 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private SettingHome settingHome;
 
     @EJB
+    AccountCache accountCache;
+    @EJB
+    private AccountService accountService;
+    @EJB
     private CashBoxGeneralService cashBoxGeneralService;
     @EJB
     private CashBoxPartialService cashBoxPartialService;
     @EJB
     private CashBoxDetailService cashBoxDetailService;
     @EJB
-    private RecordDetailService recordDetailService;
-    @EJB
-    private AccountService accountService;
-    @EJB
-    AccountCache accountCache;
-    @EJB
     private GeneralJournalService generalJournalService;
     @EJB
     private RecordService recordService;
+    @EJB
+    private RecordDetailService recordDetailService;
 
     /**
      * EDIT OBJECT.
@@ -615,9 +599,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
 
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-        Record record = null;
-        //El registro casí listo para agregar al journal
-        return record;
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

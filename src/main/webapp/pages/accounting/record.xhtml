@@ -29,8 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
-                <f:metadata>
-                    <f:viewParam name="generalJournalId" value="#{recordHome.generalJournalId}"/>
+            <f:metadata>
+                <f:viewParam name="generalJournalId" value="#{recordHome.generalJournalId}"/>
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
                         <h1 class="TexUppercase">
-                           #{i18n['app.fede.accounting.record']}
+                            #{i18n['app.fede.accounting.record']}
                         </h1>
                     </div>
                     <p:panel id="panel-msg"
@@ -66,14 +66,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                       value="#{i18n['common.view']} #{i18n['app.fede.accounting.journal']}"
                                       disabled="#{empty recordHome.record.emissionDate}"
                                       icon="pi pi-book" iconPos="left" styleClass="help-btn rounded-btn TexUppercase">
-                            <f:param name="journalId" value="#{recordHome.getGeneralJournalIdByEmisionDate()}"/>
+                            <f:param name="journalId" value="#{recordHome.generalJournalIdByEmisionDate}"/>
                         </p:linkButton>
-                        <!--                        <p:commandButton id="btnGeneralJournal"
-                                                                     icon="pi pi-book" styleClass="help-btn"
-                                                                     value="#{i18n['common.view']} #{i18n['app.fede.accounting.journal']}"
-                                                                     actionListener="#{recordHome.viewGeneralJournal()}"
-                                                                     ajax="#{true}" immediate="#{true}"
-                                                                     disabled="#{empty recordHome.record.emissionDate}"/>-->
                     </div>
                     <p:panel id="panel-record" rendered="#{not empty recordHome.record.emissionDate}"
                              class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding">
@@ -84,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:autoComplete id="account" 
                                                 value="#{recordHome.recordDetail.account}" var="account"
                                                 itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                                completeMethod="#{recordHome.filterAccounts}"
+                                                completeMethod="#{accountHome.filterAccounts}"
                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                 placeholder="#{i18n['app.fede.accounting.account.find']}"
                                                 emptyMessage="#{i18n['app.setting.list.empty']}"
@@ -146,9 +140,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          draggableColumns="#{true}" reflow="#{true}" 
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                          sortMode="single">
-                                <p:ajax event="rowSelect" listener="#{recordHome.onRowSelect}" update="@form"/>
-                                <p:ajax event="rowUnselect" listener="#{recordHome.onRowUnselect}" update="@form"/>
-                                <p:column headerText="#{i18n['app.fede.accounting.account']}"  class="Wid40">
+                                <p:column headerText="#{i18n['app.fede.accounting.account']}" class="Wid40">
                                     <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
                                 </p:column>
                                 <p:column headerText="#{i18n['common.debe']}">
@@ -177,7 +169,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:toolbarGroup class="DispInlFlex">
                                 <p:commandButton id="btn-record-save"
                                                  value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn TexUppercase"
-                                                 actionListener="#{recordHome.recordSave()}"
+                                                 actionListener="#{recordHome.save()}"
                                                  disabled="#{empty recordHome.record.recordDetails or empty recordHome.record.description}"
                                                  ajax="#{false}" immediate="#{false}" 
                                                  update="@form"/>

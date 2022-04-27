@@ -79,8 +79,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
     private BigDecimal accountSelectedHaberPartial;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha end
     private BigDecimal accountSelectedFundPartial;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha end
     private BigDecimal accountSelectedFundPrevious;//Saldo de la cuenta seleccionada desde el 1 registro hasta antes de la fecha start
-    private List<RecordDetail> accountSelectedRecords;
-
+    private List<RecordDetail> accountSelectedRecordsDetails;
     private int rangeId;
 
     @PostConstruct
@@ -169,7 +168,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         setAccountSelectedHaberPartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.HABER, getAccountSelected(), this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
         setAccountSelectedFundPartial(getAccountSelectedDebePartial().subtract(getAccountSelectedHaberPartial()));
         setAccountSelectedFundPrevious(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.addDays(getStart(), -1 * 1))));
-        setAccountSelectedRecords(recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", getAccountSelected(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
+        setAccountSelectedRecordsDetails(recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", getAccountSelected(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         calculateBalance();
     }
 
@@ -178,13 +177,13 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         setAccountSelectedDebePartial(BigDecimal.ZERO);
         setAccountSelectedHaberPartial(BigDecimal.ZERO);
         setAccountSelectedFundPartial(BigDecimal.ZERO);
-        setAccountSelectedRecords(new ArrayList<>());
+        setAccountSelectedRecordsDetails(new ArrayList<>());
     }
 
     private void calculateBalance() {
         BigDecimal accumulativeBalance = BigDecimal.ZERO;
         accumulativeBalance = accumulativeBalance.add(getAccountSelectedFundPrevious());
-        for (RecordDetail rd : getAccountSelectedRecords()) {
+        for (RecordDetail rd : getAccountSelectedRecordsDetails()) {
             if (RecordDetail.RecordTDetailType.DEBE.equals(rd.getRecordDetailType())) {
                 accumulativeBalance = accumulativeBalance.add(rd.getAmount());
             } else if (RecordDetail.RecordTDetailType.HABER.equals(rd.getRecordDetailType())) {
@@ -298,12 +297,12 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         this.accountSelectedFundPrevious = accountSelectedFundPrevious;
     }
 
-    public List<RecordDetail> getAccountSelectedRecords() {
-        return accountSelectedRecords;
+    public List<RecordDetail> getAccountSelectedRecordsDetails() {
+        return accountSelectedRecordsDetails;
     }
 
-    public void setAccountSelectedRecords(List<RecordDetail> accountSelectedRecords) {
-        this.accountSelectedRecords = accountSelectedRecords;
+    public void setAccountSelectedRecordsDetails(List<RecordDetail> accountSelectedRecordsDetails) {
+        this.accountSelectedRecordsDetails = accountSelectedRecordsDetails;
     }
 
     public int getRangeId() {

@@ -41,7 +41,7 @@ limitations under the License.
     <c:set var="process" value="#{not empty process ? process : ''}" />   
     <c:set var="style" value="#{not empty style ? style : 'text-transform: none;'}" />   
     <c:set var="mindate" value="#{not empty mindate ? mindate : ''}" />   
-    <c:set var="maxdate" value="#{not empty maxdate ? maxdate : 'ui.now()'}" />   
+    <c:set var="maxdate" value="#{not empty maxdate ? maxdate : ui.now()}" />   
     <c:set var="cache" value="#{not empty name ?  settingHome.getValue(name, 'Ingrese un valor válido') : ''}" />
     <c:set var="maxlength" value="#{not empty maxlength ? maxlength : '256' }" />
     <c:set var="rows" value="#{not empty rows ? rows : 3 }" />
@@ -135,7 +135,8 @@ limitations under the License.
                                         title="#{cache}"
                                         maxdate="#{maxdate}" mindate="#{mindate}"
                                         pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}"
-                                        class="#{class}">
+                                        class="#{class}"
+                                        showOn="button">
                                 <f:validator validatorId="#{validator}"/>        
                                 <c:if test="#{not empty update }">
                                     <p:ajax event="dateSelect" update="#{update}" partialSubmit="#{true}"/>
@@ -150,7 +151,8 @@ limitations under the License.
                                         title="#{cache}"
                                         maxdate="#{maxdate}" mindate="#{mindate}"
                                         pattern="#{settingHome.getValue('fede.date.hour.pattern', 'dd-MM-yyyy HH:mm:ss')}"
-                                        class="#{class}">
+                                        class="#{class}"
+                                        showOn="button">
                                 <f:validator validatorId="#{validator}"/>        
                                 <c:if test="#{not empty update }">
                                     <p:ajax event="dateSelect" update="#{update}" partialSubmit="#{true}"/>
