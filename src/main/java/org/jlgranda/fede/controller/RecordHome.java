@@ -103,7 +103,7 @@ public class RecordHome extends FedeController implements Serializable {
         boolean valido = true;
         //Localizar o generar el generalJournal
         if (this.generalJournal == null || this.generalJournal.getId() == null) {
-            this.generalJournal = this.buildJournal(this.record.getEmissionDate());
+            this.generalJournal = this.buildJournal(getEmissionDate());
         }
         if (this.generalJournal == null || this.generalJournal.getId() == null) {
             valido = false;
@@ -119,13 +119,13 @@ public class RecordHome extends FedeController implements Serializable {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.inlinehelp"));
         }
 
-        if (this.record.getEmissionDate() == null) {
+        if (getEmissionDate() == null) {
             valido = false;
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.date.inlinehelp"));
         }
 
         if (valido) {
-            Date lastEmissionDate = this.record.getEmissionDate();
+            Date lastEmissionDate = getEmissionDate();
             double debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
                     .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
             double haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
@@ -160,8 +160,8 @@ public class RecordHome extends FedeController implements Serializable {
     public Long getGeneralJournalIdByEmisionDate() {
         if (this.generalJournalId != null) {
             return this.generalJournalId;
-        } else if (this.record.getEmissionDate() != null) {
-            return buildJournal(this.record.getEmissionDate()).getId();
+        } else if (getEmissionDate() != null) {
+            return buildJournal(getEmissionDate()).getId();
         }
         return null;
     }

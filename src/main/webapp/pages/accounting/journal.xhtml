@@ -139,11 +139,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="EmptyBox10"/>
                                 </ui:repeat>
                             </p:column>
-                            <p:column id="report" class="Wid10">
+                            <p:column id="report" class="Wid5">
                                 <p:commandButton id="button-detail" 
-                                                 title="#{i18n['common.detail']}" icon="fa fa-list" styleClass="secondary-button rounded-btn"
+                                                 title="#{i18n['common.detail']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
                                                  actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" 
-                                                 ajax="#{true}" immediate="#{true}">
+                                                 ajax="#{true}" immediate="#{true}"
+                                                 rendered="#{empty record.bussinesEntityId}">
                                     <p:ajax event="dialogReturn" update="@form"
                                             listener="#{generalJournalHome.handleReturn}">
                                     </p:ajax>
