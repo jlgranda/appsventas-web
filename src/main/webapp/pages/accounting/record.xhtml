@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:panel id="panel-record" rendered="#{not empty recordHome.emissionDate}"
                              class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd">
-                            <h3>Agregar cuenta al asiento contable</h3>
+                            <h3>Agregar/Editar cuenta al asiento contable</h3>
                             <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
                                 <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                                 <p:autoComplete id="account" 
@@ -100,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:selectOneRadio id="recordDetailType" 
                                                   value="#{recordHome.recordDetail.recordDetailType}" 
                                                   layout="responsive" columns="3"
-                                                  required="#{true}" style="width: 20rem;">
+                                                  required="#{true}">
                                     <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
                                                    itemLabel="#{recordDetailType.label}" itemValue="#{recordDetailType}"/>
                                     <p:ajax process="@this"/>
@@ -124,7 +124,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  icon="pi pi-check-square" styleClass="warning-btn rounded-btn TexUppercase"
                                                  value="#{i18n['common.add']}"
                                                  actionListener="#{recordHome.recordDetailAdd}" 
-                                                 ajax="#{true}" immediate="#{true}"
+                                                 ajax="#{false}" immediate="#{true}"
                                                  disabled="#{empty recordHome.emissionDate or empty recordHome.recordDetail.account or empty recordHome.recordDetail.recordDetailType or recordHome.recordDetail.amount le 0}"
                                                  update="@form"/>
                             </div>

@@ -39,154 +39,155 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <p:panel class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <div class="ui-fluid"><!--Desglose de Caja-->
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BordCard NoPadding">
-                            <div class="ui-fluid">
-                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Fs30 TexAlCenter TexUppercase">#{i18n['common.summary']} #{i18n['common.of']} #{i18n['app.fede.accounting.close.cash']}</div>
-                                <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-3"></div>
-                                <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
-                                    <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16">Dinero en efectivo en caja</div>
-                                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
-                                        <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.cashPartial}" class="FontBold"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
-                                    </div>
-                                    <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16 ">Dinero detallado</div>
-                                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
-                                        <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.totalCashBreakdown}" class="Info"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
-                                    </div>
-                                    <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16 ">#{i18n['common.excess']}</div>
-                                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
-                                        <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.excessCash}"
-                                                       style="#{cashBoxGeneralHome.cashBoxPartial.excessCash gt 0 ? 'color: #34A835': ''}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </div>
-                                    <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16 ">#{i18n['common.missing']}</div>
-                                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
-                                        <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.missCash}"
-                                                       style="#{cashBoxGeneralHome.cashBoxPartial.missCash lt 0 ? 'color: #e91224': ''}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </div>
-                                </div>
-                                <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-3"></div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('CHECKER') or request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding BordCard">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter">
+                            <h1 class="TexUppercase">
+                                #{i18n['common.summary']} #{i18n['common.of']} #{i18n['app.fede.accounting.close.cash']}
+                            </h1>
+                        </div>
+                        <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-3"></div>
+                        <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
+                            <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16">Dinero en efectivo en caja</div>
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
+                                <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.cashPartial}" class="FontBold"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
+                            </div>
+                            <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16 ">Dinero detallado</div>
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
+                                <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.totalCashBreakdown}" class="Info"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
+                            </div>
+                            <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16 ">#{i18n['common.excess']}</div>
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
+                                <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.excessCash}"
+                                              style="#{cashBoxGeneralHome.cashBoxPartial.excessCash gt 0 ? 'color: #34A835': ''}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </div>
+                            <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 Fs16 ">#{i18n['common.missing']}</div>
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 Fs16 TexAlRight">
+                                <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.missCash}"
+                                               style="#{cashBoxGeneralHome.cashBoxPartial.missCash gt 0 ? 'color: #e91224': ''}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
                             </div>
                         </div>
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BordCard NoPadding MarTop5">
-                            <div class="ui-fluid">
-                                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Fs28 TexAlCenter TexUppercase">Registrar contablemente
-                                    <h:outputText value="#{cashBoxGeneralHome.cashFinally}" class="Info"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
-                                </div>
-                                <p:panel id="panel-totalCashBreakdown" rendered="#{request.isUserInRole('CHECKER') and not empty cashBoxGeneralHome.cashBoxPartial.id}"
-                                         class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><!--Panel de registro contable de dinero desglosado-->
-                                    <div class="ui-fluid">
-                                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                            <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
-                                                <p:outputLabel value="¿A qué cuenta(s) enviará el dinero de CAJA DIA?" for="@next"/>
-                                                <p:autoComplete id="account" 
-                                                                value="#{cashBoxGeneralHome.recordDetail.account}" var="account"
-                                                                itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                                                completeMethod="#{accountHome.filterAccounts}"
-                                                                converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                                placeholder="#{i18n['app.fede.accounting.account.find']}"
-                                                                emptyMessage="#{i18n['app.setting.list.empty']}"
-                                                                converterMessage="#{i18n['property.converter.fail']}"
-                                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
-                                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                                                forceSelection="#{true}" dropdown="#{false}"
-                                                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                                                required="#{true}">
-                                                    <p:column>
-                                                        <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
-                                                    </p:column>
-                                                    <!--<p:ajax process="@this"/>-->
-                                                    <p:ajax event="itemSelect" listener="#{cashBoxGeneralHome.onItemAccountSelect}" update="@form"/>
-                                                </p:autoComplete>
-                                            </div>
-                                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12" style="padding: 0rem">
-                                                <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}"
-                                                                render="amount" value="#{cashBoxGeneralHome.recordDetail.amount}" 
-                                                                required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
-                                                                placeholder="#{false}"
-                                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
-                                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
-                                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                                                container="none" rendered="#{true}"/>
-                                            </div>
-                                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: center; margin-top: 1rem">
-                                                <p:commandButton id="btnAggAdd"
-                                                                 icon="fa fa-check-square" styleClass="#{cashBoxGeneralHome.recordDetail.persistent ? 'primary-btn' : 'warning-btn'}"
-                                                                 value="#{cashBoxGeneralHome.recordDetail.persistent ? i18n['common.apply'] : i18n['common.add']}"
-                                                                 actionListener="#{cashBoxGeneralHome.recordDetailAdd}" 
-                                                                 disabled="#{empty cashBoxGeneralHome.recordDetail.account}"
-                                                                 ajax="#{true}" immediate="#{true}"
-                                                                 update="@form"/>
-                                            </div>
-                                        </div>
-                                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                            <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
-                                                         value="#{cashBoxGeneralHome.record.recordDetails}" var="recordDetail" 
-                                                         selection="#{cashBoxGeneralHome.recordDetailSelected}" 
-                                                         rowKey="#{recordDetail.account}"
-                                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
-                                                         paginator="#{true}" paginatorPosition="bottom" 
-                                                         draggableColumns="#{true}" reflow="#{false}" 
-                                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
-                                                         sortMode="single">
-                                                <p:ajax event="rowSelect" listener="#{cashBoxGeneralHome.onRowSelect}" update="@form"/>
-                                                <p:ajax event="rowUnselect" listener="#{cashBoxGeneralHome.onRowUnselect}" update="@form"/>
-                                                <p:column headerText="#{i18n['app.fede.accounting.account']}"  class="Wid40">
-                                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.money.letter']}">
-                                                    <h:outputText value="#{recordDetail.amount}">
-                                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                                    </h:outputText>
-                                                </p:column>
-                                                <p:column headerText="#{i18n['common.actions']}" class="Wid20">
-                                                    <p:commandButton id="btnEdit"
-                                                                     icon="fa fa-edit" styleClass="secondary-button rounded-btn"
-                                                                     actionListener="#{cashBoxGeneralHome.editRecordDetail(recordDetail)}"
-                                                                     ajax="#{true}" immediate="#{true}"
-                                                                     update="@form">
-                                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                                    </p:commandButton>
-                                                    <p:commandButton id="btnDelete"
-                                                                     icon="fa fa-remove" styleClass="danger-btn rounded-btn"
-                                                                     actionListener="#{cashBoxGeneralHome.deleteRecordDetail(recordDetail)}"
-                                                                     update="@form">
-                                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                                    </p:commandButton>
-                                                </p:column>
-                                            </p:dataTable>
-                                        </div>
-                                        <p:toolbar id="selectedToolBar" class="NoBorder" 
-                                                   rendered="#{not empty cashBoxGeneralHome.cashBoxPartial.id}">
-                                            <p:toolbarGroup class="DispInlFlex">
-                                                <p:linkButton outcome="cash-breakdown"
-                                                              value="#{i18n['common.previous']}"
-                                                              icon="pi pi-chevron-left" iconPos="left" styleClass="info-btn rounded-btn TexUppercase">
-                                                    <f:param name="cashBoxPartialId" value="#{cashBoxGeneralHome.cashBoxPartial.id}"/>
-                                                </p:linkButton>
-                                            </p:toolbarGroup>
-                                            <p:toolbarGroup align="right" class="DispInlFlexRight">
-                                                <p:commandButton id="btnRecordSave"
-                                                                 value="#{i18n['common.finish']}" 
-                                                                 icon="pi pi-save" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase"
-                                                                 actionListener="#{cashBoxGeneralHome.recordSave()}" action="#{cashBoxGeneralHome.redirect}"
-                                                                 disabled="#{empty cashBoxGeneralHome.record.recordDetails}"
-                                                                 ajax="#{true}" immediate="#{false}" 
-                                                                 update="@form">
-                                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']} #{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
-                                                </p:commandButton>
-                                            </p:toolbarGroup>
-                                        </p:toolbar>
-                                    </div>
-                                </p:panel>
-                            </div>
-                        </div>
+                        <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-3"></div>
                     </div>
-                </p:panel>
+                    <div class="EmptyBox5"/>
+                    <p:panel id="panel-record" rendered="#{request.isUserInRole('CHECKER') and not empty cashBoxGeneralHome.cashBoxPartial.id}"
+                             class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding BordCard">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Fs28 TexAlCenter TexUppercase">
+                            Registrar contablemente
+                            <h:outputText value="#{cashBoxGeneralHome.cashFinally}" class="Info"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd">
+                            <h3>Agregar/Editar cuenta al asiento contable</h3>
+                            <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
+                                <p:outputLabel value="¿A qué cuenta(s) enviará el dinero de CAJA DIA?" for="@next"/>
+                                <p:autoComplete id="account" 
+                                                value="#{cashBoxGeneralHome.recordDetail.account}" var="account"
+                                                itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                                completeMethod="#{accountHome.filterAccounts}"
+                                                converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                                placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                                emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                converterMessage="#{i18n['property.converter.fail']}"
+                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                forceSelection="#{true}" dropdown="#{false}"
+                                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                required="#{true}">
+                                    <p:column>
+                                        <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                                    </p:column>
+                                    <p:ajax process="@this"/>
+                                    <p:ajax event="itemSelect" listener="#{cashBoxGeneralHome.onItemAccountSelect}" update="@form"/>
+                                </p:autoComplete>
+                            </div>
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12 NoPadding DispInlGrid">
+                                <jlgranda:input id="amount" name="amount" render="amount" container="none"
+                                                type="decimal" 
+                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                value="#{cashBoxGeneralHome.recordDetail.amount}" label="#{i18n['common.money.letter']}"
+                                                required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
+                                                placeholder="#{false}"
+                                                rendered="#{true}"
+                                                update="@form"/>
+                            </div>
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPaddingTop">
+                                <p:commandButton id="btn-detail-add"
+                                                 icon="pi pi-check-square" styleClass="rounded-btn TexUppercase #{cashBoxGeneralHome.recordDetail.persistent ? 'primary-btn' : 'warning-btn'}"
+                                                 value="#{cashBoxGeneralHome.recordDetail.persistent ? i18n['common.apply'] : i18n['common.add']}"
+                                                 actionListener="#{cashBoxGeneralHome.recordDetailAdd}" 
+                                                 ajax="#{false}" immediate="#{true}"
+                                                 disabled="#{empty cashBoxGeneralHome.recordDetail.account or cashBoxGeneralHome.recordDetail.amount le 0}"
+                                                 update="@form"/>
+                                <!--ajax="#{true}" immediate="#{true}"-->
+                            </div>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd DispInlGrid">
+                            <h3>Configuración del asiento contable</h3>
+                            <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
+                                         value="#{cashBoxGeneralHome.record.recordDetails}" var="recordDetail" 
+                                         selection="#{cashBoxGeneralHome.recordDetailSelected}" 
+                                         rowKey="#{recordDetail.account}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{false}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
+                                <p:ajax event="rowSelect" listener="#{cashBoxGeneralHome.onRowSelect}" update="@form"/>
+                                <p:ajax event="rowUnselect" listener="#{cashBoxGeneralHome.onRowUnselect}" update="@form"/>
+                                <p:column headerText="#{i18n['app.fede.accounting.account']}"  class="Wid40">
+                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.money.letter']}">
+                                    <h:outputText value="#{recordDetail.amount}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.actions']}" class="Wid20">
+                                    <p:commandButton id="btnEdit"
+                                                     icon="fa fa-edit" styleClass="secondary-button rounded-btn"
+                                                     actionListener="#{cashBoxGeneralHome.editRecordDetail(recordDetail)}"
+                                                     ajax="#{true}" immediate="#{true}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                    <p:commandButton id="btnDelete"
+                                                     icon="fa fa-remove" styleClass="danger-btn rounded-btn"
+                                                     actionListener="#{cashBoxGeneralHome.recordDetailDelete(recordDetail)}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                        <p:toolbar id="selectedToolBar" class="NoBorder" 
+                                   rendered="#{not empty cashBoxGeneralHome.cashBoxPartial.id}">
+                            <p:toolbarGroup class="DispInlFlex">
+                                <p:linkButton outcome="cash-breakdown"
+                                              value="#{i18n['common.previous']}"
+                                              icon="pi pi-chevron-left" iconPos="left" styleClass="info-btn rounded-btn TexUppercase">
+                                    <f:param name="cashBoxPartialId" value="#{cashBoxGeneralHome.cashBoxPartial.id}"/>
+                                </p:linkButton>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="right" class="DispInlFlexRight">
+                                <p:commandButton id="btnRecordSave"
+                                                 value="#{i18n['common.finish']}" 
+                                                 icon="pi pi-save" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase"
+                                                 actionListener="#{cashBoxGeneralHome.recordSave()}" action="#{cashBoxGeneralHome.redirect}"
+                                                 disabled="#{empty cashBoxGeneralHome.record.recordDetails}"
+                                                 ajax="#{true}" immediate="#{false}" 
+                                                 update="@form">
+                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']} #{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
+                                </p:commandButton>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:panel>
+                </div>
             </div>
         </ui:define>
         <ui:define name="style">

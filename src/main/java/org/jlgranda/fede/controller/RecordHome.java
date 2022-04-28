@@ -23,6 +23,7 @@ import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -119,13 +120,7 @@ public class RecordHome extends FedeController implements Serializable {
             this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.inlinehelp"));
         }
 
-        if (getEmissionDate() == null) {
-            valido = false;
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.date.inlinehelp"));
-        }
-
         if (valido) {
-            Date lastEmissionDate = getEmissionDate();
             double debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
                     .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
             double haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
@@ -145,7 +140,7 @@ public class RecordHome extends FedeController implements Serializable {
                 //Encerar objetos de pantalla
                 setRecordDetail(recordDetailService.createInstance());
                 setRecord(recordService.createInstance());
-                setEmissionDate(lastEmissionDate);
+                setEmissionDate(getEmissionDate());
 
                 this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
             } else {
@@ -157,6 +152,19 @@ public class RecordHome extends FedeController implements Serializable {
     /**
      * METHODS UTIL.
      */
+    public void getGeneralJournalAndRecordEdit(Long journalId, Long recordId) {
+        if (journalId != null && recordId != null) {
+            //Cargar generalJournal y record para edición
+            this.generalJournal = generalJournalService.find(journalId);
+            this.record = recordService.find(recordId);
+            orderRecordDetails();
+        }
+    }
+
+    public void orderRecordDetails() {
+        Collections.sort(this.record.getRecordDetails(), (RecordDetail rd1, RecordDetail other) -> rd1.getRecordDetailType().compareTo(other.getRecordDetailType()));//Ordenar por tipo de entrada/salida de transacción
+    }
+
     public Long getGeneralJournalIdByEmisionDate() {
         if (this.generalJournalId != null) {
             return this.generalJournalId;
@@ -172,10 +180,20 @@ public class RecordHome extends FedeController implements Serializable {
         return generalJournalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
     }
 
+    public void onItemAccountSelect(SelectEvent<Account> event) {
+        Account account = event.getObject();
+        Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().getId().equals(account.getId())).findFirst();
+        if (find.isPresent()) {
+            setRecordDetail(find.get());
+            System.out.println("\n¡CUENTA YA EXISTENTE!\n");
+        }
+    }
+
     public void recordDetailAdd(ActionEvent e) {
         this.recordDetail.setOwner(this.subject);
         this.record.addRecordDetail(this.recordDetail);
         this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
+        orderRecordDetails();
 
         //Encerar el registro
         this.recordDetail = recordDetailService.createInstance();
@@ -197,15 +215,6 @@ public class RecordHome extends FedeController implements Serializable {
             suggestedAmount = BigDecimal.valueOf(haber - debe);
         }
         return suggestedAmount;
-    }
-
-    public void onItemAccountSelect(SelectEvent<Account> event) {
-        Account account = event.getObject();
-        Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().equals(account)).findFirst();
-        if (find.isPresent()) {
-            System.out.println("\n¡CUENTA YA EXISTENTE!\n");
-            this.setRecordDetail(find.get());
-        }
     }
 
     public Long getGeneralJournalId() {

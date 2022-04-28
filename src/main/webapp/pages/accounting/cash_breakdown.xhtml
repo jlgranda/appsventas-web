@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="cashBoxPartialId" value="#{cashBoxGeneralHome.cashBoxPartialId}"/>
-                <f:viewAction action="#{cashBoxGeneralHome.asignedCashBoxPartialProperties}"></f:viewAction>
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -60,12 +59,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                  sortMode="single"
                                                  editable="#{true}">
-                                        <p:ajax event="rowEdit" listener="#{cashBoxGeneralHome.onRowEditCashBoxDetail}" update="@this :form:bills-subtotal :form:dataTable-summary :form:selectedToolBar"/>
-                                        <p:ajax event="rowEditCancel" listener="#{cashBoxGeneralHome.onRowCancelCashBoxDetail}" update="@this"/>
                                         <f:facet name="header">
-                                            <label class="bold-capital">#{i18n['common.registry']} #{i18n['common.of']} #{i18n['common.money.bills']}</label>
+                                            <h:outputText class="FontBold TexUppercase">#{i18n['common.registry']} #{i18n['common.of']} #{i18n['common.money.bills']}</h:outputText>
                                         </f:facet>
                                         <p:column headerText="#{i18n['common.money.letter']}">
+                                            #{cashBoxDetail}
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" class="Wid30">
@@ -112,6 +110,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <label class="bold-capital">#{i18n['common.registry']} #{i18n['common.of']} #{i18n['common.money.moneys']}</label>
                                         </f:facet>
                                         <p:column headerText="#{i18n['common.money.letter']}">
+                                            #{cashBoxDetail}
                                             <h:outputText value="#{cashBoxDetail.denomination.contains('MONEDA') ? '$1 (m)':cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" class="Wid30">
@@ -157,14 +156,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.excess']}</div>
                                     <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight">
                                         <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.excessCash}"
-                                                       style="#{cashBoxGeneralHome.cashBoxPartial.excessCash gt 0 ? 'color: #34A835': ''}">
+                                                      style="#{cashBoxGeneralHome.cashBoxPartial.excessCash gt 0 ? 'color: #34A835': ''}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                         </h:outputText>
                                     </div>
                                     <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.missing']}</div>
                                     <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight">
                                         <h:outputText value="#{cashBoxGeneralHome.cashBoxPartial.missCash}"
-                                                       style="#{cashBoxGeneralHome.cashBoxPartial.missCash lt 0 ? 'color: #e91224': ''}">
+                                                      style="#{cashBoxGeneralHome.cashBoxPartial.missCash gt 0 ? 'color: #e91224': ''}">
                                             <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                         </h:outputText>
                                     </div>
@@ -185,7 +184,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase"
                                              actionListener="#{cashBoxGeneralHome.closeCashBoxPartial}"
                                              disabled="#{cashBoxGeneralHome.cashBoxPartial.totalCashBreakdown eq 0}"
-                                             ajax="#{true}" immediate="#{false}" 
+                                             ajax="#{false}" immediate="#{false}" 
                                              update="@form">
                                 <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']} #{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
                             </p:commandButton>

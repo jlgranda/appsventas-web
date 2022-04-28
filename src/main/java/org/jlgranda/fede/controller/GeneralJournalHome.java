@@ -41,6 +41,7 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
+import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.ui.model.LazyGeneralJournalDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;
@@ -277,11 +278,22 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public void execute() {
         if (isActionExecutable()) {
             if ("borrar".equalsIgnoreCase(this.selectedAction)) {
+                int recordNoDeleted = 0;
                 for (Record instance : getRecordsSelected()) {
-                    instance.setDeleted(Boolean.TRUE);
-                    this.recordService.save(instance.getId(), instance); //Actualizar la entidad
+                    if (instance.getBussinesEntityType() == null) {
+                        instance.setDeleted(Boolean.TRUE);
+                        this.recordService.save(instance.getId(), instance); //Actualizar la entidad
+                    } else {
+                        recordNoDeleted += 1;
+                    }
+                }
+                if (recordNoDeleted > 0) {
+                    this.addWarningMessage(I18nUtil.getMessages("action.sucessfully").concat(" ").concat(I18nUtil.getMessages("action.sucessfully.detail")).concat(" ").concat(I18nUtil.getMessages("action.warning")).concat(" " + recordNoDeleted + " registros no fueron borrados! "), "Recuerde que estos se relacionan con VENTAS/COMPRAS/INGRESOS/EGRESOS y sólo son modificables/borrables desde sus funcionalidades específicas.");
+                } else {
+                    this.addDefaultSuccessMessage();
                 }
                 setJournal(journalService.createInstance()); //Forzar carga de journal actual
+                setRecordsSelected(new ArrayList<>());
                 getJournal();
                 setOutcome("");
             } else if ("moveto".equalsIgnoreCase(this.selectedAction) && getJournalSelected() != null) {
@@ -295,6 +307,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
                         this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date", " " + Dates.toDateString(Dates.now())));
                     }
                 }
+                this.addDefaultSuccessMessage();
+                setRecordsSelected(new ArrayList<>());
                 //Recargar el journal actual
                 setJournal(journalService.createInstance()); //Forzar carga de journal actual
                 getJournal();
@@ -304,6 +318,8 @@ public class GeneralJournalHome extends FedeController implements Serializable {
                     instance.setDeleted(Boolean.TRUE);
                     journalService.save(instance.getId(), instance); //Actualizar la entidad
                 }
+                this.addDefaultSuccessMessage();
+                setJournalsSelected(new ArrayList<>());
                 //volver a filtrar la vista
                 setLazyDataModel(null);
                 clear();
@@ -361,10 +377,6 @@ public class GeneralJournalHome extends FedeController implements Serializable {
 
     public void orderRecordDetails() {
         Collections.sort(this.record.getRecordDetails(), (RecordDetail recordDetail1, RecordDetail other) -> recordDetail1.getRecordDetailType().compareTo(other.getRecordDetailType()));//Ordenar por tipo de entrada/salida de transacción
-    }
-
-    public boolean isRecordOfReferen() {
-        return this.record.getBussinesEntityId() == null;
     }
 
     public void onRowSelectRecord(SelectEvent<RecordDetail> event) {

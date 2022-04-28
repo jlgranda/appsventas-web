@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </f:facet>
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter DispVerticalTop"/>
                             <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.emission']}" class="Wid10 DispVerticalTop">
-                                <h:outputText value="#{record.journal.emissionDate}">
+                                <h:outputText value="#{record.emissionDate}">
                                     <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                                 </h:outputText>
                             </p:column>
