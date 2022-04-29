@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:commandButton value="#{i18n['common.find']}"
                                              icon="pi pi-search" styleClass="help-btn"
                                              actionListener="#{kardexInventoryHome.clear()}" 
-                                             ajax="false">
+                                             ajax="#{false}">
                             </p:commandButton>
                         </f:facet>
                         <f:facet name="right">
@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                               style="#{kardex.quantity gt kardex.unitMaximum ? 'color: #9C0D0D': kardex.quantity lt kardex.unitMinimum ? 'color: #F94C00' : 'color: #0A8517'}" 
                                               class="Fright"/>
                             </p:column>
-                            <p:column id="fechaEmision"  headerText="#{i18n['common.date.update']}" sortBy="#{kardex.lastUpdate}">
+                            <p:column id="fechaEmision"  headerText="#{i18n['common.date.update']}" sortBy="#{kardex.lastUpdate}" class="Wid10">
                                 <h:outputText value="#{kardex.lastUpdate}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

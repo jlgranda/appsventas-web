@@ -125,7 +125,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                     <h:outputText value="#{recordTemplate.name}" />
                                 </p:column>
-                                <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}">
+                                <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}" class="Wid10">
                                     <h:outputText value="#{recordTemplate.createdOn}">
                                         <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>
@@ -136,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          icon="pi pi-check"  styleClass="danger-btn p-mr-2"
                                          value="#{i18n['common.import']}"
                                          actionListener="#{recordTemplateHome.importarRegla()}"
-                                         type="submit" ajax="false" 
+                                         type="submit" ajax="#{false}" 
                                          update="@form"
                                          disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
                                          style="width: -webkit-fill-available;">

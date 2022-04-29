@@ -125,7 +125,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                             </div>
                                                             <div class="ui-g-12 ui-md-6 ui-lg-10">
                                                                 <span class="task-badge status-ready">
-                                                                    <p:commandLink ajax="false" immediate="true" value="#{ui.truncateFilename(documento.name)}" >
+                                                                    <p:commandLink ajax="#{false}" immediate="true" value="#{ui.truncateFilename(documento.name)}" >
                                                                         <p:fileDownload value="#{instanciaProcesoHome.downloadDocument(documento)}" />
                                                                     </p:commandLink>
                                                                 </span>
@@ -220,7 +220,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                                 <p:toolbar>
                                     <f:facet name="left">
-                                        <p:commandButton value="#{i18n['common.submit']}" ajax="false" 
+                                        <p:commandButton value="#{i18n['common.submit']}" ajax="#{false}" 
                                                          actionListener="#{instanciaProcesoHome.send()}" disabled="false" 
                                                          style="width: auto !important;"
                                                          action="#{instanciaProcesoHome.getOutcome()}" type="submit"/>
@@ -236,7 +236,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                                     <f:facet name="right">
 
-                                        <p:commandButton ajax="false" action="#{instanciaProcesoHome.getOutcome()}" disabled="false" immediate="true"
+                                        <p:commandButton ajax="#{false}" action="#{instanciaProcesoHome.getOutcome()}" disabled="false" immediate="true"
                                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
 
     <!--                                    <p:menuButton value="#{i18n['common.options']}">

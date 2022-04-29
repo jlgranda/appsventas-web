@@ -100,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column colspan="2" headerText="#{i18n['common.fund']}"/>
                             </p:row>
                             <p:row>
-                                <p:column headerText="#{i18n['common.date.emission']}"/>
+                                <p:column headerText="#{i18n['common.date.emission']}" class="Wid10"/>
                                 <p:column headerText="#{i18n['app.fede.inventory.kardex.operation.type']}"/>
                                 <p:column headerText="#{i18n['common.price.unit']}"/>
                                 <p:column headerText="#{i18n['common.quantity']}"/>
@@ -111,7 +111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['common.value']}"/>
                             </p:row>
                         </p:columnGroup>
-                        <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{kardexDetail.entryOn}" sortOrder="ASC">
+                        <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{kardexDetail.entryOn}" sortOrder="ASC" class="Wid10">
                             <h:outputText value="#{kardexDetail.entryOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="dd/MM/yyyy HH:mm:ss"/>
                             </h:outputText>
@@ -213,7 +213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  actionListener="#{kardexInventoryHome.addKardexDetail()}"
                                                  disabled="#{not kardexInventoryHome.validKardexDetail()}"
                                                  update="@form"
-                                                 ajax="false" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
+                                                 ajax="#{false}" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
                                 </p:commandButton>
                                 <i class="fa fa-bars p-px-2"/>
                             </f:facet>
@@ -287,7 +287,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  icon="pi pi-save"  styleClass="danger-btn p-mr-2"
                                  value="#{i18n['common.save']}"
                                  actionListener="#{kardexInventoryHome.editKardex()}"
-                                 type="submit" ajax="false" 
+                                 type="submit" ajax="#{false}" 
                                  update="@form"
                                  disabled="#{kardexInventoryHome.editarKardex}"
                                  style="width: -webkit-fill-available;">

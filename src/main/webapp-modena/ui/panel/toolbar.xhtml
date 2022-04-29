@@ -29,7 +29,7 @@
                     <p:menuButton value="Options">
                         <p:menuitem value="Save" actionListener="#{toolbarView.save}" update="messages" icon="ui-icon-disk" />
                         <p:menuitem value="Update" actionListener="#{toolbarView.update}" update="messages" icon="ui-icon-arrowrefresh-1-w" />
-                        <p:menuitem value="Delete" actionListener="#{toolbarView.delete}" ajax="false" icon="ui-icon-close" />
+                        <p:menuitem value="Delete" actionListener="#{toolbarView.delete}" ajax="#{false}" icon="ui-icon-close" />
                         <p:menuitem value="Homepage" url="http://www.primefaces.org" icon="ui-icon-extlink" />
                     </p:menuButton>
                 </f:facet>

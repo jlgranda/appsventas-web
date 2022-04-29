@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.sales']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/fede/sales/proformas.jsf?interval=7&amp;overcome=overdues&amp;documentType=#{invoiceHome.documentType}">#{i18n[invoiceHome.documentType]}</p:link></li>
+        <li><p:link outcome="/pages/fede/sales/invoices_finder.jsf?interval=7&amp;overcome=overdues&amp;documentType=#{invoiceHome.documentType}">#{i18n[invoiceHome.documentType]}</p:link></li>
     </ui:define>
     <ui:define name="content">
         <o:importConstants type="org.jpapi.model.StatusType" />
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
                                      actionListener="#{invoiceHome.clear()}" ajax="#{false}" immediate="true">
                     </p:commandButton>
-                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="#{organizationData.organization.vistaVenta}"/>
+                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=invoices_finder"/>
                 </div>
                 <div class="card">
                     <!-- Resultados de busqueda -->
@@ -85,27 +85,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:ajax event="rowSelectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities" />
                         <p:ajax event="rowUnselectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities"/>
                         <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
-                        <p:column headerText="#{i18n['app.fede.sales.invoice.proforma.number']}" class="Wid30">
-                            <h:outputText value="#{invoice.code}" />
+                        <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid10">
+                            <h:outputText value="#{invoice.code}"/>
                         </p:column>
-                        <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}"
-                                  style="width:20%;text-align:left">
+                        <p:column  id="boardNumber" headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{invoice.boardNumber}" sortOrder="desc" class="Wid10">
+                            <h:outputText value="#{invoice.boardNumber}">
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}">
                             <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
                         </p:column>
-                        <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains">
+                        <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains" class="Wid30">
                             <h:outputText value="#{invoice.summary}" />
                         </p:column>
-                        <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{invoice.total}"  class="Wid30">
+                        <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{invoice.total}" class="Wid10">
                             <h:outputText value="#{invoice.total}" class="Fright">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
-                        <p:column headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{invoice.paymentsDiscount}"  class="Wid30">
+                        <p:column headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{invoice.paymentsDiscount}" class="Wid10">
                             <h:outputText value="#{invoice.paymentsDiscount}" class="Fright">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
                         </p:column>
-                        <p:column  id="emissionOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" sortOrder="desc" class="Wid10">
+                        <p:column  id="emissionOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" class="Wid10">
                             <h:outputText value="#{invoice.emissionOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>
@@ -127,7 +130,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="EmptyBox10"></div>
                 <!--Herramientas con seleccionados -->
                 <p:panel id="panelSelectedToolBar">
-                    <p:toolbar id="selectedToolBar" rendered="#{not empty invoiceHome.selectedInvoices}">
+                    <p:toolbar id="selectedToolBar" rendered="#{not empty invoiceHome.selectedBussinesEntities}">
                         <f:facet name="left">
                             <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
                             <p:selectOneMenu value="#{invoiceHome.selectedAction}">

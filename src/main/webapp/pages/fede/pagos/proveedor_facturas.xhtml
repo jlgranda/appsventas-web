@@ -84,7 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                    facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
                             </h:outputText>
                         </p:column>
-                        <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">
+                        <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc" class="Wid10">
                             <h:outputText value="#{facturaElectronica.fechaEmision}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                             </h:outputText>

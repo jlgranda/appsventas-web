@@ -550,7 +550,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              selection="#{facturaElectronicaCompraHome.selectedBussinesEntities}"
                                              sortBy="#{payment.createdOn}"
                                              editable="#{false}">
-                                    <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid20">
+                                    <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid10">
                                         <h:outputText value="#{payment.createdOn}">
                                             <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                         </h:outputText>

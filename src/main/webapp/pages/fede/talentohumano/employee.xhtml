@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.dedication']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.dedication}" />
                             </p:column>
-                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{role.createdOn}">
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{role.createdOn}" class="Wid10">
                                 <h:outputText value="#{role.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

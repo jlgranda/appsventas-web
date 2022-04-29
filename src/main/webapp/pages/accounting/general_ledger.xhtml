@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfCenter" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
                     <p:panel id="panel-head" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <h1 class="TexUppercase">
                             #{generalLedgerHome.accountSelected.code} #{generalLedgerHome.accountSelected.name} #{not empty generalLedgerHome.accountSelected ? '| TOTAL ': i18n['app.fede.accounting.ledger']} 
@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:staticMessage rendered="#{empty generalLedgerHome.accountSelected}"
                                          severity="info" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accounting.ledger.report']}" style="width: 100%"/>
                     </p:panel>
-                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 NoPadding ui-fluid"><!--Panel arbol-->
+                    <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 NoPadding ui-fluid">
                         <p:tree id="tree-generalLedger" value="#{generalLedgerHome.treeDataModel}" var="node"
                                 selectionMode="single"
                                 selection="#{generalLedgerHome.singleSelectedNode}"
@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:tree>
                     </div>
                     <p:panel id="panel-summary"
-                             class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 NoPadding"><!--Panel libro general-->
+                             class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 NoPadding">
                         <p:toolbar id="topToolBarHead" class="NoBorder NoPadding FlexColumn">
                             <p:toolbarGroup class="Container100 TexAlCenter TexUppercase">
                                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -94,34 +94,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:toolbar id="topToolBar" class="NoBorder">
                             <p:toolbarGroup>
                                 <jlgranda:input id="date-start" name="date-start" render="date-start" container="none"
-                                                type="calendar" 
+                                                type="calendar" showOn="button"
                                                 value="#{generalLedgerHome.start}" label="#{i18n['common.from']}:&nbsp;" 
                                                 required="#{false}" 
-                                                placeholder="#{false}">
+                                                placeholder="#{false}"
+                                                update="@form">
                                 </jlgranda:input> 
                                 <jlgranda:input id="date-end" name="date-end" render="date-end" container="none"
-                                                type="calendar" 
+                                                type="calendar" showOn="button"
                                                 value="#{generalLedgerHome.end}" label="#{i18n['common.to']}:&nbsp;" 
                                                 required="#{false}" 
-                                                placeholder="#{false}">
+                                                placeholder="#{false}"
+                                                update="@form">
                                 </jlgranda:input>
-                                <p:commandButton id="btn-search-account-details" 
-                                                 value="#{i18n['common.find']}" icon="fa fa-search"  styleClass="help-btn"
-                                                 actionListener="#{generalLedgerHome.getSummaryRecordByAccount()}"
-                                                 disabled="#{empty generalLedgerHome.accountSelected}"
-                                                 ajax="#{false}" immediate="#{false}"
-                                                 update="form:panel-summary">
-                                </p:commandButton>
                             </p:toolbarGroup>
                             <p:toolbarGroup align="rigth">
-                                <jlgranda:input type="calendar" id="date-filter" name="date-filter" render="date-filter" container="none"
-                                                value="#{generalLedgerHome.dateDay}" label="Filtrar por #{i18n['common.day.min']}:&nbsp;" 
+                                <jlgranda:input id="date-filter" name="date-filter" render="date-filter" container="none"
+                                                type="calendar" showOn="button"
+                                                value="#{generalLedgerHome.daySelected}" label="Filtrar por #{i18n['common.day.min']}:&nbsp;" 
                                                 required="#{false}" 
-                                                maxdate="#{generalLedgerHome.end}" mindate="#{generalLedgerHome.start}"
                                                 placeholder="#{false}"
-                                                rendered="#{not empty generalLedgerHome.accountSelectedRecordsDetails and not empty generalJournalHome.start and not empty generalJournalHome.end}"
-                                                listener="#{generalLedgerHome.onDateSelect()}" update="form:panel-summary"
-                                                execute="@this">
+                                                maxdate="#{generalLedgerHome.end}" mindate="#{generalLedgerHome.start}"
+                                                rendered="#{not empty generalLedgerHome.accountSelectedRecordsDetails}"
+                                                disabled="#{empty generalJournalHome.start and empty generalJournalHome.end}"
+                                                listener="#{generalLedgerHome.onDateSelect()}" update="form:panel-summary">
                                 </jlgranda:input>
                             </p:toolbarGroup>
                         </p:toolbar>

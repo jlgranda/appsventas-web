@@ -76,7 +76,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:dataTable>
                     </div>
                     <div class="ui-g ui-g-12">
-                        <p:commandButton rendered="#{true}" value="#{i18n['common.download']}" ajax="false" update="@parent" 
+                        <p:commandButton rendered="#{true}" value="#{i18n['common.download']}" ajax="#{false}" update="@parent" 
                                          actionListener="#{facturaElectronicaHome.procesarURLs()}" 
                                          action="#{facturaElectronicaHome.getOutcome()}" disabled="false" />
                         <p:commandButton value="#{i18n['common.close']}" ajax="#{true}" 

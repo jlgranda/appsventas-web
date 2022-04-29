@@ -617,6 +617,9 @@ input[type="text"], input[type="password"], textarea{
 .AlignItemsCenter{
     align-items: center;
 }
+.AlignItemsFlEnd{
+    align-items: flex-end;
+}
 .AlignSelfCenter{
     align-self: center;
 }
@@ -1107,7 +1110,7 @@ input[type="text"], input[type="password"], textarea{
 }
 
 .MarTop20{
-    margin-top:20px;
+    margin-top:20px ;
 }
 .MarTop30{
     margin-top:30px;
@@ -1313,6 +1316,10 @@ input[type="text"], input[type="password"], textarea{
 }
 .BackgroundInfo{
     background: #007ad9 !important;
+    color: white;
+}
+.BackgroundSuccess{
+    background: #34a835 !important;
     color: white;
 }
 

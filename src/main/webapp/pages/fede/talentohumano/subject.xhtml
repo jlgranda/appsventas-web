@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
                         <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                         ajax="false" 
+                                         ajax="#{false}" 
                                          actionListener="#{employeeHome.saveEmployee()}" 
                                          action="#{employeeHome.getOutcome()}"
                                          style="width: auto !important;"

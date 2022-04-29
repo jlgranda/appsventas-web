@@ -124,7 +124,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <ul>
                             <li role="separator" class="divider"></li>
                             <li>
-                                <p:commandLink id="button-labels" actionListener="#{organizationHome.mostrarFormularioNuevaEtiqueta()}" ajax="false"
+                                <p:commandLink id="button-labels" actionListener="#{organizationHome.mostrarFormularioNuevaEtiqueta()}" ajax="#{false}"
                                                styleClass=""
                                                rendered="#{empty organizationHome.selectedBussinesEntities}">
                                     <i class="fa fa-pencil-square-o">&nbsp;</i><h:outputText value="#{i18n['common.new']} #{i18n['common.label']}" />
@@ -135,14 +135,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </li>
                             <li>
                                 <h:link rendered="#{empty organizationHome.selectedBussinesEntities}"
-                                        outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" ajax="false" 
+                                        outcome="#{facesContext.externalContext.requestContextPath}/pages/fede/labels.jsf?faces-redirect=true" ajax="#{false}" 
                                         styleClass=""
                                         disabled="#{empty organizationHome.selectedBussinesEntities}">
                                     <i class="fa fa-tags"></i>&nbsp;#{i18n['common.manage']}&nbsp;#{i18n['common.labels']}
                                 </h:link>
                             </li>
                             <li>
-                                <p:commandLink id="button-apply-labels" actionListener="#{organizationHome.applySelectedGroups}" ajax="false"
+                                <p:commandLink id="button-apply-labels" actionListener="#{organizationHome.applySelectedGroups}" ajax="#{false}"
                                                styleClass=""
                                                rendered="#{not empty organizationHome.selectedBussinesEntities}">
                                     <h:outputText value="#{i18n['common.apply']}" />
@@ -166,7 +166,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <label class="Gray">#{i18n['common.find']}&nbsp;:</label>
                         <p:inputText value="#{organizationHome.keyword}" class="input-sm">
                         </p:inputText>
-                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="false">
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="#{false}">
                         </p:commandButton>
 
                         <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/management/organization/organization.jsf"/>

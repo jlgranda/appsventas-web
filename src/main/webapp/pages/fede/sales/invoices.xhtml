@@ -187,7 +187,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:column  id="createdOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}">
+                                <p:column  id="createdOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}" class="Wid10">
                                     <h:outputText value="#{entity.createdOn}">
                                         <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>

@@ -53,7 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          value="#{i18n['common.find']}"
                                          icon="pi pi-search" styleClass="help-btn" 
                                          actionListener="#{invoiceHome.clear()}"
-                                         ajax="false" immediate="true">
+                                         ajax="#{false}" immediate="true">
                         </p:commandButton>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right"  style="display: inline-table;">
@@ -100,7 +100,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.register']}" 
                                                          icon="fa fa-dot-circle-o" styleClass="secondary-button Fright"
                                                          actionListener="#{invoiceHome.record(entity.id)}" action="#{invoiceHome.redirect}" 
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                         <!--Botón de modificación/o pago-->
                                         <p:button title="#{i18n['common.collect']}" 
@@ -110,7 +110,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.attend']}" 
                                                          icon="fa fa-thumbs-o-up" styleClass="secondary-button Fright #{entity.status}"
                                                          action="#{invoiceHome.attend(entity.id)}"
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                     </div>                                       
                                     <div class="EmptyBox10"/>
@@ -156,7 +156,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.rollback']}" 
                                                          icon="fa fa-undo" styleClass="secondary-button Fright"
                                                          action="#{invoiceHome.reopen(entity.id)}"
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                     </div>
                                     <div class="EmptyBox10"></div>
@@ -230,7 +230,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.rollback']}" 
                                                          icon="fa fa-undo" styleClass="secondary-button Fright"
                                                          action="#{invoiceHome.reopen(entity.id)}"
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                     </div>
                                     <div class="EmptyBox10"></div>
@@ -310,7 +310,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  icon="fa fa-undo"
                                                                  styleClass="GrayButton Fright"
                                                                  action="#{invoiceHome.reopen(entity.id)}"
-                                                                 ajax="false"
+                                                                 ajax="#{false}"
                                                                  immediate="true">
                                                 </p:commandButton>
                                             </div>

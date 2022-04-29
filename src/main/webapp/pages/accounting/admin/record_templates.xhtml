@@ -17,11 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:p="http://primefaces.org/ui"
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:define name="title">#{i18n['app.name']} - #{i18n['common.recordtemplates']}</ui:define>
         <ui:define name="head"></ui:define>
@@ -37,34 +40,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <p:toolbar id="selectedToolBar" rendered="#{true}">
-                        <f:facet name="left">
-                            <p:outputLabel class="Gray" value="#{i18n['common.keyword']}:&nbsp;" for="@next"/>
-                            <p:inputText class="input-sm MarRight10" value="#{recordTemplateHome.keyword}" >
-                            </p:inputText>
-                            <p:commandButton value="#{i18n['common.find']}"
-                                             icon="pi pi-search" styleClass="help-btn"
-                                             actionListener="#{recordTemplateHome.clear()}" 
-                                             ajax="false">
-                            </p:commandButton>
-                        </f:facet>
-                        <f:facet name="right">
-                            <p:button value="#{i18n['common.newa']} #{i18n['bussines.entity.rule']}" styleClass="danger-btn" outcome="/pages/accounting/admin/record_template.jsf"/>
-                            <p:commandButton id="import-button" value="#{i18n['common.import']}" 
-                                             ajax="#{true}" immediate="#{true}" icon="fas fa-file-import"
-                                             actionListener="#{recordTemplateHome.prepararImportarReglas()}"
-                                             update="importarReglasDialog" 
-                                             oncomplete="PF('importarReglasDialog').show()"
-                                             disabled="#{false}"
-                                             style="width: auto !important;"
-                                             styleClass="btn raised-btn success-btn"
-                                             />
-                        </f:facet>
-                    </p:toolbar>
-                </div>
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <div class="card">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <jlgranda:input id="keyword" name="keyword" render="keyword" container="none"
+                                                type="text" 
+                                                value="#{recordTemplateHome.keyword}" label="#{i18n['common.keyword']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}">
+                                </jlgranda:input>
+                                <p:commandButton icon="pi pi-search" styleClass="primary-btn"
+                                                 actionListener="#{recordTemplateHome.clear()}"
+                                                 ajax="#{false}" immediate="#{false}">
+                                </p:commandButton>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="rigth">
+                                <p:button value="#{i18n['common.newa']} #{i18n['bussines.entity.rule']}"
+                                          icon="pi pi-plus-circle" styleClass="danger-btn rounded-btn"
+                                          outcome="record-template"/>
+                                <p:commandButton id="import-button"
+                                                 value="#{i18n['common.import']}" 
+                                                 icon="fas fa-file-import" styleClass="success-btn rounded-btn"
+                                                 actionListener="#{recordTemplateHome.prepararImportarReglas()}"
+                                                 update="importarReglasDialog" 
+                                                 oncomplete="PF('importarReglasDialog').show()"
+                                                 disabled="#{false}"
+                                                 ajax="#{true}" immediate="#{true}">
+                                </p:commandButton>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{true}" 
                                      value="#{recordTemplateHome.lazyDataModel}" var="recordTemplate" 
                                      selection="#{recordTemplateHome.selectedRecordTemplates}"
@@ -83,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                 <h:outputText value="#{recordTemplate.name}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}">
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" class="Wid10">
                                 <h:outputText value="#{recordTemplate.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
@@ -125,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                     <h:outputText value="#{recordTemplate.name}" />
                                 </p:column>
-                                <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}">
+                                <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}" class="Wid10">
                                     <h:outputText value="#{recordTemplate.createdOn}">
                                         <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>
@@ -136,7 +143,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          icon="pi pi-check"  styleClass="danger-btn p-mr-2"
                                          value="#{i18n['common.import']}"
                                          actionListener="#{recordTemplateHome.importarReglas()}"
-                                         type="submit" ajax="false" 
+                                         type="submit" ajax="#{false}" 
                                          update="@form"
                                          disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
                                          style="width: -webkit-fill-available;">

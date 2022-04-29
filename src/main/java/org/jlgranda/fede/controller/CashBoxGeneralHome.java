@@ -126,13 +126,14 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     private void init() {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(getEnd()));
+        initializeVars();
 
         setCashBoxGeneral(cashBoxGeneralService.createInstance());
         setCashBoxPartial(cashBoxPartialService.createInstance());
 
         setRecord(recordService.createInstance());
         setRecordDetail(recordDetailService.createInstance());
-        initializeVars();
+
         asignedCashBoxPartialProperties();
 
         setOutcome("cash-initial");
@@ -247,6 +248,18 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     /**
      * METHODS UTIL.
      */
+    private void initializeVars() {
+        setCashCurrent(BigDecimal.ZERO);
+        setCashFinally(BigDecimal.ZERO);
+
+        setAccountMain(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA DIA", this.organizationData.getOrganization()));
+        if (getAccountMain() != null) {
+            setCashCurrent(accountService.mayorizarTo(getAccountMain(), this.organizationData.getOrganization(), Dates.maximumDate(getEnd())));
+        }
+        setCashBoxMoneys(new ArrayList<>());
+        setCashBoxBills(new ArrayList<>());
+    }
+
     public void closeCashBoxPartial() {
         updateCashBoxPartialStatusFinally();
         this.cashBoxPartial.setPriority(cashBoxPartialService.getPriority(this.cashBoxGeneral));
@@ -264,18 +277,6 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
                 }
             }
         }
-    }
-
-    private void initializeVars() {
-        setCashCurrent(BigDecimal.ZERO);
-        setCashFinally(BigDecimal.ZERO);
-
-        setAccountMain(accountService.findUniqueByNamedQuery("Account.findByNameAndOrg", "CAJA DIA", this.organizationData.getOrganization()));
-        if (getAccountMain() != null) {
-            setCashCurrent(accountService.mayorizarTo(getAccountMain(), this.organizationData.getOrganization(), Dates.maximumDate(getEnd())));
-        }
-        setCashBoxMoneys(new ArrayList<>());
-        setCashBoxBills(new ArrayList<>());
     }
 
     public void onRowEditCashBoxDetail(RowEditEvent<CashBoxDetail> event) {

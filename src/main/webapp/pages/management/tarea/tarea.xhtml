@@ -143,7 +143,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:toolbar styleClass="ui-g ui-lg-12 ui-md-12">
                                 <p:toolbarGroup style="flex-wrap: nowrap !important;"> 
 
-                                    <p:commandButton value="#{i18n['common.submit']}" ajax="false" 
+                                    <p:commandButton value="#{i18n['common.submit']}" ajax="#{false}" 
                                                      actionListener="#{tareaHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
                                                      action="#{tareaHome.getOutcome()}" type="submit"/>
@@ -159,7 +159,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:toolbarGroup>
                                 <p:toolbarGroup align="rigth">
 
-                                    <p:commandButton ajax="false" action="#{tareaHome.getOutcome()}" disabled="false" immediate="true"
+                                    <p:commandButton ajax="#{false}" action="#{tareaHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
 
 <!--                                    <p:menuButton value="#{i18n['common.options']}">
@@ -251,7 +251,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      oncomplete="PF('dlgDocumento').hide()"/>   
                                 </div>
                                 <div class="Wid33 Fleft Responsive">
-                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="false" immediate="true"
+                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="#{false}" immediate="true"
                                                      icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')} Fs16 White" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
                                         <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
                                     </p:commandButton>

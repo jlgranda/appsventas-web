@@ -207,7 +207,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  actionListener="#{kardexProduccionInventoryHome.addKardexDetail()}"
                                                  disabled="#{not kardexProduccionInventoryHome.validKardexDetail()}"
                                                  update="@form"
-                                                 ajax="false" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
+                                                 ajax="#{false}" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
                                 </p:commandButton>
                                 <i class="fa fa-bars p-px-2"/>
                             </f:facet>
@@ -281,7 +281,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  icon="pi pi-save"  styleClass="danger-btn p-mr-2"
                                  value="#{i18n['common.save']}"
                                  actionListener="#{kardexProduccionInventoryHome.editKardex()}"
-                                 type="submit" ajax="false" 
+                                 type="submit" ajax="#{false}" 
                                  update="@form"
                                  disabled="#{kardexProduccionInventoryHome.editarKardex}"
                                  style="width: -webkit-fill-available;">

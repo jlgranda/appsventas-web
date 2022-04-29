@@ -91,7 +91,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </h:panelGroup>
                         </h:panelGroup>
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
-                                         actionListener="#{facturaElectronicaHome.clear()}" ajax="false" immediate="true">
+                                         actionListener="#{facturaElectronicaHome.clear()}" ajax="#{false}" immediate="true">
                         </p:commandButton>
                         <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
                         <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
@@ -146,7 +146,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                        facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc" class="Wid10">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

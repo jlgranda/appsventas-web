@@ -84,7 +84,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
     private List<RecordDetail> accountSelectedRecordsDetails;
     private List<RecordDetail> accountSelectedRecordsDetailsFiltered;
     private int rangeId;
-    private Date dateDay;
+    private Date daySelected;
 
     @PostConstruct
     private void init() {
@@ -163,9 +163,8 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
     }
 
     public void getSummaryRecordByAccount() {
-        setDateDay(null);
+        setDaySelected(null);
         setRangeId(-1);
-        initVariablesSummary();
         setAccountSelectedFundTotal(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.now())));
         setAccountSelectedDebePartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.DEBE, getAccountSelected(), this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
         setAccountSelectedHaberPartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.HABER, getAccountSelected(), this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
@@ -211,14 +210,20 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
                 setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfYear(getEnd()) - 1))));
                 break;
         }
+        initVariablesSummary();
         getSummaryRecordByAccount();
     }
 
     public void onDateSelect() {
-        if (this.dateDay != null) {
-            this.accountSelectedRecordsDetailsFiltered = this.accountSelectedRecordsDetails.stream().filter(d -> (Dates.isInRange(Dates.minimumDate(this.dateDay), Dates.maximumDate(this.dateDay), d.getRecord().getJournal().getEmissionDate()))).collect(Collectors.toList());
+        initVariablesSummary();
+        if (getDaySelected() == null) {
+            getSummaryRecordByAccount();
+            return;
         }
-
+        if (getDaySelected() != null) {
+            this.accountSelectedRecordsDetailsFiltered = this.accountSelectedRecordsDetails.stream().filter(d -> (Dates.isInRange(Dates.minimumDate(getDaySelected()), Dates.maximumDate(getDaySelected()), d.getRecord().getJournal().getEmissionDate()))).collect(Collectors.toList());
+            setDaySelected(null);
+        }
     }
 
     public boolean editarFormularioRecord(Long recordId) {
@@ -333,12 +338,12 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         this.rangeId = rangeId;
     }
 
-    public Date getDateDay() {
-        return dateDay;
+    public Date getDaySelected() {
+        return daySelected;
     }
 
-    public void setDateDay(Date dateDay) {
-        this.dateDay = dateDay;
+    public void setDaySelected(Date daySelected) {
+        this.daySelected = daySelected;
     }
 
     @Override

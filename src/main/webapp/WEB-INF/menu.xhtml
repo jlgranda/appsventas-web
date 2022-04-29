@@ -91,76 +91,76 @@
 <!--<p:menuitem id="om_gifts" value="#{i18n['app.gifts.my']}" icon="pi pi-fw pi-cog" outcome="/pages/fede/gifts/gifts.jsf" rendered="#{request.isUserInRole('USER')}"/>-->
 
                         <!--                        <p:submenu id="om_customization_mode" label="Menu Colors" icon="pi pi-fw pi-cog">
-                                                    <p:menuitem id="om_customization_mode_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.setLightMenu(true)}" ajax="false" />
-                                                    <p:menuitem id="om_customization_mode_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.setLightMenu(false)}" ajax="false" />
+                                                    <p:menuitem id="om_customization_mode_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.setLightMenu(true)}" ajax="#{false}" />
+                                                    <p:menuitem id="om_customization_mode_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.setLightMenu(false)}" ajax="#{false}" />
                                                 </p:submenu>
                                                 <p:submenu id="om_customization" label="Layouts" icon="pi pi-fw pi-cog">
-                                                    <p:menuitem id="om_customization_1" value="Static" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-static')}" ajax="false" />
-                                                    <p:menuitem id="om_customization_2" value="Overlay" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-overlay')}" ajax="false" />
-                                                    <p:menuitem id="om_customization_3" value="Slim" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-slim')}" ajax="false" />
-                                                    <p:menuitem id="om_customization_4" value="Horizontal" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-horizontal')}" ajax="false" />
+                                                    <p:menuitem id="om_customization_1" value="Static" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-static')}" ajax="#{false}" />
+                                                    <p:menuitem id="om_customization_2" value="Overlay" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-overlay')}" ajax="#{false}" />
+                                                    <p:menuitem id="om_customization_3" value="Slim" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-slim')}" ajax="#{false}" />
+                                                    <p:menuitem id="om_customization_4" value="Horizontal" icon="pi pi-fw pi-bars" actionListener="#{guestPreferences.setMenuMode('layout-menu-horizontal')}" ajax="#{false}" />
                                                 </p:submenu>
                                                 <p:submenu id="om_themes" label="Themes" icon="pi pi-fw pi-paint-brush">
                                                     <f:attribute name="badge" value="15" />
                                                     <p:submenu id="om_indigo" label="Indigo" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_indigo_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo')}" ajax="false"/>
-                                                        <p:menuitem id="om_indigo_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_indigo_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_indigo_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('indigo-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_pink" label="Pink" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_pink_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('pink')}" ajax="false"/>
-                                                        <p:menuitem id="om_pink_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('pink-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_pink_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('pink')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_pink_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('pink-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_green" label="Green" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_green_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('green')}" ajax="false"/>
-                                                        <p:menuitem id="om_green_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('green-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_green_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('green')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_green_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('green-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_amber" label="Amber" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_amber_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('amber')}" ajax="false"/>
-                                                        <p:menuitem id="om_amber_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('amber-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_amber_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('amber')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_amber_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('amber-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_deeppurple" label="Deep Purple" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_deeppurple_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple')}" ajax="false"/>
-                                                        <p:menuitem id="om_deeppurple_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_deeppurple_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_deeppurple_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeppurple-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_blue" label="Blue" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_blue_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('blue')}" ajax="false"/>
-                                                        <p:menuitem id="om_blue_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('blue-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_blue_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('blue')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_blue_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('blue-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_darkblue" label="Dark Blue" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_darkblue_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('darkblue')}" ajax="false"/>
-                                                        <p:menuitem id="om_darkblue_2" value="Dark" icon="pi pi-fw vpaint-brush" actionListener="#{guestPreferences.changeTheme('darkblue-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_darkblue_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('darkblue')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_darkblue_2" value="Dark" icon="pi pi-fw vpaint-brush" actionListener="#{guestPreferences.changeTheme('darkblue-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_cyan" label="Cyan" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_cyan_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan')}" ajax="false"/>
-                                                        <p:menuitem id="om_cyan_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_cyan_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_cyan_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('cyan-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_purple" label="Purple" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_purple_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('purple')}" ajax="false"/>
-                                                        <p:menuitem id="om_purple_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('purple-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_purple_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('purple')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_purple_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('purple-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_deeporange" label="Deep Orange" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_deeporange_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange')}" ajax="false"/>
-                                                        <p:menuitem id="om_deeporange_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_deeporange_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_deeporange_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('deeporange-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_lime" label="Lime" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_lime_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('lime')}" ajax="false"/>
-                                                        <p:menuitem id="om_lime_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('lime-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_lime_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('lime')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_lime_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('lime-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_yellow" label="Yellow" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_yellow_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow')}" ajax="false"/>
-                                                        <p:menuitem id="om_yellow_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_yellow_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_yellow_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('yellow-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_bluegrey" label="Blue Grey" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_bluegrey_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey')}" ajax="false"/>
-                                                        <p:menuitem id="om_bluegrey_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_bluegrey_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_bluegrey_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('bluegrey-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_mojito" label="Mojito" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_mojito_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito')}" ajax="false"/>
-                                                        <p:menuitem id="om_mojito_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_mojito_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_mojito_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('mojito-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                     <p:submenu id="om_grey" label="Grey" icon="pi pi-fw pi-paint-brush">
-                                                        <p:menuitem id="om_grey_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('grey')}" ajax="false"/>
-                                                        <p:menuitem id="om_grey_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('grey-dark')}" ajax="false"/>
+                                                        <p:menuitem id="om_grey_1" value="Light" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('grey')}" ajax="#{false}"/>
+                                                        <p:menuitem id="om_grey_2" value="Dark" icon="pi pi-fw pi-paint-brush" actionListener="#{guestPreferences.changeTheme('grey-dark')}" ajax="#{false}"/>
                                                     </p:submenu>
                                                 </p:submenu>
                                                 <p:submenu id="om_components" label="Components" icon="pi pi-fw pi-bars">

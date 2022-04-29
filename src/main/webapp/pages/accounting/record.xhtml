@@ -53,13 +53,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </p:panel>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
                         <jlgranda:input id="emissionDate" name="emissionDate" render="emissionDate" container="none"
-                                        type="calendar" 
-                                        value="#{recordHome.emissionDate}" label="Fecha de Registro del Asiento:&nbsp;" 
+                                        type="calendar" showOn="button"
+                                        value="#{recordHome.emissionDate}" label="#{i18n['common.to']}:&nbsp;" 
                                         required="#{true}" 
-                                        placeholder="#{false}"
-                                        rendered="#{true}"
+                                        placeholder="#{false}" 
                                         update="@form">
-                        </jlgranda:input> 
+                        </jlgranda:input>
                     </div>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Padding5 ui-fluid">
                         <p:linkButton outcome="journal"

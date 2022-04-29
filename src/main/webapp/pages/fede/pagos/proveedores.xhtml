@@ -75,12 +75,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <!--                        <p:commandButton value="#{i18n['common.find']}" 
                                          icon="pi pi-search" styleClass="help-btn" 
                                          actionListener="#{proveedorHome.clear()}"
-                                         ajax="false" immediate="true">
+                                         ajax="#{false}" immediate="true">
                         </p:commandButton>
                         <p:commandButton value="#{i18n['app.fede.payments.immediate']}" 
                                          icon="pi pi-star-fill" styleClass="success-btn raised-btn" 
                                          actionListener="#{proveedorHome.filtrarUrgentes()}" 
-                                         ajax="false" immediate="true">
+                                         ajax="#{false}" immediate="true">
                         </p:commandButton>-->
                     </f:facet>
                 </p:toolbar>
@@ -113,7 +113,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.alias']}" sortBy="#{proveedor.owner.fullName}">
                                 <h:outputText value="#{proveedor.name}" />
                             </p:column>
-                            <p:column id="fechaIngreso" headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}">
+                            <p:column id="fechaIngreso" headerText="#{i18n['common.date.created']}" sortBy="#{proveedor.activationTime}" class="Wid10">
                                 <h:outputText value="#{proveedor.activationTime}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

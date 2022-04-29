@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              oncomplete="PF('dlgDocumento').hide()"/>   
                         </div>
                         <div class="Wid33 Fleft Responsive">
-                            <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="false" 
+                            <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="#{false}" 
                                              icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')} Fs16 White" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
                                 <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
                             </p:commandButton>

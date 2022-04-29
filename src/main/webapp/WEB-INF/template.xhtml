@@ -62,7 +62,7 @@
 <!--                                                        <p:rating readonly="true" value="#{organization.rating}"/>-->
                                                     </div>
                                                     <div class="product-list-action">
-                                                        <p:commandButton type="submit" ajax="false" process="@this"
+                                                        <p:commandButton type="submit" ajax="#{false}" process="@this"
                                                                          value="#{i18n['common.activate']}"
                                                                          actionListener="#{organizationData.activateOrganizacion(organization)}"
                                                                          icon="pi pi-check"

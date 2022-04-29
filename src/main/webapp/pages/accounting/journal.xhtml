@@ -150,7 +150,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:ajax>
                                 </p:commandButton>
                             </p:column>
-                            <p:columnGroup type="footer">
+                            <p:columnGroup type="footer" rendered="#{not empty generalJournalHome.journal.records}">
                                 <p:row>
                                     <p:column colspan="3" class="BackgroundToolbar"/>
                                     <p:column class="BackgroundToolbar">
@@ -173,24 +173,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <!--Herramientas con seleccionados--> 
                         <p:panel id="panelSelectedToolBar">
                             <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.recordsSelected}">
-                                <p:toolbarGroup class="FlexNowRap AlignItemsCenter">
-                                    <div>
+                                <p:toolbarGroup class="FlexNowRap AlignItemsFlEnd">
+                                    <div class="DispInlGrid">
                                         <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
                                         <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
                                             <f:selectItems value="#{generalJournalHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
                                             <f:ajax render="selectedToolBar"></f:ajax>
                                         </p:selectOneMenu>
-                                    </div>
+                                    </div>&nbsp;
                                     <jlgranda:input id="general-journal-date" name="general-journal-date" render="general-journal-date" container="none"
                                                     type="calendar" 
                                                     value="#{generalJournalHome.generalJournalDate}" label="#{i18n['app.fede.accounting.record.date']}:&nbsp;" 
                                                     required="#{false}" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
-                                                    placeholder="#{false}"
+                                                    placeholder="#{false}" 
                                                     rendered="#{generalJournalHome.selectedAction eq 'moveto'}"
                                                     update="selectedToolBar">
-                                    </jlgranda:input> 
+                                    </jlgranda:input>&nbsp;
                                     <p:commandButton id="go-button"
-                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto" style="padding: 2px; margin-top: 16px;"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
                                                      actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
                                                      oncomplete="PF('dataTable-records').unselectAllRows()"
                                                      disabled="#{not generalJournalHome.actionExecutable}"
