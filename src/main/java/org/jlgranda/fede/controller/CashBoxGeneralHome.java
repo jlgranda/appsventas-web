@@ -59,7 +59,7 @@ import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 
 /**
- *
+ * Ajustes para pantalla de cierre de caja
  * @author usuario
  */
 @Named
