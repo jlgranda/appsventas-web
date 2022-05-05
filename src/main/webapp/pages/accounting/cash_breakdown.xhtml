@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.accounting']}</li>
             <li>/</li>
-            <li><p:link outcome="cash-initial">#{i18n['app.fede.accounting.close.cash']}</p:link></li>
+            <li><p:link outcome="cash-initial">#{i18n['app.fede.accounting.close.cash']} #{not empty cashBoxGeneralHome.cashBoxPartialId and not empty cashBoxGeneralHome.cashBoxPartial ? ("# ".concat(cashBoxGeneralHome.cashBoxPartial.id)) : ''}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -58,12 +58,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  draggableColumns="#{true}" reflow="#{false}" 
                                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                  sortMode="single"
-                                                 editable="#{true}">
+                                                 editable="#{cashBoxGeneralHome.cashBoxPartial.totalCashBreakdown eq cashBoxGeneralHome.cashBoxPartial.cashFinally}">
+                                        <p:ajax event="rowEdit" listener="#{cashBoxGeneralHome.onRowEditCashBoxDetail}" update="@this :form:bills-subtotal :form:dataTable-summary :form:selectedToolBar"/>
+                                        <p:ajax event="rowEditCancel" listener="#{cashBoxGeneralHome.onRowCancelCashBoxDetail}" update="@this :form:selectedToolBar"/>
                                         <f:facet name="header">
                                             <h:outputText class="FontBold TexUppercase">#{i18n['common.registry']} #{i18n['common.of']} #{i18n['common.money.bills']}</h:outputText>
                                         </f:facet>
                                         <p:column headerText="#{i18n['common.money.letter']}">
-                                            #{cashBoxDetail}
                                             <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" class="Wid30">
@@ -103,15 +104,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  draggableColumns="#{true}" reflow="#{false}" 
                                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                                  sortMode="single"
-                                                 editable="#{true}">
+                                                 editable="#{cashBoxGeneralHome.cashBoxPartial.totalCashBreakdown eq cashBoxGeneralHome.cashBoxPartial.cashFinally}">
                                         <p:ajax event="rowEdit" listener="#{cashBoxGeneralHome.onRowEditCashBoxDetail}" update="@this :form:moneys-subtotal :form:dataTable-summary :form:selectedToolBar"/>
                                         <p:ajax event="rowEditCancel" listener="#{cashBoxGeneralHome.onRowCancelCashBoxDetail}" update="@this"/>
                                         <f:facet name="header">
                                             <label class="bold-capital">#{i18n['common.registry']} #{i18n['common.of']} #{i18n['common.money.moneys']}</label>
                                         </f:facet>
                                         <p:column headerText="#{i18n['common.money.letter']}">
-                                            #{cashBoxDetail}
-                                            <h:outputText value="#{cashBoxDetail.denomination.contains('MONEDA') ? '$1 (m)':cashBoxDetail.denomination}"/>
+                                            <h:outputText value="#{cashBoxDetail.denomination}"/>
                                         </p:column>
                                         <p:column headerText="#{i18n['common.quantity']}" class="Wid30">
                                             <p:cellEditor>
@@ -184,7 +184,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase"
                                              actionListener="#{cashBoxGeneralHome.closeCashBoxPartial}"
                                              disabled="#{cashBoxGeneralHome.cashBoxPartial.totalCashBreakdown eq 0}"
-                                             ajax="#{false}" immediate="#{false}" 
+                                             ajax="#{true}" immediate="#{true}"
                                              update="@form">
                                 <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']} #{i18n['common.confirmation.message']}" icon="fa fa-exclamation-triangle"/>
                             </p:commandButton>
