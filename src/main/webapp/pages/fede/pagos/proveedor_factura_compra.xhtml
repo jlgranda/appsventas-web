@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column>
                                         <h:outputText value="#{entidad.fullName.toUpperCase()}"/>
                                     </p:column>
-                                    <p:ajax update="btn-facturaElectronicaDetail-new" partialSubmit="true"></p:ajax>
+                                    <p:ajax update="btn-facturaElectronicaDetail-new" partialSubmit="#{true}"></p:ajax>
                                 </p:autoComplete>
                                 <h:outputText value="#{i18['common.supplier.invoce.none']}" />
                                 <p:selectBooleanCheckbox value="#{facturaElectronicaCompraHome.useDefaultSupplier}"
@@ -115,13 +115,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:spinner id="days-expired" 
                                            value="#{facturaElectronicaCompraHome.days}" min="1" 
                                            disabled="#{true}"
-                                           immediate="false">
-                                    <p:ajax listener="#{facturaElectronicaCompraHome.calculateDateExpired()}" update="date-expired" partialSubmit="true"></p:ajax>
+                                           immediate="#{false}">
+                                    <p:ajax listener="#{facturaElectronicaCompraHome.calculateDateExpired()}" update="date-expired" partialSubmit="#{true}"></p:ajax>
                                 </p:spinner>
                                 <p:calendar id="date-expired" 
                                             value="#{facturaElectronicaCompraHome.facturaElectronica.fechaVencimiento}" 
                                             disabled="#{true}"
-                                            immediate="false" 
+                                            immediate="#{false}" 
                                             required="true">
                                     <!--<p:ajax event="dateSelect" listener="#{facturaElectronicaCompraHome.calculateDaysExpired()}" oncomplete="form.submit()" update="days-expired"/>-->
                                 </p:calendar>
@@ -226,8 +226,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.purchases.decimalPlaces', '4')}">
-                                            <p:ajax listener="#{facturaElectronicaCompraHome.calcularTotalFactura()}" update="impt" partialSubmit="true"></p:ajax>
-                                            <p:ajax listener="#{facturaElectronicaCompraHome.montoPorPagar()}" update="total fund-request" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaCompraHome.calcularTotalFactura()}" update="impt" partialSubmit="#{true}"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaCompraHome.montoPorPagar()}" update="total fund-request" partialSubmit="#{true}"></p:ajax>
                                         </p:inputNumber>
                                     </div>
                                     <div class="invoice-label ui-g-8" style="padding: 15px">#{i18n['common.iva.0']}</div>
@@ -256,7 +256,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                            <p:ajax listener="#{facturaElectronicaCompraHome.montoPorPagar()}" update="fund-request" partialSubmit="true"></p:ajax>
+                                            <p:ajax listener="#{facturaElectronicaCompraHome.montoPorPagar()}" update="fund-request" partialSubmit="#{true}"></p:ajax>
                                         </p:inputNumber>
                                     </div>
                                 </div>
@@ -275,7 +275,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  value="#{i18n['common.save']}" 
                                                  actionListener="#{facturaElectronicaCompraHome.save()}" action="#{facturaElectronicaCompraHome.getOutcome()}"
                                                  disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.payments or empty facturaElectronicaCompraHome.facturaElectronica.facturaElectronicaDetails}"
-                                                 ajax="true"
+                                                 ajax="#{true}"
                                                  type="submit"/>
                                 <i class="fa fa-bars p-px-2"/>
                             </f:facet>
@@ -322,7 +322,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <h:outputText value="#{entidad.name.toUpperCase()} [$ #{entidad.priceCost}]"/>
                                         </p:column>
                                         <p:ajax event="change" listener="#{facturaElectronicaCompraHome.asignedPropiertiesProduct()}" 
-                                                update="btn-facturaElectronicaDetail-save unit_value btn-new-product btn-facturaElectronicaDetail-save" partialSubmit="true"></p:ajax>
+                                                update="btn-facturaElectronicaDetail-save unit_value btn-new-product btn-facturaElectronicaDetail-save" partialSubmit="#{true}"></p:ajax>
                                     </p:autoComplete>
                                     <p:outputLabel value="#{i18n['common.quantity']}" for="@next"/>
                                     <p:inputNumber id="amount" value="#{facturaElectronicaCompraHome.facturaElectronicaDetail.amount}" required="#{false}"
@@ -330,7 +330,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}"
                                                    thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                    decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '4')}">
-                                        <p:ajax listener="#{facturaElectronicaCompraHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="true"></p:ajax>
+                                        <p:ajax listener="#{facturaElectronicaCompraHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="#{true}"></p:ajax>
                                     </p:inputNumber>
                                     <p:outputLabel value="#{i18n['common.price']}" for="@next"/>
                                     <p:inputNumber id="unit_value" value="#{facturaElectronicaCompraHome.facturaElectronicaDetail.unitValue}" required="#{false}"
@@ -338,7 +338,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                    decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}"
                                                    thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                    decimalPlaces="#{settingHome.getValue('app.fede.purchases.decimalPlaces', '4')}">
-                                        <p:ajax listener="#{facturaElectronicaCompraHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="true"></p:ajax>
+                                        <p:ajax listener="#{facturaElectronicaCompraHome.validatedFacturaElectronicaDetail()}" update="btn-facturaElectronicaDetail-save unit_value" partialSubmit="#{true}"></p:ajax>
                                     </p:inputNumber>
                                     <div class="ui-g-12" style="text-align: -webkit-right; padding-right: 1rem">
                                         <p:outputLabel value="#{i18n['common.iva']}" for="@next"/>
@@ -370,7 +370,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:inputText id="nme" 
                                                  value="#{facturaElectronicaCompraHome.productNew.name}" 
                                                  required="true">
-                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
+                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="#{true}"></p:ajax>
                                     </p:inputText>
                                     <p:outputLabel value="#{i18n['common.cost']}" for="@next"/>
                                     <p:inputNumber id="priceCost" value="#{facturaElectronicaCompraHome.productNew.priceCost}"
@@ -379,7 +379,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                    thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                    decimalPlaces="#{settingHome.getValue('app.fede.purchases.decimalPlaces', '4')}"
                                                    required="true">
-                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
+                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="#{true}"></p:ajax>
                                     </p:inputNumber>
                                     <p:outputLabel value="#{i18n['common.price']}" for="@next"/>
                                     <p:inputNumber id="price" value="#{facturaElectronicaCompraHome.productNew.price}"
@@ -388,7 +388,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                    thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                    decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}"
                                                    required="true">
-                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
+                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="#{true}"></p:ajax>
                                     </p:inputNumber>   
                                     <p:outputLabel value="#{i18n['common.tax']}" for="@next"/>
                                     <p:selectOneMenu id="taxtType"
@@ -398,7 +398,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this" />
-                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="true"></p:ajax>
+                                        <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="#{true}"></p:ajax>
                                     </p:selectOneMenu>
                                     <p:outputLabel value="#{i18n['common.type']}" for="@next"/>
                                     <p:selectOneMenu id="productType"
@@ -471,7 +471,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                  converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                                  immediate="true"
                                                                  required="true" style="width: 100%"> 
-                                                    <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                    <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                     <p:ajax update="@this"/>
                                                 </p:selectOneMenu>
                                             </h:panelGroup>
@@ -486,8 +486,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularMontoAbonado()}" update="total cash" partialSubmit="true"></p:ajax>
-                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularVueltoAbonado()}" update="total change" partialSubmit="true"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularMontoAbonado()}" update="total cash" partialSubmit="#{true}"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularVueltoAbonado()}" update="total change" partialSubmit="#{true}"></p:ajax>
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -499,8 +499,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularMontoAbonado()}" update="cash" partialSubmit="true"></p:ajax>
-                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularVueltoAbonado()}" update="change" partialSubmit="true"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularMontoAbonado()}" update="cash" partialSubmit="#{true}"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularVueltoAbonado()}" update="change" partialSubmit="#{true}"></p:ajax>
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -512,7 +512,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                            decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularVueltoAbonado()}" update="change" partialSubmit="true"></p:ajax>
+                                                <p:ajax listener="#{facturaElectronicaCompraHome.calcularVueltoAbonado()}" update="change" partialSubmit="#{true}"></p:ajax>
                                             </p:inputNumber>
                                         </div>
                                         <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6">
@@ -550,7 +550,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              selection="#{facturaElectronicaCompraHome.selectedBussinesEntities}"
                                              sortBy="#{payment.createdOn}"
                                              editable="#{false}">
-                                    <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid20">
+                                    <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid10">
                                         <h:outputText value="#{payment.createdOn}">
                                             <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                         </h:outputText>

@@ -16,17 +16,16 @@
  */
 package org.jlgranda.fede.controller;
 
-import com.jlgranda.fede.SettingNames;
+import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -44,7 +43,6 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
 
 /**
  *
@@ -62,38 +60,161 @@ public class RecordHome extends FedeController implements Serializable {
     private SettingHome settingHome;
 
     @EJB
+    AccountCache accountCache;
+    @EJB
+    private AccountService accountService;
+    @EJB
     private GeneralJournalService generalJournalService;
     @EJB
     private RecordService recordService;
     @EJB
     private RecordDetailService recordDetailService;
-    @EJB
-    AccountCache accountCache;
 
-    private GeneralJournal generalJournal;
+    /**
+     * EDIT OBJECT.
+     */
     private Long generalJournalId;
+    private GeneralJournal generalJournal;
     private Record record;
-    private List<Record> recordPorCreatedOn;
-    private List<Record> recordPorGeneralJournal;
+
+    /**
+     * UX.
+     */
     private RecordDetail recordDetail;
     private RecordDetail recordDetailSelected;
+    private Date emissionDate;
 
     @PostConstruct
     private void init() {
-        record = recordService.createInstance();
-        recordDetail = recordDetailService.createInstance();
-        this.recordPorCreatedOn = recordService.findByNamedQuery("Record.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()), this.organizationData.getOrganization());
+        setEnd(Dates.maximumDate(Dates.now()));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
+
+        setGeneralJournal(generalJournalService.createInstance());
+        setRecord(recordService.createInstance());
+        setEmissionDate(this.generalJournal.getEmissionDate());
+        setRecordDetail(recordDetailService.createInstance());
+
+        setOutcome("journals");
     }
 
-    public GeneralJournal getGeneralJournal() {
-        if (this.generalJournalId != null) {
-            return generalJournalService.find(this.generalJournalId);
+    /**
+     * METHODS.
+     */
+    public void save() {
+        boolean valido = true;
+        //Localizar o generar el generalJournal
+        if (this.generalJournal == null || this.generalJournal.getId() == null) {
+            this.generalJournal = this.buildJournal(getEmissionDate());
         }
-        return generalJournal;
+        if (this.generalJournal == null || this.generalJournal.getId() == null) {
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), "Error interno relacionado con el libro diario.");
+        }
+
+        if (this.record.getRecordDetails().isEmpty()) {
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
+        }
+        if (org.jpapi.util.Strings.isNullOrEmpty(this.record.getDescription())) {
+            valido = false;
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.inlinehelp"));
+        }
+
+        if (valido) {
+            double debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
+                    .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+            double haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
+                    .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+
+            if (debe == haber) {
+
+                this.record.setOwner(subject);
+                this.record.setGeneralJournalId(this.generalJournal.getId());
+                this.record.setEmissionDate(this.generalJournal.getEmissionDate());
+                this.record.getEmissionDate().setHours(Dates.now().getHours());
+                this.record.getEmissionDate().setMinutes(Dates.now().getMinutes());
+                this.record.getEmissionDate().setSeconds(Dates.now().getSeconds());
+
+                recordService.save(record.getId(), record);
+
+                //Encerar objetos de pantalla
+                setRecordDetail(recordDetailService.createInstance());
+                setRecord(recordService.createInstance());
+                setEmissionDate(getEmissionDate());
+
+                this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
+            } else {
+                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
+            }
+        }
     }
 
-    public void setGeneralJournal(GeneralJournal generalJournal) {
-        this.generalJournal = generalJournal;
+    /**
+     * METHODS UTIL.
+     */
+    public void getGeneralJournalAndRecordEdit(Long journalId, Long recordId) {
+        if (journalId != null && recordId != null) {
+            //Cargar generalJournal y record para edición
+            this.generalJournal = generalJournalService.find(journalId);
+            this.record = recordService.find(recordId);
+            orderRecordDetails();
+        }
+    }
+
+    public void orderRecordDetails() {
+        Collections.sort(this.record.getRecordDetails(), (RecordDetail rd1, RecordDetail other) -> rd1.getRecordDetailType().compareTo(other.getRecordDetailType()));//Ordenar por tipo de entrada/salida de transacción
+    }
+
+    public Long getGeneralJournalIdByEmisionDate() {
+        if (this.generalJournalId != null) {
+            return this.generalJournalId;
+        } else if (getEmissionDate() != null) {
+            return buildJournal(getEmissionDate()).getId();
+        }
+        return null;
+    }
+
+    private GeneralJournal buildJournal(Date emissionDate) {
+        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+        return generalJournalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
+    }
+
+    public void onItemAccountSelect(SelectEvent<Account> event) {
+        Account account = event.getObject();
+        Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().getId().equals(account.getId())).findFirst();
+        if (find.isPresent()) {
+            setRecordDetail(find.get());
+            System.out.println("\n¡CUENTA YA EXISTENTE!\n");
+        }
+    }
+
+    public void recordDetailAdd(ActionEvent e) {
+        this.recordDetail.setOwner(this.subject);
+        this.record.addRecordDetail(this.recordDetail);
+        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
+        orderRecordDetails();
+
+        //Encerar el registro
+        this.recordDetail = recordDetailService.createInstance();
+
+        this.recordDetail.setAmount(calculateValueSuggested()); //Por si el valor es el mismo
+    }
+
+    private BigDecimal calculateValueSuggested() {
+        //Calcular valor sugerido, que sería el faltanta para cuadrar el registro
+        BigDecimal suggestedAmount = BigDecimal.ZERO;
+        double debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
+                .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+        double haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
+                .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
+
+        if (debe > haber) {
+            suggestedAmount = BigDecimal.valueOf(debe - haber);
+        } else {
+            suggestedAmount = BigDecimal.valueOf(haber - debe);
+        }
+        return suggestedAmount;
     }
 
     public Long getGeneralJournalId() {
@@ -104,20 +225,15 @@ public class RecordHome extends FedeController implements Serializable {
         this.generalJournalId = generalJournalId;
     }
 
-    public List<Record> getRecordPorCreatedOn() {
-        return recordPorCreatedOn;
+    public GeneralJournal getGeneralJournal() {
+        if (this.generalJournalId != null) {
+            this.generalJournal = generalJournalService.find(this.generalJournalId);
+        }
+        return generalJournal;
     }
 
-    public void setRecordPorCreatedOn(List<Record> recordPorCreatedOn) {
-        this.recordPorCreatedOn = recordPorCreatedOn;
-    }
-
-    public List<Record> getRecordPorGeneralJournal() {
-        return recordPorGeneralJournal;
-    }
-
-    public void setRecordPorGeneralJournal(List<Record> recordPorGeneralJournal) {
-        this.recordPorGeneralJournal = recordPorGeneralJournal;
+    public void setGeneralJournal(GeneralJournal generalJournal) {
+        this.generalJournal = generalJournal;
     }
 
     public Record getRecord() {
@@ -144,172 +260,24 @@ public class RecordHome extends FedeController implements Serializable {
         this.recordDetailSelected = recordDetailSelected;
     }
 
-    public List<Account> filterAccounts(String query) {
-        return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
-    }
-
-    public List<Account> filterAccountsChildrens(String query) {
-        return accountCache.filterByNameOrCodeChildrens(query, this.organizationData.getOrganization());
-    }
-
-    public void recordDetailAdd(ActionEvent e) {
-
-        this.recordDetail.setOwner(this.subject);
-        this.record.addRecordDetail(this.recordDetail);
-
-        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(this.recordDetail.getAccount().getName()));
-
-        //Encerar el registro
-        this.recordDetail = recordDetailService.createInstance();
-
-        //Calcular valor sugerido, que sería el faltanta para cuadrar el registro
-        double debe;
-        debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
-                .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
-        double haber;
-        haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
-                .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
-
-        BigDecimal suggestedAmount = BigDecimal.ZERO;
-        if (debe > haber) {
-            suggestedAmount = BigDecimal.valueOf(debe - haber);
-        } else {
-            suggestedAmount = BigDecimal.valueOf(haber - debe);
+    public Date getEmissionDate() {
+        if (this.getGeneralJournal().getId() != null) {
+            setEmissionDate(this.generalJournal.getEmissionDate());
         }
-        this.recordDetail.setAmount(suggestedAmount); //Por si el valor es el mismo
-
-        this.recordDetailSelected = null;
+        return emissionDate;
     }
 
-    public void onItemAccountSelect(SelectEvent<Account> event) {
-        Account account = event.getObject();
-        Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().equals(account)).findFirst();
-        if (find.isPresent()) {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> cuenta ya existente!!! ");
-            this.setRecordDetail(find.get());
-        }
-    }
-    
-    public void onRowSelect(SelectEvent<RecordDetail> event) {
-        this.recordDetail = event.getObject();
-        addInfoMessage(I18nUtil.getMessages("action.sucessfully"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
-
-    }
-
-    public void onRowUnselect(UnselectEvent<RecordDetail> event) {
-
-        this.setRecordDetail(recordDetailService.createInstance()); //Encerar formulario de edición
-    }
-
-    public void recordSave() {
-        boolean valido = true;
-        if (this.record.getRecordDetails().isEmpty()) {
-            valido = false;
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
-        }
-        if (org.jpapi.util.Strings.isNullOrEmpty(this.record.getDescription())) {
-            valido = false;
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.description.inlinehelp"));
-        }
-
-        if (this.record.getEmissionDate() == null) {
-            valido = false;
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.date.inlinehelp"));
-        }
-
-        if (valido) {
-
-            Date lastEmissionDate = this.record.getEmissionDate();
-            double debe;
-            debe = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE)
-                    .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
-            double haber;
-            haber = this.record.getRecordDetails().stream().filter(x -> x.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER)
-                    .map(x -> x.getAmount()).collect(Collectors.summingDouble(BigDecimal::doubleValue));
-
-            if (debe == haber) {
-                this.record.setOwner(subject);
-                //Localizar o generar el generalJournal
-                this.generalJournal = this.buildJournal(this.record.getEmissionDate());
-                if (this.generalJournal != null && this.generalJournal.getId() != null) {
-                    this.record.setGeneralJournalId(this.generalJournal.getId());
-                    recordService.save(record.getId(), record);
-
-                    //Encerar objetos de pantalla
-                    this.recordDetail = recordDetailService.createInstance();
-                    this.record = recordService.createInstance();
-                    this.record.setEmissionDate(lastEmissionDate);
-
-                    this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
-                    //this.generalJournal = generalJournalService.createInstance();
-                }
-            } else {
-                this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
-            }
-
-        }
-    }
-
-    private GeneralJournal buildJournal(Date emissionDate) {
-        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
-        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
-        return generalJournalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
-    }
-
-    public void viewGeneralJournal() {
-        this.generalJournal = this.buildJournal(this.record.getEmissionDate());
-        if (this.generalJournal != null && this.generalJournal.getId() != null) {
-            this.buildDialog();
-        }
-    }
-
-    public boolean buildDialog() {
-        super.setSessionParameter("generalJournalId", this.generalJournal.getId());
-        return mostrarFormularioGeneralJournal(null);
-    }
-
-    public boolean mostrarFormularioGeneralJournal(Map<String, List<String>> params) {
-        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
-        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "600");
-        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
-        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
-        super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALJOURNAL, width, height, left, top, true, params);
-        return true;
-    }
-
-    public void closeFormularioGeneralJournal(Object data) {
-        removeSessionParameter("generalJournalId");
-        super.closeDialog(data);
-    }
-
-    public void loadSessionParameters() {
-        if (existsSessionParameter("generalJournalId")) {
-            this.setGeneralJournalId((Long) getSessionParameter("generalJournalId"));
-            this.setGeneralJournal(this.getGeneralJournal()); //Carga el objeto persistente
-            if (this.generalJournal != null && this.generalJournal.getId() != null) {
-                this.recordPorGeneralJournal = recordService.findByNamedQuery("Record.findByJournalId", this.generalJournal.getId());
-            }
-        }
-    }
-
-    public void irALibroDiario(Long generalJournalId) throws IOException {
-        //Redireccionar a RIDE de objeto seleccionado
-        if (generalJournalId != null) {
-            redirectTo("//pages/accounting/journal.jsf?journalId=" + generalJournalId);
-        }
-    }
-
-    public void confirmRecordDelete(Record record) {
-        this.recordDelete(record);
-    }
-
-    public void recordDelete(Record record) {
-        recordService.deleteRecord(record);
-        this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf("Asiento # " + record.getId() + " eliminado."));
+    public void setEmissionDate(Date emissionDate) {
+        this.emissionDate = emissionDate;
     }
 
     @Override
     public void handleReturn(SelectEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -325,11 +293,6 @@ public class RecordHome extends FedeController implements Serializable {
 
     @Override
     public List<Group> getGroups() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

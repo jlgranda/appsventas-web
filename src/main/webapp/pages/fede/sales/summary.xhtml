@@ -165,7 +165,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:column id="board_number" headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{discount[1]}" >
                             <h:outputText value="#{discount[1]}"/>
                         </p:column>
-                        <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{discount[2]}" >
+                        <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{discount[2]}" class="Wid10">
                             <h:outputText value="#{discount[2]}"><f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" /></h:outputText>
                         </p:column>
                         <p:column id="amount" headerText="#{i18n['common.total']}" sortBy="#{discount[3]}" >

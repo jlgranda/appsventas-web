@@ -15,18 +15,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.accounts.plan']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <f:viewAction action="#{accountHome.closeFormularioLedger(accountHome.accountSelected)}" />
+                <!--<f:viewParam name="" value="" />-->
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -35,25 +39,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <li><p:link outcome="accounts">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
         </ui:define>
         <ui:define name="content">
+            <!--comentario-->
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <p:toolbar>
-                        <f:facet name="left">
-                            <p:button value="#{i18n['common.newa']}"
-                                      icon="pi pi-plus-circle" styleClass="danger-btn"
-                                      outcome="account"/>
-                        </f:facet>
-                        <f:facet name="right">
-                        </f:facet>
-                    </p:toolbar>
-                </div>
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <div class="card">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="rigth">
+                                <p:button value="#{i18n['common.newa']}"
+                                          icon="pi pi-plus-circle" styleClass="danger-btn rounded-btn"
+                                          outcome="account"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                         <p:treeTable id="treeTable" 
                                      value="#{accountHome.treeDataModel}" var="account"
                                      selectionMode="checkbox" selection="#{accountHome.selectedNodes}"
-                                     propagateSelectionUp="#{false}" propagateSelectionDown="#{false}"
-                                     style="padding-left: 0.8rem; padding-right: 0.8rem;">
+                                     propagateSelectionUp="#{false}" propagateSelectionDown="#{false}">
                             <p:ajax event="select" update=":form:panelSelectedToolBar"/>
                             <p:column headerText="#{i18n['common.code']}" filterBy="#{account.code}" filterMatchMode="contains" class="Wid20">
                                 <h:outputText value="#{account.code}"/>
@@ -61,29 +65,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.name']}" filterBy="#{account.name}" filterMatchMode="contains">
                                 <h:outputText value="#{account.name}"/>
                             </p:column>
-                            <p:column  headerText="#{i18n['common.date.created']}" class="Wid20">
+                            <p:column  headerText="#{i18n['common.date.created']}" class="Wid10">
                                 <h:outputText value="#{account.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
-                            <p:column class="Wid20">
+                            <p:column class="Wid10">
                                 <p:button title="#{i18n['common.edit']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
                                           outcome="/pages/accounting/account.jsf?accountId=#{account.id}"/>
                                 <p:button icon="fa fa-plus-square-o" title="Añadir subcuenta" styleClass="primary-button rounded-btn"
                                           outcome="/pages/accounting/account.jsf?parentAccountId=#{account.id}" />
                             </p:column>
                         </p:treeTable>
+                        <!--Herramientas con seleccionados -->
                         <p:panel id="panelSelectedToolBar">
                             <p:toolbar id="selectedToolBar" rendered="#{not empty accountHome.selectedNodes}">
-                                <f:facet name="left">
-                                    <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
-                                    <div class="ui-g">
+                                <p:toolbarGroup class="FlexNowRap AlignItemsFlEnd">
+                                    <div class="DispInlGrid">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
                                         <p:selectOneMenu value="#{accountHome.selectedAction}">
                                             <f:selectItems value="#{accountHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
                                             <f:ajax render="selectedToolBar"></f:ajax>
                                         </p:selectOneMenu>
-                                    </div>
-                                    <p:panel id="panelMoverTo" rendered="#{accountHome.selectedAction eq 'moveto'}">
+                                    </div>&nbsp;
+                                    <p:panel rendered="#{accountHome.selectedAction eq 'moveto'}">
                                         <p:autoComplete id="account" 
                                                         value="#{accountHome.parentAccountMoveTo}" var="account"
                                                         itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
@@ -102,15 +107,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </p:column>
                                             <p:ajax process="@this"/>
                                         </p:autoComplete>
-                                    </p:panel>
+                                    </p:panel>&nbsp;
                                     <p:commandButton id="go-button"
-                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
                                                      actionListener="#{accountHome.execute()}" action="#{accountHome.getOutcome()}"
                                                      disabled="#{not accountHome.actionExecutable}"
-                                                     ajax="#{true}" update="@form">
+                                                     ajax="#{true}"
+                                                     update="@form">
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                     </p:commandButton>
-                                </f:facet>
+                                </p:toolbarGroup>
                             </p:toolbar>
                         </p:panel>
                     </div>

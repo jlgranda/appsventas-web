@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.close.cash']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
         </ui:define>
@@ -40,13 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
                     <p:panel header="#{i18n['app.fede.accounting.close.cash']}" styleClass="statistics ui-g">
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
-                            <!--                            <i class="fa fa-level-up"></i>
-                                                        <span class="icon-label">Mejora</span>
-                                                        <span>$ 85,397</span>
-                                                        <div class="statsbar">
-                                                            <div class="statsbar-value" style="width: 50%"></div>
-                                                        </div>-->
-                            <!--30 días-->
                             <i class="fa fa-usd"></i>
                             <span class="icon-label">#{i18n['common.last']} #{i18n['app.fede.accounting.close.cash']}</span>
                             <span>
@@ -58,22 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="statsbar">
                                 <div class="statsbar-value" style="width: 100%"></div>
                             </div>
-                            <!--                            <i class="fa fa-history"></i>
-                                                        <span class="icon-label">Tiempo faltante</span>
-                                                        <span>16:01:53</span>
-                                                        <div class="statsbar">
-                                                            <div class="statsbar-value" style="width: 25%"></div>
-                                                        </div>-->
                         </div>
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
-                            <!--                            <div>
-                                                            <i class="fa fa-level-up"></i>
-                                                            <span>50%</span>
-                                                            <i class="fa fa-usd"></i>
-                                                            <span>75%</span>
-                                                            <i class="fa fa-history"></i>
-                                                            <span>25%</span>
-                                                        </div>-->
                             <div class="knob-container">
                                 <div class="knob">
                                     <h:outputText

@@ -50,7 +50,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable" lazy="true">
 
-                            <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{gift.createdOn}">
+                            <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{gift.createdOn}" class="Wid10">
                                 <h:outputText value="#{gift.createdOn}" />
                             </p:column>
                             <p:column headerText="#{i18n['app.fede.payment.discount.type']}" sortBy="#{gift.discountType}">
@@ -93,7 +93,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{giftHome.fechaEmision}"
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{giftHome.fechaEmision}" class="Wid10"
                                        >
                                 <h:outputText value="#{giftHome.fechaEmision}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />

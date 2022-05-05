@@ -33,7 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.model.SelectItem;
@@ -165,16 +164,9 @@ public class AccountHome extends FedeController implements Serializable {
         setAccount(accountService.createInstance());
         setParentAccount(accountService.createInstance());
 
-        int range = 0;
-        try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.ACCOUNT_TOP_RANGE, "7"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 7;
-        }
         //Inicialización de variables, objetos, métodos.
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
@@ -186,6 +178,7 @@ public class AccountHome extends FedeController implements Serializable {
 
         setRangeReport(-1);
         setFundAccountMain(BigDecimal.ZERO);
+        setFundAccountMainRange(BigDecimal.ZERO);
         setFundOldAccountSelected(BigDecimal.ZERO);
 
         initializeActions();
@@ -493,6 +486,15 @@ public class AccountHome extends FedeController implements Serializable {
         return accountCache.lookup(x.getParentAccountId());
     }
 
+    //LOS IMPORTAMOS DE RECORD HOME
+    public List<Account> filterAccounts(String query) {
+        return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
+    }
+
+    public List<Account> filterAccountsChildrens(String query) {
+        return accountCache.filterByNameOrCodeChildrens(query, this.organizationData.getOrganization());
+    }
+
     /**
      * Generar el código de un objeto <tt>Account</tt> según su objeto padre
      *
@@ -788,12 +790,6 @@ public class AccountHome extends FedeController implements Serializable {
      */
     public boolean isRecordOfReferen() {
         return this.record.getBussinesEntityId() == null;
-    }
-
-    public void messageEditableRecord() {
-        if (!isRecordOfReferen()) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.not.editable.message", " " + this.record.getBussinesEntityType()));
-        }
     }
 
     /**

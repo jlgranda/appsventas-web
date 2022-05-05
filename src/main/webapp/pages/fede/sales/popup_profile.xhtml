@@ -44,7 +44,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="Container100">
                         <div class="ui-g-12">
                             <div class="ui-g-4">
-                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="true"
+                                <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="#{true}"
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.code}" 
                                                 validator="#{invoiceHome.nonnative ? 'safeTextUTF8Validator' : 'ciValidator'}"
                                                 required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" 
@@ -69,13 +69,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="ui-g-4">
                                 <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.mobileNumber}"
-                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                                 execute="@this save" render="phone"/>
                             </div>
                             <div class="ui-g-4">
                                 <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                                 value="#{invoiceHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                                required="#{!invoiceHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                                 execute="@this save" render="email"/>
                                 <h:outputText value="#{i18n['app.email.none']} " />
                                 <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultEmail}">
@@ -92,12 +92,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="ui-g-12">
                             <div class="ui-g-6">
                                 <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.description}" required="#{false}" 
                                                 inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
                             </div>
                             <div class="ui-g-6">
                                 <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
-                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
+                                                value="#{invoiceHome.subjectAdminHome.subjectEdit.bio}" required="#{false}" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
                                                 execute="@this save" render="bio"/>
                             </div>
                         </div>
@@ -112,14 +112,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:toolbar>
                         <f:facet name="left">
                             <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                             ajax="false" 
+                                             ajax="#{false}" 
                                              actionListener="#{invoiceHome.saveCustomer()}" 
                                              style="width: auto !important;"
                                              type="submit"/>
                         </f:facet>
                         <f:facet name="right">
 
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                            <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                              actionListener="#{invoiceHome.closeDialog(invoiceHome.subjectAdminHome.subjectEdit)}"
                                              action="#{invoiceHome.redirect}"
                                              icon="fa fa-undo Fs14 Black" styleClass="GrayButton" type="submit"

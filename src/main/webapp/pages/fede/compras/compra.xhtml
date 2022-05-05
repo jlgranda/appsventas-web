@@ -117,13 +117,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                            value="#{facturaElectronicaCompraHome.days}" min="1" 
                                            disabled="#{facturaElectronicaCompraHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
                                            rendered="#{empty facturaElectronicaCompraHome.facturaElectronica.id}"
-                                           immediate="false">
+                                           immediate="#{false}">
                                     <p:ajax listener="#{facturaElectronicaCompraHome.calculateDateExpired()}" update="date-expired" partialSubmit="#{true}"></p:ajax>
                                 </p:spinner>
                                 <p:calendar id="date-expired" 
                                             value="#{facturaElectronicaCompraHome.facturaElectronica.fechaVencimiento}" 
                                             disabled="#{true}"
-                                            immediate="false" 
+                                            immediate="#{false}" 
                                             required="#{true}">
                                 </p:calendar>
                             </div>
@@ -459,7 +459,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                              converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                              immediate="#{true}"
                                                              required="#{true}" style="width: 100%"> 
-                                                <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <p:ajax update="@this"/>
                                             </p:selectOneMenu>
                                         </h:panelGroup>
@@ -539,7 +539,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                          sortMode="single"
                                          editable="#{false}">
-                                <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid20">
+                                <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid10">
                                     <h:outputText value="#{payment.createdOn}">
                                         <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>

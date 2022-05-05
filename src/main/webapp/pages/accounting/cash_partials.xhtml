@@ -156,16 +156,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight BigTopic Fs14">
                                             <h:outputText value="#{cashBoxPartial.totalCashBreakdown}"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
                                         </div>
-                                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.missing']}</div>
+                                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.excess']}</div>
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight">
-                                            <h:outputText value="#{cashBoxPartial.missCash}"
-                                                          style="#{cashBoxPartial.missCash le 0 ? 'color: #000000': 'color: #e53935'}">
+                                            <h:outputText value="#{cashBoxPartial.excessCash}"
+                                                          style="#{cashBoxPartial.excessCash gt 0 ? 'color: #34A835': ''}">
                                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                             </h:outputText>
                                         </div>
-                                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.excess']}</div>
+                                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.missing']}</div>
                                         <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight">
-                                            <h:outputText value="#{cashBoxPartial.excessCash}"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
+                                            <h:outputText value="#{cashBoxPartial.missCash}"
+                                                          style="#{cashBoxPartial.missCash lt 0 ? 'color: #e91224': ''}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
                                         </div>
                                     </p:panel>
                                 </div>

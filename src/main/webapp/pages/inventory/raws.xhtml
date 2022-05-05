@@ -62,7 +62,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:commandButton value="#{i18n['common.find']}"
                                              icon="pi pi-search" styleClass="help-btn"
                                              actionListener="#{inventoryRawHome.clear()}" 
-                                             ajax="false">
+                                             ajax="#{false}">
                             </p:commandButton>
                         </f:facet>
                         <f:facet name="right">
@@ -158,7 +158,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                          value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
                                                          actionListener="#{inventoryRawHome.execute()}" action="#{inventoryRawHome.getOutcome()}"
                                                          disabled="#{not inventoryRawHome.actionExecutable}"
-                                                         ajax="false" update="@form">
+                                                         ajax="#{false}" update="@form">
                                             <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                         </p:commandButton>
                                     </div>

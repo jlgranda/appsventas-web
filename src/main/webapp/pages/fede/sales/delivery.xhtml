@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="EmptyBox20"></div>
                     <p:toolbar rendered="#{not invoiceHome.invoice.persistent}">
                         <f:facet name="left">
-                            <p:commandButton value="#{i18n['common.save']}" ajax="true" 
+                            <p:commandButton value="#{i18n['common.save']}" ajax="#{true}" 
                                              actionListener="#{invoiceHome.save()}" action="preinvoices" disabled="false" 
                                              style="width: auto !important;"
                                              type="submit"/>
@@ -78,7 +78,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                         <f:facet name="right">
 
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                            <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                              action="home"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
@@ -93,7 +93,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:toolbar>
                     <p:toolbar rendered="#{invoiceHome.invoice.persistent}">
                         <f:facet name="left">
-                            <p:commandButton value="#{i18n['common.collect']}" ajax="true" 
+                            <p:commandButton value="#{i18n['common.collect']}" ajax="#{true}" 
                                              styleClass="CyanButton"
                                              actionListener="#{invoiceHome.collect()}" action="preinvoices" 
                                              rendered="#{invoiceHome.invoice.isPersistent()}" disabled="false" 
@@ -102,7 +102,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <span class="ui-separator">
                                 <span class="fa fa-ellipsis-v SoftGray" />
                             </span>
-                            <p:commandButton value="#{i18n['common.save']}" ajax="true" 
+                            <p:commandButton value="#{i18n['common.save']}" ajax="#{true}" 
                                              actionListener="#{invoiceHome.save()}" action="preinvoices" disabled="false" 
                                              style="width: auto !important;"
                                              type="submit"/>
@@ -110,7 +110,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                         <f:facet name="right">
 
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                            <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                              action="home"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"

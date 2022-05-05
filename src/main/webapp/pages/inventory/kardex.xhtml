@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          actionListener="#{kardexInventoryHome.activePanelKardex()}"
                                          update="editarKardexDialog"
                                          oncomplete="PF('editarKardexDialog').show()"
-                                         immediate="false">
+                                         immediate="#{false}">
                         </p:commandButton>
                         <i class="fa fa-bars p-px-2"/>
                     </f:facet>
@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
                                          disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
-                                         immediate="false">
+                                         immediate="#{false}">
                         </p:commandButton>
                         <p:commandButton id="btn-kardexDetail-output"
                                          value="#{i18n['common.exitd']}" icon="fa fa-minus" styleClass="warning-btn" style="width: auto !important;"
@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          update="entradaDialog"
                                          oncomplete="PF('entradaDialog').show()"
                                          disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
-                                         immediate="false">
+                                         immediate="#{false}">
                         </p:commandButton>
                         <p:button value="#{i18n['common.newa']}" icon="fa fa-cart-plus" styleClass="danger-btn" style="width: auto !important;" 
                                   outcome="compra"/>
@@ -100,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column colspan="2" headerText="#{i18n['common.fund']}"/>
                             </p:row>
                             <p:row>
-                                <p:column headerText="#{i18n['common.date.emission']}"/>
+                                <p:column headerText="#{i18n['common.date.emission']}" class="Wid10"/>
                                 <p:column headerText="#{i18n['app.fede.inventory.kardex.operation.type']}"/>
                                 <p:column headerText="#{i18n['common.price.unit']}"/>
                                 <p:column headerText="#{i18n['common.quantity']}"/>
@@ -111,7 +111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['common.value']}"/>
                             </p:row>
                         </p:columnGroup>
-                        <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{kardexDetail.entryOn}" sortOrder="ASC">
+                        <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{kardexDetail.entryOn}" sortOrder="ASC" class="Wid10">
                             <h:outputText value="#{kardexDetail.entryOn}">
                                 <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="dd/MM/yyyy HH:mm:ss"/>
                             </h:outputText>
@@ -175,33 +175,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:selectOneMenu id="operationtype-input" value="#{kardexInventoryHome.kardexDetail.operationType}" style="width: 100%;"
                                          required="#{true}">
                             <f:selectItems value="#{ui.getOperationTypesAsSelectItem(kardexInventoryHome.operationTypeFlow)}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                            <p:ajax update="btn-agregar" partialSubmit="true"></p:ajax>
+                            <p:ajax update="btn-agregar" partialSubmit="#{true}"></p:ajax>
                         </p:selectOneMenu>
                         <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}" 
                                         render="quantity" value="#{kardexInventoryHome.kardexDetail.quantity}" 
                                         required="true" requiredMessage="#{i18n['common.quantity']}"
-                                        placeholder="false" minValue="0"
+                                        placeholder="#{false}" minValue="0"
                                         decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                         thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                        container="none" rendered="true"
+                                        container="none" rendered="#{true}"
                                         update="btn-agregar"/>
                         <jlgranda:input id="unit_value" name="unit_value" type="decimal" label="#{i18n['common.price.unit']}" 
                                         render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
                                         required="true" requiredMessage="#{i18n['common.price.unit']}"
-                                        placeholder="false" minValue="0"
+                                        placeholder="#{false}" minValue="0"
                                         decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                         thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                         decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                        container="none" rendered="true"
+                                        container="none" rendered="#{true}"
                                         update="btn-agregar"/>
                         <jlgranda:input id="entryon" name="entryon" type="calendar-time" label="#{i18n['common.date.register']}" 
                                         render="entryon" value="#{kardexInventoryHome.kardexDetail.entryOn}" 
-                                        required="false" requiredMessage="#{i18n['common.date.register']}"
+                                        required="#{false}" requiredMessage="#{i18n['common.date.register']}"
                                         container="none"/>
                         <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.vaucher']} #{i18n['common.nr']}" 
                                         render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
-                                        required="false" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
+                                        required="#{false}" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
                                         container="none" 
                                         listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-agregar"/>
                     </div>
@@ -213,7 +213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  actionListener="#{kardexInventoryHome.addKardexDetail()}"
                                                  disabled="#{not kardexInventoryHome.validKardexDetail()}"
                                                  update="@form"
-                                                 ajax="false" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
+                                                 ajax="#{false}" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
                                 </p:commandButton>
                                 <i class="fa fa-bars p-px-2"/>
                             </f:facet>
@@ -248,7 +248,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <p:column>
                                                         <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
                                                     </p:column>
-                                                    <p:ajax event="itemSelect" update="entradaDialog, kardex-code" partialSubmit="true" listener="#{kardexInventoryHome.generateCode()}"></p:ajax>
+                                                    <p:ajax event="itemSelect" update="entradaDialog, kardex-code" partialSubmit="#{true}" listener="#{kardexInventoryHome.generateCode()}"></p:ajax>
                                                 </p:autoComplete>
                                             </div>
                                             <div class="ui-inputgroup" style="width: 100%">
@@ -270,7 +270,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-inputgroup">
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.minimun']}</span>
                                 <p:spinner value="#{kardexInventoryHome.kardex.unitMinimum}" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"
-                                           min="1" immediate="false" styleClass="" required="#{true}">
+                                           min="1" immediate="#{false}" styleClass="" required="#{true}">
                                     <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@form:unit_maximun"></p:ajax>
                                 </p:spinner>
                                 <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.maximum']}</span>
@@ -287,7 +287,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  icon="pi pi-save"  styleClass="danger-btn p-mr-2"
                                  value="#{i18n['common.save']}"
                                  actionListener="#{kardexInventoryHome.editKardex()}"
-                                 type="submit" ajax="false" 
+                                 type="submit" ajax="#{false}" 
                                  update="@form"
                                  disabled="#{kardexInventoryHome.editarKardex}"
                                  style="width: -webkit-fill-available;">

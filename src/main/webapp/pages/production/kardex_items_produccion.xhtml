@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:commandButton value="#{i18n['common.find']}"
                                              icon="pi pi-search" styleClass="help-btn"
                                              actionListener="#{kardexProduccionInventoryHome.clear()}" 
-                                             ajax="false">
+                                             ajax="#{false}">
                             </p:commandButton>
                         </f:facet>
                         <f:facet name="right">
@@ -111,7 +111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                          actionListener="#{kardexProduccionInventoryHome.execute()}" action="#{kardexProduccionInventoryHome.getOutcome()}"
                                                          oncomplete="PF('dataTable').unselectAllRows()"
                                                          disabled="#{not kardexProduccionInventoryHome.actionExecutable}"
-                                                         ajax="true" update="@form">
+                                                         ajax="#{true}"e}" update="@form">
                                             <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
                                         </p:commandButton>
                                     </div>

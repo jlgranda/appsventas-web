@@ -59,11 +59,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:column>
                         <h:outputText value="#{ui.renderer('', entidad)}"/>
                     </p:column>
-                    <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
+                    <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}"></p:ajax>
                 </p:autoComplete>
                 <p:commandButton id="button-change-customer" 
                                  icon="fa fa-user-plus" styleClass="primary-button"
-                                 actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="true"
+                                 actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="#{true}"
                                  immediate="true"
                                  styleClass="RedButton" style="width:30px">
                     <p:ajax event="dialogReturn" update="@form"
@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.dedication']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.dedication}" />
                             </p:column>
-                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{role.createdOn}">
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{role.createdOn}" class="Wid10">
                                 <h:outputText value="#{role.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
@@ -101,7 +101,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}" 
                                          actionListener="#{employeeHome.save()}" action="#{employeeHome.redirect()}" 
                                          disabled="#{false}" 
                                          style="width: auto !important;"
@@ -113,7 +113,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <f:facet name="right">
 
-                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                        <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                          actionListener="#{employeeHome.closeDialog(null)}" 
                                          action="home"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"

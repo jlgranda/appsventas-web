@@ -53,7 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          value="#{i18n['common.find']}"
                                          icon="pi pi-search" styleClass="help-btn" 
                                          actionListener="#{invoiceHome.clear()}"
-                                         ajax="false" immediate="true">
+                                         ajax="#{false}" immediate="true">
                         </p:commandButton>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right"  style="display: inline-table;">
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:tab>
                         <!-- overrides title on tab-->
                         <f:facet name="title">
-                            <h:outputText value="#{i18n['app.fede.sales']}" escape="false" rendered="true"/> 
+                            <h:outputText value="#{i18n['app.fede.sales']}" escape="false" rendered="#{true}"/> 
                         </f:facet>
                         <div class="ui-g">
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -100,7 +100,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.register']}" 
                                                          icon="fa fa-dot-circle-o" styleClass="secondary-button Fright"
                                                          actionListener="#{invoiceHome.record(entity.id)}" action="#{invoiceHome.redirect}" 
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                         <!--Botón de modificación/o pago-->
                                         <p:button title="#{i18n['common.collect']}" 
@@ -110,20 +110,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.attend']}" 
                                                          icon="fa fa-thumbs-o-up" styleClass="secondary-button Fright #{entity.status}"
                                                          action="#{invoiceHome.attend(entity.id)}"
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                     </div>                                       
                                     <div class="EmptyBox10"/>
                                 </ui:repeat>
                             </div>
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Fs20 BoldGray TexAlRight">
-                                <h:outputText rendered="false">#{i18n['common.total.pay']}:</h:outputText>
-                                <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastPreInvoices)}" rendered="false">
+                                <h:outputText rendered="#{false}">#{i18n['common.total.pay']}:</h:outputText>
+                                <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastPreInvoices)}" rendered="#{false}">
                                     <f:convertNumber type="currency"/>
                                 </h:outputText>
                             </div>
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 TexAlCenter">
-                                <p:button value="#{i18n['common.show.all']}" rendered="false" 
+                                <p:button value="#{i18n['common.show.all']}" rendered="#{false}" 
                                           styleClass="danger-btn" icon="fa fa-table"
                                           outcome="/pages/fede/sales/invoices.jsf"/>
                             </div>
@@ -131,7 +131,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:tab>
                     <p:tab>
                         <f:facet name="title">
-                            <h:outputText value="#{i18n['app.fede.sales.my']}" escape="false" rendered="true"/> 
+                            <h:outputText value="#{i18n['app.fede.sales.my']}" escape="false" rendered="#{true}"/> 
                         </f:facet>
                         <div class="ui-g">
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -156,7 +156,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.rollback']}" 
                                                          icon="fa fa-undo" styleClass="secondary-button Fright"
                                                          action="#{invoiceHome.reopen(entity.id)}"
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                     </div>
                                     <div class="EmptyBox10"></div>
@@ -206,7 +206,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     </p:tab>
                     <p:tab>
                         <f:facet name="title">
-                            <h:outputText value="#{i18n['common.courtesies']}" escape="false" rendered="true"/> 
+                            <h:outputText value="#{i18n['common.courtesies']}" escape="false" rendered="#{true}"/> 
                         </f:facet>
                         <div class="ui-g">
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -230,7 +230,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:commandButton title="#{i18n['common.rollback']}" 
                                                          icon="fa fa-undo" styleClass="secondary-button Fright"
                                                          action="#{invoiceHome.reopen(entity.id)}"
-                                                         ajax="false" immediate="true">
+                                                         ajax="#{false}" immediate="true">
                                         </p:commandButton>
                                     </div>
                                     <div class="EmptyBox10"></div>
@@ -252,36 +252,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.board.number']}" 
                                                 execute="@this" render="board_number" value="#{invoiceHome.invoice.boardNumber}"
                                                 required="true" requiredMessage="#{i18n['app.fede.sales.invoice.board.number.required']}"
-                                                decimalPlaces="0" container="none" rendered="true"/>
+                                                decimalPlaces="0" container="none" rendered="#{true}"/>
                                 <jlgranda:input id="amount" name="amount" type="number" label="#{i18n['common.quantity']}" 
                                                 execute="@this" render="amount" value="#{invoiceHome.amount}" 
                                                 required="true" requiredMessage="#{i18n['common.quantity.required']}"
-                                                decimalPlaces="0" container="none" rendered="true"/>
+                                                decimalPlaces="0" container="none" rendered="#{true}"/>
                             </div>
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:commandButton immediate="false" ajax="true"
+                                <p:commandButton immediate="#{false}" ajax="#{true}"
                                                  actionListener="#{invoiceHome.macro('100494')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                  icon="flaticon-almuerzo" styleClass="warning-btn" title="#{i18n['app.phrase.order.lunch']}"
                                                  style="width:36px; height: 36px;" type="submit">
                                 </p:commandButton>
-                                <p:commandButton immediate="false" ajax="true"
+                                <p:commandButton immediate="#{false}" ajax="#{true}"
                                                  actionListener="#{invoiceHome.macro('100529')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                  icon="flaticon-almuerzo-solo-segundo" styleClass="warning-btn" title="#{i18n['app.phrase.order.lunch.second']}"
                                                  style="width:36px; height: 36px;" type="submit">
                                 </p:commandButton>
 
-                                <p:commandButton immediate="false" ajax="true"
+                                <p:commandButton immediate="#{false}" ajax="#{true}"
                                                  actionListener="#{invoiceHome.macro('100550')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                  icon="flaticon-almuerzo-solo-sopa" styleClass="help-btn" title="#{i18n['app.phrase.order.lunch.soup']}"
                                                  style="width:36px; height: 36px;" type="submit">
                                 </p:commandButton>
 
-                                <p:commandButton immediate="false" ajax="true"
+                                <p:commandButton immediate="#{false}" ajax="#{true}"
                                                  actionListener="#{invoiceHome.macro('100626')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                  icon="flaticon-almuerzo" styleClass="danger-btn" title="#{i18n['app.phrase.order.lunch.sunday']}"
                                                  style="width:36px; height: 36px;" type="submit">
                                 </p:commandButton>
-                                <p:commandButton immediate="false" ajax="true"
+                                <p:commandButton immediate="#{false}" ajax="#{true}"
                                                  actionListener="#{invoiceHome.macro('102086')}" action="#{invoiceHome.redirect}" disabled="#{false}"
                                                  icon="flaticon-almuerzo-solo-segundo" styleClass="danger-btn" title="#{i18n['app.phrase.order.lunch.sunday.second']}"
                                                  style="width:36px; height: 36px;" type="submit">
@@ -292,7 +292,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <!--Busqueda-->
                     <p:tab title="#{i18n['common.search']}" rendered="#{invoiceHome.busquedaEjecutada}">
                         <f:facet name="title">
-                            <h:outputText value="#{i18n['common.search']} #{invoiceHome.start} - #{invoiceHome.end} - #{invoiceHome.keyword}" escape="false" rendered="true"/> 
+                            <h:outputText value="#{i18n['common.search']} #{invoiceHome.start} - #{invoiceHome.end} - #{invoiceHome.keyword}" escape="false" rendered="#{true}"/> 
                         </f:facet>
                         <div class="ui-g">
                             <div class="Container100">
@@ -310,7 +310,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                  icon="fa fa-undo"
                                                                  styleClass="GrayButton Fright"
                                                                  action="#{invoiceHome.reopen(entity.id)}"
-                                                                 ajax="false"
+                                                                 ajax="#{false}"
                                                                  immediate="true">
                                                 </p:commandButton>
                                             </div>

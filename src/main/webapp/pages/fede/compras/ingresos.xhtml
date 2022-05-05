@@ -83,7 +83,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                              value="#{i18n['common.find']}"
                                              icon="pi pi-search" styleClass="help-btn" 
                                              actionListener="#{facturaElectronicaIngresoHome.clear()}"
-                                             ajax="false" immediate="#{true}">
+                                             ajax="#{false}" immediate="#{true}">
                             </p:commandButton>
                         </p:toolbarGroup>
                         <p:toolbarGroup align="right" style="display: inline-table;">
@@ -153,7 +153,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                                        facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}">
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" class="Wid10">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

@@ -111,7 +111,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                             <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                             value="#{tareaHome.tarea.description}" execute="@this save" render="descrpn" 
-                                            required="false" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
+                                            required="#{false}" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                             container="none"/>
 
                             <!-- Adjuntos -->
@@ -143,7 +143,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:toolbar styleClass="ui-g ui-lg-12 ui-md-12">
                                 <p:toolbarGroup style="flex-wrap: nowrap !important;"> 
 
-                                    <p:commandButton value="#{i18n['common.submit']}" ajax="false" 
+                                    <p:commandButton value="#{i18n['common.submit']}" ajax="#{false}" 
                                                      actionListener="#{tareaHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
                                                      action="#{tareaHome.getOutcome()}" type="submit"/>
@@ -159,7 +159,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </p:toolbarGroup>
                                 <p:toolbarGroup align="rigth">
 
-                                    <p:commandButton ajax="false" action="#{tareaHome.getOutcome()}" disabled="false" immediate="true"
+                                    <p:commandButton ajax="#{false}" action="#{tareaHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
 
 <!--                                    <p:menuButton value="#{i18n['common.options']}">
@@ -183,14 +183,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                         <jlgranda:input id="_documentName" name="_documentName" type="text" 
                                         placeholder="true" label="#{i18n['common.name']}" 
-                                        value="#{tareaHome.documento.name}" required="false" 
+                                        value="#{tareaHome.documento.name}" required="#{false}" 
                                         container="default"/>
 
                         <jlgranda:input id="documentType" name="documentType" type="select" 
                                         placeholder="true" label="#{i18n['common.type']}" 
                                         value="#{tareaHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
                                         converter="omnifaces.SelectItemsConverter"
-                                        required="false" 
+                                        required="#{false}" 
                                         execute="none" listener="none" render="none"
                                         onchange="return;"
                                         container="default"/>
@@ -217,7 +217,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                           player="pdf" width="100%" height="250"/>-->
                                 <jlgranda:input id="documentName" name="documentName" type="text" 
                                                 label="#{i18n['common.name']}" 
-                                                value="#{tareaHome.documentoAceptar.name}" required="false" 
+                                                value="#{tareaHome.documentoAceptar.name}" required="#{false}" 
                                                 execute="@this save" render="documentNam"
                                                 />
                                 <h:panelGrid columns="2" cellpadding="10">
@@ -240,7 +240,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 container="default"/>
                                 <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.document.number']}" 
                                                 value="#{tareaHome.documentoAceptar.numeroRegistro}" render="numReg" 
-                                                execute="@this save" required="false"  />
+                                                execute="@this save" required="#{false}"  />
 
                                 <div class="Wid33 Fleft Responsive">
                                     <p:commandButton value="#{i18n['common.accept']}"
@@ -251,7 +251,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      oncomplete="PF('dlgDocumento').hide()"/>   
                                 </div>
                                 <div class="Wid33 Fleft Responsive">
-                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="false" immediate="true"
+                                    <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="#{false}" immediate="true"
                                                      icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')} Fs16 White" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
                                         <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
                                     </p:commandButton>

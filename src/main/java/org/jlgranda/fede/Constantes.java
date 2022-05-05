@@ -16,6 +16,8 @@
  */
 package org.jlgranda.fede;
 
+import java.util.Calendar;
+
 /**
  *
  * @author jlgranda

@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:calendar value="#{invoiceHome.end}" class="input-sm">
                         <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" oncomplete="form.submit();"/>
                     </p:calendar>
-                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
+                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="#{false}" immediate="true">
                     </p:commandButton>
                     <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice.jsf"/>
                 </div>

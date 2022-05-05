@@ -15,19 +15,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
-                <!--<f:viewParam name="" value="" />-->
+                <f:viewParam name="generalJournalId" value="#{recordHome.generalJournalId}"/>
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
@@ -37,34 +40,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12">
-                    <h1 class="TexUppercase">#{i18n['app.fede.accounting.record']}</h1>
-                    <div class="ui-fluid">
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:outputLabel value="Fecha de Registro del Asiento" for="@next"/>
-                            <p:datePicker id="emissionDate" value="#{recordHome.record.emissionDate}"
-                                          touchUI="#{true}" showOtherMonths="#{true}" showIcon="#{true}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}"
-                                          required="#{true}"
-                                          immediate="#{true}">
-                                <p:ajax event="dateSelect" update="btnRecordAdd btnGeneralJournal" process="@this"/>
-                            </p:datePicker>
-                        </div>
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <p:commandButton id="btnGeneralJournal"
-                                             icon="pi pi-book" styleClass="help-btn"
-                                             value="#{i18n['common.view']} #{i18n['app.fede.accounting.journal']}"
-                                             actionListener="#{recordHome.viewGeneralJournal()}"
-                                             ajax="#{true}" immediate="#{true}"
-                                             disabled="#{empty recordHome.record.emissionDate}"/>
-                        </div>
-                        <h3>Agregar cuenta al asiento contable</h3>
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-12">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
+                        <h1 class="TexUppercase">
+                            #{i18n['app.fede.accounting.record']}
+                        </h1>
+                    </div>
+                    <p:panel id="panel-msg"
+                             class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
+                        <p:staticMessage rendered="#{empty recordHome.emissionDate}"
+                                         severity="warn" summary="#{i18n['action.warning']}" detail="Por favor seleccione la fecha de registro del asiento." style="width: 100%"/>
+                    </p:panel>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
+                        <jlgranda:input id="emissionDate" name="emissionDate" render="emissionDate" container="none"
+                                        type="calendar" showOn="button"
+                                        value="#{recordHome.emissionDate}" label="#{i18n['common.to']}:&nbsp;" 
+                                        required="#{true}" 
+                                        placeholder="#{false}" 
+                                        update="@form">
+                        </jlgranda:input>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Padding5 ui-fluid">
+                        <p:linkButton outcome="journal"
+                                      value="#{i18n['common.view']} #{i18n['app.fede.accounting.journal']}"
+                                      disabled="#{empty recordHome.emissionDate}"
+                                      icon="pi pi-book" iconPos="left" styleClass="help-btn rounded-btn TexUppercase">
+                            <f:param name="journalId" value="#{recordHome.generalJournalIdByEmisionDate}"/>
+                        </p:linkButton>
+                    </div>
+                    <p:panel id="panel-record" rendered="#{not empty recordHome.emissionDate}"
+                             class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd">
+                            <h3>Agregar/Editar cuenta al asiento contable</h3>
+                            <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
                                 <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                                 <p:autoComplete id="account" 
                                                 value="#{recordHome.recordDetail.account}" var="account"
                                                 itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                                completeMethod="#{recordHome.filterAccounts}"
+                                                completeMethod="#{accountHome.filterAccounts}"
                                                 converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                                 placeholder="#{i18n['app.fede.accounting.account.find']}"
                                                 emptyMessage="#{i18n['app.setting.list.empty']}"
@@ -81,100 +94,92 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
                                 </p:autoComplete>
                             </div>
-                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12">
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12 DispInlGrid">
                                 <p:outputLabel value="Seleccione el tipo:" for="@next"/>
                                 <p:selectOneRadio id="recordDetailType" 
                                                   value="#{recordHome.recordDetail.recordDetailType}" 
                                                   layout="responsive" columns="3"
-                                                  required="#{true}" style="width: 20rem;">
+                                                  required="#{true}">
                                     <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
                                                    itemLabel="#{recordDetailType.label}" itemValue="#{recordDetailType}"/>
                                     <p:ajax process="@this"/>
-                                    <f:ajax execute="@this" render="btnRecordAdd"></f:ajax>
+                                    <f:ajax execute="@this" render="@form"></f:ajax>
                                 </p:selectOneRadio>
                             </div>
-                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="padding: 0rem">
-                                <jlgranda:input id="amount" name="amount" type="decimal" label="#{i18n['common.money.letter']}"
-                                                render="amount" value="#{recordHome.recordDetail.amount}" 
-                                                required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
-                                                placeholder="false"
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12 DispInlGrid">
+                                <jlgranda:input id="amount" name="amount" render="amount" container="none"
+                                                type="decimal" 
                                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                 thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                 decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
-                                                container="none" rendered="#{true}"/>
+                                                value="#{recordHome.recordDetail.amount}" label="#{i18n['common.money.letter']}"
+                                                required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
+                                                placeholder="#{false}"
+                                                rendered="#{true}"
+                                                update="@form"/>
                             </div>
-                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-12" style="align-self: center; margin-top: 1rem">
-                                <p:commandButton id="btnRecordAdd"
-                                                 icon="pi pi-check-square" styleClass="warning-btn"
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPaddingTop">
+                                <p:commandButton id="btn-detail-add"
+                                                 icon="pi pi-check-square" styleClass="warning-btn rounded-btn TexUppercase"
                                                  value="#{i18n['common.add']}"
                                                  actionListener="#{recordHome.recordDetailAdd}" 
-                                                 ajax="#{true}" immediate="#{true}"
-                                                 disabled="#{empty recordHome.record.emissionDate or empty recordHome.recordDetail.account or empty recordHome.recordDetail.recordDetailType}"
+                                                 ajax="#{false}" immediate="#{true}"
+                                                 disabled="#{empty recordHome.emissionDate or empty recordHome.recordDetail.account or empty recordHome.recordDetail.recordDetailType or recordHome.recordDetail.amount le 0}"
                                                  update="@form"/>
                             </div>
                         </div>
-                        <h3>Configuración del asiento contable</h3>
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
-                                             value="#{recordHome.record.recordDetails}" var="recordDetail" 
-                                             selection="#{recordHome.recordDetailSelected}" 
-                                             rowKey="#{recordDetail.account}"
-                                             rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
-                                             paginator="#{true}" paginatorPosition="bottom" 
-                                             draggableColumns="#{true}" reflow="#{true}" 
-                                             resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
-                                             sortMode="single">
-                                    <p:ajax event="rowSelect" listener="#{recordHome.onRowSelect}" update="@form"/>
-                                    <p:ajax event="rowUnselect" listener="#{recordHome.onRowUnselect}" update="@form"/>
-                                    <p:column headerText="#{i18n['app.fede.accounting.account']}"  class="Wid40">
-                                        <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.debe']}">
-                                        <h:outputText value="#{recordDetail.amount}"
-                                                      rendered="#{recordDetail.recordDetailType=='DEBE'}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="#{i18n['common.haber']}">
-                                        <h:outputText value="#{recordDetail.amount}"
-                                                      rendered="#{recordDetail.recordDetailType=='HABER'}">
-                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                        </h:outputText>
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                                <p:outputLabel value="Concepto" for="@next"/>
-                                <p:inputTextarea  class="BigTopic" 
-                                                  value="#{recordHome.record.description}" 
-                                                  rows="3" cols="30" autoResize="false"
-                                                  required="#{true}">
-                                    <p:ajax process="@this"/>
-                                    <p:ajax event="keyup" update="btnRecordSave" />
-                                </p:inputTextarea>
-                            </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd DispInlGrid">
+                            <h3>Configuración del asiento contable</h3>
+                            <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
+                                         value="#{recordHome.record.recordDetails}" var="recordDetail" 
+                                         selection="#{recordHome.recordDetailSelected}" 
+                                         rowKey="#{recordDetail.account}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
+                                <p:column headerText="#{i18n['app.fede.accounting.account']}" class="Wid40">
+                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.debe']}">
+                                    <h:outputText value="#{recordDetail.amount}"
+                                                  rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.haber']}">
+                                    <h:outputText value="#{recordDetail.amount}"
+                                                  rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                            <p:outputLabel value="#{i18n['common.concept']}" for="@next"/>
+                            <p:inputTextarea  class="BigTopic" 
+                                              value="#{recordHome.record.description}" 
+                                              rows="3" cols="30" autoResize="false"
+                                              required="#{false}">
+                                <p:ajax process="@this"/>
+                                <p:ajax event="keyup" update="btn-record-save" />
+                            </p:inputTextarea>
                         </div>
-                    </div>
-                </div>
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                    <p:toolbar>
-                        <f:facet name="left">
-                            <p:commandButton id="btnRecordSave"
-                                             value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
-                                             actionListener="#{recordHome.recordSave()}"
-                                             disabled="#{empty recordHome.record.recordDetails or empty recordHome.record.description}"
-                                             ajax="#{true}" immediate="false" 
-                                             update="@form"/>
-                            <i class="pi pi-bars p-px-2"/>
-                        </f:facet>
-                        <f:facet name="right">
-                            <p:commandButton id="btnRecordCancel"
-                                             title="#{i18n['common.home']}" icon="pi pi-home" styleClass="primary-button"
-                                             actionListener="#{recordHome.closeDialog(null)}" action="#{recordHome.getOutcome()}" 
-                                             ajax="#{true}" immediate="#{true}"/>
-                        </f:facet>
-                    </p:toolbar>
+                        <p:toolbar class="NoBorder">
+                            <p:toolbarGroup class="DispInlFlex">
+                                <p:commandButton id="btn-record-save"
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn TexUppercase"
+                                                 actionListener="#{recordHome.save()}"
+                                                 disabled="#{empty recordHome.record.recordDetails or empty recordHome.record.description}"
+                                                 ajax="#{false}" immediate="#{false}" 
+                                                 update="@form"/>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="right" class="DispInlFlexRight">
+                                <p:commandButton title="#{i18n['common.home']}" icon="pi pi-home" styleClass="secondary-button rounded-btn"
+                                                 actionListener="#{recordHome.closeDialog(null)}" action="#{recordHome.getOutcome()}" 
+                                                 ajax="#{true}" immediate="#{true}"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:panel>
                 </div>
             </div>
         </ui:define> 

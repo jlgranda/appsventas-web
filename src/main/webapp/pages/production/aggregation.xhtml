@@ -93,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </p:column>
                                     <p:ajax process="@this"/>
                                     <p:ajax event="itemSelect" update="@this @form:panel-aggregation"
-                                            listener="#{aggregationHome.calculePriceUnit}" partialSubmit="true"/>
+                                            listener="#{aggregationHome.calculePriceUnit}" partialSubmit="#{true}"/>
                                 </p:autoComplete>
                             </div>
                             <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-6 NoPadding" style="#{aggregationHome.aggregationDetail.persistent ? 'background-color: #e0236414;' : ''}">

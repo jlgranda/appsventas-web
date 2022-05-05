@@ -11,13 +11,13 @@
         <h:form>
             <h3 style="margin-top:0">AJAX</h3>
             <p:commandButton actionListener="#{exceptionHandlerView.throwViewExpiredException}"
-                             ajax="true"
+                             ajax="#{true}"
                              value="Throw ViewExpiredException!" />
             <p:commandButton actionListener="#{exceptionHandlerView.throwNullPointerException}"
-                             ajax="true"
+                             ajax="#{true}"
                              value="Throw NullPointerException!" />
             <p:commandButton actionListener="#{exceptionHandlerView.throwWrappedIllegalStateException}"
-                             ajax="true"
+                             ajax="#{true}"
                              value="Throw IllegalStateException!" />
 
             <h3>Non-AJAX</h3>

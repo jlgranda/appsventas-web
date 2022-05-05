@@ -614,6 +614,12 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Align */
+.AlignItemsCenter{
+    align-items: center;
+}
+.AlignItemsFlEnd{
+    align-items: flex-end;
+}
 .AlignSelfCenter{
     align-self: center;
 }
@@ -639,6 +645,9 @@ input[type="text"], input[type="password"], textarea{
 .DispInlBlock{
     display:inline-block;
 }
+.DispInlGrid{
+    display:inline-grid !important;
+}
 .DispInlFlex{
     display:inline-flex !important;
     float:left;
@@ -646,6 +655,10 @@ input[type="text"], input[type="password"], textarea{
 
 .FlexNowRap{
     flex-wrap: nowrap !important;
+}
+
+.FlexColumn{
+    flex-flow: column;
 }
 
 .DispInlFlexRight{
@@ -938,8 +951,12 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Width */
+.MinWidFull{
+    min-width: -webkit-fill-available;
+}
+
 .Wid100{
-    width:100%;
+    width: -webkit-fill-available !important;
 }
 .Wid90{
     width:90%;
@@ -988,6 +1005,9 @@ input[type="text"], input[type="password"], textarea{
 .Wid5{
     width:5%;
 }
+.WidAuto {
+    width: auto !important;
+}
 
 .MaxWid500{
     max-width:500px;
@@ -1028,6 +1048,10 @@ input[type="text"], input[type="password"], textarea{
 /* Margins */
 .Margin8{
     margin: 8px;
+}
+
+.Margin16{
+    margin: 16px;
 }
 
 .MarTopPerc5{
@@ -1086,7 +1110,7 @@ input[type="text"], input[type="password"], textarea{
 }
 
 .MarTop20{
-    margin-top:20px;
+    margin-top:20px ;
 }
 .MarTop30{
     margin-top:30px;
@@ -1105,6 +1129,9 @@ input[type="text"], input[type="password"], textarea{
     margin-top:50%;
 }
 
+.MarBot4{
+    margin-bottom:4px;
+}
 .MarBot10{
     margin-bottom:10px;
 }
@@ -1125,6 +1152,9 @@ input[type="text"], input[type="password"], textarea{
 .NoPadding{
     padding:0px !important;
 }
+.Padding2{
+    padding: 2px !important;
+}
 .Padding5{
     padding: 5px !important;
 }
@@ -1133,6 +1163,10 @@ input[type="text"], input[type="password"], textarea{
 }
 .Padding15{
     padding: 15px !important;
+}
+
+.NoPaddingTop{
+    padding-top:0px !important;
 }
 
 /* Containers */
@@ -1257,15 +1291,20 @@ input[type="text"], input[type="password"], textarea{
 /* Border */
 .NoBorder{
     border-color: transparent !important;
+    border-width: 0px !important;
+    border: none;
 }
 
 /* Background */
+.NoColor{
+    color: transparent !important;
+}
 .NoBackground{
     background-color: transparent !important;
 }
 
 .BackgroundToolbar{
-    background: #EFEFEF !important;
+    background: #efefef !important;
 }
 
 .BackgroundSecondary{
@@ -1277,6 +1316,10 @@ input[type="text"], input[type="password"], textarea{
 }
 .BackgroundInfo{
     background: #007ad9 !important;
+    color: white;
+}
+.BackgroundSuccess{
+    background: #34a835 !important;
     color: white;
 }
 
@@ -1380,7 +1423,7 @@ input[type="text"], input[type="password"], textarea{
     font-weight:bold;
 }
 .FontLight{
-    font-weight:lighter;
+    font-weight:lighter !important;
 }
 .FontNormal{
     font-weight:normal;
@@ -1505,8 +1548,14 @@ input[type="text"], input[type="password"], textarea{
 }
 
 /* Display */
+.DispContents{
+    display: contents;
+}
 .DispBlock{
     display:block;
+}
+.DispVerticalTop{
+    vertical-align:top;
 }
 .DispTable{
     display:table;
@@ -1799,7 +1848,7 @@ input[type="text"], input[type="password"], textarea{
 
 /* Width */
 .Wid100{
-    width:100%;
+    width: -webkit-fill-available !important;
 }
 .Wid90{
     width:90%;
@@ -2089,7 +2138,7 @@ input[type="text"], input[type="password"], textarea{
     font-weight:bold;
 }
 .FontLight{
-    font-weight:lighter;
+    font-weight:lighter !important;
 }
 .FontNormal{
     font-weight:normal;
@@ -2599,7 +2648,10 @@ input[type="text"], input[type="password"], textarea{
     color: gray;
     font-weight: 700;
 }
-
+.White {
+    color: white;
+    font-weight: 700;
+}
 
 body .ui-panel .ui-panel-content {
     padding: 0px;

@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:toolbar rendered="#{subject != null}">
                                 <f:facet name="left">
 
-                                    <p:commandButton value="#{i18n['common.save']}" ajax="true" 
+                                    <p:commandButton value="#{i18n['common.save']}" ajax="#{true}" 
                                                      actionListener="#{subjectHome.save(subject)}" disabled="false" 
                                                      style="width: auto !important;"
                                                      action="#{subjectHome.getOutcome()}" type="submit"/>
@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                 <f:facet name="right">
 
-                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                    <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                                      action="home" 
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
                                 </f:facet>

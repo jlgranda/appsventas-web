@@ -26,18 +26,15 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
@@ -48,9 +45,6 @@ import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -60,124 +54,59 @@ import org.slf4j.LoggerFactory;
 @ViewScoped
 public class GeneralJournalHome extends FedeController implements Serializable {
 
-    private static final long serialVersionUID = -1007161141552849702L;
-
-    Logger logger = LoggerFactory.getLogger(GeneralJournalHome.class);
-
     @Inject
     private Subject subject;
-
     @Inject
     private SettingHome settingHome;
-
     @Inject
     private OrganizationData organizationData;
 
     @EJB
     private GroupService groupService;
-
     @EJB
     private AccountService accountService;
-
     @EJB
-    private GeneralJournalService journalService;
-
+    private GeneralJournalService generalJournalService;
     @EJB
     private RecordService recordService;
-
     @EJB
     private RecordDetailService recordDetailService;
 
-    private LazyGeneralJournalDataModel lazyDataModel;
-
     /**
-     * El objeto Journal para edición
+     * EDIT OBJECT.
      */
+    private Long journalId;
     private GeneralJournal journal;
-
-    /**
-     * Lista de entidades seleccionadas
-     */
-    private List<GeneralJournal> selectedGeneralJournals;
-    /**
-     * El objeto seleccionado para mover registros
-     */
-    private GeneralJournal selectedGeneralJournal;
-
-    /**
-     * Fecha tentativa para obtener el registro contable, si existiese
-     */
-    private Date generalJournalDate;
-
-    /**
-     * El objeto Record para edición
-     */
+    private Long recordId;
     private Record record;
-
-    /**
-     * Lista de entidades seleccionadas
-     */
-    private List<Record> selectedRecords;
-
-    /**
-     * RecordDetail para edición
-     */
     private RecordDetail recordDetail;
 
-    private Long journalId;
-    private Long recordId;
-
-    private Account accountSelected;
-
-    protected List<SelectItem> generalJournalActions = new ArrayList<>();
-
+    /**
+     * UX.
+     */
+    private Date generalJournalDate; //Fecha tentativa para obtener el registro contable, si existiese
+    private List<Record> recordsSelected;
     private RecordDetail recordDetailSelected;
-
-    private boolean busquedaAvanzada;
+    protected List<SelectItem> generalJournalActions = new ArrayList<>();
+    private LazyGeneralJournalDataModel lazyDataModel;
+    private GeneralJournal journalSelected;
+    private List<GeneralJournal> journalsSelected;
+    private BigDecimal subtotalDebe;
+    private BigDecimal subtotalHaber;
+    private Date daySelected;
 
     @PostConstruct
     private void init() {
-        int range = 0;
-        try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.JOURNAL_TOP_RANGE, "7"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 7;
-        }
-
-        setBusquedaAvanzada(true);
-
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
-        setJournal(journalService.createInstance());//Instancia de Cuenta
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
+        clear();
+        initializeActions();
+
+        setJournal(generalJournalService.createInstance());//Instancia de Cuenta
+        setRecord(recordService.createInstance());
+        setRecordDetail(recordDetailService.createInstance());
+
         setOutcome("journals");
-        filter();
-
-        this.record = recordService.createInstance();
-        this.recordDetail = recordDetailService.createInstance();
-
-        this.initializeActions();
-    }
-
-    @Override
-    public void handleReturn(SelectEvent event) {
-        this.setJournalId((Long) event.getObject());
-        this.setJournal(new GeneralJournal());
-        this.getJournal();
-    }
-
-    @Override
-    public Group getDefaultGroup() {
-        return this.defaultGroup;
-    }
-
-    @Override
-    public List<Group> getGroups() {
-        if (this.groups.isEmpty()) {
-            //Todos los grupos para el modulo actual
-            setGroups(groupService.findByOwnerAndModuleAndType(subject, settingHome.getValue(SettingNames.MODULE + "inventory", "inventory"), Group.Type.LABEL));
-        }
-        return this.groups;
     }
 
     public Long getJournalId() {
@@ -188,20 +117,11 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.journalId = journalId;
     }
 
-    public Long getRecordId() {
-        return recordId;
-    }
-
-    public void setRecordId(Long recordId) {
-        this.recordId = recordId;
-    }
-
     public GeneralJournal getJournal() {
-        if (this.journalId != null && this.journal != null && !this.journal.isPersistent()) {
-            this.journal = journalService.find(journalId);
-
-            //Cargar registros 
+        if (this.journalId != null && !this.journal.isPersistent()) {
+            this.journal = generalJournalService.find(journalId);
             this.journal.setRecords(recordService.findByNamedQuery("Record.findByJournalId", this.journalId));
+            getCalculateBalance();
         }
         return this.journal;
     }
@@ -210,12 +130,12 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.journal = journal;
     }
 
-    public LazyGeneralJournalDataModel getLazyDataModel() {
-        return lazyDataModel;
+    public Long getRecordId() {
+        return recordId;
     }
 
-    public void setLazyDataModel(LazyGeneralJournalDataModel lazyDataModel) {
-        this.lazyDataModel = lazyDataModel;
+    public void setRecordId(Long recordId) {
+        this.recordId = recordId;
     }
 
     public Record getRecord() {
@@ -237,73 +157,46 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.recordDetail = recordDetail;
     }
 
-    public List<Account> getAccounts() {
-        return accountService.findByOrganization(this.organizationData.getOrganization());
-    }
-
-    public Account getAccountSelected() {
-        return accountSelected;
-    }
-
-    public void setAccountSelected(Account accountSelected) {
-        this.accountSelected = accountSelected;
-    }
-
-    public Date getGeneralJournalDate() {
-        return generalJournalDate;
-    }
-
-    public void setGeneralJournalDate(Date generalJournalDate) {
-        this.generalJournalDate = generalJournalDate;
-    }
-
-    public GeneralJournal getSelectedGeneralJournal() {
-        if (this.generalJournalDate != null) {
-            this.selectedGeneralJournal = buildJournal(generalJournalDate);
+    /**
+     * METHODS.
+     *
+     */
+    public void save() {
+        if (journal.isPersistent()) {
+            journal.setLastUpdate(Dates.now());
+        } else {
+            journal.setAuthor(this.subject);
+            journal.setOwner(this.subject);
         }
-        return selectedGeneralJournal;
+        generalJournalService.save(journal.getId(), journal);
     }
 
-    public void setSelectedGeneralJournal(GeneralJournal selectedGeneralJournal) {
-        this.selectedGeneralJournal = selectedGeneralJournal;
-    }
-
-    public List<GeneralJournal> getSelectedGeneralJournals() {
-        return selectedGeneralJournals;
-    }
-
-    public void setSelectedGeneralJournals(List<GeneralJournal> selectedGeneralJournals) {
-        this.selectedGeneralJournals = selectedGeneralJournals;
-    }
-
-    public List<Record> getSelectedRecords() {
-        return selectedRecords;
-    }
-
-    public void setSelectedRecords(List<Record> selectedRecords) {
-        this.selectedRecords = selectedRecords;
-    }
-
-    public boolean isBusquedaAvanzada() {
-        return busquedaAvanzada;
-    }
-
-    public void setBusquedaAvanzada(boolean busquedaAvanzada) {
-        this.busquedaAvanzada = busquedaAvanzada;
-    }
-
+    /**
+     * METHODS UTIL.
+     *
+     */
     public void clear() {
-        filter();
+        filter(getStart(), getEnd());
     }
 
-    public void filter() {
-        if (lazyDataModel == null) {
-            lazyDataModel = new LazyGeneralJournalDataModel(journalService);
+    public void onDateSelect() {
+        if (getDaySelected() == null) {
+            clear();
+            return;
         }
-//        lazyDataModel.setOwner(this.subject);
+        if (getDaySelected() != null) {
+            filter(getDaySelected(), getDaySelected());
+            setDaySelected(null);
+        }
+    }
+
+    public void filter(Date _start, Date _end) {
+        if (lazyDataModel == null) {
+            lazyDataModel = new LazyGeneralJournalDataModel(generalJournalService);
+        }
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
-        lazyDataModel.setStart(Dates.minimumDate(getStart()));
-        lazyDataModel.setEnd(Dates.maximumDate(getEnd()));
+        lazyDataModel.setStart(Dates.minimumDate(_start));
+        lazyDataModel.setEnd(Dates.maximumDate(_end));
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
@@ -316,12 +209,30 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         }
     }
 
-    public RecordDetail getRecordDetailSelected() {
-        return recordDetailSelected;
+    private void getCalculateBalance() {
+        setSubtotalDebe(generalJournalService.findBigDecimal("RecordDetail.findTotalByGeneralJournalAndType", this.journalId, RecordDetail.RecordTDetailType.DEBE));
+        setSubtotalHaber(generalJournalService.findBigDecimal("RecordDetail.findTotalByGeneralJournalAndType", this.journalId, RecordDetail.RecordTDetailType.HABER));
     }
 
-    public void setRecordDetailSelected(RecordDetail recordDetailSelected) {
-        this.recordDetailSelected = recordDetailSelected;
+    public void validateNewJournal() throws IOException {
+        List<GeneralJournal> generalJournal = generalJournalService.findByNamedQueryWithLimit("GeneralJournal.findByCreatedOnAndOrganization", 1, Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()), this.organizationData.getOrganization());
+        if (generalJournal.isEmpty()) {
+            redirectTo("/pages/accounting/journal.jsf");
+        } else {
+            redirectTo("/pages/accounting/journal.jsf?journalId=" + generalJournal.get(0).getId());
+        }
+    }
+
+    public void validateNewReloadJournal() throws IOException {
+        if (this.journalId == null) {
+            setJournal(buildJournal(Dates.now()));
+        }
+    }
+
+    private GeneralJournal buildJournal(Date emissionDate) {
+        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
+        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
+        return generalJournalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
     }
 
     public void onRowSelect(SelectEvent event) {
@@ -336,29 +247,89 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         }
     }
 
-    public void onRowSelectAsRecord(SelectEvent event) {
-        //dummy
+    //Acciones sobre seleccionados
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        this.generalJournalActions = new ArrayList<>();
+
+        SelectItem item;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        this.actions.add(item);
+        this.generalJournalActions.add(item);
+
+        //Acciones de records     
+        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
+        this.actions.add(item);
+        item = new SelectItem("moveto", I18nUtil.getMessages("common.moveto"));
+        this.actions.add(item);
+
+        //Acciones de journals 
+        item = new SelectItem("generaljournal-borrar", I18nUtil.getMessages("common.delete"));
+        this.generalJournalActions.add(item);
     }
 
-    public void onRowSelectRecord(SelectEvent<RecordDetail> event) {
-        this.recordDetail = event.getObject();
-        addInfoMessage(I18nUtil.getMessages("action.sucessfully"), "Registro seleccionado: " + this.recordDetail.getAccount().getName());
-
-    }
-
-    public void onRowUnselectRecord(UnselectEvent<RecordDetail> event) {
-
-        this.setRecordDetail(recordDetailService.createInstance()); //Encerar formulario de edición
-    }
-
-    public void save() {
-        if (journal.isPersistent()) {
-            journal.setLastUpdate(Dates.now());
-        } else {
-            journal.setAuthor(this.subject);
-            journal.setOwner(this.subject);
+    public boolean isActionExecutable() {
+        if ("borrar".equalsIgnoreCase(this.selectedAction) && !getRecordsSelected().isEmpty()) {
+            return true;
+        } else if ("moveto".equalsIgnoreCase(this.selectedAction) && getJournalSelected() != null) {
+            return true;
+        } else if ("generaljournal-borrar".equalsIgnoreCase(this.selectedAction) && !getJournalsSelected().isEmpty()) {
+            return true;
         }
-        journalService.save(journal.getId(), journal);
+        return false;
+    }
+
+    public void execute() {
+        if (isActionExecutable()) {
+            if ("borrar".equalsIgnoreCase(this.selectedAction)) {
+                int recordNoDeleted = 0;
+                for (Record instance : getRecordsSelected()) {
+                    if (instance.getBussinesEntityType() == null) {
+                        instance.setDeleted(Boolean.TRUE);
+                        recordService.save(instance.getId(), instance); //Actualizar la entidad
+                    } else {
+                        recordNoDeleted += 1;
+                    }
+                }
+                if (recordNoDeleted > 0) {
+                    this.addWarningMessage(I18nUtil.getMessages("action.sucessfully").concat(" ").concat(I18nUtil.getMessages("action.sucessfully.detail")).concat(" ").concat(I18nUtil.getMessages("action.warning")).concat(" " + recordNoDeleted + " registros no fueron borrados! "), "Recuerde que estos se relacionan con VENTAS/COMPRAS/INGRESOS/EGRESOS y sólo son modificables/borrables desde sus funcionalidades específicas.");
+                } else {
+                    this.addDefaultSuccessMessage();
+                }
+                setJournal(generalJournalService.createInstance()); //Forzar carga de journal actual
+                setRecordsSelected(new ArrayList<>());
+                getJournal();
+                setOutcome("");
+            } else if ("moveto".equalsIgnoreCase(this.selectedAction) && getJournalSelected() != null) {
+                for (Record instance : getRecordsSelected()) {
+                    if (getJournalSelected() != null && getJournalSelected().getId() != null) {
+                        instance.setGeneralJournalId(getJournalSelected().getId());
+                        instance.setEmissionDate(getJournalSelected().getEmissionDate());
+                        recordService.save(instance.getId(), instance); //Actualizar la entidad
+                        getJournal();
+                    } else {
+                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date", " " + Dates.toDateString(Dates.now())));
+                    }
+                }
+                this.addDefaultSuccessMessage();
+                setRecordsSelected(new ArrayList<>());
+                //Recargar el journal actual
+                setJournal(generalJournalService.createInstance()); //Forzar carga de journal actual
+                getJournal();
+                setOutcome("");
+            } else if ("generaljournal-borrar".equalsIgnoreCase(this.selectedAction)) {
+                for (GeneralJournal instance : getJournalsSelected()) {
+                    instance.setDeleted(Boolean.TRUE);
+                    generalJournalService.save(instance.getId(), instance); //Actualizar la entidad
+                }
+                this.addDefaultSuccessMessage();
+                setJournalsSelected(new ArrayList<>());
+                //volver a filtrar la vista
+                setLazyDataModel(null);
+                clear();
+                setOutcome("");
+            }
+        }
     }
 
     public boolean mostrarFormularioRecord(Map<String, List<String>> params) {
@@ -399,187 +370,88 @@ public class GeneralJournalHome extends FedeController implements Serializable {
     public void loadSessionParameters() {
 
         if (existsSessionParameter("journalId")) {
-            this.setJournalId((Long) getSessionParameter("journalId"));
+            setJournalId((Long) getSessionParameter("journalId"));
             if (existsSessionParameter("recordId")) {
-                this.setRecordId((Long) getSessionParameter("recordId"));
+                setRecordId((Long) getSessionParameter("recordId"));
             }
-            this.getJournal(); //Carga el objeto persistente
-            this.getRecord(); //Carga el objeto persistente
+            getJournal(); //Carga el objeto persistente
+            getRecord(); //Carga el objeto persistente
         }
     }
 
-    public void messageEditableRecord() {
-        if (!isRecordOfReferen()) {
-            this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.record.not.editable.message", " " + this.record.getBussinesEntityType()));
+    public LazyGeneralJournalDataModel getLazyDataModel() {
+        return lazyDataModel;
+    }
+
+    public void setLazyDataModel(LazyGeneralJournalDataModel lazyDataModel) {
+        this.lazyDataModel = lazyDataModel;
+    }
+
+    public Date getGeneralJournalDate() {
+        return generalJournalDate;
+    }
+
+    public void setGeneralJournalDate(Date generalJournalDate) {
+        this.generalJournalDate = generalJournalDate;
+    }
+
+    public GeneralJournal getJournalSelected() {
+        if (this.generalJournalDate != null) {
+            this.journalSelected = buildJournal(generalJournalDate);
         }
+        return journalSelected;
     }
 
-    public void orderRecordDetails() {
-        Collections.sort(this.record.getRecordDetails(), (RecordDetail recordDetail1, RecordDetail other) -> recordDetail1.getRecordDetailType().compareTo(other.getRecordDetailType()));//Ordenar por tipo de entrada/salida de transacción
+    public void setJournalSelected(GeneralJournal journalSelected) {
+        this.journalSelected = journalSelected;
     }
 
-    /**
-     * Agrega un detalle al Record
-     */
-    public void recordDetailAdd() {
-        if (this.recordDetail.getAccount() != null && (BigDecimal.ZERO.compareTo(this.recordDetail.getAmount()) == -1) && this.recordDetail.getRecordDetailType() != null) {
-            this.recordDetail.setOwner(subject);
-            this.record.addRecordDetail(this.recordDetail);
-            //Preparar para una nueva entrada
-            this.recordDetail = recordDetailService.createInstance();
-        } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
-        }
+    public List<GeneralJournal> getJournalsSelected() {
+        return journalsSelected;
     }
 
-    /**
-     * Agrega un record al Journal
-     */
-    public void recordSave() {
-        this.record.setOwner(subject);
-        this.record.setGeneralJournalId(this.journalId);
-        BigDecimal sumDebe = new BigDecimal(0);
-        BigDecimal sumHaber = new BigDecimal(0);
-        for (int i = 0; i < this.record.getRecordDetails().size(); i++) {
-            if (this.record.getRecordDetails().get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
-                sumDebe = sumDebe.add(this.record.getRecordDetails().get(i).getAmount());
-            } else if (this.record.getRecordDetails().get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
-                sumHaber = sumHaber.add(this.record.getRecordDetails().get(i).getAmount());
-            }
-        }
-        if (sumDebe.compareTo(sumHaber) == 0) {
-            recordService.save(record.getId(), record);
-            closeFormularioRecord(journal.getId());
-        } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
-        }
+    public void setJournalsSelected(List<GeneralJournal> journalsSelected) {
+        this.journalsSelected = journalsSelected;
     }
 
-    private GeneralJournal buildJournal() {
-        return this.buildJournal(Dates.now());
-
+    public List<Record> getRecordsSelected() {
+        return recordsSelected;
     }
 
-    private GeneralJournal buildJournal(Date emissionDate) {
-        String generalJournalPrefix = settingHome.getValue("app.fede.accounting.generaljournal.prefix", "Libro diario");
-        String timestampPattern = settingHome.getValue("app.fede.accounting.generaljournal.timestamp.pattern", "E, dd MMM yyyy HH:mm:ss z");
-        return journalService.find(emissionDate, this.organizationData.getOrganization(), this.subject, generalJournalPrefix, timestampPattern);
-
+    public void setRecordsSelected(List<Record> recordsSelected) {
+        this.recordsSelected = recordsSelected;
     }
 
-    public void validateNewJournal() throws IOException {
-        List<GeneralJournal> generalJournal = journalService.findByNamedQueryWithLimit("GeneralJournal.findByCreatedOnAndOrganization", 1, Dates.minimumDate(Dates.now()), Dates.maximumDate(Dates.now()), this.organizationData.getOrganization());
-        if (generalJournal.isEmpty()) {
-            redirectTo("/pages/accounting/journal.jsf");
-        } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date", " " + Dates.toDateString(Dates.now())));
-        }
+    public RecordDetail getRecordDetailSelected() {
+        return recordDetailSelected;
     }
 
-    public void validateNewReloadJournal() throws IOException {
-        if (this.journalId == null) {
-            this.journal = buildJournal();
-        }
+    public void setRecordDetailSelected(RecordDetail recordDetailSelected) {
+        this.recordDetailSelected = recordDetailSelected;
     }
 
-    /**
-     * El registro actual no esta referenciado a una entidad
-     *
-     * @return
-     */
-    public boolean isRecordOfReferen() {
-        return this.record.getBussinesEntityId() == null;
+    public BigDecimal getSubtotalDebe() {
+        return subtotalDebe;
     }
 
-    public void onItemAccountSelect(SelectEvent<Account> event) {
-        Account account = event.getObject();
-        Optional<RecordDetail> find = this.record.getRecordDetails().stream().filter(x -> x.getAccount().equals(account)).findFirst();
-        if (find.isPresent()) {
-            this.setRecordDetail(find.get());
-        }
+    public void setSubtotalDebe(BigDecimal subtotalDebe) {
+        this.subtotalDebe = subtotalDebe;
     }
 
-    @Override
-    protected void initializeDateInterval() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public BigDecimal getSubtotalHaber() {
+        return subtotalHaber;
     }
 
-    @Override
-    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setSubtotalHaber(BigDecimal subtotalHaber) {
+        this.subtotalHaber = subtotalHaber;
     }
 
-    //Acciones sobre seleccionados
-    public void execute() {
-        if (this.isActionExecutable()) {
-            if ("borrar".equalsIgnoreCase(this.selectedAction)) {
-                for (Record instance : this.getSelectedRecords()) {
-                    instance.setDeleted(Boolean.TRUE);
-                    this.recordService.save(instance.getId(), instance); //Actualizar la entidad
-                }
-                setOutcome("");
-            } else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getSelectedGeneralJournal() != null) {
-                for (Record instance : this.getSelectedRecords()) {
-                    if (this.getSelectedGeneralJournal() != null && this.getSelectedGeneralJournal().getId() != null) {
-                        instance.setGeneralJournalId(this.getSelectedGeneralJournal().getId());
-                        this.recordService.save(instance.getId(), instance); //Actualizar la entidad
-                    } else {
-                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.journal.available.date", " " + Dates.toDateString(Dates.now())));
-                    }
-                }
-                //Recargar el journal actual
-                this.setJournal(null); //Forzar carga de journal actual
-                this.getJournal();
-                setOutcome("");
-            } else if ("generaljournal-borrar".equalsIgnoreCase(this.selectedAction)) {
-                for (GeneralJournal instance : this.getSelectedGeneralJournals()) {
-                    instance.setDeleted(Boolean.TRUE);
-                    this.journalService.save(instance.getId(), instance); //Actualizar la entidad
-                }
-
-                //volver a filtrar la vista
-                this.setLazyDataModel(null);
-                this.clear();
-                setOutcome("");
-
-            }
-        }
+    public Date getDaySelected() {
+        return daySelected;
     }
 
-    public boolean isActionExecutable() {
-        if ("borrar".equalsIgnoreCase(this.selectedAction) && !this.getSelectedRecords().isEmpty()) {
-            return true;
-        } else if ("moveto".equalsIgnoreCase(this.selectedAction) && this.getSelectedGeneralJournal() != null) {
-            return true;
-        } else if ("generaljournal-borrar".equalsIgnoreCase(this.selectedAction) && !this.getSelectedGeneralJournals().isEmpty()) {
-            return true;
-        }
-        return false;
-    }
-
-    private void initializeActions() {
-        this.actions = new ArrayList<>();
-        SelectItem item = null;
-        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-        actions.add(item);
-
-        item = new SelectItem("borrar", I18nUtil.getMessages("common.delete"));
-        actions.add(item);
-
-        item = new SelectItem("moveto", I18nUtil.getMessages("common.moveto"));
-        actions.add(item);
-
-//        item = new SelectItem("moveto", "Mover a categoría");
-//        actions.add(item);
-//        
-//        item = new SelectItem("changeto", "Cambiar tipo a");
-//        actions.add(item);
-        this.generalJournalActions = new ArrayList<>();
-        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-        this.generalJournalActions.add(item);
-
-        item = new SelectItem("generaljournal-borrar", I18nUtil.getMessages("common.delete"));
-        this.generalJournalActions.add(item);
+    public void setDaySelected(Date daySelected) {
+        this.daySelected = daySelected;
     }
 
     public List<SelectItem> getGeneralJournalActions() {
@@ -590,4 +462,30 @@ public class GeneralJournalHome extends FedeController implements Serializable {
         this.generalJournalActions = generalJournalActions;
     }
 
+    @Override
+    public void handleReturn(SelectEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        Record record = null;
+        //El registro casí listo para agregar al journal
+        return record;
+    }
+
+    @Override
+    public Group getDefaultGroup() {
+        return this.defaultGroup;
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Group> getGroups() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

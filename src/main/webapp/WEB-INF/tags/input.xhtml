@@ -41,11 +41,12 @@ limitations under the License.
     <c:set var="process" value="#{not empty process ? process : ''}" />   
     <c:set var="style" value="#{not empty style ? style : 'text-transform: none;'}" />   
     <c:set var="mindate" value="#{not empty mindate ? mindate : ''}" />   
-    <c:set var="maxdate" value="#{not empty maxdate ? maxdate : 'ui.now()'}" />   
+    <c:set var="maxdate" value="#{not empty maxdate ? maxdate : ui.now()}" />   
     <c:set var="cache" value="#{not empty name ?  settingHome.getValue(name, 'Ingrese un valor válido') : ''}" />
     <c:set var="maxlength" value="#{not empty maxlength ? maxlength : '256' }" />
     <c:set var="rows" value="#{not empty rows ? rows : 3 }" />
     <c:set var="onkeypress" value="#{not empty onkeypress ? onkeypress : true }" />
+    <c:set var="showOn" value="#{not empty showOn ? showOn : '' }" />
 
     <c:if test="#{rendered == 'true'}">
 
@@ -59,7 +60,7 @@ limitations under the License.
         <c:if test="#{mode == 'write'}">
             <c:if test="#{container != 'default'}">
 
-                <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field ui-g ui-g-12 ui-md-12">
+                <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field ui-g ui-g-12 ui-md-12 WidAuto AlignItemsCenter NoPadding">
                     <c:if test="#{placeholder == 'false' and rendered == 'true'}">
                         <!--<h:panelGroup id="panel-group-label-#{id}" rendered="#{rendered}" styleClass="ui-g ui-g-12 ui-md-12">-->
                         <p:outputLabel for="#{name}" value="#{label}" />
@@ -93,13 +94,13 @@ limitations under the License.
                                     <f:validator validatorId="#{validator}"/>
                                 </c:if>
                                 <c:if test="#{not empty listener and not empty update }">
-                                    <p:ajax listener="#{listener}" update="#{update}" partialSubmit="true" process="@this"/>
+                                    <p:ajax listener="#{listener}" update="#{update}" partialSubmit="#{true}" process="@this"/>
                                 </c:if>
                                 <c:if test="#{empty listener and not empty update }">
-                                    <p:ajax update="#{update}" partialSubmit="true"  process="@this"/>
+                                    <p:ajax update="#{update}" partialSubmit="#{true}"  process="@this"/>
                                 </c:if>
                                 <c:if test="#{empty listener and empty update }">
-                                    <p:ajax partialSubmit="true"  process="@this"/>
+                                    <p:ajax partialSubmit="#{true}"  process="@this"/>
                                 </c:if>
                             </p:inputNumber>
                         </c:when>
@@ -124,34 +125,41 @@ limitations under the License.
                                 <c:if test="#{not empty validator}">
                                     <f:validator validatorId="#{validator}"/>
                                 </c:if>
-                                <!--<p:ajax event="blur" update="#{render}" partialSubmit="true"/>-->
+                                <!--<p:ajax event="blur" update="#{render}" partialSubmit="#{true}"/>-->
                             </p:password>
                         </c:when>
                         <c:when test="#{type == 'java.util.Date' or type == 'calendar'}">
-                            <p:calendar value="#{value}" id="#{name}" navigator="true" label="#{label}" 
+                            <p:calendar value="#{value}" id="#{name}" navigator="#{true}" label="#{label}" 
                                         disabled="#{disabled}" 
                                         required="#{required}" 
                                         requiredMessage="#{label}: #{cache}"
                                         title="#{cache}"
                                         maxdate="#{maxdate}" mindate="#{mindate}"
-                                        pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}">
-                                <f:validator validatorId="#{validator}"/>        
+                                        pattern="#{settingHome.getValue('fede.date.pattern', 'dd-MM-yyyy')}"
+                                        class="#{class}"
+                                        showOn="#{showOn}">
+                                <!--<f:validator validatorId="#{validator}"/>-->        
                                 <c:if test="#{not empty update }">
-                                    <p:ajax event="dateSelect" update="#{update}" partialSubmit="true"/>
+                                    <p:ajax event="dateSelect" update="#{update}" partialSubmit="#{true}"/>
+                                </c:if>
+                                <c:if test="#{not empty listener and not empty update }">
+                                    <p:ajax event="dateSelect" listener="#{listener}" update="#{update}" partialSubmit="#{true}" process="@this"/>
                                 </c:if>
                             </p:calendar>  
                         </c:when>
                         <c:when test="#{type == 'java.util.Date' or type == 'calendar-time'}">
-                            <p:calendar value="#{value}" id="#{name}" navigator="true" label="#{label}" 
+                            <p:calendar value="#{value}" id="#{name}" navigator="#{true}" label="#{label}" 
                                         disabled="#{disabled}" 
                                         required="#{required}" 
                                         requiredMessage="#{label}: #{cache}"
                                         title="#{cache}"
                                         maxdate="#{maxdate}" mindate="#{mindate}"
-                                        pattern="#{settingHome.getValue('fede.date.hour.pattern', 'dd-MM-yyyy HH:mm:ss')}">
-                                <f:validator validatorId="#{validator}"/>        
+                                        pattern="#{settingHome.getValue('fede.date.hour.pattern', 'dd-MM-yyyy HH:mm:ss')}"
+                                        class="#{class}"
+                                        showOn="button">
+                                <!--<f:validator validatorId="#{validator}"/>-->        
                                 <c:if test="#{not empty update }">
-                                    <p:ajax event="dateSelect" update="#{update}" partialSubmit="true"/>
+                                    <p:ajax event="dateSelect" update="#{update}" partialSubmit="#{true}"/>
                                 </c:if>
                             </p:calendar>  
                         </c:when>
@@ -159,13 +167,13 @@ limitations under the License.
                             <br />
                             <p:selectBooleanCheckbox value="#{value}" id="#{name}" required="#{required}" label="#{label}">
                                 <c:if test="#{not empty listener and not empty update }">
-                                    <p:ajax listener="#{listener}" update="#{update}" partialSubmit="true" process="@this"/>
+                                    <p:ajax listener="#{listener}" update="#{update}" partialSubmit="#{true}" process="@this"/>
                                 </c:if>
                                 <c:if test="#{empty listener and not empty update }">
-                                    <p:ajax update="#{update}" partialSubmit="true"  process="@this"/>
+                                    <p:ajax update="#{update}" partialSubmit="#{true}"  process="@this"/>
                                 </c:if>
                                 <c:if test="#{empty listener and empty update }">
-                                    <p:ajax partialSubmit="true"  process="@this"/>
+                                    <p:ajax partialSubmit="#{true}"  process="@this"/>
                                 </c:if>
                             </p:selectBooleanCheckbox>
                             <span>#{inlinehelp}</span>
@@ -174,7 +182,7 @@ limitations under the License.
                             <p:inputTextarea value="#{value}" id="#{name}" title="#{cache}" maxlength="#{maxlength}" disabled="#{disabled}"
                                              required="#{required}" label="#{label}" autoResize="false" class="#{class}" rows="#{rows}"
                                              style="#{style}">
-                                <!--<p:ajax update="#{render}" partialSubmit="true"/>-->
+                                <!--<p:ajax update="#{render}" partialSubmit="#{true}"/>-->
                                 <c:if test="#{not empty event and not empty process}">
                                     <p:ajax event="#{event}" process="#{process}"/>
                                 </c:if>
@@ -195,7 +203,7 @@ limitations under the License.
                                  <!--<f:selectItem itemLabel="#{etiquetas['common.seleccioneuno']}" noSelectionOption="true"></f:selectItem>-->
                                 <f:selectItems value="#{values}" var="v" itemLabel="#{itemLabel}" itemValue="#{itemValue}"  itemDescription="#{v.descripcion}"/>  
                                 <c:if test="#{listener != 'none'}">
-                                    <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                                    <p:ajax event="change" listener="#{listener}" update="#{render}" partialSubmit="#{true}"/>
                                 </c:if>
                             </p:selectOneMenu>  
                         </c:when>
@@ -222,14 +230,14 @@ limitations under the License.
                                          required="#{required}" disabled="#{disabled}"
                                          class="#{class}" type="#{type}">
                                 <f:validator validatorId="#{validator}"/>
-                                <p:ajax event="blur" update="#{render}" partialSubmit="true"/>
+                                <p:ajax event="blur" update="#{render}" partialSubmit="#{true}"/>
                             </p:inputText -->
                             <!--<p:inputNumber id="#{name}" value="#{value}" required="#{required}" rendered="#{rendered}" disabled="#{disabled}"
                                            styleClass="#{class}" requiredMessage="#{requiredMessage}"
                                            title="#{title}"
                                            decimalSeparator="." thousandSeparator="," decimalPlaces="#{decimalPlaces}" style="border: none !important; padding:0px;">
                                 <c:if test="#{listener != 'none'}">
-                                    <p:ajax listener="#{listener}" update="#{render}" partialSubmit="true"/>
+                                    <p:ajax listener="#{listener}" update="#{render}" partialSubmit="#{true}"/>
                                 </c:if>
                                 <c:if test="#{validator != 'none'}">
                                     <f:validator validatorId="#{validator}"/>
@@ -252,33 +260,38 @@ limitations under the License.
             </c:if>
             <c:if test="#{type == 'calendar'}">
                 <script>
-                    PrimeFaces.locales["es"] = {
-                        closeText: "Cerrar",
-                        prevText: "Anterior",
-                        nextText: "Siguiente",
-                        monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-                        monthNamesShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-                        dayNames: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
-                        dayNamesShort: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
-                        dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
-                        weekHeader: "Semana",
-                        firstDay: 0,
+                    PrimeFaces.locales['es'] = {
+                        closeText: 'Cerrar',
+                        prevText: 'Anterior',
+                        nextText: 'Siguiente',
+                        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                        monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                        dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                        dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+                        weekHeader: 'Semana',
+                        firstDay: 1,
                         isRTL: false,
                         showMonthAfterYear: false,
-                        yearSuffix: "",
-                        timeOnlyTitle: "Solo hora",
-                        timeText: "Tiempo",
-                        hourText: "Hora",
-                        minuteText: "Minuto",
-                        secondText: "Segundo",
-                        currentText: "Fecha actual",
+                        yearSuffix: '',
+                        timeOnlyTitle: 'Sólo hora',
+                        timeText: 'Tiempo',
+                        hourText: 'Hora',
+                        minuteText: 'Minuto',
+                        secondText: 'Segundo',
+                        millisecondText: 'Milisegundo',
+                        currentText: 'Fecha actual',
                         ampm: false,
-                        month: "Mes",
-                        week: "Semana",
-                        day: "Día",
-                        allDayText: "Todo el día"
+                        month: 'Mes',
+                        week: 'Semana',
+                        day: 'Día',
+                        allDayText: 'Todo el día',
+                        today: 'Hoy',
+                        clear: 'Claro'
                     };
                 </script>
+                <style type="text/css">
+                </style>
             </c:if>
         </c:if>
     </c:if>

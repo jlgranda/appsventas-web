@@ -50,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:ajax event="dateSelect" listener="#{groupInventoryHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>-->
                         <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;"
-                                         styleClass="raised-btn" actionListener="#{groupInventoryHome.clear()}" ajax="false">
+                                         styleClass="raised-btn" actionListener="#{groupInventoryHome.clear()}" ajax="#{false}">
                         </p:commandButton>
                         <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/inventory/group.jsf?groupType=#{groupInventoryHome.groupType}"
                                   disabled="#{empty organizationData.organization}"/>
@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.description']}" sortBy="#{group.descripcion}">
                                 <h:outputText value="#{group.description}"/>                            
                             </p:column>
-                            <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{group.createdOn}">
+                            <p:column id="fechaEmision" headerText="#{i18n['common.date.created']}" sortBy="#{group.createdOn}" class="Wid10">
                                 <h:outputText value="#{group.createdOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

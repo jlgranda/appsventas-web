@@ -54,12 +54,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     inlinehelp="#{messages['common.lastname.inlinehelp']}" 
                                                     execute="@this save" render="lstn"/><!--mode="read"-->
                                     <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio']}" 
-                                                    value="#{securityGroupUserHome.subject.bio}" required="false" inlinehelp="#{messages['common.bio.inlinehelp']}"
+                                                    value="#{securityGroupUserHome.subject.bio}" required="#{false}" inlinehelp="#{messages['common.bio.inlinehelp']}"
                                                     execute="@this save" render="bio"/><!--mode="read"-->
                                 </div>
                                 <div class="Container50 Responsive100">
                                     <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                                    value="#{securityGroupUserHome.subject.description}" required="false" 
+                                                    value="#{securityGroupUserHome.subject.description}" required="#{false}" 
                                                     inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"
                                                     /><!--mode="read"-->
 

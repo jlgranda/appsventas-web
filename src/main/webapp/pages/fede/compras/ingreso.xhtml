@@ -117,13 +117,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                    value="#{facturaElectronicaIngresoHome.days}" min="1" 
                                                                    disabled="#{facturaElectronicaIngresoHome.facturaElectronica.emissionType!=EmissionType.PURCHASE_CREDIT}"
                                                                    rendered="#{empty facturaElectronicaIngresoHome.facturaElectronica.id}"
-                                                                   immediate="false">
+                                                                   immediate="#{false}">
                                                             <p:ajax listener="#{facturaElectronicaIngresoHome.calculateDateExpired()}" update="fechaVencimiento" partialSubmit="#{true}"></p:ajax>
                                                         </p:spinner>
                                                         <p:calendar id="fechaVencimiento" 
                                                                     value="#{facturaElectronicaIngresoHome.facturaElectronica.fechaVencimiento}" 
                                                                     disabled="#{true}"
-                                                                    immediate="false" 
+                                                                    immediate="#{false}" 
                                                                     required="#{true}">
                                                         </p:calendar>
                                                     </div>
@@ -244,7 +244,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <jlgranda:input id="rcdd-amount" name="rcdd-amount" type="decimal" label="#{i18n['common.money.letter']}"
                                     render="rcdd-amount" value="#{facturaElectronicaIngresoHome.recordDetail.amount}" 
                                     required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
-                                    placeholder="false"
+                                    placeholder="#{false}"
                                     decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                     thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                     decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
@@ -302,7 +302,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                              immediate="#{true}"
                                                              required="#{true}" style="width: 100%"> 
                                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                                                <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                                <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <p:ajax update="@this"/>
                                             </p:selectOneMenu>
                                         </h:panelGroup>
@@ -381,7 +381,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                          sortMode="single"
                                          editable="#{false}">
-                                <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid20">
+                                <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{payment.createdOn}" class="Wid10">
                                     <h:outputText value="#{payment.createdOn}">
                                         <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>

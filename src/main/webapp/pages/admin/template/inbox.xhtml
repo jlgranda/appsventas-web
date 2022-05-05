@@ -45,7 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:inputText value="#{templateHome.keyword}" class="input-sm">
                         </p:inputText>
 
-                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{templateHome.clear()}" ajax="false">
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{templateHome.clear()}" ajax="#{false}">
                         </p:commandButton>
 
                         <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/admin/template/template.jsf"/>
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:column headerText="#{i18n['app.mail.template.title']}" sortBy="#{_template.title}">
                                 <h:outputText value="#{_template.title}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_template.createdOn}">
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_template.createdOn}" class="Wid10">
                                 <h:outputText value="#{_template.createdOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

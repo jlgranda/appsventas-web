@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     value="#{inventoryRawHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
 
                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
-                                    value="#{inventoryRawHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
+                                    value="#{inventoryRawHome.product.description}" required="#{false}" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
 
                     <div class="ui-g-12 ui-lg-12 ui-md-12">
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
                             <label>#{i18n['app.fede.inventory.product.price.b']}:&nbsp;</label>
-                            <p:inputNumber id="priceB" value="#{inventoryRawHome.product.priceB}" required="false" 
+                            <p:inputNumber id="priceB" value="#{inventoryRawHome.product.priceB}" required="#{false}" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="ui-g-3 ui-lg-3 ui-md-3">
                             <label>#{i18n['app.fede.inventory.product.price.c']}:&nbsp;</label>
-                            <p:inputNumber id="priceC" value="#{inventoryRawHome.product.priceC}" required="false" 
+                            <p:inputNumber id="priceC" value="#{inventoryRawHome.product.priceC}" required="#{false}" 
                                            inputStyle="text-align: right" symbol="$"
                                            decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                            thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
@@ -134,7 +134,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="EmptyBox10"></div>
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true"
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}"
                                          actionListener="#{inventoryRawHome.save()}" action="#{inventoryRawHome.getOutcome()}"
                                          disabled="#{false}"
                                          style="width: auto !important;"
@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <f:facet name="right">
 
-                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                        <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                          actionListener="#{inventoryRawHome.closeDialog(null)}" 
                                          action="raws"
                                          icon="pi pi-undo" styleClass="GrayButton" type="submit"

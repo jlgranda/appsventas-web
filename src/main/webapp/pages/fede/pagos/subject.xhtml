@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <h1 class="BigTopic">#{i18n['app.fede.talentohumano.employee']} </h1>
                 <div class="ui-g ui-fluid">
                     <div class="ui-g ui-lg-12">
-                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="true"
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="#{true}"
                                         value="#{proveedorHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
                                         required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
                         <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstname']}" 
@@ -55,17 +55,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
                         <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
                                         value="#{proveedorHome.subjectAdminHome.subjectEdit.mobileNumber}"
-                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                         execute="@this save" render="phone"/>
                         <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                         value="#{proveedorHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
-                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="false" 
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
                                         execute="@this save" render="email"/>
                         <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.description}" required="false" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.description}" required="#{false}" 
                                         inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
                         <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio']}" 
-                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.bio}" required="false" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.bio}" required="#{false}" inlinehelp="#{messages['bio.inlinehelp']}" 
                                         execute="@this save" render="bio"/>
                         <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
                             <p:outputLabel for="contactable" value="¿Quiere participar de mejores promociones y descuentos?:" />
@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
                         <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                         ajax="false" 
+                                         ajax="#{false}" 
                                          actionListener="#{proveedorHome.saveProveedor()}" 
                                          action="#{proveedorHome.getOutcome()}"
                                          style="width: auto !important;"
@@ -85,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </f:facet>
                     <f:facet name="right">
 
-                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                        <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                          actionListener="#{proveedorHome.closeDialog(null)}" 
                                          action="home"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"

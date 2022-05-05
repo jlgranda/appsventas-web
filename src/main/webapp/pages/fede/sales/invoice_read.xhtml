@@ -55,28 +55,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
                         <jlgranda:input id="comanda_number_new" name="comanda_number_new" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
                                         execute="@this save-button" render="comanda_number_new" value="#{invoiceHome.invoice.code}" 
-                                        validator="comandaValidator" placeholder="false"
+                                        validator="comandaValidator" placeholder="#{false}"
                                         required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
                                         decimalPlaces="0" container="none" rendered="#{not invoiceHome.invoice.persistent}" disabled="#{true}"/>
                         <jlgranda:input id="comanda_number_edit" name="comanda_number_edit" type="number" label="#{i18n['app.fede.sales.invoice.comanda.number']}" 
                                         execute="@this save-button" render="comanda_number_edit" value="#{invoiceHome.invoice.code}" 
                                         required="true" requiredMessage="#{i18n['app.fede.sales.invoice.comanda.number.required']}"
-                                        placeholder="false"
+                                        placeholder="#{false}"
                                         decimalPlaces="0" container="none" rendered="#{invoiceHome.invoice.persistent}" disabled="#{invoiceHome.invoice.persistent}"/>
                     </div>
                     <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
                         <jlgranda:input id="board_number" name="board_number" type="number" label="#{i18n['app.fede.sales.invoice.board.number']}" 
                                         execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.boardNumber}" 
                                         required="true" requiredMessage="#{i18n['app.fede.sales.invoice.board.number.required']}"
-                                        placeholder="false"
-                                        decimalPlaces="0" container="none" rendered="true" disabled="#{true}"/>
+                                        placeholder="#{false}"
+                                        decimalPlaces="0" container="none" rendered="#{true}" disabled="#{true}"/>
                     </div>
                     <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
                         <jlgranda:input id="pax" name="pax" type="number" label="#{i18n['app.fede.sales.invoice.pax']}" 
                                         execute="@this save-button" render="board_number" value="#{invoiceHome.invoice.pax}" 
                                         required="true" requiredMessage="#{i18n['app.fede.sales.invoice.pax.required']}"
-                                        placeholder="false"
-                                        decimalPlaces="0" container="none" rendered="true" disabled="#{true}"/>
+                                        placeholder="#{false}"
+                                        decimalPlaces="0" container="none" rendered="#{true}" disabled="#{true}"/>
                     </div>
                 </div>
             </div>
@@ -85,56 +85,56 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 <div class="ui-fluid">
                     <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
                         <ui:repeat value="#{inventoryHome.findTop()}" var="product">  
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch(product)}" disabled="#{true}"
                                              icon="#{product.icon}" styleClass="success-btn" title="#{product.name}"
                                              style="width:36px; height: 36px;">
                             </p:commandButton>
                         </ui:repeat>
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('80,101')}" disabled="#{true}"
                                          icon="flaticon-empanada-cafe" styleClass="warning-btn" title="#{i18n['app.phrase.order.emp.coff']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('80,87')}" disabled="#{true}"
                                          icon="flaticon-empanada-chocolate" styleClass="raised-btn" title="#{i18n['app.phrase.order.emp.choco']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('80,78')}" disabled="#{true}"
                                          icon="flaticon-capuchino" styleClass="warning-btn" title="#{i18n['app.phrase.order.emp.capp']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
 
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('370,101')}" disabled="#{true}"
                                          icon="flaticon-pizza-cafe" styleClass="help-btn raised-btn" title="#{i18n['app.phrase.order.empz.coff']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('370,87')}" disabled="#{true}"
                                          icon="flaticon-pizza-chocolate" styleClass="help-btn" title="#{i18n['app.phrase.order.empz.choco']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('370,78')}" disabled="#{true}"
                                          icon="flaticon-capuchino" styleClass="help-btn" title="#{i18n['app.phrase.order.empz.capp']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
 
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('101,6660')}" disabled="#{true}"
                                          icon="flaticon-tamal" styleClass="warning-btn" title="#{i18n['app.phrase.order.tam.coff']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('101,6846')}" disabled="#{true}"
                                          icon="flaticon-humitas" styleClass="warning-btn" title="#{i18n['app.phrase.order.hum.coff']}"
                                          style="width:36px; height: 36px;">
                         </p:commandButton>
 
-                        <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                        <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                          actionListener="#{invoiceHome.touch('100494,100558')}" disabled="#{true}"
                                          icon="flaticon-almuerzo" styleClass="help-btn" title="#{i18n['app.phrase.order.lunch.avo']}"
                                          style="width:36px; height: 36px;">
@@ -158,10 +158,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
                             </p:column>
                             <p:ajax event="itemSelect" update="@form:save-button @form:detailPanel @form:AutoCompletePanel  @form:payment-panel" 
-                                    listener="#{invoiceHome.addCandidateDetail()}" partialSubmit="true"></p:ajax>
+                                    listener="#{invoiceHome.addCandidateDetail()}" partialSubmit="#{true}"></p:ajax>
                         </p:autoComplete>
                         <ui:repeat value="#{invoiceHome.recents.toArray()}" var="product"> 
-                            <p:commandButton ajax="true" update="@form @form:detailPanel @form:payment-panel" immediate="true"
+                            <p:commandButton ajax="#{true}" update="@form @form:detailPanel @form:payment-panel" immediate="true"
                                              actionListener="#{invoiceHome.touch(product)}" disabled="#{true}"
                                              icon="#{product.icon}" styleClass="danger-btn" title="#{product.name}"
                                              style="width:36px; height: 36px;">
@@ -224,7 +224,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                    <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, collect-button" partialSubmit="true"></p:ajax>
+                                    <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, collect-button" partialSubmit="#{true}"></p:ajax>
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
@@ -234,17 +234,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                    <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, payment-total" partialSubmit="true"/>
+                                    <p:ajax listener="#{invoiceHome.calculeChange()}" update="number_amount, number_change, payment-total" partialSubmit="#{true}"/>
                                 </p:inputNumber>
                             </div>
                             <div class="ui-g-3 ui-lg-3 ui-md-6 ui-sm-12">
                                 <p:outputLabel value="#{i18n['app.fede.payment.change']}" for="@next"/>
-                                <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="false" disabled="#{true}"
+                                <p:inputNumber id="number_change" value="#{invoiceHome.payment.change}" required="#{false}" disabled="#{true}"
                                                styleClass=""
                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
-                                    <p:ajax partialSubmit="true"/>
+                                    <p:ajax partialSubmit="#{true}"/>
                                 </p:inputNumber>
                             </div>
                             <h:panelGroup id="transferencia" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" style="padding-top: 0rem">
@@ -256,7 +256,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      disabled="#{true}"
                                                      immediate="true"
                                                      required="true" style="width: 100%"> 
-                                        <f:selectItems value="#{ui.getAccountsAsSelectItem(recordHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                        <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this"/>
                                     </p:selectOneMenu>
                                 </h:panelGroup>
@@ -265,7 +265,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:outputLabel value="#{i18n['common.observation']}" for="@next"/>
                                 <jlgranda:input id="description" name="description" type="textarea" style="width: 100%"
                                                 execute="none" render="description" value="#{invoiceHome.invoice.description}" 
-                                                required="false" requiredMessage="#{i18n['common.observation']}"
+                                                required="#{false}" requiredMessage="#{i18n['common.observation']}"
                                                 container="none" disabled="#{true}"/>
                             </div>
                         </div>
@@ -303,7 +303,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:column>
                                     <h:outputText value="#{ui.renderer('', entidad)}"/>
                                 </p:column>
-                                <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
+                                <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}"></p:ajax>
                             </p:autoComplete>
                             <p:selectBooleanCheckbox value="#{invoiceHome.useDefaultCustomer}" title="#{i18n['common.consumer.end']}"
                                                      disabled="#{true}"> 
@@ -329,7 +329,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </div>
                         <jlgranda:input id="alias" name="alias" type="textarea" placeholder="#{i18n['common.alias']}" 
                                         execute="none" render="description" value="#{invoiceHome.invoice.printAliasSummary}" 
-                                        required="false" requiredMessage="#{i18n['common.alias']}"
+                                        required="#{false}" requiredMessage="#{i18n['common.alias']}"
                                         container="none" disabled="#{true}"/>
                     </div>
                 </div>
@@ -342,7 +342,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          icon="pi pi-save" styleClass="danger-btn"
                                          actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect()}" 
                                          disabled="#{true}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"
@@ -368,26 +368,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" 
                                          disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <p:commandButton id="overdue-button"
                                          value="#{i18n['common.overdue']}"
                                          icon="pi pi-credit-card" styleClass="help-btn"
                                          actionListener="#{invoiceHome.overdue()}" action="#{invoiceHome.redirect}"
                                          disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <p:commandButton id="courtesy-button"
                                          value="#{i18n['common.courtesy']}"
                                          icon="pi pi-star-fill" styleClass="success-btn"
                                          actionListener="#{invoiceHome.courtesy()}" action="#{invoiceHome.redirect}"
                                          disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" type="submit"/>
+                                         ajax="#{true}" type="submit"/>
                         <p:commandButton  value="#{i18n['common.save']}" 
                                           icon="pi pi-save" styleClass="primary-button"
                                           actionListener="#{invoiceHome.save()}" action="#{invoiceHome.redirect}"
                                           disabled="#{true}" 
-                                          ajax="true" type="submit"/>
+                                          ajax="#{true}" type="submit"/>
                         <i class="pi pi-bars p-px-2 MarRight10"/>
                         <p:commandButton id="print-button" 
                                          value="#{i18n['common.print']}" 
@@ -395,7 +395,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                          actionListener="#{invoiceHome.print()}" 
                                          disabled="#{true}" 
                                          rendered="#{invoiceHome.invoice.isPersistent()}" 
-                                         ajax="true" process="@this" oncomplete="PF('reportViewer').show();"/>
+                                         ajax="#{true}" process="@this" oncomplete="PF('reportViewer').show();"/>
                     </p:toolbarGroup>
                     <p:toolbarGroup align="rigth"  style="display: inline-flex;">
                         <p:commandButton icon="pi pi-home" styleClass="primary-button"

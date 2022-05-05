@@ -62,7 +62,7 @@
 <!--                                                        <p:rating readonly="true" value="#{organization.rating}"/>-->
                                                     </div>
                                                     <div class="product-list-action">
-                                                        <p:commandButton type="submit" ajax="false" process="@this"
+                                                        <p:commandButton type="submit" ajax="#{false}" process="@this"
                                                                          value="#{i18n['common.activate']}"
                                                                          actionListener="#{organizationData.activateOrganizacion(organization)}"
                                                                          icon="pi pi-check"
@@ -77,7 +77,7 @@
                                                          required="true" immediate="true"
                                                          onchange="submit()"> 
                                             <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
-                                            <p:ajax event="change" listener="#{organizationData.organizationValueChange}" partialSubmit="true"/>
+                                            <p:ajax event="change" listener="#{organizationData.organizationValueChange}" partialSubmit="#{true}"/>
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
                                             <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
                                         </p:selectOneMenu>-->

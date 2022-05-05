@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -47,6 +48,7 @@ import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
 import org.jpapi.model.TaxType;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.omnifaces.el.functions.Strings;
 import org.primefaces.model.DefaultStreamedContent;
@@ -286,7 +288,7 @@ public class UI {
 //            items.add(item);
             item = new SelectItem(KardexDetail.OperationType.PRODUCCION_BAJA_MATERIA_PRIMA, "BAJA DE MATERIA PRIMA");
             items.add(item);
-        } 
+        }
 
         return items;
     }
@@ -605,6 +607,10 @@ public class UI {
     public static final Object getPropertyValueViaReflection(Object o, String field)
             throws ReflectiveOperationException, IllegalArgumentException, IntrospectionException {
         return new PropertyDescriptor(field, o.getClass()).getReadMethod().invoke(o);
+    }
+
+    public static Date now() {
+        return Dates.now();
     }
 
 }

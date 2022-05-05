@@ -277,10 +277,12 @@ public class SettingHome extends FedeController implements Serializable {
         dest.setOverwritable(false);
         dest.setUuid(java.util.UUID.randomUUID().toString());
         dest.setActive(Boolean.TRUE);
-        dest.setName(src.getName());
-        dest.setValue(src.getValue());
-        dest.setLabel(src.getLabel());
-        dest.setDescription(src.getDescription());
+        if (src != null) {
+            dest.setName(src.getName() != null ? src.getName() : "NO DEFINIDO");
+            dest.setValue(src.getValue() != null ? src.getValue() : "NO DEFINIDO");
+            dest.setLabel(src.getLabel() != null ? src.getLabel() : "NO DEFINIDO");
+            dest.setDescription(src.getDescription() != null ? src.getDescription() : "NO DEFINIDO");
+        }
         return dest;
     }
 
