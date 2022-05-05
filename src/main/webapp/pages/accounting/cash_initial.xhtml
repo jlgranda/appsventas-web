@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <span class="icon-label">#{i18n['common.last']} #{i18n['app.fede.accounting.close.cash']}</span>
                             <span>
                                <h:outputText
-                                   value="#{cashBoxGeneralHome.cashCurrent}">
+                                   value="#{cashBoxGeneralHome.cashBoxGeneral.cashFinally}">
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>   
                             </span>
@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
                             <div class="knob-container">
-                                <div class="knob">
+                                <div class="knob" style="width: max-content; height: -webkit-fill-available;">
                                     <h:outputText
                                         value="#{cashBoxGeneralHome.cashCurrent}">
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
