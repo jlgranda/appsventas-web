@@ -36,42 +36,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="content">
             <div class="layout-dashboard">
-            <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel header="#{i18n['app.fede.accounting.close.cash']}" styleClass="statistics ui-g">
-                        <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
-                            <i class="fa fa-usd"></i>
-                            <span class="icon-label">#{i18n['common.last']} #{i18n['app.fede.accounting.close.cash']}</span>
-                            <span>
-                               <h:outputText
-                                   value="#{cashBoxGeneralHome.cashBoxGeneral.cashFinally}">
+                <div class="ui-g">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                        <p:panel header="#{i18n['app.fede.accounting.close.cash']}" styleClass="statistics ui-g">
+                            <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
+                                <i class="fa fa-usd"></i>
+                                <span class="icon-label">#{i18n['common.last']} #{i18n['app.fede.accounting.close.cash']}</span>
+                                <span class="icon-label" rendered="#{not empty cashBoxGeneralHome.cashBoxPartialPrevious}">
+                                    <strong><h:outputText value="#{cashBoxGeneralHome.cashBoxPartialPrevious.cashBoxGeneral.emissionDate}">
+                                            <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
+                                        </h:outputText></strong>
+                                </span>
+                                <span class="icon-label" rendered="#{empty cashBoxGeneralHome.cashBoxPartialPrevious}">
+                                    <strong>#{'[Aún no se ha registrado cierres de caja]'}</strong>
+                                </span>
+                                <span>
+                                    <h:outputText rendered="#{not empty cashBoxGeneralHome.cashBoxPartialPrevious}"
+                                                  value="#{cashBoxGeneralHome.cashBoxPartialPrevious.cashFinally}">
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>   
-                            </span>
-                            <div class="statsbar">
-                                <div class="statsbar-value" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
-                            <div class="knob-container">
-                                <div class="knob" style="width: max-content; height: -webkit-fill-available;">
-                                    <h:outputText
-                                        value="#{cashBoxGeneralHome.cashCurrent}">
+                                    <h:outputText rendered="#{empty cashBoxGeneralHome.cashBoxPartialPrevious}"
+                                                  value="#{0.00}">
                                         <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>   
+                                </span>
+                                <div class="statsbar">
+                                    <div class="statsbar-value" style="width: 100%"></div>
                                 </div>
                             </div>
-                            <div class="details">
-                                <p:linkButton outcome="cash-breakdown" rendered="#{request.isUserInRole('CHECKER')}"
-                                              value="#{i18n['common.register']} #{i18n['app.fede.accounting.ajust.breakdown']}"
-                                              icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase">
-                                </p:linkButton>
+                            <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
+                                <div class="knob-container">
+                                    <div class="knob" style="width: max-content; height: -webkit-fill-available;">
+                                        <h:outputText
+                                            value="#{cashBoxGeneralHome.cashCurrent}">
+                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                        </h:outputText>   
+                                    </div>
+                                </div>
+                                <div class="details">
+                                    <p:linkButton outcome="cash-breakdown" rendered="#{request.isUserInRole('CHECKER')}"
+                                                  value="#{i18n['common.register']} #{i18n['app.fede.accounting.ajust.breakdown']}"
+                                                  icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase">
+                                    </p:linkButton>
+                                </div>
                             </div>
-                        </div>
-                    </p:panel>
+                        </p:panel>
+                    </div>
                 </div>
             </div>
-        </div>
         </ui:define>
         <ui:define name="style">
         </ui:define>
