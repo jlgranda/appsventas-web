@@ -2640,6 +2640,14 @@ input[type="text"], input[type="password"], textarea{
     color: red;
     font-weight: 700;
 }
+.Danger {
+    color: #e91224;
+    font-weight: 700;
+}
+.Success {
+    color: #34a835;
+    font-weight: 700;
+}
 .Info {
     color: #007ad9;
     font-weight: 700;

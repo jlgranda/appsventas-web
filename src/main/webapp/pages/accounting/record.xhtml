@@ -123,7 +123,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                  icon="pi pi-check-square" styleClass="warning-btn rounded-btn TexUppercase"
                                                  value="#{i18n['common.add']}"
                                                  actionListener="#{recordHome.recordDetailAdd}" 
-                                                 ajax="#{false}" immediate="#{true}"
+                                                 ajax="#{true}" immediate="#{true}"
                                                  disabled="#{empty recordHome.emissionDate or empty recordHome.recordDetail.account or empty recordHome.recordDetail.recordDetailType or recordHome.recordDetail.amount le 0}"
                                                  update="@form"/>
                             </div>
