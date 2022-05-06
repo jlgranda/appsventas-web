@@ -1563,7 +1563,8 @@ public class InvoiceHome extends FedeController implements Serializable {
                 && this.invoice.getOwner() != null
                 && !"consumidorfinal@fede.com".equalsIgnoreCase(this.invoice.getOwner().getEmail())
                 && !this.invoice.getOwner().getEmail().contains("@emporiolojano.com")
-                && !this.invoice.getOwner().getEmail().contains("@fede")) {
+                && !this.invoice.getOwner().getEmail().contains("@fede")
+                && Boolean.valueOf(settingHome.getValue("app.mail.template.invoice.thanks.enabled", "false"))) {
             //Agradecimiento compra
             String url = this.organizationData.getOrganization().getUrl();
             String url_title = this.organizationData.getOrganization().getName();
