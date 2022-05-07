@@ -61,7 +61,7 @@ limitations under the License.
             <c:if test="#{container != 'default'}">
 
                 <!--<h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field ui-g ui-g-12 ui-md-12 WidAuto AlignItemsCenter NoPadding">-->
-                <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field ui-g ui-g-12 ui-md-12">
+                <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field">
                     <c:if test="#{placeholder == 'false' and rendered == 'true'}">
                         <!--<h:panelGroup id="panel-group-label-#{id}" rendered="#{rendered}" styleClass="ui-g ui-g-12 ui-md-12">-->
                         <p:outputLabel for="#{name}" value="#{label}" />

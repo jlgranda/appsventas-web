@@ -54,6 +54,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:staticMessage rendered="#{empty generalLedgerHome.accountSelected}"
                                          severity="info" summary="#{i18n['action.warning']}" detail="#{i18n['app.fede.accounting.ledger.report']}" style="width: 100%"/>
                     </p:panel>
+
+                    <!-- panel izquierda -->
                     <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 NoPadding ui-fluid">
                         <p:tree id="tree-generalLedger" value="#{generalLedgerHome.treeDataModel}" var="node"
                                 selectionMode="single"
@@ -72,6 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:ajax event="select" listener="#{generalLedgerHome.onNodeSelected}" update="form:panel-msg form:panel-head form:panel-summary"/>
                         </p:tree>
                     </div>
+
+                    <!-- panel derecho -->
                     <p:panel id="panel-summary"
                              class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 NoPadding">
                         <p:toolbar id="topToolBarHead" class="NoBorder NoPadding FlexColumn">
@@ -98,14 +102,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 value="#{generalLedgerHome.start}" label="#{i18n['common.from']}:&nbsp;" 
                                                 required="#{false}" 
                                                 placeholder="#{false}"
-                                                update="@form">
+                                                disabled="#{empty generalLedgerHome.accountSelected}"
+                                                update="form:panel-summary">
                                 </jlgranda:input> 
                                 <jlgranda:input id="date-end" name="date-end" render="date-end" container="none"
                                                 type="calendar" showOn="button"
                                                 value="#{generalLedgerHome.end}" label="#{i18n['common.to']}:&nbsp;" 
                                                 required="#{false}" 
                                                 placeholder="#{false}"
-                                                update="@form">
+                                                disabled="#{empty generalLedgerHome.accountSelected}"
+                                                update="form:panel-summary">
                                 </jlgranda:input>
                             </p:toolbarGroup>
                             <p:toolbarGroup align="rigth">
@@ -115,8 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 required="#{false}" 
                                                 placeholder="#{false}"
                                                 maxdate="#{generalLedgerHome.end}" mindate="#{generalLedgerHome.start}"
-                                                rendered="#{not empty generalLedgerHome.accountSelectedRecordsDetails}"
-                                                disabled="#{empty generalJournalHome.start and empty generalJournalHome.end}"
+                                                disabled="#{empty generalLedgerHome.accountSelected or empty generalJournalHome.start or empty generalJournalHome.end}"
                                                 listener="#{generalLedgerHome.onDateSelect()}" update="form:panel-summary">
                                 </jlgranda:input>
                             </p:toolbarGroup>

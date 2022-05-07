@@ -103,6 +103,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <div>
                                     <p:fileUpload listener="#{subjectHome.handlePhotoUpload}" mode="advanced" dragDropSupport="true" auto="true"
                                                   update="photo"
+                                                  label="#{i18n['common.upload.photo']}" 
                                                   sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
                                                   fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
                                                   allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/>
