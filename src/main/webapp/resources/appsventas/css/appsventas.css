@@ -1158,6 +1158,9 @@ input[type="text"], input[type="password"], textarea{
 .Padding5{
     padding: 5px !important;
 }
+.Padding8{
+    padding: 8px !important;
+}
 .Padding10{
     padding: 10px !important;
 }

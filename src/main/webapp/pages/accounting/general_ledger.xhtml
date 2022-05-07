@@ -98,14 +98,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 value="#{generalLedgerHome.start}" label="#{i18n['common.from']}:&nbsp;" 
                                                 required="#{false}" 
                                                 placeholder="#{false}"
-                                                update="@form">
+                                                disabled="#{empty generalLedgerHome.accountSelected}"
+                                                update="form:panel-summary">
                                 </jlgranda:input> 
                                 <jlgranda:input id="date-end" name="date-end" render="date-end" container="none"
                                                 type="calendar" showOn="button"
                                                 value="#{generalLedgerHome.end}" label="#{i18n['common.to']}:&nbsp;" 
                                                 required="#{false}" 
                                                 placeholder="#{false}"
-                                                update="@form">
+                                                disabled="#{empty generalLedgerHome.accountSelected}"
+                                                update="form:panel-summary">
                                 </jlgranda:input>
                             </p:toolbarGroup>
                             <p:toolbarGroup align="rigth">
@@ -115,8 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 required="#{false}" 
                                                 placeholder="#{false}"
                                                 maxdate="#{generalLedgerHome.end}" mindate="#{generalLedgerHome.start}"
-                                                rendered="#{not empty generalLedgerHome.accountSelectedRecordsDetails}"
-                                                disabled="#{empty generalJournalHome.start and empty generalJournalHome.end}"
+                                                disabled="#{empty generalLedgerHome.accountSelected or empty generalJournalHome.start or empty generalJournalHome.end}"
                                                 listener="#{generalLedgerHome.onDateSelect()}" update="form:panel-summary">
                                 </jlgranda:input>
                             </p:toolbarGroup>
