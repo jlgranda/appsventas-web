@@ -20,6 +20,7 @@ import com.jlgranda.fede.ejb.sales.KardexDetailService;
 import com.jlgranda.fede.ejb.sales.KardexService;
 import com.jlgranda.fede.ejb.sales.ProductCache;
 import com.jlgranda.fede.ejb.sales.ProductService;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -31,12 +32,17 @@ import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.fede.model.sales.Kardex;
 import org.jlgranda.fede.model.sales.KardexType;
 import org.jlgranda.fede.ui.model.LazyKardexDataModel;
+import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -45,6 +51,8 @@ import org.primefaces.event.SelectEvent;
 @Named
 @ViewScoped
 public class KardexProduccionHome extends FedeController implements Serializable {
+
+    Logger logger = LoggerFactory.getLogger(KardexHome.class);
 
     @Inject
     private Subject subject;
@@ -97,6 +105,18 @@ public class KardexProduccionHome extends FedeController implements Serializable
                 lazyDataModel.setTags(getTags());
                 lazyDataModel.setFilterValue(getKeyword());
             }
+        }
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                Kardex k = (Kardex) event.getObject();
+                redirectTo("/pages/production/kardex_produccion.jsf?kardexId=" + k.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
         }
     }
 

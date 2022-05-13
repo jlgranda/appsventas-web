@@ -149,11 +149,15 @@ public class KardexHome extends FedeController implements Serializable {
             kardex.setOwner(this.subject);
             this.kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-").concat(this.organizationData.getOrganization().getId().toString()).concat(this.kardex.getProduct().getId() != null ? this.kardex.getProduct().getId().toString() : ""));
             this.kardex.setName(this.kardex.getProduct().getName() != null ? this.kardex.getProduct().getName().toUpperCase() : "");
-            kardex.setKardexType(ProductType.PRODUCT.equals(this.kardex.getProduct().getProductType()) ? KardexType.COMERCIALIZACION : ProductType.SERVICE.equals(this.kardex.getProduct().getProductType()) ? KardexType.SERVICE : KardexType.PRODUCCION);
+            kardex.setKardexType(ProductType.PRODUCT.equals(this.kardex.getProduct().getProductType()) ? KardexType.COMERCIALIZACION
+                    : ProductType.SERVICE.equals(this.kardex.getProduct().getProductType()) ? KardexType.SERVICE
+                    : ProductType.RAW_MATERIAL.equals(this.kardex.getProduct().getProductType()) ? KardexType.PRODUCCION : KardexType.DEPRECATED);
             kardex.setOrganization(this.organizationData.getOrganization());
-            setOutcome("");
         }
         kardexService.save(kardex.getId(), kardex);
+        if (this.kardexId == null) {//Cuando se crea una kardex nueva
+            redirectToByType(kardex);
+        }
         setKardex(kardexService.find(kardex.getId()));
     }
 
@@ -166,7 +170,8 @@ public class KardexHome extends FedeController implements Serializable {
     }
 
     public void initOperationTypes(String type) {
-        setOperationTypesOutput(UI.getOperationTypeByType(type));
+        setType(type);
+        setOperationTypesOutput(UI.getOperationTypeByType(getType()));
     }
 
     public List<Product> filterProductsRawMaterial(String query) {
@@ -232,11 +237,19 @@ public class KardexHome extends FedeController implements Serializable {
     public void getKardexByProduct() {
         Kardex k = kardexService.findByProductAndOrganization(this.kardex.getProduct(), this.subject, this.organizationData.getOrganization());
         if (k != null) {
-            try {
+            redirectToByType(k);
+        }
+    }
+
+    private void redirectToByType(Kardex k) {
+        try {
+            if ("output".equals(this.type)) {
                 redirectTo("/pages/inventory/kardex.jsf?kardexId=" + k.getId());
-            } catch (IOException ex) {
-                logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), (k));
+            } else if ("output-raw".equals(this.type)) {
+                redirectTo("/pages/production/kardex_produccion.jsf?kardexId=" + k.getId());
             }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), (k));
         }
     }
 
@@ -249,18 +262,25 @@ public class KardexHome extends FedeController implements Serializable {
 
     public void kardexDetailAdd() {
         this.kardexDetail.setTotalValue(this.kardexDetail.getUnitValue().multiply(this.kardexDetail.getQuantity()));
-        String fechaIngresoBodega = Dates.toString(this.kardexDetail.getEntryOn(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy hh:mm:s"));
-        String queryQuantity = Strings.render("select cast(sum(case when kdd.operation_type in ('%s') then kdd.quantity * -1 else kdd.quantity end) as decimal(5,2)) as quantity from Kardex_detail kdd where kdd.kardex_id=%s and kdd.fecha_ingreso_bodega <= '%s' and kdd.deleted=false",
-                Lists.toString(this.operationTypesOutput, "','"), this.getKardexId(), fechaIngresoBodega);
-        List<BigDecimal> resultSetQuantity = kardexDetailService.findBigDecimalResultSet(queryQuantity);
-        String queryTotalValue = Strings.render("select cast(sum(case when kdd.operation_type in ('%s') then kdd.total_value * -1 else kdd.total_value end) as decimal(5,2)) as col_0_0_ from Kardex_detail kdd where kdd.kardex_id=%s and kdd.fecha_ingreso_bodega <= '%s' and kdd.deleted=false",
-                Lists.toString(this.operationTypesOutput, "','"), this.getKardexId(), fechaIngresoBodega);
-        List<BigDecimal> resultSetTotalValue = kardexDetailService.findBigDecimalResultSet(queryTotalValue);
-
+//        String fechaIngresoBodega = Dates.toString(this.kardexDetail.getEntryOn(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy hh:mm:s"));
+        String fechaIngresoBodega = Dates.toString(this.kardexDetail.getEntryOn());
+        List<BigDecimal> resultSetQuantity = new ArrayList<>();
+        List<BigDecimal> resultSetTotalValue = new ArrayList<>();
+        System.out.println("this.operationTypesOutput::"+this.operationTypesOutput);
+//        if (this.kardexId != null) {
+            String queryQuantity = Strings.render("select cast(sum(case when kdd_.operation_type in ('%s') then kdd_.quantity * -1 else kdd_.quantity end) as decimal(5,2)) as col_0_0_ from Kardex_detail kdd_ where kdd_.kardex_id=%s and kdd_.fecha_ingreso_bodega <= '%s' and kdd_.deleted=false",
+                    Lists.toString(this.operationTypesOutput, "','"), this.kardexId, fechaIngresoBodega);
+            resultSetQuantity = kardexDetailService.findBigDecimalResultSet(queryQuantity);
+            String queryTotalValue = Strings.render("select cast(sum(case when kdd_.operation_type in ('%s') then kdd_.total_value * -1 else kdd_.total_value end) as decimal(5,2)) as col_0_0_ from Kardex_detail kdd_ where kdd_.kardex_id=%s and kdd_.fecha_ingreso_bodega <= '%s' and kdd_.deleted=false",
+                    Lists.toString(this.operationTypesOutput, "','"), this.kardexId, fechaIngresoBodega);
+            resultSetTotalValue = kardexDetailService.findBigDecimalResultSet(queryTotalValue);
+//        }
         if (!resultSetQuantity.isEmpty() && !resultSetTotalValue.isEmpty()) {
 
             BigDecimal quantityToDate = resultSetQuantity.get(0);
             BigDecimal totalValueToDate = resultSetTotalValue.get(0);
+            System.out.println("quantityToDate:: "+quantityToDate);
+            System.out.println("totalValueToDate:: "+totalValueToDate);
 
             //Al total a la fecha le agregamos la cantidad/total del nuevo detalle
             BigDecimal totalQuantity = this.operationTypesOutput.contains(this.kardexDetail.getOperationType()) ? quantityToDate.subtract(this.kardexDetail.getQuantity()) : quantityToDate.add(this.kardexDetail.getQuantity());
@@ -292,7 +312,6 @@ public class KardexHome extends FedeController implements Serializable {
             this.kardexDetail.setAuthor(subject);
             this.kardexDetail.setOwner(subject);
             this.kardex.addKardexDetail(this.kardexDetail);
-            this.kardexDetail = kardexDetailService.createInstance();
             setKardexDetail(kardexDetailService.createInstance());
             save();
         }

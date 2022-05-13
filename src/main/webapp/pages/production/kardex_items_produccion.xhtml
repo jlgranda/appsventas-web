@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.kardex']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.kardex.produccion']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      draggableColumns="#{true}" reflow="#{true}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                      sortMode="single">
-                            <p:ajax event="rowSelect" listener="#{kardexHome.onRowSelect}"/>
+                            <p:ajax event="rowSelect" listener="#{kardexProduccionHome.onRowSelect}"/>
                             <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar"/>
                             <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>

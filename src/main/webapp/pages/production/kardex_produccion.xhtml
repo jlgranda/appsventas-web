@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.kardex']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.kardex.produccion']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -37,9 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.inventory']}</li>
             <li>/</li>
-            <li><p:link outcome="inventory-kardexs-production">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
+            <li><p:link outcome="inventory-kardexs-production">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex.produccion']}</p:link></li>
             <li>/</li>
-            <li><p:link outcome="kardex-production">#{not empty kardexHome.kardexId ? i18n['common.edit'] : i18n['common.newa']} #{i18n['app.fede.inventory.kardex']}
+            <li><p:link outcome="kardex-production">#{not empty kardexHome.kardexId ? i18n['common.edit'] : i18n['common.newa']} #{i18n['app.fede.inventory.kardex.produccion']}
                     <f:param name="kardexId" value="#{kardexHome.kardexId}" rendered="#{not empty kardexHome.kardexId}"/>
                 </p:link>
             </li>
@@ -132,19 +132,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:toolbarGroup>
                                         <p:commandButton value="#{i18n['common.entry']}" 
                                                          icon="fa fa-plus" styleClass="success-text-btn rounded-btn" style="width: auto !important"
-                                                         actionListener="#{kardexHome.getDetailValues('input')}"
+                                                         actionListener="#{kardexHome.getDetailValues('input-raw')}"
                                                          disabled="#{empty kardexHome.kardex.id or empty kardexHome.kardex.product}"
                                                          oncomplete="PF('entradaDialog').show()"
-                                                         ajax="#{true}" immediate="#{true}"
-                                                         update="entradaDialog">
+                                                         ajax="#{true}" immediate="#{false}"
+                                                         update="dialog-detail">
                                         </p:commandButton>
                                         <p:commandButton value="#{i18n['common.exitd']}" 
                                                          icon="fa fa-minus" styleClass="danger-text-btn rounded-btn" style="width: auto !important"
-                                                         actionListener="#{kardexHome.getDetailValues('output')}"
+                                                         actionListener="#{kardexHome.getDetailValues('output-raw')}"
                                                          disabled="#{empty kardexHome.kardex.id or empty kardexHome.kardex.product}"
                                                          oncomplete="PF('entradaDialog').show()"
-                                                         ajax="#{true}" immediate="#{true}"
-                                                         update="entradaDialog">
+                                                         ajax="#{true}" immediate="#{false}"
+                                                         update="dialog-detail">
                                         </p:commandButton>
                                     </p:toolbarGroup>
                                     <p:toolbarGroup align="rigth">
@@ -188,26 +188,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:column>
                             <p:column headerText="#{i18n['common.quantity']}" style="background: #D8ECE1 !important;">
                                 <h:outputText value="#{kardexDetail.quantity}" class="Fright"
-                                              rendered="#{kardexDetail.operationType=='EXISTENCIA_INICIAL' or kardexDetail.operationType=='PRODUCCION' or kardexDetail.operationType=='PRODUCCION_PRODUCTO_TERMINADO'
-                                                          or  kardexDetail.operationType=='COMPRA' or kardexDetail.operationType=='DEVOLUCION_COMPRA'}"/>
+                                              rendered="#{ui.getOperationTypeByType('input-raw').contains(kardexDetail.operationType)}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.value']}" style="background: #D8ECE1 !important;">
                                 <h:outputText value="#{kardexDetail.totalValue}" class="Fright"
-                                              rendered="#{kardexDetail.operationType=='EXISTENCIA_INICIAL' or kardexDetail.operationType=='PRODUCCION' or kardexDetail.operationType=='PRODUCCION_PRODUCTO_TERMINADO'
-                                                          or kardexDetail.operationType=='COMPRA' or kardexDetail.operationType=='DEVOLUCION_COMPRA'}">
+                                              rendered="#{ui.getOperationTypeByType('input-raw').contains(kardexDetail.operationType)}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="#{i18n['common.quantity']}" style="background: #FCF3CF !important;">
                                 <label> #{kardexDetail.operationType=='DEVOLUCION_VENTA' ? '-' : ''} </label>
                                 <h:outputText value="#{kardexDetail.quantity}" class="Fright"
-                                              rendered="#{kardexDetail.operationType=='SALIDA_INVENTARIO' or  kardexDetail.operationType=='VENTA' 
-                                                          or kardexDetail.operationType=='DEVOLUCION_VENTA'}"/>
+                                              rendered="#{ui.getOperationTypeByType('output-raw').contains(kardexDetail.operationType)}"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.value']}"  style="background: #FCF3CF !important;">
                                 <h:outputText value="#{kardexDetail.totalValue}" class="Fright"
-                                              rendered="#{kardexDetail.operationType=='SALIDA_INVENTARIO' or kardexDetail.operationType=='VENTA' 
-                                                          or kardexDetail.operationType=='DEVOLUCION_VENTA'}">
+                                              rendered="#{ui.getOperationTypeByType('output-raw').contains(kardexDetail.operationType)}">
                                     <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
@@ -229,7 +225,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </ui:define>
         <ui:define name="popups">
             <!-- Ventanas de dialogo de edición -->
-            <p:dialog id="entradaDialog" header="#{i18n['common.new']} #{i18n['common.registry']}" widgetVar="entradaDialog" minHeight="40" width="350" showEffect="fade" modal="true">
+            <p:dialog id="dialog-detail" widgetVar="entradaDialog"
+                      header="#{i18n['common.new']} #{i18n['common.registry']}" 
+                      modal="#{true}" closable="#{true}" minHeight="50" width="400">
                 <h:form id="registerKardexDetailForm">
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -280,8 +278,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              actionListener="#{kardexHome.kardexDetailAdd}" oncomplete="PF('entradaDialog').hide()"
                                              disabled="#{empty kardexHome.kardexDetail.entryOn or empty kardexHome.kardexDetail.operationType
                                                          or empty kardexHome.kardexDetail.unitValue or empty kardexHome.kardexDetail.quantity}"
-                                             ajax="#{false}" immediate="#{false}"
-                                             update="registerKardexDetailForm"/>
+                                             ajax="#{true}" immediate="#{false}"
+                                             update="registerKardexDetailForm form:dataTable"/>
                         </div>
                     </div>
                 </h:form>
