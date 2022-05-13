@@ -218,6 +218,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         setAccountSelectedDebePartial(BigDecimal.ZERO);
         setAccountSelectedHaberPartial(BigDecimal.ZERO);
         setAccountSelectedFundPartial(BigDecimal.ZERO);
+        setAccountSelectedFundPrevious(BigDecimal.ZERO);
     }
 
     private void calculateBalance() {

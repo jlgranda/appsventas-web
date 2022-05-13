@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                              class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding">
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd">
                             <h3>Agregar/Editar cuenta al asiento contable</h3>
-                            <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
+                            <div class="ui-g-5 ui-md-5 ui-lg-5 ui-sm-12">
                                 <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
                                 <p:autoComplete id="account" 
                                                 value="#{recordHome.recordDetail.account}" var="account"
@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
                                 </p:autoComplete>
                             </div>
-                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12 DispInlGrid">
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12 DispInlGrid">
                                 <p:outputLabel value="Seleccione el tipo:" for="@next"/>
                                 <p:selectOneRadio id="recordDetailType" 
                                                   value="#{recordHome.recordDetail.recordDetailType}" 
@@ -85,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:ajax execute="@this" render="@form"></f:ajax>
                                 </p:selectOneRadio>
                             </div>
-                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12 DispInlGrid">
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12">
                                 <jlgranda:input id="amount" name="amount" render="amount" container="none"
                                                 type="decimal" 
                                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -99,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPaddingTop">
                                 <p:commandButton id="btn-detail-add"
-                                                 icon="pi pi-check-square" styleClass="warning-btn rounded-btn TexUppercase"
+                                                 icon="pi pi-check-square" styleClass="warning-btn rounded-btn"
                                                  value="#{i18n['common.add']}"
                                                  actionListener="#{recordHome.recordDetailAdd}" 
                                                  ajax="#{false}" immediate="#{true}"
@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:toolbar class="NoBorder">
                             <p:toolbarGroup class="DispInlFlex">
                                 <p:commandButton id="btn-record-save"
-                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn TexUppercase"
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn"
                                                  actionListener="#{recordHome.save()}" action="#{generalJournalHome.closeFormularioRecord(eneralJournalHome.journal.id)}"
                                                  disabled="#{empty recordHome.record.recordDetails or empty recordHome.record.description}"
                                                  ajax="#{false}" immediate="#{true}" 

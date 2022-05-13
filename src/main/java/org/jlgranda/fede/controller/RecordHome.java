@@ -201,6 +201,18 @@ public class RecordHome extends FedeController implements Serializable {
         this.recordDetail.setAmount(calculateValueSuggested()); //Por si el valor es el mismo
     }
 
+    public void recordDetailDelete(RecordDetail detail) {
+        Optional<RecordDetail> rd = this.record.getRecordDetails().stream()
+                .filter(d -> d.getAccount().getId().equals(detail.getAccount().getId()))
+                .findFirst();
+        if (rd.isPresent()) {
+            this.record.getRecordDetails().remove(this.record.getRecordDetails().indexOf(rd.get()));
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully.detail"), String.valueOf(rd.get().getAccount().getName()));
+            //Encerar el registro
+            this.recordDetail = recordDetailService.createInstance();
+        }
+    }
+
     private BigDecimal calculateValueSuggested() {
         //Calcular valor sugerido, que sería el faltanta para cuadrar el registro
         BigDecimal suggestedAmount = BigDecimal.ZERO;

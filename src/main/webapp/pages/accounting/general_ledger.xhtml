@@ -159,10 +159,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>&nbsp;
                                         </f:facet>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.debe']}" class="BackgroundWarning NoBorder TexUppercase"/>
-                                    <p:column headerText="#{i18n['common.haber']}" class="BackgroundWarning NoBorder TexUppercase"/>
-                                    <p:column headerText="#{i18n['common.fund']}" class="BackgroundWarning NoBorder TexUppercase"/>
-                                    <p:column class="BackgroundWarning NoBorder TexUppercase"/>
+                                    <p:column headerText="#{i18n['common.debe']}" class="BackgroundWarning NoBorder"/>
+                                    <p:column headerText="#{i18n['common.haber']}" class="BackgroundWarning NoBorder"/>
+                                    <p:column headerText="#{i18n['common.fund']}" class="BackgroundWarning NoBorder"/>
+                                    <p:column headerText="#{i18n['common.fund']} actual" class="BackgroundWarning NoBorder TexUppercase"/>
                                 </p:row>
                                 <p:row>
                                     <p:column class="BackgroundWarning NoBorder">
@@ -187,7 +187,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
-                                    <p:column class="BackgroundWarning NoBorder"/>
+                                    <p:column class="BackgroundWarning NoBorder">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{generalLedgerHome.accountSelectedFundPartial.add(generalLedgerHome.accountSelectedFundPrevious)}" class="Fright" 
+                                                          style="#{generalLedgerHome.accountSelectedFundPartial.add(generalLedgerHome.accountSelectedFundPrevious) lt 0 ? 'color: #e91224': ''}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
                                 </p:row>
                                 <p:row>
                                     <p:column headerText="#{i18n['common.date.emission']}"/>

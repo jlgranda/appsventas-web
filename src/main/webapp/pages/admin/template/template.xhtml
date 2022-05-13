@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['common.management']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/admin/template/inbox.jsf">#{i18n['app.mail.templates']}</p:link></li>
+            <li><p:link outcome="templates">#{i18n['app.mail.templates']}</p:link></li>
             <li>/</li>
             <li><p:link outcome="/pages/admin/template/template.jsf">#{templateHome.templateId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.mail.template']) : i18n['common.edit']} #{templateHome.template.title}</p:link></li>
         </ui:define>

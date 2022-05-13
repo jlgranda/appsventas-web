@@ -92,8 +92,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:selectOneMenu id="type"
                                              value="#{facturaElectronicaCompraHome.facturaElectronica.emissionType}"
                                              disabled="#{not empty facturaElectronicaCompraHome.facturaElectronica.id}"
-                                             immediate="#{true}"
-                                             required="#{true}"> 
+                                             required="#{true}"
+                                             immediate="#{true}"> 
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this tittle days-expired date-title" />
@@ -132,8 +132,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}" for="@next"/>
                             <p:selectOneMenu id="document"
                                              value="#{facturaElectronicaCompraHome.facturaElectronica.documentType}"
-                                             immediate="#{true}"
-                                             required="#{true}"> 
+                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}">
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.getDocumentFacturaTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this" />
@@ -388,22 +389,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:outputLabel value="#{i18n['common.tax']}" for="@next"/>
                             <p:selectOneMenu id="taxtType"
                                              value="#{facturaElectronicaCompraHome.productNew.taxType}"
-                                             immediate="#{true}"
-                                             required="#{true}"> 
+                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}">
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this" />
                                 <p:ajax listener="#{facturaElectronicaCompraHome.saveButtonProduct()}" update="btn-save-product-new" partialSubmit="#{true}"></p:ajax>
                             </p:selectOneMenu>
-<!--                                    <p:outputLabel value="#{i18n['common.type']}" for="@next"/>
-                            <p:selectOneMenu id="productType"
-                                             value="#{facturaElectronicaCompraHome.productNew.productType}"
-                                             immediate="#{true}"
-                                             required="#{true}"> 
-                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
-                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
-                                <p:ajax update="@this" />
-                            </p:selectOneMenu>-->
                             <div class="ui-g-12" style="display: inline-flex; padding: 0.5rem 0 0 0">
                                 <p:commandButton id="btn-save-product-new" 
                                                  icon="pi pi-save" styleClass="primary-button" 
@@ -444,8 +437,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:selectOneMenu id="method"
                                                          value="#{facturaElectronicaCompraHome.payment.method}"
                                                          disabled="#{facturaElectronicaCompraHome.payableTotal}"
-                                                         immediate="#{true}"
-                                                         required="#{true}" style="width: 100%"> 
+                                                         required="#{true}"
+                                                         immediate="#{true}"> 
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                             <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                             <p:ajax update="@this transferencia"/>
@@ -457,8 +450,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:selectOneMenu id="accountPaymentSelected"
                                                              value="#{facturaElectronicaCompraHome.accountPaymentSelected}"
                                                              converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                             immediate="#{true}"
-                                                             required="#{true}" style="width: 100%"> 
+                                                             disabled="#{false}"
+                                                             required="#{true}"
+                                                             immediate="#{true}">
                                                 <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <p:ajax update="@this"/>
                                             </p:selectOneMenu>

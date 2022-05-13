@@ -56,8 +56,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <!--                    <div class="Container100 Responsive50">
                                             <div class="ContainerIndent">
                                                 <h2 class="BigTopic">#{i18n['common.type']}&nbsp;</h2>
-                                                <p:selectOneMenu value="#{groupInventoryHome.group.groupType}" effect="fade"
-                                                                 required="#{true}" immediate="true">
+                                                <p:selectOneMenu value="#{groupInventoryHome.group.groupType}"
+                                                                 disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}">
                                                     <f:selectItem itemLabel="#{messages['common.choice']}" itemValue=""/>
                                                     <f:selectItems value="#{ui.groupTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 </p:selectOneMenu>
