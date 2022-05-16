@@ -43,6 +43,14 @@
                             <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
                                                 class="profile-image"/>
                             <span class="name">#{subjectHome.signup.fullName}</span>
+                            <!-- <div>
+                                <i class="fa fa-briefcase"></i>
+                                <span class="job">Human Resource Manager</span>
+                            </div>
+                            <div>
+                                <i class="fa fa-location-arrow"></i>
+                                <span class="location">Seattle</span>
+                            </div>-->
                             <div>
                                 <div class="profile-numbers">
                                     <span class="header">#{i18n['app.gifts']}</span>
@@ -68,6 +76,12 @@
                         <ul>
                             <ui:repeat value="#{giftHome.lastGitfs}" var="entity">
                                 <li>
+<!--                                    <div class="date-indicator ui-lg-3 ui-md-3">
+                                        <span class="date">
+                                        </span>
+                                    </div>-->
+<!--                                    <div class="activity-link"></div>
+                                    <i class="fa fa-circle code"></i>-->
                                     <div class="timeline-subject ui-lg-9 ui-md-9">
                                         <span class="timeline-header">#{i18n['common.expire']} <h:outputText value="#{entity.expirationTime}" styleClass="">
                                                 <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
