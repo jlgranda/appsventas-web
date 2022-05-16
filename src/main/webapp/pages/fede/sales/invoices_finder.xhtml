@@ -69,6 +69,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 placeholder="#{false}" 
                                                 update="@form">
                                 </jlgranda:input>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="rigth">
                                 <jlgranda:input id="date-filter" name="date-filter" render="date-filter" container="none"
                                                 type="calendar" showOn="button"
                                                 value="#{invoiceHome.daySelected}" label="Filtrar por #{i18n['common.day.min']}:&nbsp;" 
@@ -78,8 +80,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 disabled="#{empty invoiceHome.start and empty invoiceHome.end}"
                                                 listener="#{invoiceHome.onDateSelect()}" update="@form">
                                 </jlgranda:input>
-                            </p:toolbarGroup>
-                            <p:toolbarGroup align="rigth">
                                 <p:button value="#{i18n['common.newa']}"
                                           icon="pi pi-plus-circle" styleClass="danger-btn rounded-btn"
                                           outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=invoices_finder"/>
@@ -138,12 +138,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <!--Herramientas con seleccionados -->
                         <p:panel id="panelSelectedToolBar">
                             <p:panel rendered="#{not empty invoiceHome.selectedInvoices}"
-                                     class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BackgroundWarning Padding10 TexAlRight FontBold">
+                                       class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BackgroundWarning Padding10 TexAlRight FontBold">
                                 <!--<p:toolbarGroup class="Container100 FlexNowRap AlignItemsFlEnd">-->
                                 <h:outputText value="#{i18n['common.total.collect']}:&nbsp;" />
-                                <h:outputText value="#{invoiceHome.selectedInvoicesByCollect}" class="MarRightPerc10">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
-                                </h:outputText>
+                                    <h:outputText value="#{invoiceHome.selectedInvoicesByCollect}" class="MarRightPerc10">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
                                 <!--</p:toolbarGroup>-->
                             </p:panel>
                             <p:toolbar id="selectedToolBar" rendered="#{not empty invoiceHome.selectedInvoices}">

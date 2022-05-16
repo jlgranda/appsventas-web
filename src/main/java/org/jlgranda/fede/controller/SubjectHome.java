@@ -18,17 +18,11 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.SubjectService;
-import com.jlgranda.fede.ejb.sales.InvoiceService;
-import com.jlgranda.fede.ejb.sri.SriDigitalCertService;
 import com.jlgranda.shiro.UsersRoles;
 import com.jlgranda.shiro.UsersRolesPK;
 import com.jlgranda.shiro.ejb.UsersRolesFacade;
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +39,6 @@ import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.model.accounting.Record;
-import org.jlgranda.fede.model.sri.SriDigitalCert;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -73,23 +66,15 @@ public class SubjectHome extends FedeController implements Serializable {
 
     @Inject
     Subject subject; //La instancia Subject de la sessión activa
-
-    @Inject
-    private OrganizationData organizationData;//se llama la organizacion activa
-
+    
+    
     Subject signup = null; //El objeto para edición
 
     @EJB
     SubjectService subjectService;
-
+    
     @EJB
     UsersRolesFacade usersRolesFacade;
-
-    @EJB
-    SriDigitalCertService sriDigitalCertService; // se llama el servicio de certificacion
-
-    @EJB
-    private InvoiceService invoiceService;
 
     @Inject
     private SettingHome settingHome;
@@ -99,32 +84,27 @@ public class SubjectHome extends FedeController implements Serializable {
 
     @Resource
     private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
-
+    
     @Inject
     private TemplateHome templateHome;
-
+    
     PasswordService svc = new DefaultPasswordService();
-
+    
     private boolean handledPhotoUpload;
-    private boolean handledFileUpload;
-
+    
     private byte[] photo;
-    private byte[] file;
-    private String nomfile;
-
+    
     private String clave;
     private String confirmarClave;
-    private SriDigitalCert sriDigitalCert;
-
+    
     /**
      * Bandera para indicar si encontró sugerencias en elementos autocomplete
      */
     private boolean sugerenciasEncontradas = false;
-
+    
     @PostConstruct
     public void init() {
         setHandledPhotoUpload(false);
-        setSriDigitalCert(sriDigitalCertService.createInstance());
     }
 
     public boolean isLoggedIn() {
@@ -139,29 +119,18 @@ public class SubjectHome extends FedeController implements Serializable {
         this.sugerenciasEncontradas = sugerenciasEncontradas;
     }
 
-    public SriDigitalCert getSriDigitalCert() {
-        return sriDigitalCert;
-    }
-
-    public void setSriDigitalCert(SriDigitalCert sriDigitalCert) {
-        this.sriDigitalCert = sriDigitalCert;
-    }
-
-    public void save() {
-        if (isHandledPhotoUpload()) {
+    public void save(){
+        if (isHandledPhotoUpload()){
             getSignup().setPhoto(getPhoto()); //Guardar la foto cargada
         }
         save(getSignup());
     }
-
     /**
-     * Guardar la instancia <tt>Subject</tt> en el medio de almacenamiento
-     * persistente
-     *
+     * Guardar la instancia <tt>Subject</tt> en el medio de almacenamiento persistente
      * @param _subject la instancia a guardar
      */
     public void save(Subject _subject) {
-        subjectService.save(_subject.getId(), _subject);
+        subjectService.save(_subject.getId(), _subject); 
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
     }
 
@@ -189,22 +158,6 @@ public class SubjectHome extends FedeController implements Serializable {
         this.photo = photo;
     }
 
-    public byte[] getFile() {
-        return file;
-    }
-
-    public void setFile(byte[] file) {
-        this.file = file;
-    }
-
-    public String getNomFile() {
-        return nomfile;
-    }
-
-    public void setNomFile(String file) {
-        this.nomfile = file;
-    }
-
     public boolean isHandledPhotoUpload() {
         return handledPhotoUpload;
     }
@@ -213,38 +166,27 @@ public class SubjectHome extends FedeController implements Serializable {
         this.handledPhotoUpload = handledPhotoUpload;
     }
 
-    public boolean isHandledFileUpload() {
-        return handledFileUpload;
-    }
-
-    public void setHandledFileUpload(boolean handledFileUpload) {
-        this.handledFileUpload = handledFileUpload;
-    }
-
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
-     *
      * @param _signup el objeto <tt>Subject</tt> a agregar
      * @param owner el propietario del objeto a agregar
      */
     public void processSignup(Subject _signup, Subject owner) {
         processSignup(_signup, owner, "USER", true);
     }
-
+    
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
-     *
      * @param _signup el objeto <tt>Subject</tt> a agregar
      * @param owner el propietario del objeto a agregar
      */
     public void processSignupEmployee(Subject _signup, Subject owner) {
-
+        
         processSignup(_signup, owner, "EMPLOYEE", true);
     }
-
+    
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
-     *
      * @param _signup el objeto <tt>Subject</tt> a agregar
      * @param owner el propietario del objeto a agregar
      * @param roles
@@ -256,19 +198,19 @@ public class SubjectHome extends FedeController implements Serializable {
             try {
 
                 //separar nombres
-                if (Strings.isNullOrEmpty(_signup.getSurname())
-                        && !Strings.isNullOrEmpty(_signup.getFirstname())) {
-
+                if (Strings.isNullOrEmpty(_signup.getSurname()) 
+                        && !Strings.isNullOrEmpty(_signup.getFirstname())){
+                   
                     List<String> names = Strings.splitNamesAt(_signup.getFirstname());
 
                     if (names.size() > 1) {
                         _signup.setFirstname(names.get(0));
                         _signup.setSurname(names.get(1));
                     }
-                } else if (!Strings.isNullOrEmpty(_signup.getDescription())
+                } else if (!Strings.isNullOrEmpty(_signup.getDescription()) 
                         && Strings.isNullOrEmpty(_signup.getFirstname())
-                        && Strings.isNullOrEmpty(_signup.getSurname())) {
-
+                        && Strings.isNullOrEmpty(_signup.getSurname())){
+                    
                     List<String> names = Strings.splitNamesAt(_signup.getDescription());
 
                     switch (names.size()) {
@@ -284,9 +226,9 @@ public class SubjectHome extends FedeController implements Serializable {
                             _signup.setFirstname(names.get(0) + names.get(1));
                             _signup.setSurname(names.get(2));
                             break;
-                        case 4:
+                        case 4: 
                             _signup.setFirstname(names.get(0) + names.get(1));
-                            _signup.setSurname(names.get(2) + names.get(3));
+                            _signup.setSurname(names.get(2)  + names.get(3));
                             break;
                         default:
                             break;
@@ -304,26 +246,27 @@ public class SubjectHome extends FedeController implements Serializable {
                 //Finalmente crear en fede
                 _signup.setUuid(UUID.randomUUID().toString());
                 _signup.setSubjectType(Subject.Type.NATURAL);
-
+                
                 //No cambiar owner y author si ya es persistente
-                if (!_signup.isPersistent()) {
+                if (!_signup.isPersistent()){
                     _signup.setOwner(owner);
                     _signup.setAuthor(owner);
                 }
-
+                
                 _signup.setActive(true);
-
+                
                 //crypt password
                 _signup.setPassword(svc.encryptPassword(_signup.getPassword()));
-
+                
                 subjectService.save(_signup);
-                if (setupRoles) {
+                if (setupRoles){
                     //Asignar roles
                     UsersRoles shiroUsersRoles = new UsersRoles();
                     UsersRolesPK usersRolesPK = new UsersRolesPK(_signup.getUsername(), roles);
                     shiroUsersRoles.setUsersRolesPK(usersRolesPK);
                     usersRolesFacade.create(shiroUsersRoles);
                 }
+                
 
             } catch (SecurityException | IllegalStateException e) {
                 throw new RuntimeException("Could not create default security entities.", e);
@@ -331,10 +274,9 @@ public class SubjectHome extends FedeController implements Serializable {
         }
 
     }
-
+    
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
-     *
      * @param _signup el objeto <tt>Subject</tt> a agregar
      * @throws java.io.IOException
      */
@@ -346,9 +288,9 @@ public class SubjectHome extends FedeController implements Serializable {
             try {
                 //crypt password
                 _signup.setPassword(svc.encryptPassword(_signup.getPassword()));
-
+                
                 subjectService.save(_signup.getId(), _signup);
-
+                
                 //Cerrar sessión
                 redirectTo("/logout");
 
@@ -358,29 +300,29 @@ public class SubjectHome extends FedeController implements Serializable {
         }
 
     }
-
+    
     /**
-     * Procesa la creación de una cuenta en fede, se asigna admin como
-     * propietario
+     * Procesa la creación de una cuenta en fede, 
+     * se asigna admin como propietario
      */
     public void processSignup() {
         Subject admin = subjectService.findUniqueByNamedQuery("Subject.findUserByLogin", "admin");
         processSignup(this.signup, admin);
         sendConfirmation(this.signup);
-
+        
     }
-
+    
     public void sendConfirmation(Subject _subject) {
         if (_subject.isPersistent() && !_subject.isConfirmed()) {
             //Notificar alta en appsventas
             String confirm_url = settingHome.getValue("app.login.confirm.url", "http://emporiolojano.com:8080/appsventas/confirm.jsf?uuid=");
             Map<String, Object> values = new HashMap<>();
-
+            
             //TODO implementar una forma de definición de parametros desde coniguración
             values.put("fullname", _subject.getFullName());
             values.put("url", confirm_url + _subject.getUuid());
 
-            if (templateHome.sendEmail(_subject, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values)) {
+            if (templateHome.sendEmail(_subject, settingHome.getValue("app.mail.template.signin", "app.mail.template.signin"), values)){
                 addDefaultSuccessMessage();
             } else {
                 addDefaultErrorMessage();
@@ -391,10 +333,8 @@ public class SubjectHome extends FedeController implements Serializable {
     /**
      * Busca objetos <tt>Subject</tt> para la clave de búsqueda en las columnas
      * usernae, firstname, surname
-     *
      * @param _keyword
-     * @return una lista de objetos <tt>Subject</tt> que coinciden con la
-     * palabra clave dada.
+     * @return una lista de objetos <tt>Subject</tt> que coinciden con la palabra clave dada.
      */
     public List<Subject> find(String _keyword) {
         _keyword = _keyword.trim();
@@ -419,24 +359,18 @@ public class SubjectHome extends FedeController implements Serializable {
     public List<org.jpapi.model.Group> getGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+  
     @Override
     protected void initializeDateInterval() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     public void handlePhotoUpload(FileUploadEvent event) {
         setPhoto(event.getFile().getContent());
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getSessionMap().put("photoUser", getPhoto()); //Para cargar desde memoria
         addSuccessMessage(I18nUtil.getMessages("subject.upload.photo"), I18nUtil.getMessages("subject.upload.photo"));
         setHandledPhotoUpload(true);
-    }
-
-    public void handleFileUpload(FileUploadEvent event) {
-        setNomFile(event.getFile().getFileName());
-        setFile(Base64.getEncoder().encode(event.getFile().getContent()));
-        setHandledFileUpload(true);
     }
 
     public String getClave() {
@@ -454,11 +388,10 @@ public class SubjectHome extends FedeController implements Serializable {
     public void setConfirmarClave(String confirmarClave) {
         this.confirmarClave = confirmarClave;
     }
-
+    
     /**
      * El método debe actualizar en picketlink, de otra manera no tiene efecto
      * el cambio de clave.
-     *
      * @throws java.io.IOException
      */
     public void changePassword() throws IOException {
@@ -472,28 +405,7 @@ public class SubjectHome extends FedeController implements Serializable {
         }
 
     }
-
-    public void saveValidado() {
-        //La validación se hace en la vista
-        boolean boolCorrecto = true;
-        if ("".equals(getClave())) {
-            this.addWarningMessage("Ingrese una contraseña", "");
-            boolCorrecto = false;
-        }
-        if (getNomFile() == null) {
-            this.addWarningMessage("Ingrese firma electronica", "");
-
-            boolCorrecto = false;
-        }
-        if (boolCorrecto) {
-            this.sriDigitalCert.setDigitalCert(getFile());
-            this.sriDigitalCert.setPassword(getClave());
-            this.sriDigitalCert.setOwner(this.organizationData.getOrganization());
-            this.sriDigitalCertService.save(this.sriDigitalCert);
-            this.addSuccessMessage("La firma electrónica se guardo correctamente.", "");
-        }
-    }
-
+    
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

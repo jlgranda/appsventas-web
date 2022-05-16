@@ -34,5 +34,4 @@ public class Constantes {
     public static String MODULE_PROVIDERS = "proveedores";
     public static String MODULE_SALES = "ventas";
     public static String ACCOUNT_DAY = "caja dia";
-    public static String SRI_STATUS_APPLIED = "APPLIED";
 }

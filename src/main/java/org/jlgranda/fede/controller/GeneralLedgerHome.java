@@ -91,7 +91,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         setEnd(Dates.maximumDate(Dates.now()));
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
         setRangeId(1);
-        initVariablesTotal();
+        initVariablesSummary();
         setAccountsCatalogue(accountCache.filterByOrganization(this.organizationData.getOrganization()));
         setTreeDataModel(getAccountsCatalogueTree());
         setOutcome("general-ledger");
@@ -158,59 +158,21 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
             setAccountSelected((Account) event.getTreeNode().getData());
             getSummaryRecordByAccount();
         } else {
-            initVariablesTotal();
+            initVariablesSummary();
         }
     }
 
     public void getSummaryRecordByAccount() {
-        if (this.accountSelected != null) {
-            setDaySelected(null);
-            setRangeId(-1);
-            setAccountSelectedFundTotal(accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(Dates.now())));
-            setAccountSelectedDebePartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.DEBE, this.accountSelected, this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
-            setAccountSelectedHaberPartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.HABER, this.accountSelected, this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
-            setAccountSelectedFundPartial(getAccountSelectedDebePartial().subtract(getAccountSelectedHaberPartial()));
-            setAccountSelectedFundPrevious(accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(Dates.addDays(getStart(), -1 * 1))));
-            setAccountSelectedRecordsDetails(recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
-            setAccountSelectedRecordsDetailsFiltered(getAccountSelectedRecordsDetails());
-            calculateBalance();
-        }
-    }
-
-    public void getRangeOfRecords() {
-        initVariablesTotal();
-        setEnd(Dates.now());
-        switch (getRangeId()) {
-            case 0://Rango del reporte de la última semana
-                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfWeek(getEnd()) - 2))));
-                break;
-            case 1://Rango del reporte del último mes
-                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
-                break;
-            case 2://Rango del reporte del último año
-                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfYear(getEnd()) - 1))));
-                break;
-        }
-        getSummaryRecordByAccount();
-    }
-
-    public void onDateSelect() {
-        initVariablesSummary();
-        if (this.daySelected == null) {
-            initVariablesTotal();
-            getSummaryRecordByAccount();
-            return;
-        }
-        if (this.daySelected != null) {
-            this.accountSelectedRecordsDetailsFiltered = this.accountSelectedRecordsDetails.stream().filter(d -> (Dates.isInRange(Dates.minimumDate(this.daySelected), Dates.maximumDate(this.daySelected), d.getRecord().getJournal().getEmissionDate()))).collect(Collectors.toList());
-            setDaySelected(null);
-        }
-    }
-
-    private void initVariablesTotal() {
-        setAccountSelectedRecordsDetails(new ArrayList<>());
+        setDaySelected(null);
+        setRangeId(-1);
+        setAccountSelectedFundTotal(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.now())));
+        setAccountSelectedDebePartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.DEBE, getAccountSelected(), this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
+        setAccountSelectedHaberPartial(accountService.mayorizarPorTipo(RecordDetail.RecordTDetailType.HABER, getAccountSelected(), this.organizationData.getOrganization(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd())));
+        setAccountSelectedFundPartial(getAccountSelectedDebePartial().subtract(getAccountSelectedHaberPartial()));
+        setAccountSelectedFundPrevious(accountService.mayorizarTo(getAccountSelected(), this.organizationData.getOrganization(), Dates.maximumDate(Dates.addDays(getStart(), -1 * 1))));
+        setAccountSelectedRecordsDetails(recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", getAccountSelected(), Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
         setAccountSelectedRecordsDetailsFiltered(getAccountSelectedRecordsDetails());
-        initVariablesSummary();
+        calculateBalance();
     }
 
     private void initVariablesSummary() {
@@ -218,6 +180,8 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
         setAccountSelectedDebePartial(BigDecimal.ZERO);
         setAccountSelectedHaberPartial(BigDecimal.ZERO);
         setAccountSelectedFundPartial(BigDecimal.ZERO);
+        setAccountSelectedRecordsDetails(new ArrayList<>());
+        setAccountSelectedRecordsDetailsFiltered(getAccountSelectedRecordsDetails());
     }
 
     private void calculateBalance() {
@@ -230,6 +194,35 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
                 accumulativeBalance = accumulativeBalance.subtract(rd.getAmount());
             }
             rd.setAccumulatedBalance(accumulativeBalance);
+        }
+    }
+
+    public void getRangeOfRecords() {
+        setEnd(Dates.now());
+        switch (getRangeId()) {
+            case 0://Rango del reporte de la última semana
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfWeek(getEnd()) - 2))));
+                break;
+            case 1://Rango del reporte del último mes
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
+                break;
+            case 2://Rango del reporte del último año
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfYear(getEnd()) - 1))));
+                break;
+        }
+        initVariablesSummary();
+        getSummaryRecordByAccount();
+    }
+
+    public void onDateSelect() {
+        initVariablesSummary();
+        if (getDaySelected() == null) {
+            getSummaryRecordByAccount();
+            return;
+        }
+        if (getDaySelected() != null) {
+            this.accountSelectedRecordsDetailsFiltered = this.accountSelectedRecordsDetails.stream().filter(d -> (Dates.isInRange(Dates.minimumDate(getDaySelected()), Dates.maximumDate(getDaySelected()), d.getRecord().getJournal().getEmissionDate()))).collect(Collectors.toList());
+            setDaySelected(null);
         }
     }
 
