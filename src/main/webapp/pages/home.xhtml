@@ -6,6 +6,8 @@
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:of="http://omnifaces.org/functions"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                xmlns:pe="http://primefaces.org/ecuador"
                 template="/WEB-INF/template.xhtml">
     <ui:define name="title">#{i18n['app.name']} - #{i18n['common.welcome']} - #{subject.fullName}</ui:define>
     <ui:define name="head"></ui:define>
@@ -41,7 +43,7 @@
                         </div>
                         <div class="profile-info">
                             <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
-                                                class="profile-image"/>
+                                            class="profile-image"/>
                             <span class="name">#{subjectHome.signup.fullName}</span>
                             <!-- <div>
                                 <i class="fa fa-briefcase"></i>
@@ -76,12 +78,12 @@
                         <ul>
                             <ui:repeat value="#{giftHome.lastGitfs}" var="entity">
                                 <li>
-<!--                                    <div class="date-indicator ui-lg-3 ui-md-3">
-                                        <span class="date">
-                                        </span>
-                                    </div>-->
-<!--                                    <div class="activity-link"></div>
-                                    <i class="fa fa-circle code"></i>-->
+                                    <!--                                    <div class="date-indicator ui-lg-3 ui-md-3">
+                                                                            <span class="date">
+                                                                            </span>
+                                                                        </div>-->
+                                    <!--                                    <div class="activity-link"></div>
+                                                                        <i class="fa fa-circle code"></i>-->
                                     <div class="timeline-subject ui-lg-9 ui-md-9">
                                         <span class="timeline-header">#{i18n['common.expire']} <h:outputText value="#{entity.expirationTime}" styleClass="">
                                                 <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
@@ -98,6 +100,8 @@
                         </ul>
                     </p:panel>
                 </div>
+
+
                 <div class="ui-g-12 ui-md-12 ui-lg-8">
                     <p:panel header="#{i18n['app.fede.inventory.purchases.lasts']}" styleClass="timeline ShowOnDesktop ShowOnDesktop">
                         <ul>
@@ -139,29 +143,108 @@
                             </ui:repeat>
                         </ul>
                     </p:panel>
+
                     <p:panel header="#{i18n['app.gifts.recents']}" styleClass="inbox">
                         <ul>
                             <ui:repeat value="#{giftHome.giftsFromOthers}" var="entity">
                                 <li>
                                     <div class="image-container">
                                         <o:graphicImage value="#{images.getContent(entity.id)}" 
-                                                class="profile-image"/>
+                                                        class="profile-image"/>
                                     </div>
-                                    <div class="seperator"></div>
-                                    <div class="message-box">
-                                        <span class="messager">#{entity.fullName}</span>
-                                        <span class="time">#{entity.createdOn}</span>   
-                                        <!--                                        <span class="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribu…</span>       -->
+                                    <div class="activity-link"></div>
+                                    <i class="fa fa-circle success"></i>
+                                    <div class="timeline-subject ui-md-9">
+                                        <span class="timeline-header">#{i18n['app.phrase.slogan.go']} #{i18n['app.phrase.slogan.suggestion']}</span>
+                                        <span class="timeline-subheader">#{''}</span>
                                     </div>
-                                    <div class="message-status">
-                                        <i class="fa fa-circle"></i>
-                                        <span>#{giftHome.getCountGiftByOwner(entity)}</span>
-                                    </div>    
+                                    <i class="fa fa-coffee device success" style="color:red;"></i>
                                 </li>
                             </ui:repeat>
                         </ul>
                     </p:panel>
+                    <p:accordionPanel widgetVar="accordionFactura" activeIndex="1">
+                        <p:tab>
+                            <f:facet name="title">  
+                                <h:outputLabel>#{i18n['app.firma.electronica']}</h:outputLabel>
+                            </f:facet>
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" >
+
+                                <p:panel id="photo" >
+                                    <p:fileUpload listener="#{subjectHome.handleFileUpload}" mode="advanced" dragDropSupport="true" auto="true"
+                                                  update="photo" 
+                                                  label="#{i18n['common.upload.file']}" 
+                                                  sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
+                                                  fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
+                                                  allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(p12)$/')}"/>
+                                    <span class="name">#{subjectHome.getNomFile()}</span>
+
+                                    <div class="with30"></div>
+                                    <jlgranda:input id="password" name="password" type="password" label="#{i18n['common.password']}"
+                                                    value="#{subjectHome.clave}"  placeholder="#{true}"  class="Wid100"
+                                                    execute="@this save" render="clave" required="#{!subjectHome.signup.persistent}"/>
+
+                                    <p:toolbar >
+                                        <f:facet name="right" >
+                                            <p:commandButton value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;" actionListener="#{subjectHome.saveValidado()}" action="#{subjectHome.getOutcome()}" ajax="#{true}" type="submit" update="@form">
+                                                <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                            </p:commandButton>
+                                        </f:facet>
+                                    </p:toolbar>
+                                </p:panel>
+                            </div>
+                        </p:tab>
+                    </p:accordionPanel>
                 </div>
+
+                <!-- paneles de datos -->
+                <div class="ui-g-6 ui-md-6 ui-lg-6 ui-xl-12">
+                    <div class="overview-box sales">
+                        <p:graphicImage name="images/icon-sales.png" library="ecuador-layout"  styleClass="image-icon" />
+                        <div class="overview-title">#{i18n['common.invoices.fact.emitidas']}</div>
+                        <div class="overview-numbers">
+                            <h:outputText value="$ #{summaryHome.sumFactEmit()}">
+                            </h:outputText>                          
+                        </div>
+                        <div class="overview-subinfo">
+                            <div class="ui-g-10" style="padding: 0rem">
+                                <div class="ui-g#{summaryHome.calculeProfitRateEquivalentForUX()} progressbar">
+                                    <div class="progress sale"></div>
+                                </div>
+                            </div>
+                            <div class="ui-g-2">
+                                <span><h:outputText value="#{summaryHome.sumFactEmit()}">
+                                        <f:convertNumber type="number" />
+                                    </h:outputText></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="ui-g-6 ui-md-6 ui-lg-6 ui-xl-12">
+                    <div class="overview-box views">
+                        <p:graphicImage name="images/icon-sales.png" library="ecuador-layout" styleClass="image-icon" style="margin-top:10px"/>
+                        <div class="overview-title">#{i18n['common.invoices.fact.num.emitidas']}</div>
+                        <!--<div class="overview-numbers">
+                        #{facturaElectronicaHome.countRowsByTag("org")}
+                    </div>-->
+                        <div class="overview-numbers">
+                            #{summaryHome.contFactEmit()}
+
+                        </div>
+                        <div class="overview-subinfo">
+                            <div class="ui-g-6 progressbar">
+                                <div class="progress view"></div>
+                            </div>
+                            <span class="ui-g-6">#{summaryHome.contFactEmit()} #{i18n['common.more.min']}</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="ui-g-12 ui-md-12 ui-lg-12">
                     <p:panel header="Upcoming Events" style="height:100%" rendered="#{false}">
                         <p:schedule value="#{scheduleView.eventModel}"/>
