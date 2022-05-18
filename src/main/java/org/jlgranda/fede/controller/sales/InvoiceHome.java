@@ -22,10 +22,12 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
+import com.jlgranda.fede.ejb.OrganizationService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.RecordTemplateService;
 import com.jlgranda.fede.ejb.SubjectService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;
+import com.jlgranda.fede.ejb.reportes.ReporteService;
 import com.jlgranda.fede.ejb.sales.DetailService;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import com.jlgranda.fede.ejb.sales.KardexDetailService;
@@ -39,6 +41,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,6 +60,8 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import net.sf.jasperreports.engine.JRException;
+import org.jlgranda.fede.Constantes;
 
 import org.jlgranda.fede.controller.FacturaElectronicaHome;
 import org.jlgranda.fede.controller.FedeController;
@@ -72,8 +77,10 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordTemplate;
+import org.jlgranda.fede.model.compras.Proveedor;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
+import org.jlgranda.fede.model.reportes.Reporte;
 import org.jlgranda.fede.model.sales.Detail;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -83,14 +90,17 @@ import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Payment;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.ui.model.LazyInvoiceDataModel;
+import org.jlgranda.reportes.ReportUtil;
 import org.jlgranda.rules.RuleRunner;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.Group;
+import org.jpapi.model.Organization;
 import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
+import static org.jpapi.util.ImageUtil.generarImagen;
 import org.jpapi.util.Strings;
 import org.kie.internal.builder.KnowledgeBuilderErrors;
 import org.primefaces.PrimeFaces;
@@ -163,6 +173,11 @@ public class InvoiceHome extends FedeController implements Serializable {
     @EJB
     private KardexDetailService kardexDetailService;
 
+    @EJB
+    private OrganizationService organizationService;
+    @EJB
+    private ReporteService reporteService;
+
     /**
      * EDIT OBJECT.
      */
@@ -172,6 +187,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     private List<Detail> candidateDetails = new ArrayList<>();
     private Payment payment;
     private Subject customer;
+    private Reporte selectedReport;
 
     /**
      * UX.
@@ -206,6 +222,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Date daySelected;
     private Account accountPaymentSelected;
     private boolean recordCompleto;
+    private List<Reporte> reports;
 
     private void initializeVars() {
         setAmount(0L); //Sólo si se establece un valor
@@ -245,6 +262,8 @@ public class InvoiceHome extends FedeController implements Serializable {
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
 
+        setReports(reporteService.findByModuloAndOrganization(Constantes.MODULE_PROVIDERS, organizationData.getOrganization()));
+
         initializeActions();
 
         getSubjectAdminHome().setOutcome(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().getVistaVenta() : "invoice");
@@ -265,6 +284,22 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public void setDocumentType(DocumentType documentType) {
         this.documentType = documentType;
+    }
+
+    public List<Reporte> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Reporte> reports) {
+        this.reports = reports;
+    }
+
+    public Reporte getSelectedReport() {
+        return selectedReport;
+    }
+
+    public void setSelectedReport(Reporte selectedReport) {
+        this.selectedReport = selectedReport;
     }
 
     public Invoice getInvoice() {
@@ -796,6 +831,32 @@ public class InvoiceHome extends FedeController implements Serializable {
                 setOutcome("");
                 setSelectedInvoicesByCollect(BigDecimal.ZERO);
                 setSelectedInvoices(new ArrayList<>());
+            }
+
+//            if ("imprimir".equalsIgnoreCase(this.selectedAction) && this.selectedReport != null) {
+            if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("documentType", 4);
+                params.put("organization_id", this.organizationData.getOrganization().getId());
+                params.put("emissionOnMenor", getStart());
+                params.put("emissionOnMayor", getEnd());
+                this.selectedInvoices.forEach(prv -> {
+                    params.put("owner", prv.getOwner().getId());
+                    byte[] encodedLogo = null;
+                    try {
+                        encodedLogo = generarLogo(this.organizationData.getOrganization());
+                    } catch (IOException ex) {
+                        java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    params.put("logo", new String(encodedLogo));
+                    try {
+//                        ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, this.selectedReport.getRutaArchivoXml(), params);
+                        ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, "C:\\reportes\\jasper\\cliente_creditos.jasper", params);
+                    } catch (JRException ex) {
+                        java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                setOutcome("");
             }
         }
     }
@@ -1596,10 +1657,17 @@ public class InvoiceHome extends FedeController implements Serializable {
 
         item = new SelectItem("collect", I18nUtil.getMessages("common.collect"));
         actions.add(item);
+
+        item = new SelectItem("imprimir", I18nUtil.getMessages("common.print"));
+        actions.add(item);
     }
 
     public boolean isActionExecutable() {
         if ("collect".equalsIgnoreCase(this.selectedAction)) {
+            return true;
+        }
+
+        if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
             return true;
         }
         return false;
@@ -1676,4 +1744,20 @@ public class InvoiceHome extends FedeController implements Serializable {
         return this.groups;
     }
 
+    private byte[] generarLogo(Organization organization) throws IOException {
+//        Organization organization = organizationService.findByOwner(proveedor.getOwner());
+        if (organization != null) {
+            if (organization.getPhoto() != null) {
+                return Base64.getEncoder().encode(organization.getPhoto());
+            } else {
+                return Base64.getEncoder().encode(generarImagen(organization.getInitials()));
+            }
+        } else {
+            if (!Strings.isNullOrEmpty(organization.getInitials())) {
+                return Base64.getEncoder().encode(generarImagen(organization.getInitials()));
+            } else {
+                return Base64.getEncoder().encode(generarImagen(this.subject.getOwner().getFullName()));
+            }
+        }
+    }
 }
