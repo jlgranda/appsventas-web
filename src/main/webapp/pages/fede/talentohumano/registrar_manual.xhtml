@@ -50,20 +50,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12">
                     <div class="ui-g-5">
                         <label class="Gray Wid10">#{i18n['app.fede.talentohumano.employee']}&nbsp;</label>
-                        <p:autoComplete id="customer" value="#{journalHome.employeeSelected}" effect="fade" 
-                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                        <p:autoComplete id="customer" 
+
+                                        value="#{journalHome.employeeSelected}" var="entidad"
+                                        itemLabel="#{entidad.owner.code} #{entidad.owner.fullName}" itemValue="#{entidad}" 
                                         completeMethod="#{employeeHome.find}"
-                                        var="entidad" itemValue="#{entidad}" 
-                                        itemLabel="#{entidad.owner.code} #{entidad.owner.fullName}" multiple="false" 
-                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        converter="org.jlgranda.fede.ui.converter.EmployeeConverter" 
-                                        forceSelection="true" required="true" disabled="#{false}"
+                                        converter="org.jlgranda.fede.ui.converter.EmployeeConverter"
+                                        disabled="#{false}"
                                         placeholder="#{i18n['app.fede.talentohumano.employee']}"
-                                        styleClass="Wid100" inputStyleClass="Wid100">
+                                        placeholder="#{i18n['common.find']}"
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{true}">
                             <p:column>
                                 <h:outputText value="#{ui.renderer('', entidad.owner)}"/>
                             </p:column>
-                            <p:ajax event="itemSelect" update="@form" partialSubmit="true" listener="#{journalHome.clear()}"></p:ajax>
+                            <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}" listener="#{journalHome.clear()}"></p:ajax>
                         </p:autoComplete>
                     </div>
                     <div class="ui-g-7">
@@ -84,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g-4">
                                 <label class="Gray">#{i18n['common.month']}&nbsp;</label>
                                 <p:calendar value="#{journalHome.monthSelected}" class="input-sm"
-                                            navigator="true" mode="popup" >
+                                            navigator="#{true}" mode="popup" >
                                     <p:ajax event="dateSelect" listener="#{journalHome.onMonthSelected()}" update="@form" /> 
                                 </p:calendar>
 
@@ -113,7 +119,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
                                 <jlgranda:input id="observation" name="description" type="textarea" label="#{i18n['common.observation']}" 
-                                                value="#{journalHome.journal.description}" required="false" inlinehelp="#{messages['common.observation.inlinehelp']}" 
+                                                value="#{journalHome.journal.description}" required="#{false}" inlinehelp="#{messages['common.observation.inlinehelp']}" 
                                                 render="observation"/>
                                 <p:commandButton id="add-btn" value="#{i18n['Add']}" actionListener="#{journalHome.add()}" 
                                                  icon="fa fa-check" >
@@ -127,7 +133,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                     <div class="ui-g-12">
                         <p:commandButton value="#{i18n['common.refresh']}" id="check-btn" 
-                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="true"
+                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="#{true}"
                                          update="@form:dataTableJournal">
                         </p:commandButton>
                     </div>
@@ -143,7 +149,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      editable="true" editMode="cell"
                                      rendered="#{not empty journalHome.employeeSelected.id}"
                                      rowStyleClass="#{journal.justCreated ? 'Red just' : ''}">
-                            
+
                             <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
                                 <h:outputText value="#{journal.id}" />
                             </p:column>
@@ -157,15 +163,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
-                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
-                                       styleClass="text-right">
-
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.record.time']}" sortBy="#{journal.beginTime}">
                                 <h:outputText value="#{journal.beginTime}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
-                                       styleClass="text-right">
+                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm']}" sortBy="#{journal.beginTime}">
                                 <h:outputText value="#{journal.beginTime}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}" />
                                 </h:outputText>
@@ -182,7 +185,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:setPropertyActionListener value="#{journal}" target="#{journalHome.journalEgress}" />
                                 </p:commandButton>
                                 <p:commandButton value="#{i18n['common.delete']}" id="delete-btn" 
-                                                 actionListener="#{journalHome.delete(journal)}" icon="fa fa-eraser " ajax="true"
+                                                 actionListener="#{journalHome.delete(journal)}" icon="fa fa-eraser " ajax="#{true}"
                                                  update="@form" class="danger-btn">
                                     <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                 </p:commandButton>
@@ -199,7 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 showHour="true" showMinute="true" showSecond="false">
                                     </p:calendar>
                                     <p:commandButton value="#{i18n['common.save']}" id="put-btn-access" 
-                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
+                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="#{true}"
                                                      update="@form" class="danger-btn" onclick="PF('addJournalAcces').hide()">
                                         <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                     </p:commandButton>
@@ -217,7 +220,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 showHour="true" showMinute="true" showSecond="false">
                                     </p:calendar>
                                     <p:commandButton value="#{i18n['common.save']}" id="put-btn-egress" 
-                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="true"
+                                                     actionListener="#{journalHome.put()}" icon="fa fa-times" ajax="#{true}"
                                                      update="@form" class="danger-btn" onclick="PF('addJournalEgress').hide()">
                                         <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                     </p:commandButton>

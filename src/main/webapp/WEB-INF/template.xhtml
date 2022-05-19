@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
@@ -16,6 +17,7 @@
         <title><ui:insert name="title">#{i18n['app.name']} #{i18n['app.version']}</ui:insert></title>
         <h:outputScript name="js/nanoscroller.js" library="ecuador-layout" />
         <h:outputScript name="js/layout.js" library="ecuador-layout" />
+        <script src="https://kit.fontawesome.com/1d5025be71.js" crossorigin="anonymous"></script>
         <ui:insert name="head"/>
         <ui:insert name="style"/>
     </h:head>
@@ -28,7 +30,7 @@
             <div class="layout-main">
                 <div class="route-bar">
                     <div class="route-bar-breadcrumb">
-                        <i class="fa fa-home"></i> 
+                        <i class="pi pi-home"></i> 
                         <span>/ </span>
                         <ui:insert name="viewname" />
                     </div>
@@ -38,15 +40,64 @@
                         <p:growl id="growl-sticky" showDetail="true" sticky="false"  keepAlive="false">
                              <p:autoUpdate />
                         </p:growl>
-                        <ui:insert name="content"></ui:insert>
+                        <c:if test="#{ not empty organizationData.organization or request.isUserInRole('ADMIN') }">
+                            <ui:insert name="content"></ui:insert>
+                        </c:if>
+                        <c:if test="#{empty organizationData.organization }">
+                            <div class="p-col-12 p-md-4">
+                                <p:staticMessage severity="warn" summary="WARN" detail="#{i18n['app.management.organization.empty']}" style="width: 100%"/>
+                                <h1 class="BigTopic">#{i18n['app.management.organization']} </h1>
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12 ui-lg-12 ui-md-12">
+                                        <p:repeat value="#{organizationHome.findOrganizations(subject)}" var="organization">
+                                            <div class="ui-g-3 ui-lg-3 ui-md-3">
+                                                <div class="organization-list-item border-1 p-p-5">
+                                                    <!--<p:graphicImage name="demo/images/product/#{product.image}"/>-->
+                                                    <div class="organization-list-detail">
+                                                        <h1 class="BigTopic">
+                                                            <i class="fa fa-fw fa-building"/><span
+                                                            class="organization-category">#{organization.initials}</span>
+                                                        </h1>
+                                                        <div class="organization-description">#{organization.name}</div>
+<!--                                                        <p:rating readonly="true" value="#{organization.rating}"/>-->
+                                                    </div>
+                                                    <div class="product-list-action">
+                                                        <p:commandButton type="submit" ajax="#{false}" process="@this"
+                                                                         value="#{i18n['common.activate']}"
+                                                                         actionListener="#{organizationData.activateOrganizacion(organization)}"
+                                                                         icon="pi pi-check"
+                                                                         styleClass="warning-btn rounded-btn" 
+                                                                         disabled="#{false}">
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </p:repeat>
+<!--                                        <p:selectOneMenu id="organization" value="#{organizationData.organization}"
+                                                         required="true" immediate="true"
+                                                         onchange="submit()"> 
+                                            <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
+                                            <p:ajax event="change" listener="#{organizationData.organizationValueChange}" partialSubmit="#{true}"/>
+                                            <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
+                                            <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
+                                        </p:selectOneMenu>-->
+                                    </div>
+                                </div>
+                                <div class="EmptyBox10"></div>
+                            </div>
+                        </c:if>
                         <p:messages id="messages" showDetail="true" closable="true" globalOnly="false">
                             <p:autoUpdate />
                         </p:messages>
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
-                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat primary-button" icon="pi pi-times" />
+                            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes danger-btn" icon="pi pi-check" />
                         </p:confirmDialog>
                     </h:form>
+                    <h:form id="frmReporteViewer">
+                        <ui:insert name="report"></ui:insert>
+                    </h:form>
+                    <ui:insert name="popups"></ui:insert>
                 </div>
 
                 <div class="layout-footer">
@@ -56,7 +107,7 @@
 
             <p:ajaxStatus styleClass="layout-ajax-loader">
                 <f:facet name="start">
-                    <i class="fa fa-circle-o-notch fa-spin layout-ajax-loader-icon" aria-hidden="true"></i>
+                    <i class="pi pi-circle-o-notch pi-spin layout-ajax-loader-icon" aria-hidden="true"></i>
                 </f:facet>
 
                 <f:facet name="complete">
@@ -65,9 +116,11 @@
             </p:ajaxStatus>
         </div>
         <ui:insert name="script"/>
+<!--        <h:outputStylesheet name="css/fontawesome.css" library="ecuador-layout" />
+        <h:outputStylesheet name="css/brands.css" library="ecuador-layout" />-->
         <h:outputStylesheet name="css/nanoscroller.css" library="ecuador-layout" />
         <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="ecuador-layout" />
         <h:outputStylesheet name="css/appsventas.css" library="appsventas" />
+        <!--<h:outputStylesheet library="webjars" name="primeflex/2.0.0/primeflex.min.css" />-->
     </h:body>
-z
 </html>

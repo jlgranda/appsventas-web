@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:o="http://omnifaces.org/ui">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.documents.task']}" />
+        <ui:param name="title" value="#{i18n['app.document.task']}" />
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="instanciaProcesoId" value="#{instanciaProcesoHome.instanciaProcesoId}" />
@@ -51,8 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="ui-g ui-fluid p-d-inline-flex p-ai-center" style="vertical-align: middle">
                                         <div class="ui-g-12 ui-md-6 ui-lg-0.6" >
                                             <o:graphicImage value="#{images.getContent(tarea.author.id)}" 
-                                                        alt="#{tarea.author.fullName}" width="32" style="vertical-align: middle; margin-left: .5rem"
-                                                        class="subjectimg"/>
+                                                            alt="#{tarea.author.fullName}" width="32" style="vertical-align: middle; margin-left: .5rem"
+                                                            class="subjectimg"/>
                                         </div>
                                         <div class="ui-g-12 ui-md-6 ui-lg-11">
                                             <div class="ui-g">
@@ -75,7 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                     <span class="p-ml-2" style="vertical-align: middle; margin-left: .5rem; font-weight: normal;">#{tarea.name}</span>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </f:facet>
@@ -90,22 +90,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="ui-g-2 ui-lg-2">
                                                 <!-- Responder/Reenviar -->
                                                 <p:panel id="accionesRespuesta" rendered="#{tarea.checkStatus(EstadoTipo.ESPERA)}">
-                                                    <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
+                                                    <p:commandButton ajax="#{true}" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_RESPONDER, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.owner ==  subject}"
-                                                                     icon="fa fa-mail-reply-all" styleClass="success-btn" title="#{i18n['app.documents.task.reply']}"
+                                                                     icon="fa fa-mail-reply-all" styleClass="success-btn" title="#{i18n['app.document.task.reply']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
-                                                    <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
+                                                    <p:commandButton ajax="#{true}" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_REDIRECCIONAR, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.owner ==  subject}"
-                                                                     icon="fa fa-mail-forward" styleClass="success-btn" title="#{i18n['app.documents.task.forward']}"
+                                                                     icon="fa fa-mail-forward" styleClass="success-btn" title="#{i18n['common.forward']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
-                                                    <p:commandButton ajax="true" update="@form:responsePanel" immediate="true"
+                                                    <p:commandButton ajax="#{true}" update="@form:responsePanel" immediate="true"
                                                                      actionListener="#{instanciaProcesoHome.prepararAccion(EstadoTipo.ACCION_FINALIZAR, tarea)}" 
                                                                      disabled="#{false}" rendered="#{tarea.instanciaProceso.owner ==  subject}"
-                                                                     icon="fa fa-hourglass-end" styleClass="danger-btn" title="#{i18n['app.documents.task.finalize']}"
+                                                                     icon="fa fa-hourglass-end" styleClass="danger-btn" title="#{i18n['common.finish']}"
                                                                      style="width:36px; height: 36px;">
                                                     </p:commandButton>
                                                 </p:panel>
@@ -114,7 +114,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <div class="DispBlockDocuments">
                                             <div class="Separator"></div>
                                             <div class="EmptyBox20"></div>
-                                            <div class="Container100 Fs14 BoldGray FontRobotoRegular">#{tarea.documentos.size()} #{i18n['app.documents.task.documents']}</div>
+                                            <div class="Container100 Fs14 BoldGray FontRobotoRegular">#{tarea.documentos.size()} #{i18n['app.documents.procedures']}</div>
                                             <div class="EmptyBox20"></div>
                                             <div class="ui-g ui-lg-12 ui-fluid">
                                                 <ui:repeat value="#{tarea.documentos}" var="documento" rendered="#{true}">
@@ -125,7 +125,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                             </div>
                                                             <div class="ui-g-12 ui-md-6 ui-lg-10">
                                                                 <span class="task-badge status-ready">
-                                                                    <p:commandLink ajax="false" immediate="true" value="#{ui.truncateFilename(documento.name)}" >
+                                                                    <p:commandLink ajax="#{false}" immediate="true" value="#{ui.truncateFilename(documento.name)}" >
                                                                         <p:fileDownload value="#{instanciaProcesoHome.downloadDocument(documento)}" />
                                                                     </p:commandLink>
                                                                 </span>
@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </ui:repeat>
 
                         <!-- responder/redireccionar -->
-                        <h:panelGroup id="responsePanel" layout="block" class="ui-g ui-fluid" rendered="true">
+                        <h:panelGroup id="responsePanel" layout="block" class="ui-g ui-fluid" rendered="#{true}">
 
                             <div class="Separator"></div>
                             <div class="EmptyBox20"></div>
@@ -154,16 +154,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:panel styleClass="ui-g ui-fluid" rendered="#{instanciaProcesoHome.tareaSeleccionada.checkStatus(EstadoTipo.ESPERA)}">
                                 <!-- Destinatario -->
                                 <h:panelGroup layout="block" class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                    <p:outputLabel for="consignee" value="#{i18n['app.documents.task.consignee']}" />
+                                    <p:outputLabel for="consignee" value="#{i18n['app.document.task.consignee']}" />
                                 </h:panelGroup>
                                 <h:panelGroup class="ui-panelgrid-cell ui-g-12 ui-md-12">
-                                    <p:autoComplete id="consignee" value="#{instanciaProcesoHome.destinatario}" effect="fade" 
-                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" completeMethod="#{subjectHome.find}"
-                                                    var="entidad" itemValue="#{entidad}" itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" multiple="false" 
-                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                    <p:autoComplete id="consignee" 
+                                                    value="#{instanciaProcesoHome.destinatario}" var="entidad" 
+                                                    itemLabel="#{entidad.code} - #{entidad.surname} #{entidad.firstname}" itemValue="#{entidad}" 
+                                                    completeMethod="#{subjectHome.find}"
                                                     converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                                    emptyMessage="#{i18n['common.emptyList']}"
-                                                    forceSelection="true" required="true" disabled="#{tareaHome.tarea.persistent}">
+                                                    disabled="#{tareaHome.tarea.persistent}"
+                                                    placeholder="#{i18n['common.find']}"
+                                                    emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                    converterMessage="#{i18n['property.converter.fail']}"
+                                                    minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                    maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                    multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                                    cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                    required="#{true}">
                                         <p:column>
                                             <h:outputText value="#{entidad.code} - #{entidad.surname} #{entidad.firstname}"/>
                                         </p:column>
@@ -172,13 +179,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <!-- //Destinatario -->
 
                                 <!-- Cuerpo del mensaje -->
-                                <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.tarea.subject']}" 
+                                <jlgranda:input id="nme" name="name" type="text" label="#{i18n['app.fede.task.subject']}" 
                                                 execute="@this save" render="nme" value="#{instanciaProcesoHome.tarea.name}" required="true"
                                                 container="none"/>
 
                                 <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                                 value="#{instanciaProcesoHome.tarea.description}" execute="@this save" render="descrpn" 
-                                                required="false" inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                                required="#{false}" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                                 container="none"/>
 
                                 <div class="DispBlockDocuments">
@@ -199,7 +206,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 <p:commandLink update="@form:documentList" ajax="@this" 
                                                                actionListener="#{instanciaProcesoHome.removerDocumento(documento, instanciaProcesoHome.tarea)}"
                                                                title="#{i18n['common.close']}" styleClass="" style="margin-right:10px;display:inline-block"
-                                                               onclick="if (!confirm('#{i18n['app.documents.document.message.remove']}'))
+                                                               onclick="if (!confirm('#{i18n['app.document.remove.message']}'))
                                                                            return false;">
                                                     <i class="icon-delete gray Fs15" style="margin-top:5px;"></i>
                                                 </p:commandLink>
@@ -213,7 +220,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                                 <p:toolbar>
                                     <f:facet name="left">
-                                        <p:commandButton value="#{i18n['common.submit']}" ajax="false" 
+                                        <p:commandButton value="#{i18n['common.submit']}" ajax="#{false}" 
                                                          actionListener="#{instanciaProcesoHome.send()}" disabled="false" 
                                                          style="width: auto !important;"
                                                          action="#{instanciaProcesoHome.getOutcome()}" type="submit"/>
@@ -229,7 +236,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                                     <f:facet name="right">
 
-                                        <p:commandButton ajax="false" action="#{instanciaProcesoHome.getOutcome()}" disabled="false" immediate="true"
+                                        <p:commandButton ajax="#{false}" action="#{instanciaProcesoHome.getOutcome()}" disabled="false" immediate="true"
                                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
 
     <!--                                    <p:menuButton value="#{i18n['common.options']}">
@@ -246,14 +253,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 my="right bottom" at="left bottom">
                                     <p:panelGrid columns="3" layout="grid">
                                         <jlgranda:input id="documentName" name="documentName" type="text" 
-                                                        placeholder="true" label="#{i18n['common.firstname']}" 
-                                                        value="#{instanciaProcesoHome.documento.name}" required="false" />
+                                                        placeholder="true" label="#{i18n['common.name']}" 
+                                                        value="#{instanciaProcesoHome.documento.name}" required="#{false}" />
 
                                         <jlgranda:input id="documentType" name="documentType" type="select" 
                                                         placeholder="true" label="#{i18n['common.type']}" 
                                                         value="#{instanciaProcesoHome.documento.documentType}" values="#{ui.documentTypesAsSelectItem}" 
                                                         converter="omnifaces.SelectItemsConverter"
-                                                        required="false" 
+                                                        required="#{false}" 
                                                         execute="none" listener="none" render="none"
                                                         onchange="return;"/>
 

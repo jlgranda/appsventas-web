@@ -12,7 +12,7 @@
                 <h:panelGroup layout="block" class="clearfix">
                     <p:inputTextarea value="#{adminTools.query}" rows="7" cols="64" autoResize="false"/>
                 </h:panelGroup>
-                <p:commandButton value="#{i18n['Submit']}" actionListener="#{adminTools.executeQuery}" ajax="true" update="result"/>
+                <p:commandButton value="#{i18n['Submit']}" actionListener="#{adminTools.executeQuery}" ajax="#{true}" update="result"/>
                 <h:panelGroup layout="block" class="clearfix">
                     <p:inputTextarea id="result"  value="#{adminTools.result}" rows="21" cols="64" autoResize="false"/>
                 </h:panelGroup>

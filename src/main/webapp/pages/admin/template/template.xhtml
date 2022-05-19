@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:param name="sitename" value="#{i18n['Sitename']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="templateId" value="#{templateHome.templateId}" />       
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/admin/template/inbox.jsf">#{i18n['app.mail.templates']}</p:link></li>
+            <li>/</li>
+            <li><p:link outcome="/pages/admin/template/template.jsf">#{templateHome.templateId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.mail.template']) : i18n['common.edit']} #{templateHome.template.title}</p:link></li>
+        </ui:define>
+        <ui:define name="subheader">
+            #{templateHome.templateId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.mail.template']).concat(': ') : i18n['common.edit'].concat(': ')} #{templateHome.template.title}
+        </ui:define>
+        <ui:define name="content">
+            <div class="layout-dashboard">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-lg-12">
+                        <!-- Left Side -->
+                        <div class="card card-w-title">
+                            <h1>#{templateHome.template.title}</h1>
+                            <div class="EmptyBox10"></div>
+                            <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}" 
+                                            value="#{templateHome.template.code}"
+                                            required="#{!templateHome.template.persistent}" placeholder="#{false}" render="code"/>
+                            <jlgranda:input id="title" name="title" type="text" label="#{i18n['app.mail.template.title']}" 
+                                            value="#{templateHome.template.title}"
+                                            required="#{!templateHome.template.persistent}" placeholder="#{false}" render="title"/>
+                            <jlgranda:input id="body" name="body" type="richtext" label="#{i18n['app.mail.template.body']}" 
+                                            value="#{templateHome.template.body}" render="body" 
+                                            required="#{false}" inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
+                                            container="none"/>
+
+                            <div class="EmptyBox10"></div>
+
+                            <p:toolbar>
+                                <f:facet name="left">
+                                    <p:commandButton value="#{i18n['common.save']}" ajax="#{false}" 
+                                                     actionListener="#{templateHome.save()}" disabled="false" 
+                                                     style="width: auto !important;"
+                                                     action="#{templateHome.getOutcome()}" type="submit"/>
+                                </f:facet>
+
+                                <f:facet name="right">
+
+                                    <p:commandButton ajax="#{false}" action="#{templateHome.getOutcome()}" disabled="false" immediate="#{true}"
+                                                     icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
+                                    <p:menuButton value="#{i18n['common.options']}">
+                                                                                <p:menuitem value="Update" icon="fa fa-upload" />
+                                                                                <p:menuitem value="Delete" icon="fa fa-trash" />
+                                                                                <p:menuitem value="Homepage" icon="fa fa-home" />
+                                    </p:menuButton>
+                                </f:facet>
+
+                            </p:toolbar>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/.panel-body -->
+
+        </ui:define>
+        <ui:define name="script">
+
+        </ui:define>
+    </ui:composition>
+</html>

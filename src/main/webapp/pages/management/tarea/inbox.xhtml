@@ -26,14 +26,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}" />
         <!--<ui:param name="title" value="#{i18n['fede']}" />-->
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.documents']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.documents.procedures']}</ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="tags" value="#{tareaHome.tags}" />
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="/pages/management/tarea/inbox.jsf">#{i18n['common.tasks']}</p:link></li>
+            <li><p:link outcome="/pages/management/tarea/inbox.jsf">#{i18n['app.document.tasks']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <!-- /.row -->
@@ -48,7 +48,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <p:calendar value="#{tareaHome.end}" class="input-sm">
                             <p:ajax event="dateSelect" listener="#{tareaHome.clear()}" oncomplete="form.submit();"/>
                         </p:calendar>
-                        <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/management/tarea/tarea.jsf"/>
+                        <!--<p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/management/tarea/tarea.jsf"/>-->
+                        <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/management/proceso/iniciar_instancia_proceso.jsf"/>
                     </div>
                     <div class="card">
                         <p:dataTable var="tarea" 
@@ -57,15 +58,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      reflow="true" selection="#{tareaHome.selectedBussinesEntities}" 
                                      rowKey="#{instanciaProceso.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                     id="dataTable" widgetVar="dataTable" lazy="true">
                             <p:ajax event="rowSelect" listener="#{tareaHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                             
-                            <p:column headerText="#{i18n['app.documents.task.applicant']}" sortBy="#{tarea.name}">
+                            <p:column headerText="#{i18n['app.document.task.applicant']}" sortBy="#{tarea.name}">
                                 <h:outputText value="#{tarea.author.fullName}" />
                             </p:column>
                             
-                            <p:column headerText="#{i18n['app.documents.task']}" sortBy="#{tarea.name}">
+                            <p:column headerText="#{i18n['app.document.task']}" sortBy="#{tarea.name}">
                                 <h:outputText value="#{tarea.name}" />
                             </p:column>
                             
@@ -73,8 +74,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{tarea.instanciaProceso.name}" />
                             </p:column>
                             
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.crationDate']}" sortBy="#{tarea.createdOn}"
-                                       styleClass="text-right">
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{tarea.createdOn}">
                                 <h:outputText value="#{tarea.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

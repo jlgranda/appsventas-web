@@ -155,7 +155,7 @@ public class Templates {
 
         //footerComponent = cmp.pageXofY().setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
         //footerComponent = cmp.text("AppsVentas por jlgranda.com").setStyle(stl.style(boldCenteredStyle).setTopBorder(stl.pen1Point()));
-        footerComponent = cmp.text("De Loja a domicilio www.cafesdeloja.com").setStyle(stl.style(footerStyle).setTopBorder(stl.pen1Point()));
+        footerComponent = cmp.text("Plataforma de negocios APPSVENTAS").setStyle(stl.style(footerStyle).setTopBorder(stl.pen1Point()));
     }
 
     /**
@@ -173,7 +173,7 @@ public class Templates {
                 .newRow()
                 .add(cmp.line())
                 .newRow()
-                .add(cmp.verticalGap(6));
+                .add(cmp.verticalGap(5));
     }
 
     /**
@@ -256,8 +256,8 @@ public class Templates {
                 .newRow()
                 .add(cmp.text("Fecha: " + Dates.formatDate(invoice.getCreatedOn(), "d/MM/yyyy HH:mm")).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
                 .newRow()
-                .add(cmp.text("Mesa: " + invoice.getBoardNumber() + " / Comanda: " + invoice.getCode() + " / Servicio: " + invoice.getAuthor().getFirstname()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
-                .add(cmp.verticalGap(5));
+                .add(cmp.text("Mesa: " + invoice.getBoardNumber() + " : " + invoice.getCode() + " / Servicio: " + invoice.getAuthor().getFirstname()).setStyle(rootStyle).setHorizontalTextAlignment(HorizontalTextAlignment.LEFT))
+                .add(cmp.verticalGap(4));
     }
     /**
      * Creates custom component which is possible to add to any report band

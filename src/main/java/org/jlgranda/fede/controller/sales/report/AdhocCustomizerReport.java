@@ -43,8 +43,8 @@ import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.dynamicreports.report.definition.datatype.DRIDataType;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.JRDataSource;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.model.sales.Invoice;
-import org.jlgranda.fede.model.sales.Detail;
 
 /**
  * @author Ricardo Mariaca (r.mariaca@dynamicreports.org)
@@ -62,31 +62,31 @@ public class AdhocCustomizerReport {
         AdhocReport report = new AdhocReport();
         configuration.setReport(report);
 
-        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth() - 20;
+        int pageWidth = Templates.reportTemplate.getReportTemplate().getPageWidth() - 24;
         
         //columns
         AdhocColumn column = new AdhocColumn();
         column.setName("cantidad");
         column.setTitle("Cant.");
-        column.setWidth(calculePorcentaje(pageWidth, 14));
+        column.setWidth(calculePorcentaje(pageWidth, 16));
         report.addColumn(column);
         
         column = new AdhocColumn();
         column.setName("descripcion");
         column.setTitle("Descripción");
-        column.setWidth(calculePorcentaje(pageWidth, 56));
+        column.setWidth(calculePorcentaje(pageWidth, 50));
         report.addColumn(column);
         
         column = new AdhocColumn();
         column.setName("preciounitario");
         column.setTitle("P.U.");
-        column.setWidth(calculePorcentaje(pageWidth, 14));
+        column.setWidth(calculePorcentaje(pageWidth, 16));
         report.addColumn(column);
         
         column = new AdhocColumn();
         column.setName("subtotal");
-        column.setTitle("Subtotal");
-        column.setWidth(calculePorcentaje(pageWidth, 16));
+        column.setTitle("Subt.");
+        column.setWidth(calculePorcentaje(pageWidth, 18));
         report.addColumn(column);
         
 	//groups
@@ -121,7 +121,7 @@ public class AdhocCustomizerReport {
             
             
             //PDF
-            JasperPdfExporterBuilder pdfExporter = export.pdfExporter("/tmp/" + invoice.getSequencial() + ".pdf")
+            JasperPdfExporterBuilder pdfExporter = export.pdfExporter(Constantes.DIRECTORIO_SALIDA_REPORTES + invoice.getUuid() + ".pdf")
                     .setEncrypted(false);
             reportBuilder.toPdf(pdfExporter);
             
@@ -167,17 +167,17 @@ public class AdhocCustomizerReport {
     private JRDataSource createDataSource(Invoice invoice) {
         DRDataSource dataSource = new DRDataSource("cantidad", "descripcion", "preciounitario", "subtotal");
         if ( !Boolean.TRUE.equals(invoice.getPrintAlias()) ){
-            invoice.getDetails().stream().filter(detail -> (detail.getAmount() != 0.0f)).forEachOrdered(detail -> {
-                BigDecimal subtotal = detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount()));
+            invoice.getDetails().stream().filter(detail -> (BigDecimal.ZERO.compareTo(detail.getAmount()) != 0)).forEachOrdered(detail -> {
+                BigDecimal subtotal = detail.getPrice().multiply(detail.getAmount());
                 dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), subtotal);
             });
             //Agregar el descuento como item
             if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){
                 BigDecimal discount = invoice.getPaymentsDiscount().multiply(BigDecimal.valueOf(-1));
-                dataSource.add(1.0f, "Descuento", discount, discount);
+                dataSource.add(BigDecimal.ONE, "Descuento", discount, discount);
             }
         } else {
-            dataSource.add(1.0f, invoice.getPrintAliasSummary(), invoice.getTotalSinImpuesto(), invoice.getTotalSinImpuesto());
+            dataSource.add(BigDecimal.ONE, invoice.getPrintAliasSummary(), invoice.getTotalSinImpuesto(), invoice.getTotalSinImpuesto());
         }
         return dataSource;
     }
@@ -228,7 +228,7 @@ public class AdhocCustomizerReport {
         protected DRIDataType<?, ?> getFieldType(String name) {
 
             if (name.equals("cantidad")) {
-                return type.floatType();
+                return type.bigDecimalType();
             }
             if (name.equals("descripcion")) {
                 return type.stringType();
@@ -261,7 +261,7 @@ public class AdhocCustomizerReport {
                 return "P.U.";
             }
             if (name.equals("subtotal")) {
-                return "Subtotal";
+                return "Subt.";
             }
             return name;
         }

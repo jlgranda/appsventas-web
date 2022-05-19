@@ -1,7 +1,6 @@
 package org.apache.shiro.authc.credential;
 
 import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.credential.PasswordMatcher;
 
 /**
  * Applies a temporary fix to the PasswordMatcher since it does not take character arrays into account.

@@ -17,22 +17,24 @@
  */
 package org.jlgranda.fede.ui.util;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Account;
+import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.model.document.FacturaElectronica;
@@ -46,6 +48,7 @@ import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
 import org.jpapi.model.TaxType;
 import org.jpapi.model.profile.Subject;
+import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.omnifaces.el.functions.Strings;
 import org.primefaces.model.DefaultStreamedContent;
@@ -112,6 +115,18 @@ public class UI {
         for (ProductType t : getProductTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
             items.add(item);
+        }
+        return items;
+    }
+
+    public List<SelectItem> getProductTypesEspecificsAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (ProductType t : getProductTypes()) {
+            if (ProductType.RAW_MATERIAL.equals(t) || ProductType.SERVICE.equals(t)) {
+                item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+                items.add(item);
+            }
         }
         return items;
     }
@@ -186,6 +201,30 @@ public class UI {
         return items;
     }
 
+    public SelectItem[] getGeneralJournalAsSelectItem(List<GeneralJournal> entities) {
+
+        boolean selectOne = true;
+        int size = 1;
+        if (entities != null) {
+            size = selectOne ? entities.size() + 1 : entities.size();
+        }
+        SelectItem[] items = new SelectItem[size];
+        int i = 0;
+        if (selectOne) {
+            items[0] = new SelectItem("", I18nUtil.getMessages("common.choice"));
+            i++;
+        }
+
+        if (size == 1) {
+            return items;
+        }
+
+        for (GeneralJournal x : entities) {
+            items[i++] = new SelectItem(x, x.getName());
+        }
+        return items;
+    }
+
     public SelectItem[] getAccountAsSelectItem(List<Account> entities) {
         boolean selectOne = true;
         int size = selectOne ? entities.size() + 1 : entities.size();
@@ -196,7 +235,7 @@ public class UI {
             i++;
         }
         for (Account x : entities) {
-            items[i++] = new SelectItem(x, x.getName());
+            items[i++] = new SelectItem(x, x.getCode() + " - " + x.getName());
         }
         return items;
     }
@@ -204,13 +243,10 @@ public class UI {
     public List<SelectItem> getAccountTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
-        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-        items.add(item);
         item = new SelectItem("DEBE", "DEBE");
         items.add(item);
         item = new SelectItem("HABER", "HABER");
         items.add(item);
-
         return items;
     }
 
@@ -223,25 +259,36 @@ public class UI {
         return items;
     }
 
-    public List<SelectItem> getOperationTypesAsSelectItem() {
+    public List<SelectItem> getOperationTypesAsSelectItem(String type) {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL.toString(), KardexDetail.OperationType.EXISTENCIA_INICIAL.toString());
-//        items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.PRODUCCION.toString(), KardexDetail.OperationType.PRODUCCION.toString());
-        items.add(item);
-        item = new SelectItem(KardexDetail.OperationType.SALIDA_INVENTARIO.toString(), KardexDetail.OperationType.SALIDA_INVENTARIO.toString());
-        items.add(item);
+        if ("input".equals(type)) {
+            item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL, "INVENTARIO INICIAL");
+            items.add(item);
+            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO, "PRODUCTO TERMINADO");
+            items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
 //        items.add(item);
+//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
+//        items.add(item);
+        } else if ("output".equals(type)) {
+            item = new SelectItem(KardexDetail.OperationType.SALIDA_INVENTARIO, "SALIDA DE INVENTARIO");
+            items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
 //        items.add(item);
 //        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_COMPRA.toString(), KardexDetail.OperationType.DEVOLUCION_COMPRA.toString());
 //        items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
-//        items.add(item);
+        } else if ("input-raw".equals(type)) {
+            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_INGRESO_MATERIA_PRIMA, "INGRESO DE MATERIA PRIMA");
+            items.add(item);
+        } else if ("output-raw".equals(type)) {
+//            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO, "PRODUCTO TERMINADO");
+//            items.add(item);
+            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_BAJA_MATERIA_PRIMA, "BAJA DE MATERIA PRIMA");
+            items.add(item);
+        }
 
         return items;
     }
@@ -283,6 +330,18 @@ public class UI {
         for (EmissionType t : getEmissionTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
             items.add(item);
+        }
+        return items;
+    }
+
+    public List<SelectItem> getEmisionCompraTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (EmissionType t : getEmissionTypes()) {
+            if (t.equals(EmissionType.PURCHASE_CASH) || t.equals(EmissionType.PURCHASE_CREDIT)) {
+                item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+                items.add(item);
+            }
         }
         return items;
     }
@@ -353,10 +412,12 @@ public class UI {
         SelectItem item = null;
         item = new SelectItem("EFECTIVO", "EFECTIVO");
         items.add(item);
-        item = new SelectItem("TARJETA CREDITO", "TARJETA CREDITO");
+        item = new SelectItem("TRANSFERENCIA", "TRANSFERENCIA");
         items.add(item);
-        item = new SelectItem("TARJETA DEBITO", "TARJETA DEBITO");
-        items.add(item);
+//        item = new SelectItem("TARJETA CREDITO", "TARJETA CREDITO");
+//        items.add(item);
+//        item = new SelectItem("TARJETA DEBITO", "TARJETA DEBITO");
+//        items.add(item);
 
         return items;
     }
@@ -384,6 +445,32 @@ public class UI {
             item = new SelectItem(cleanValue(o), o.getInitials());
             items.add(item);
         }
+
+        return items;
+    }
+
+    public List<SelectItem> getAccountsAsSelectItem(List<Account> accounts) {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
+        for (Account o : accounts) {
+            item = new SelectItem(cleanValue(o), o.getName());
+            items.add(item);
+        }
+
+        return items;
+    }
+
+    public List<SelectItem> getReportTypeAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+//        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+//        items.add(item);
+        item = new SelectItem("LISTA", "LISTA");
+        items.add(item);
+        item = new SelectItem("INDIVIDUAL", "INDIVIDUAL");
+        items.add(item);
 
         return items;
     }
@@ -424,6 +511,7 @@ public class UI {
      * @param gap
      * @return
      */
+    @Deprecated
     public String calculeEmoticon(BigDecimal total, int gap) {
         String emoticon = "<i class=\"fa  fa-flag-o\"></i>";
         int half_gap = gap / 2;
@@ -474,14 +562,9 @@ public class UI {
 
         double factor = (porcentaje / (double) 100);
         int valor = (int) (pageWidth * factor);
-        //System.out.println(">>> pageWidth: " + pageWidth + ", pocentaje:" + porcentaje + ", factor" + factor+ ", valor " + valor);
         return valor;
     }
 
-//    public String renderer(String templete, BussinesEntity entity){
-//        //TODO Aplicar template via velocity
-//        return entity.getName() + ", " + entity.getCode() + ", " + entity.getDescription();
-//    }
     public String renderer(String template, Subject entity) {
         if (entity == null) {
             return "";
@@ -521,13 +604,13 @@ public class UI {
         return Strings.abbreviate(string, Integer.valueOf(settingHome.getValue("app.documents.filename.length", "14")));
     }
 
-    public static void main(String[] args) {
-        System.out.println(new org.apache.commons.codec.digest.Crypt().crypt("f3d3"));
+    public static final Object getPropertyValueViaReflection(Object o, String field)
+            throws ReflectiveOperationException, IllegalArgumentException, IntrospectionException {
+        return new PropertyDescriptor(field, o.getClass()).getReadMethod().invoke(o);
+    }
 
-        UI.calculePorcentaje(297, 10);
-        UI.calculePorcentaje(297, 60);
-        UI.calculePorcentaje(297, 15);
-        UI.calculePorcentaje(297, 15);
+    public static Date now() {
+        return Dates.now();
     }
 
 }

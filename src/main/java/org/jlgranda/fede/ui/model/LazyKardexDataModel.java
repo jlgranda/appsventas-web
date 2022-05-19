@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.jlgranda.fede.model.sales.Kardex;
+import org.jlgranda.fede.model.sales.KardexType;
 import org.jlgranda.fede.model.sales.Kardex_;
 import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
@@ -58,6 +59,7 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
     private Date end;
     private String filterValue;
     private String tags;
+    private KardexType kardexType;
 
     public LazyKardexDataModel(KardexService bussinesEntityService) {
         setPageSize(MAX_RESULTS);
@@ -70,7 +72,6 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
     }
 
     public List<Kardex> getResultList() {
-        logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
@@ -203,6 +204,10 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
+        
+        _filters.put("deleted", false);
+        
+        _filters.put(Kardex_.kardexType.getName(), this.kardexType);
 
         _filters.putAll(filters);
 
@@ -213,6 +218,48 @@ public class LazyKardexDataModel extends LazyDataModel<Kardex> implements Serial
         QueryData<Kardex> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
+    }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+
+        if (!range.isEmpty()) {
+            _filters.put(Kardex_.createdOn.getName(), range); //Filtro de fechas
+        }
+        if (getOwner() != null) {
+            _filters.put(Kardex_.owner.getName(), getOwner()); //Filtro de Subject
+        }
+        if (getOrganization() != null) {
+            _filters.put(Kardex_.organization.getName(), getOrganization()); //Filtro de org
+
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+
+        QueryData<Kardex> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
+
+    public void setKardexType(KardexType kardexType) {
+        this.kardexType =  kardexType;
     }
 
 }

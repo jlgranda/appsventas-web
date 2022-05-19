@@ -31,6 +31,7 @@ import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.ui.model.LazyEmployeeDataModel;
 import org.jpapi.model.Group;
@@ -136,6 +137,10 @@ public class EmployeeHome extends FedeController implements Serializable {
     public void setSubjectAdminHome(SubjectAdminHome subjectAdminHome) {
         this.subjectAdminHome = subjectAdminHome;
     }
+    
+    public void clear(){
+        this.filter();
+    }
 
     /**
      * Filtro que llena el Lazy Datamodel
@@ -144,10 +149,9 @@ public class EmployeeHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyEmployeeDataModel(employeeService);
         }
-        
 //        lazyDataModel.setOwner(null); //listar todos
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
-        lazyDataModel.setAuthor(subject);
+        //lazyDataModel.setAuthor(subject);
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
@@ -227,5 +231,10 @@ public class EmployeeHome extends FedeController implements Serializable {
         filters.put("surname", keyword);
         QueryData<Employee> queryData = employeeService.find("Employee.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
         return queryData.getResult();
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

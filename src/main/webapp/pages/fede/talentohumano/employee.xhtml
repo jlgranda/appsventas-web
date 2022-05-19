@@ -43,22 +43,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12">
                 <h1 class="BigTopic">#{i18n['app.fede.talentohumano.employee']} </h1>
-                <p:autoComplete id="customer" value="#{employeeHome.employee.owner}" effect="fade" 
-                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                <p:autoComplete id="customer"
+                                value="#{employeeHome.employee.owner}" var="entidad"
+                                itemLabel="#{entidad.code} #{entidad.fullName}" itemValue="#{entidad}" 
                                 completeMethod="#{subjectHome.find}"
-                                var="entidad" itemValue="#{entidad}" 
-                                itemLabel="#{entidad.code} #{entidad.fullName}" multiple="false" 
-                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                 converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                forceSelection="true" required="true"
-                                placeholder="#{i18n['app.fede.sales.invoice.header']}">
+                                placeholder="#{i18n['app.fede.sales.invoice.header']}"
+                                emptyMessage="#{i18n['app.setting.list.empty']}"
+                                converterMessage="#{i18n['property.converter.fail']}"
+                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                required="#{true}" >
                     <p:column>
                         <h:outputText value="#{ui.renderer('', entidad)}"/>
                     </p:column>
-                    <p:ajax event="itemSelect" update="@form" partialSubmit="true"></p:ajax>
+                    <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}"></p:ajax>
                 </p:autoComplete>
-                <p:commandButton id="button-change-customer" icon="fa fa-user-plus" 
-                                 actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="true"
+                <p:commandButton id="button-change-customer" 
+                                 icon="fa fa-user-plus" styleClass="primary-button"
+                                 actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="#{true}"
                                  immediate="true"
                                  styleClass="RedButton" style="width:30px">
                     <p:ajax event="dialogReturn" update="@form"
@@ -75,8 +80,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      reflow="true" selection="#{employeeHome.employee.role}" 
                                      rowKey="#{role.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
-                            <p:column selectionMode="single" style="width:32px;text-align:center"/>
+                                     id="dataTable" widgetVar="dataTable" lazy="true">
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.name}" />
                             </p:column>
@@ -86,8 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.dedication']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.dedication}" />
                             </p:column>
-                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{role.createdOn}"
-                                       styleClass="text-right">
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{role.createdOn}" class="Wid10">
                                 <h:outputText value="#{role.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
@@ -95,22 +99,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:dataTable>
                     </div>
                 </div>
-                <h1 class="BigTopic">#{i18n['app.management.organization']} </h1>
-                <div class="ui-g">
-                    <div class="ui-g-12">
-                        <p:selectOneMenu id="organization" value="#{employeeHome.employee.organization}" effect="fade"
-                                             required="true" immediate="false"> 
-                                <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
-                                <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="true" itemValue="#{null}"/> 
-                                <f:selectItems value="#{organizationHome.findOrganizations()}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
-                            </p:selectOneMenu>
-                    </div>
-                </div>
-                <div class="EmptyBox10"></div>
-                
                 <p:toolbar rendered="#{true}">
                     <f:facet name="left">
-                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}" 
                                          actionListener="#{employeeHome.save()}" action="#{employeeHome.redirect()}" 
                                          disabled="#{false}" 
                                          style="width: auto !important;"
@@ -122,7 +113,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <f:facet name="right">
 
-                        <p:commandButton ajax="true" disabled="false" immediate="true"
+                        <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                          actionListener="#{employeeHome.closeDialog(null)}" 
                                          action="home"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"

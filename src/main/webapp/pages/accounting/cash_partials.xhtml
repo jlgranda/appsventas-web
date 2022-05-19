@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="cashBoxGeneralId" value="#{cashBoxGeneralHome.cashBoxGeneralId}"/>
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting']}</li>
+            <li>/</li>
+            <li><p:link outcome="cash-close" value="#{i18n['app.fede.accounting.close.cash']}">
+                    <f:param name="cashBoxGeneralId" value="#{cashBoxGeneralHome.cashBoxGeneralId}"/>
+                </p:link>
+            </li>
+            <li>/</li>
+            <li>#{i18n['common.date.today']}</li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <h3 class="TexUppercase">#{i18n['app.fede.accounting.close.cashs.partials']} #{i18n['common.registereds']}</h3>
+                <p:accordionPanel activeIndex="-1" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12"><!--Panel de historial-->
+                    <c:forEach var="cashBoxPartial" items="#{cashBoxGeneralHome.getCashBoxPartialsCompleted(cashBoxGeneralHome.cashBoxGeneral.cashBoxPartials)}">
+                        <p:tab>
+                            <f:facet name="title">
+                                <h:outputText value="#{cashBoxPartial.name} #{' ('}"></h:outputText>
+                                <h:outputText value="#{cashBoxPartial.lastUpdate}">
+                                    <f:converter converterId="org.ocpsoft.PrettyTimeConverter" />
+                                </h:outputText>
+                                <h:outputText value="#{')'} "></h:outputText>
+                            </f:facet>
+                            <p:panel id="panel-breakdown" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BordCard MarTop2"><!--Panel de registro de caja-->
+                                <div class="ui-fluid"><!--Desglose de Caja-->
+                                    <div class="TexUppercase TexAlCenter Fs22"> 
+                                        Dinero encontrado antes del desglose
+                                        <h:outputText value="#{cashBoxPartial.cashPartial}" class="FontBold">
+                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                        </h:outputText>
+                                    </div>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                        <p:dataTable id="dataTable-bills" widgetVar="dataTable-bills" lazy="#{false}"
+                                                     value="#{cashBoxGeneralHome.getCashBoxDetailsByDenominationType(cashBoxPartial.cashBoxDetails, 'BILL')}" var="cashBoxDetail"
+                                                     rowKey="#{cashBoxDetail.denomination}"
+                                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                     paginator="#{false}" paginatorPosition="bottom" 
+                                                     draggableColumns="#{true}" reflow="#{false}" 
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                     sortMode="single"
+                                                     editable="#{false}">
+                                            <f:facet name="header">
+                                                <label class="bold-capital">#{i18n['common.registry']} #{i18n['common.of']} #{i18n['common.money.bills']}</label>
+                                            </f:facet>
+                                            <p:column headerText="#{i18n['common.money.letter']}">
+                                                <h:outputText value="#{cashBoxDetail.denomination}"/>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.quantity']}" class="Wid30">
+                                                <p:cellEditor>
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{cashBoxDetail.quantity}" class="Fright"></h:outputText>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <p:spinner value="#{cashBoxDetail.quantity}" min="0" 
+                                                                   immediate="#{true}" 
+                                                                   required="#{false}">
+                                                        </p:spinner>
+                                                    </f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['app.fede.payment.cash']}">
+                                                <h:outputText value="#{cashBoxDetail.amount}" class="Fright">
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                </h:outputText>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:panel id="bills-subtotal" class="FontBold TexAlRight MarRightPerc5">
+                                            <h:outputText value="#{cashBoxPartial.totalCashBills}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </p:panel>
+                                    </div>
+                                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                                        <p:dataTable id="dataTable-moneys" widgetVar="dataTable-moneys" lazy="#{false}"
+                                                     value="#{cashBoxGeneralHome.getCashBoxDetailsByDenominationType(cashBoxPartial.cashBoxDetails, 'MONEY')}" var="cashBoxDetail"
+                                                     rowKey="#{cashBoxDetail.denomination}"
+                                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                                     paginator="#{false}" paginatorPosition="bottom" 
+                                                     draggableColumns="#{true}" reflow="#{false}" 
+                                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                                     sortMode="single"
+                                                     editable="#{false}">
+                                            <f:facet name="header">
+                                                <label class="bold-capital">#{i18n['common.registry']} #{i18n['common.of']} #{i18n['common.money.moneys']}</label>
+                                            </f:facet>
+                                            <p:column headerText="#{i18n['common.money.letter']}">
+                                                <h:outputText value="#{cashBoxDetail.denomination.contains('MONEDA') ? '$1 (m)':cashBoxDetail.denomination}"/>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['common.quantity']}" class="Wid30">
+                                                <p:cellEditor>
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{cashBoxDetail.quantity}" class="Fright"></h:outputText>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <p:spinner value="#{cashBoxDetail.quantity}" min="0"
+                                                                   immediate="#{true}" 
+                                                                   required="#{false}">
+                                                        </p:spinner>
+                                                    </f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                                            <p:column headerText="#{i18n['app.fede.payment.cash']}">
+                                                <h:outputText value="#{cashBoxDetail.amount}" class="Fright">
+                                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                                </h:outputText>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:panel id="moneys-subtotal" class="FontBold TexAlRight MarRightPerc5">
+                                            <h:outputText value="#{cashBoxPartial.totalCashMoneys}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </p:panel>
+                                    </div>
+                                    <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8">
+                                        #{i18n['common.observations']}
+                                        <p:inputTextarea value="#{cashBoxPartial.description}" 
+                                                         rows="3" cols="30" autoResize="false"/>
+                                    </div>
+                                    <p:panel id="dataTable-summary"
+                                             class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4">
+                                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5 BigTopic Fs14">#{i18n['common.total']}</div>
+                                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight BigTopic Fs14">
+                                            <h:outputText value="#{cashBoxPartial.totalCashBreakdown}"><f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/></h:outputText>
+                                        </div>
+                                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.excess']}</div>
+                                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight">
+                                            <h:outputText value="#{cashBoxPartial.excessCash}"
+                                                          style="#{cashBoxPartial.excessCash gt 0 ? 'color: #34A835': ''}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </div>
+                                        <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-8 Padding5">#{i18n['common.missing']}</div>
+                                        <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4 Padding5 TexAlRight">
+                                            <h:outputText value="#{cashBoxPartial.missCash}"
+                                                          style="#{cashBoxPartial.missCash lt 0 ? 'color: #e91224': ''}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </p:panel>
+                        </p:tab>
+                    </c:forEach>
+                </p:accordionPanel>
+            </div>
+
+        </ui:define>
+        <ui:define name="style">
+        </ui:define>
+    </ui:composition>
+</html>

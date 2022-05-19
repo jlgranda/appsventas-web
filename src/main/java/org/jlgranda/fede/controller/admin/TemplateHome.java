@@ -39,6 +39,7 @@ import net.tecnopro.mailing.Notification;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.document.FacturaElectronica;
 import org.jlgranda.fede.ui.model.LazyTemplateDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -175,7 +176,7 @@ public class TemplateHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-                redirectTo("/pages/fede/admin/template/template.jsf?templateId=" + ((BussinesEntity) event.getObject()).getId());
+                redirectTo("/pages/admin/template/template.jsf?templateId=" + ((BussinesEntity) event.getObject()).getId());
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
@@ -230,7 +231,7 @@ public class TemplateHome extends FedeController implements Serializable {
             logger.warn(I18nUtil.getMessages("app.mail.template.404", templateId));
         } else {
 
-            String _from = settingHome.getValue("mail.smtps.from", "APPSVENTAS <appsventas@jlgranda.com>");
+            String _from = settingHome.getValue("mail.smtps.from", "AppsVentas Plataforma <notificacion@jlgranda.com>");
             String title;
             String body;
             String txt;
@@ -260,6 +261,11 @@ public class TemplateHome extends FedeController implements Serializable {
 
     @Override
     protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

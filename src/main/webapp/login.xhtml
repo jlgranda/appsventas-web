@@ -30,14 +30,14 @@
             <div class="login-panel">
                 <h:form id="appsventas-login-form"  class="form-signin">
                     <p:graphicImage name="images/appsventas.png" library="appsventas"  style="margin-bottom: 8px;"/>
-                    <p:inputText id="j_username" placeholder="#{i18n['common.email']}" required="true"/>
+                    <p:inputText id="j_username" placeholder="#{i18n['app.email']}" required="true"/>
                     <p:inputText id="j_password" type="password" placeholder="#{i18n['common.password']}" required="true"/>
                     <div class="checkbox-container">
                         <div class="remember-me">
                             <p:selectBooleanCheckbox id="rememberMe"/>
                             <span>#{i18n['common.remeberme.here']}</span>
                         </div>
-                        <p:commandButton id="submit" value="#{i18n['common.login']}" ajax="false" type="submit"/>
+                        <p:commandButton id="submit" value="#{i18n['common.login']}" ajax="#{false}" type="submit"/>
                     </div>
 
                     <div class="separator"></div>

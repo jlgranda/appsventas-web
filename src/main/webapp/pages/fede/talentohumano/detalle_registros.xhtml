@@ -71,17 +71,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:column headerText="#{i18n['common.id']}" sortBy="#{journal.id}">
                                     <h:outputText value="#{journal.id}" />
                                 </p:column>
-                                <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
+                                <p:column headerText="#{i18n['common.name']}" sortBy="#{journal.name}">
                                     <h:outputText value="#{journal.name}" />
                                 </p:column>
-                                <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
-                                           styleClass="text-right">
+                                <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time']}" sortBy="#{journal.beginTime}">
                                     <h:outputText value="#{journal.beginTime}">
                                         <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}"/>
                                     </h:outputText>
                                 </p:column>                    
-                                <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
-                                           styleClass="text-right">
+                                <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm']}" sortBy="#{journal.beginTime}">
                                     <h:outputText value="#{journal.beginTime}">
                                         <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.talentohumano.time.pattern', 'HH:mm')}"/>
                                     </h:outputText>

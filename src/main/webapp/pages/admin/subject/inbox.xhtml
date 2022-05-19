@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="tags" value="#{subjectAdminHome.tags}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/admin/subject/inbox.jsf">#{i18n['app.management.persons']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <!-- /.row -->
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="card">
+                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                        <p:inputText value="#{subjectAdminHome.keyword}" class="input-sm">
+                        </p:inputText>
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{subjectAdminHome.filter()}" ajax="#{false}">
+                        </p:commandButton>
+
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/admin/subject/profile.jsf"/>
+                    </div>
+                    <div class="Card">
+                        <p:dataTable id="dataTable-persons" widgetVar="dataTable-persons" lazy="#{true}"
+                                     value="#{subjectAdminHome.lazyDataModel}" var="_subject"
+                                     selection="#{subjectAdminHome.selectedBussinesEntities}"
+                                     rowKey="#{_subject.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
+                            <p:ajax event="rowSelect" listener="#{subjectAdminHome.onRowSelect}"/>
+                            <p:ajax event="rowSelectCheckbox" 
+                                    process="dataTable-persons" update="dataTable-persons"/>
+                                                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column headerText="#{i18n['common.lastnames']}" sortBy="#{_subject.surname}">
+                                <h:outputText value="#{_subject.surname}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.firstnames']}" sortBy="#{_subject.firstname}">
+                                <h:outputText value="#{_subject.firstname}" />
+                            </p:column>
+                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{_subject.createdOn}" class="Wid10">
+                                <h:outputText value="#{_subject.createdOn}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="code"  headerText="#{i18n['common.dni']}" sortBy="#{_subject.code}">
+                                <h:outputText value="#{_subject.code}" class="Fright"/>
+                            </p:column>
+                            <p:column  id="codeType"  headerText="#{i18n['app.email']}" sortBy="#{_subject.email}">
+                                <h:outputText value="#{_subject.email}"/>
+                            </p:column>
+                        </p:dataTable>
+                        <!--/.panel-body -->
+                    </div>
+                    <!--/.panel--> 
+                </div>
+            </div>
+            <!-- /.row -->
+        </ui:define>
+        <ui:define name="script">
+            <style></style>
+            <script>
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

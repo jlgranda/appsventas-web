@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.close.cash']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting']}</li>
+            <li>/</li>
+            <li><p:link outcome="cash-initial">#{i18n['app.fede.accounting.close.cash']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="layout-dashboard">
+                <div class="ui-g">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
+                        <p:panel header="#{i18n['app.fede.accounting.close.cash']}" styleClass="statistics ui-g">
+                            <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 left-side">
+                                <i class="fa fa-usd"></i>
+                                <span class="icon-label">#{i18n['common.last']} #{i18n['app.fede.accounting.close.cash']}</span>
+                                <span class="icon-label" rendered="#{not empty cashBoxGeneralHome.cashBoxPartialPrevious}">
+                                    <strong><h:outputText value="#{cashBoxGeneralHome.cashBoxPartialPrevious.cashBoxGeneral.emissionDate}">
+                                            <f:convertDateTime dateStyle="long"  timeZone="#{ui.timeZone}" type="both" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy')}"/>
+                                        </h:outputText></strong>
+                                </span>
+                                <span>
+                                    <h:outputText rendered="#{not empty cashBoxGeneralHome.cashBoxPartialPrevious}"
+                                                  value="#{cashBoxGeneralHome.cashBoxPartialPrevious.cashFinally}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>   
+                                    <h:outputText rendered="#{empty cashBoxGeneralHome.cashBoxPartialPrevious}"
+                                                  value="#{0.00}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>   
+                                </span>
+                                <div class="statsbar">
+                                    <div class="statsbar-value" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="ui-g-12 ui-md-6 ui-lg-6 ui-xl-6 right-side">
+                                <div class="knob-container">
+                                    <div class="knob" style="width: max-content; height: -webkit-fill-available;">
+                                        <h:outputText
+                                            value="#{cashBoxGeneralHome.cashCurrent}">
+                                            <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                        </h:outputText>   
+                                    </div>
+                                </div>
+                                <div class="details">
+                                    <p:linkButton outcome="cash-breakdown" rendered="#{request.isUserInRole('CHECKER')}"
+                                                  value="#{i18n['common.register']} #{i18n['app.fede.accounting.ajust.breakdown']}"
+                                                  icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase"
+                                                  disabled="#{cashBoxGeneralHome.cashCurrent le 0}">
+                                    </p:linkButton>
+                                </div>
+                            </div>
+                        </p:panel>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+        <ui:define name="style">
+        </ui:define>
+    </ui:composition>
+</html>

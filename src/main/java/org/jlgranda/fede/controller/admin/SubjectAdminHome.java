@@ -21,17 +21,19 @@ import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.SettingService;
 import com.jlgranda.fede.ejb.SubjectService;
+import com.jlgranda.fede.ejb.talentohumano.RolesService;
+import com.jlgranda.shiro.Roles;
 import com.jlgranda.shiro.UsersRoles;
 import com.jlgranda.shiro.UsersRolesPK;
 import com.jlgranda.shiro.ejb.UsersRolesFacade;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -43,16 +45,17 @@ import org.jlgranda.fede.controller.GroupHome;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.SubjectHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.ui.model.LazySubjectDataModel;
-import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import org.jpapi.util.Lists;
 import org.jpapi.util.StringValidations;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TransferEvent;
+import org.primefaces.model.DualListModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,17 +71,18 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(SubjectAdminHome.class);
 
-    private Long subjectId;
-
     @Inject
     private Subject subject;
-
     private Subject subjectEdit;
-
+    @Inject
+    private SubjectHome subjectHome;
     @Inject
     private SettingHome settingHome;
     @Inject
     GroupHome groupHome;
+    
+    @Inject
+    private OrganizationData organizationData;
 
     @EJB
     private GroupService groupService;
@@ -86,23 +90,22 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     SubjectService subjectService;
     @EJB
     SettingService settingService;
+    @EJB
+    RolesService rolesService;
+    @EJB
+    UsersRolesFacade usersRolesFacade;
+
+    private Long subjectId;
     private List<org.jpapi.model.Group> grupos;
-
     private LazySubjectDataModel lazyDataModel;
-
-    @Inject
-    private SubjectHome subjectHome;
     private String confirmarClave;
     private String clave;
     private boolean cambiarClave;
-    
-    @EJB
-    UsersRolesFacade usersRolesFacade;
-    
     PasswordService svc = new DefaultPasswordService();
-    
-    @Inject
-    private OrganizationData organizationData;
+
+    private DualListModel<Roles> roles = new DualListModel<>();
+    private List<Roles> rolesNoAsignadosUsuario;
+    private List<Roles> rolesAsignadosUsuario;
 
     public SubjectAdminHome() {
         this.grupos = new ArrayList<>();
@@ -128,7 +131,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         if (groups.isEmpty()) {
             groups = groupService.findByOwnerAndModuleAndType(subject, "admin", org.jpapi.model.Group.Type.LABEL);
         }
-
         return groups;
     }
 
@@ -145,7 +147,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         lazyDataModel.setOwner(null); //Buscar todos los sujetos
 //        lazyDataModel.setStart(getStart());
         //lazyDataModel.setEnd(getEnd());
-
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
             String parts[] = getKeyword().split(":");
             if (parts.length > 1) {
@@ -199,8 +200,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         try {
             //Redireccionar a RIDE de objeto seleccionado
             if (event != null && event.getObject() != null) {
-
-                redirectTo("/pages/fede/admin/subject/profile.jsf?subjectId=" + ((BussinesEntity) event.getObject()).getId() + "&faces-redirect=true");
+                redirectTo("/pages/admin/subject/profile.jsf?subjectId=" + ((Subject) event.getObject()).getId() + "&faces-redirect=true");
             }
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
@@ -218,15 +218,15 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
     /**
      * Registrar personas en el sistema
-     * @return 
+     *
+     * @return
      */
     @Deprecated
     public String validateAndSave() {
         //Realizar signup
         try {
-            if (!getSubjectEdit().isPersistent() 
+            if (!getSubjectEdit().isPersistent()
                     || (getSubjectEdit().isPersistent() && !getSubjectEdit().isConfirmed())) {
-                
                 if (!StringValidations.isPassword(clave)) {
                     addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "7"));
                     setOutcome("signin");
@@ -244,108 +244,100 @@ public class SubjectAdminHome extends FedeController implements Serializable {
 
         return getOutcome();
     }
-    
+
     public void validate() {
         setValidated(true);
         int length = Integer.valueOf(settingHome.getValue("app.security.password.length", "5"));
         if (!StringValidations.isPassword(getClave(), length)) {
-            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", ""+length));
+            addErrorMessage(I18nUtil.getMessages("passwordInvalidMsg"), I18nUtil.getMessages("passwordInvalidLengthMsg", "" + length));
             setValidated(false);
         }
     }
 
-    public String saveValidado(){
+    public String saveValidado() {
         //La validación se hace en la vista
         return save(true);
     }
-    
+
     public String save() {
-        
         return save(isValidated());
     }
-    
+
     public String save(boolean _validated) {
-        
-        if (_validated){
+        if (_validated) {
             return save("USER");
         } else {
             setOutcome(""); //quedarse en el mismo lugar
             addErrorMessage(I18nUtil.getMessages("validation.general"), I18nUtil.getMessages("validation.general.detail"));
-            return ""; 
+            return "";
         }
     }
 
     public String save(String role) {
         //Realizar signup
         try {
-
             if (!getSubjectEdit().isPersistent()) {
                 if (subject == null) {
                     subject = subjectService.find(9L); //ID del usuario ADMIN
                 }
                 boolean setupRoles = "admin".equalsIgnoreCase(subject.getUsername());
-                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())){ //Preguntar si no se estableció desde fuera
+                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())) { //Preguntar si no se estableció desde fuera
                     getSubjectEdit().setPassword(getClave()); //Establece la clave desde la vista
                 }
                 subjectHome.processSignup(getSubjectEdit(), subject, role, setupRoles); //El propietario es el administrador actual y se asigna con un rol
                 addDefaultSuccessMessage();
-
-            } else if (getSubjectEdit().isPersistent() && !getSubjectEdit().isConfirmed()){
+            } else if (getSubjectEdit().isPersistent() && !getSubjectEdit().isConfirmed()) {
                 processSigupForExistentSubject(getSubjectEdit());
                 addDefaultSuccessMessage();
             } else {
                 //Solo actualizar
-                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())){ //Preguntar si no se estableció desde fuera
+                if (Strings.isNullOrEmpty(getSubjectEdit().getPassword())) { //Preguntar si no se estableció desde fuera
                     getSubjectEdit().setPassword("UNSET"); //Establece la clave desde la vista
                 }
                 subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
                 addDefaultSuccessMessage();
             }
-            
             setOutcome("home");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             addErrorMessage(I18nUtil.getMessages("error.persistence"), e.getMessage());
             setOutcome("failed");
         }
-
         return getOutcome();
     }
-    
+
     public void update() {
         //Solo actualizar
         subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
         addDefaultSuccessMessage();
     }
-    
+
     /**
      * Procesa la creación de una cuenta en fede para el usuario dado
+     *
      * @param _signup el objeto <tt>Subject</tt> a agregar
      */
     public void processSigupForExistentSubject(Subject _signup) {
-
-//
         if (_signup != null) {
             //Crear la identidad para acceso al sistema
             try {
                 //crypt password
                 //Solo actualizar
-                if (Strings.isNullOrEmpty(getClave())){ //Preguntar si no se estableció desde fuera
+                if (Strings.isNullOrEmpty(getClave())) { //Preguntar si no se estableció desde fuera
                     setClave("UNSET"); //Establece la clave desde la vista
                 }
                 _signup.setPassword(svc.encryptPassword(getClave()));
                 _signup.setConfirmed(true);
                 //actualizar directamente
                 subjectService.save(_signup.getId(), _signup);
-                if (true){
+                if (true) {
                     //Asignar roles
                     UsersRoles shiroUsersRoles = new UsersRoles();
                     UsersRolesPK usersRolesPK = new UsersRolesPK(_signup.getUsername(), "USER");
                     shiroUsersRoles.setUsersRolesPK(usersRolesPK);
-                    if (null == usersRolesFacade.find(usersRolesPK)){
+                    if (null == usersRolesFacade.find(usersRolesPK)) {
                         usersRolesFacade.create(shiroUsersRoles);
                     }
-                    
                 }
             } catch (SecurityException | IllegalStateException e) {
                 throw new RuntimeException("Could not create default security entities.", e);
@@ -359,7 +351,6 @@ public class SubjectAdminHome extends FedeController implements Serializable {
             getSubjectEdit().setConfirmed(false);
             subjectService.save(getSubjectEdit().getId(), getSubjectEdit());
         }
-
         if (!getSubjectEdit().isConfirmed()) {
             subjectHome.sendConfirmation(getSubjectEdit());
         } else {
@@ -370,6 +361,7 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     /**
      * El método debe actualizar en picketlink, de otra manera no tiene efecto
      * el cambio de clave.
+     *
      * @throws java.io.IOException
      */
     public void changePassword() throws IOException {
@@ -381,26 +373,25 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         } else {
             this.addWarningMessage("Las contraseñas no coinciden! Intente nuevamente.", "");
         }
-
     }
-    
+
     /**
-     * Probar si el código ingresado por el usario pertenece aun usuario inactivo o registrado por el operador
-     * Si el usuario existe, cargar los datos y dejar listo para confirmar.
+     * Probar si el código ingresado por el usario pertenece aun usuario
+     * inactivo o registrado por el operador Si el usuario existe, cargar los
+     * datos y dejar listo para confirmar.
      */
-    public void tryForExistentSubject(){
+    public void tryForExistentSubject() {
         String code = getSubjectEdit().getCode();
         Subject _subject = subjectService.findUniqueByNamedQuery("Subject.findByCode", code);
-        if (null != _subject && !_subject.isConfirmed()){
+        if (null != _subject && !_subject.isConfirmed()) {
             setSubjectId(_subject.getId()); //alista para cargar el objeto desde el home
             setSubjectEdit(subjectService.createInstance()); //Cargar en memoria para edición
             getSubjectEdit().setDescription(getSubjectEdit().getFullName());
             addWarningMessage("Hola " + _subject.getFirstname(), "¡Bienvenido de nuevo, actualice sus datos y consiga más en dolar directo!");
-        } else if (null != _subject && _subject.isConfirmed()){
+        } else if (null != _subject && _subject.isConfirmed()) {
             setSubjectEdit(subjectService.createInstance());
             addWarningMessage("Hola " + _subject.getFirstname(), "¡Prueba iniciar una sesión y conseguir más en dolar directo!");
-        } 
-        
+        }
     }
 
     public Subject getSubjectEdit() {
@@ -410,8 +401,54 @@ public class SubjectAdminHome extends FedeController implements Serializable {
                 FacesContext context = FacesContext.getCurrentInstance();
                 context.getExternalContext().getSessionMap().put("photoUser", this.subjectEdit.getPhoto());
             }
+            loadRoles();//Cargar los roles
         }
         return subjectEdit;
+    }
+
+    public void loadRoles() {
+        if (subjectEdit.getId() != null) {
+            rolesAsignadosUsuario = new ArrayList<>();
+            rolesNoAsignadosUsuario = new ArrayList<>();
+            rolesAsignadosUsuario = rolesService.findByNamedQuery("Roles.findByUsername", subjectEdit.getUsername());
+            List<String> rolesName = new ArrayList<>();
+            rolesAsignadosUsuario.forEach(r -> {
+                rolesName.add(r.getName());
+            });
+            if (!rolesName.isEmpty()) {
+                rolesNoAsignadosUsuario = rolesService.findByNamedQuery("Roles.findNotByUsername", rolesName);
+            } else {
+                rolesNoAsignadosUsuario = rolesService.findByNamedQuery("Roles.findAll");
+            }
+            roles = new DualListModel<>(new ArrayList<>(rolesNoAsignadosUsuario), rolesAsignadosUsuario);
+        }
+    }
+
+    public void onTransfer(TransferEvent event) {
+        StringBuilder builder = new StringBuilder();
+        event.getItems().stream().map(item -> {
+            builder.append(((Roles) item).getName());
+            return item;
+        }).map(item -> {
+            UsersRoles shiroUsersRoles = new UsersRoles();
+            UsersRolesPK usersRolesPK = new UsersRolesPK(subjectEdit.getUsername(), ((Roles) item).getName());
+            shiroUsersRoles.setUsersRolesPK(usersRolesPK);
+            FacesMessage msg = new FacesMessage();
+            msg.setSeverity(FacesMessage.SEVERITY_INFO);
+            if (Objects.equals(event.isAdd(), Boolean.TRUE) && null == usersRolesFacade.find(usersRolesPK)) {//Agregar rol
+                usersRolesFacade.create(shiroUsersRoles);
+                msg.setSummary("Rol asignado correctamente!");
+            } else if (Objects.equals(event.isRemove(), Boolean.TRUE) && null != usersRolesFacade.find(usersRolesPK)) {//Remover rol
+                usersRolesFacade.remove(shiroUsersRoles);
+                msg.setSummary("Rol desasignado correctamente!");
+            }
+            return msg;
+        }).map(msg -> {
+            msg.setDetail(builder.toString());
+            return msg;
+        }).forEachOrdered(msg -> {
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        });
     }
 
     public void setSubjectEdit(Subject subjectEdit) {
@@ -419,33 +456,32 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     public void applySelectedGroups() {
-        String status = "";
-        Group group = null;
-        Set<String> addedGroups = new LinkedHashSet<>();
-        for (BussinesEntity fe : getSelectedBussinesEntities()) {
-            for (String key : selectedTriStateGroups.keySet()) {
-                group = findGroup(key);
-                status = selectedTriStateGroups.get(key);
-                if ("0".equalsIgnoreCase(status)) {
-                    if (fe.containsGroup(key)) {
-                        fe.remove(group);
-                    }
-                } else if ("1".equalsIgnoreCase(status)) {
-                    if (!fe.containsGroup(key)) {
-                        fe.add(group);
-                        addedGroups.add(group.getName());
-                    }
-                } else if ("2".equalsIgnoreCase(status)) {
-                    if (!fe.containsGroup(key)) {
-                        fe.add(group);
-                        addedGroups.add(group.getName());
-                    }
-                }
-            }
-            subjectService.save(fe.getId(), (Subject) fe);
-        }
-
-        this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
+//        String status = "";
+//        Group group = null;
+//        Set<String> addedGroups = new LinkedHashSet<>();
+//        for (BussinesEntity fe : getSelectedBussinesEntities()) {
+//            for (String key : selectedTriStateGroups.keySet()) {
+//                group = findGroup(key);
+//                status = selectedTriStateGroups.get(key);
+//                if ("0".equalsIgnoreCase(status)) {
+//                    if (fe.containsGroup(key)) {
+//                        fe.remove(group);
+//                    }
+//                } else if ("1".equalsIgnoreCase(status)) {
+//                    if (!fe.containsGroup(key)) {
+//                        fe.add(group);
+//                        addedGroups.add(group.getName());
+//                    }
+//                } else if ("2".equalsIgnoreCase(status)) {
+//                    if (!fe.containsGroup(key)) {
+//                        fe.add(group);
+//                        addedGroups.add(group.getName());
+//                    }
+//                }
+//            }
+//            subjectService.save(fe.getId(), (Subject) fe);
+//        }
+//        this.addSuccessMessage("Las facturas se agregaron a " + Lists.toString(addedGroups), "");
     }
 
     private Group findGroup(String key) {
@@ -458,18 +494,18 @@ public class SubjectAdminHome extends FedeController implements Serializable {
     }
 
     public void mostrarAsignarGruposUsuarios() {
-        try {
-            @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-            List<Subject> subjects = new ArrayList<>();
-            getSelectedBussinesEntities().stream().map((entity) -> (Subject) entity).forEach((s) -> {
-                subjects.add(s);
-            });
-
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(I18nUtil.getMessages("subject.selected"), getSelectedBussinesEntities());
-            redirectTo("/pages/admin/subject/subjects_group.jsf");
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
+//        try {
+//            @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+//            List<Subject> subjects = new ArrayList<>();
+//            getSelectedBussinesEntities().stream().map((entity) -> (Subject) entity).forEach((s) -> {
+//                subjects.add(s);
+//            });
+//
+//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(I18nUtil.getMessages("subject.selected"), getSelectedBussinesEntities());
+//            redirectTo("/pages/admin/subject/subjects_group.jsf");
+//        } catch (IOException e) {
+//            logger.error(e.getMessage(), e);
+//        }
     }
 
     public String getConfirmarClave() {
@@ -504,8 +540,21 @@ public class SubjectAdminHome extends FedeController implements Serializable {
         this.grupos = grupos;
     }
 
+    public DualListModel<Roles> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(DualListModel<Roles> roles) {
+        this.roles = roles;
+    }
+
     @Override
     protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

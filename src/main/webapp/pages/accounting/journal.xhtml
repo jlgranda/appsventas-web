@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2021 kellypaulinc
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.journals']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="journalId" value="#{generalJournalHome.journalId}"/>
+                <f:viewAction action="#{generalJournalHome.validateNewReloadJournal()}"/>
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting']}</li>
+            <li>/</li>
+            <li><p:link outcome="journals">#{i18n['app.fede.accounting.journals']}</p:link></li>
+            <li>/</li>
+            <li><p:link outcome="journal">#{not empty generalJournalHome.journalId ? i18n['common.edit'] : i18n['common.new']} #{i18n['app.fede.accounting.journal']}
+                    <f:param name="journalId" rendered="#{not empty generalJournalHome.journalId}" value="#{generalJournalHome.journalId}"/>
+                </p:link>
+            </li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
+                        <h1 class="TexUppercase">
+                            #{i18n['app.fede.accounting.journal']}
+                        </h1>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
+                                        value="#{generalJournalHome.journal.code}" required="#{true}"
+                                        inlinehelp="#{messages['common.code.UUID.inlinehelp']}"
+                                        execute="@this save" render="code"/>
+                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.label']}/#{i18n['common.name']}"
+                                        value="#{generalJournalHome.journal.name}" required="#{true}"
+                                        inlinehelp="#{messages['app.fede.accounting.journal.name.inlinehelp']}"
+                                        execute="@this save" render="nme"/>
+                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.observation']}"
+                                        value="#{generalJournalHome.journal.description}" required="#{false}"
+                                        inlinehelp="#{messages['app.fede.accounting.journal.description.inlinehelp']}"
+                                        execute="@this save" render="dscrpn"/>
+                        <p:toolbar class="NoBorder">
+                            <p:toolbarGroup class="DispInlFlex">
+                                <p:commandButton id="save-button" 
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn TexUppercase"
+                                                 actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
+                                                 disabled="#{false}"
+                                                 ajax="#{false}" immediate="#{false}"
+                                                 type="submit"/>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="right" class="DispInlFlexRight">
+                                <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="secondary-button rounded-btn"
+                                                 actionListener="#{generalJournalHome.closeDialog(null)}" action="#{generalJournalHome.getOutcome()}"
+                                                 ajax="#{true}" immediate="#{true}"/>                          
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid"><p:separator style="color: #EFEFEF"/></div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
+                        <p:dataTable id="dataTable-records" widgetVar="dataTable-records" lazy="#{true}"
+                                     value="#{generalJournalHome.journal.records}" var="record"
+                                     selection="#{generalJournalHome.recordsSelected}"
+                                     rowKey="#{record.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{false}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single"
+                                     editable="#{false}">
+                            <p:ajax event="rowSelect" update=":form:panelSelectedToolBar"/>
+                            <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                            <f:facet name="header">
+                                <p:linkButton outcome="record-register"
+                                              value="#{i18n['common.new']}"
+                                              disabled="#{empty generalJournalHome.journalId}"
+                                              icon="fa fa-plus-square" iconPos="left" styleClass="info-btn rounded-btn TexUppercase">
+                                    <f:param name="generalJournalId" value="#{generalJournalHome.journalId}"/>
+                                </p:linkButton>
+                            </f:facet>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter DispVerticalTop"/>
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.emission']}" class="Wid10 DispVerticalTop">
+                                <h:outputText value="#{record.emissionDate}">
+                                    <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.description']}" class="DispVerticalTop">
+                                <ui:repeat var="recordDetail" value="#{record.recordDetails}">
+                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}" 
+                                                  style="#{recordDetail.recordDetailType=='HABER' ? 'margin-left: 30%': ''}"/>
+                                    <div class="EmptyBox10"/>
+                                </ui:repeat>
+                                <div class="EmptyBox5"/>
+                                <h:outputText value="#{record.description}" class="TexUppercase Fs10 FontBold"/>
+                                <div class="EmptyBox5"/>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.debe']}" class="Wid20 DispVerticalTop">
+                                <ui:repeat var="recordDetail" value="#{record.recordDetails}">
+                                    <h:outputText value="#{recordDetail.amount}" class="Fright"
+                                                  style="#{recordDetail.recordDetailType=='HABER' ? 'color: transparent !important': ''}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                    <div class="EmptyBox10"/>
+                                </ui:repeat>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.haber']}" class="Wid20 DispVerticalTop">
+                                <ui:repeat var="recordDetail" value="#{record.recordDetails}">
+                                    <h:outputText value="#{recordDetail.amount}" class="Fright"
+                                                  style="#{recordDetail.recordDetailType=='DEBE' ? 'color: transparent !important': ''}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                    <div class="EmptyBox10"/>
+                                </ui:repeat>
+                            </p:column>
+                            <p:column id="report" class="Wid5">
+                                <p:commandButton id="button-detail" 
+                                                 title="#{i18n['common.detail']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
+                                                 actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" 
+                                                 ajax="#{true}" immediate="#{true}"
+                                                 rendered="#{empty record.bussinesEntityId}">
+                                    <p:ajax event="dialogReturn" update="@form"
+                                            listener="#{generalJournalHome.handleReturn}">
+                                    </p:ajax>
+                                </p:commandButton>
+                            </p:column>
+                            <p:columnGroup type="footer" rendered="#{not empty generalJournalHome.journal.records}">
+                                <p:row>
+                                    <p:column colspan="3" class="BackgroundToolbar"/>
+                                    <p:column class="BackgroundToolbar">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{generalJournalHome.subtotalDebe}" class="FontBold Fright">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column class="BackgroundToolbar">
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{generalJournalHome.subtotalHaber}" class="FontBold Fright">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+                            </p:columnGroup>
+                        </p:dataTable>
+                        <!--Herramientas con seleccionados--> 
+                        <p:panel id="panelSelectedToolBar">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.recordsSelected}">
+                                <p:toolbarGroup class="FlexNowRap AlignItemsFlEnd">
+                                    <div class="DispInlGrid">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                        <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
+                                            <f:selectItems value="#{generalJournalHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                            <f:ajax render="selectedToolBar"></f:ajax>
+                                        </p:selectOneMenu>
+                                    </div>&nbsp;
+                                    <jlgranda:input id="general-journal-date" name="general-journal-date" render="general-journal-date" container="none"
+                                                    type="calendar" 
+                                                    value="#{generalJournalHome.generalJournalDate}" label="#{i18n['app.fede.accounting.record.date']}:&nbsp;" 
+                                                    required="#{false}" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
+                                                    placeholder="#{false}" 
+                                                    rendered="#{generalJournalHome.selectedAction eq 'moveto'}"
+                                                    update="selectedToolBar">
+                                    </jlgranda:input>&nbsp;
+                                    <p:commandButton id="go-button"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
+                                                     actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
+                                                     oncomplete="PF('dataTable-records').unselectAllRows()"
+                                                     disabled="#{not generalJournalHome.actionExecutable}"
+                                                     ajax="#{true}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                        </p:panel>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+        <ui:define name="popups">
+        </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+            </style>
+        </ui:define>
+        <ui:define name="script">
+            <script type="text/javascript">
+                //<![CDATA[
+                $(document).ready(function () {
+                    $('input[id*="spinner"]').attr('type', 'number');
+                    $(this).select();
+                });
+                $('input[id*="spinner"]').focus(function () {
+                    $(this).select();
+                });
+                //]]>
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

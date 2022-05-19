@@ -30,6 +30,7 @@ import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jlgranda.fede.ui.model.LazyJobRoleDataModel;
@@ -125,9 +126,11 @@ public class JobRoleHome extends FedeController implements Serializable {
      * Filtro que llena el Lazy Datamodel
      */
     private void filter() {
+        
         if (lazyDataModel == null) {
             lazyDataModel = new LazyJobRoleDataModel(jobRoleService);
         }
+        
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
 //        lazyDataModel.setOwner(subject);
 
@@ -208,6 +211,11 @@ public class JobRoleHome extends FedeController implements Serializable {
 
     @Override
     protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

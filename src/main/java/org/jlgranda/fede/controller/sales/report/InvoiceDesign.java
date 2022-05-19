@@ -18,11 +18,6 @@ package org.jlgranda.fede.controller.sales.report;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import net.sf.dynamicreports.adhoc.AdhocManager;
-import net.sf.dynamicreports.adhoc.configuration.AdhocConfiguration;
-import net.sf.dynamicreports.adhoc.configuration.AdhocReport;
-import net.sf.dynamicreports.adhoc.transformation.AdhocToXmlTransform;
-import net.sf.dynamicreports.adhoc.transformation.XmlToAdhocTransform;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.jasper.builder.export.JasperOdtExporterBuilder;
 import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
@@ -30,7 +25,6 @@ import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
 import static net.sf.dynamicreports.report.builder.DynamicReports.col;
 import static net.sf.dynamicreports.report.builder.DynamicReports.exp;
 import static net.sf.dynamicreports.report.builder.DynamicReports.export;
-import static net.sf.dynamicreports.report.builder.DynamicReports.grid;
 import static net.sf.dynamicreports.report.builder.DynamicReports.report;
 import static net.sf.dynamicreports.report.builder.DynamicReports.sbt;
 import static net.sf.dynamicreports.report.builder.DynamicReports.stl;
@@ -160,7 +154,7 @@ public class InvoiceDesign {
     private JRDataSource createDataSource(Invoice invoice) {
         DRDataSource dataSource = new DRDataSource("cantidad", "descripcion", "preciounitario", "subtotal");
         for (Detail detail : invoice.getDetails()) {
-            dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), detail.getPrice().multiply(BigDecimal.valueOf(detail.getAmount())));
+            dataSource.add(detail.getAmount(), detail.getProduct().getName(), detail.getPrice(), detail.getPrice().multiply(detail.getAmount()));
         }
         //Agregar el descuento como item
         if (BigDecimal.ZERO.compareTo(invoice.getPaymentsDiscount()) < 0){

@@ -49,20 +49,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12">
                     <div class="ui-g-5">
                         <label class="Gray Wid10">#{i18n['app.fede.talentohumano.employee']}&nbsp;</label>
-                        <p:autoComplete id="customer" value="#{journalHome.employeeSelected}" effect="fade" 
-                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                        <p:autoComplete id="customer" 
+                                        value="#{journalHome.employeeSelected}" var="entidad" 
+                                        itemLabel="#{entidad.owner.code} #{entidad.owner.fullName}" itemValue="#{entidad}" 
                                         completeMethod="#{employeeHome.find}"
-                                        var="entidad" itemValue="#{entidad}" 
-                                        itemLabel="#{entidad.owner.code} #{entidad.owner.fullName}" multiple="false" 
-                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
                                         converter="org.jlgranda.fede.ui.converter.EmployeeConverter" 
-                                        forceSelection="true" required="true" disabled="#{false}"
+                                        disabled="#{false}"
                                         placeholder="#{i18n['app.fede.talentohumano.employee']}"
-                                        styleClass="Wid100" inputStyleClass="Wid100">
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{true}">
                             <p:column>
                                 <h:outputText value="#{ui.renderer('', entidad.owner)}"/>
                             </p:column>
-                            <p:ajax event="itemSelect" update="@form" partialSubmit="true" listener="#{journalHome.clear()}"></p:ajax>
+                            <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}" listener="#{journalHome.clear()}"></p:ajax>
                         </p:autoComplete>
                     </div>
                     <div class="ui-g-7">
@@ -83,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="ui-g-4">
                                 <label class="Gray">#{i18n['common.month']}&nbsp;</label>
                                 <p:calendar value="#{journalHome.monthSelected}" class="input-sm"
-                                            navigator="true" mode="popup" >
+                                            navigator="#{true}" mode="popup" >
                                     <p:ajax event="dateSelect" listener="#{journalHome.onMonthSelected()}" update="@form" /> 
                                 </p:calendar>
 
@@ -95,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <h1>#{journalHome.employeeSelected.owner.id} #{journalHome.employeeSelected.owner.fullName}</h1>
                     <div class="ui-g-12">
                         <p:commandButton value="#{i18n['common.refresh']}" id="check-btn" 
-                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="true"
+                                         actionListener="#{journalHome.clear()}" icon="fa fa-handshake-o" ajax="#{true}"
                                          update="@form:dataTableJournal">
                         </p:commandButton>
                         <h:commandLink>
@@ -120,30 +124,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <h:outputText value="#{journal.id}" />
                             </p:column>
 
-                            <p:column headerText="#{i18n['common.dayOfMonth']}">
+                            <p:column headerText="#{i18n['common.day.month']}">
                                 <h:outputText value="#{journal.dayOfMonth}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.dayOfWeek']}">
+                            <p:column headerText="#{i18n['common.day.week']}">
                                 <h:outputText value="#{journal.dayOfWeek}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
+                            <p:column headerText="#{i18n['common.name']}" sortBy="#{journal.name}">
                                 <h:outputText value="#{journal.name}" />
                             </p:column>
-                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
-                                       styleClass="text-right">
-
+                            <p:column  id="fechaIngreso"  headerText="#{i18n['app.fede.talentohumano.record.time']}" sortBy="#{journal.beginTime}">
                                 <h:outputText value="#{journal.beginTime}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.datetime.pattern', 'dd/MM/yyyy HH:mm:ss')}"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
-                                       styleClass="text-right">
+                            <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm']}" sortBy="#{journal.beginTime}">
                                 <h:outputText value="#{journal.beginTime}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                 </h:outputText>
                             </p:column>                    
-                            <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm.reglamento']}" sortBy="#{journal.endTime}"
-                                       styleClass="text-right">
+                            <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm.reglamento']}" sortBy="#{journal.endTime}">
                                 <h:outputText value="#{journal.endTime}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                 </h:outputText>

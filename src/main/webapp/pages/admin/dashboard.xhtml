@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#8E24AA', '#C6FF00'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false,
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#546E7A'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    markerOptions: {
+                        shadow: false
+                    }
+                }
+            }
+
+            function skinPie() {
+                this.cfg.seriesColors = ['#dae8ef', '#27aae1', '#33ccff', '#9fadb5'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#eaeaea',
+                    gridLineColor: '#e5ebf0',
+                    shadow: false,
+                    borderWidth: 0
+                };
+                this.cfg.seriesDefaults.shadow = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+
+        <!--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>-->
+
+    </ui:define>
+
+    <ui:define name="subheader">
+        #{i18n['app.fede.smart.dashboard']} #{i18n['common.management']}
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- Right Column -->
+        <div class="Container100 Responsive100">
+
+            <!-- Section 1 -->
+            <div class="Container100">
+                <div class="ContainerIndent">
+                    <div class="Card ShadowEffect HeiAutoOnMobile">
+                        <h2 class="CardTopic TexAlCenter">#{i18n['common.applications']}</h2>
+                        <div class="EmptyBox20"></div>
+                        <div class="Container50 Responsive50">
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGrayBack TexAlCenter">
+                                    <i class="icon-person Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['common.users']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button value="#{i18n['common.show']}" styleClass="RedButton" outcome="/pages/admin/subject/inbox.jsf"/>
+                                </div>
+                            </div> 
+                        </div> 
+                        <div class="Container50 Responsive50">
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGrayBack TexAlCenter">
+                                    <i class="icon-group Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['property.group']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button value="#{i18n['common.show']}" styleClass="RedButton" outcome="/pages/admin/security/group/inbox.jsf"/>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="Container50 Responsive50">
+                            <div class="ContainerIndent">
+                                <div class="Card SoftGrayBack TexAlCenter">
+                                    <i class="fa fa-paint-brush Fs50 BoldGray DispBlock"></i>
+                                    <div class="EmptyBox5"></div>
+                                    <span class="FontRobotoLight Fs18">#{i18n['app.mail.templates']}</span>
+                                    <div class="EmptyBox10"></div>
+                                    <p:button value="#{i18n['common.show']}" styleClass="RedButton" outcome="/pages/admin/template/inbox.jsf"/>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

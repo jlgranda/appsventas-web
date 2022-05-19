@@ -46,7 +46,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <span class="Fs20 DispBlock">
                                         #{entity.summary} <i class="fa fa-shopping-cart Fs14"><span class="CartText #{entity.status} White " style="#{entity.status eq 'ATTEND' ? 'background-color: #4b6cb7;' : ''}"> #{entity.boardNumber}</span></i>
                                     </span>
-                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{entity.total}">
+                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['app.fede.payment.amount.total']} - <h:outputText value="#{entity.total}">
                                             <f:convertNumber type="currency"/>
                                         </h:outputText>
                                     </span>
@@ -59,9 +59,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      icon="fa fa-thumbs-o-up"
                                                      styleClass="secondary-button Fright #{entity.status}"
                                                      action="#{invoiceHome.attend(entity.id)}"
-                                                     ajax="false"
+                                                     ajax="#{false}"
                                                      immediate="true"
-                                                     rendered="true">
+                                                     rendered="#{true}">
                                     </p:commandButton>
                                 </div>
                                 <div class="EmptyBox10"></div>

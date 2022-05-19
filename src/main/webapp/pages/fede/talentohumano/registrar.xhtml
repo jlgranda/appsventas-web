@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 axisOnTop="#{journalHome.axisOnTop}"
                                 eventStyle="#{journalHome.eventStyle}"
                                 showCurrentTime="#{journalHome.showCurrentTime}"
-                                showNavigation="#{journalHome.showNavigation}" locale="#{'es_EC'}" rendered="false">
+                                showNavigation="#{journalHome.showNavigation}" locale="#{'es_EC'}" rendered="#{false}">
                         <p:ajax event="select" listener="#{journalHome.onSelect}"/>
                     </p:timeline>
                 </div>
@@ -74,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                                 </p:commandButton>
                             </div>
-                            <p:commandButton value="#{i18n['Add']} #{i18n['common.rest']}" id="rest-btn" rendered="false"
+                            <p:commandButton value="#{i18n['Add']} #{i18n['common.rest']}" id="rest-btn" rendered="#{false}"
                                              actionListener="#{journalHome.checkRest()}" action="#{journalHome.redirect()}" icon="fa fa-spoon" styleClass="warning-btn" >
                                 <p:confirm header="#{i18n['common.confirm']}" message="#{i18n['app.fede.talentohumano.check.confirm.message']}" icon="fa fa-exclamation-triangle" />
                             </p:commandButton>
@@ -99,14 +99,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:column headerText="#{i18n['common.firstname']}" sortBy="#{journal.name}">
                                         <h:outputText value="#{journal.name}" />
                                     </p:column>
-                                    <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime']}" sortBy="#{journal.beginTime}"
-                                               styleClass="text-right">
+                                    <p:column  id="fechaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time']}" sortBy="#{journal.beginTime}">
                                         <h:outputText value="#{journal.beginTime}">
                                             <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.talentohumano.datetime.pattern', 'dd/MM/yyyy')}"/>
                                         </h:outputText>
                                     </p:column>                    
-                                    <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.recordTime.HHmm']}" sortBy="#{journal.beginTime}"
-                                               styleClass="text-right">
+                                    <p:column  id="horaRegistro"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm']}" sortBy="#{journal.beginTime}">
                                         <h:outputText value="#{journal.beginTime}">
                                             <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                         </h:outputText>

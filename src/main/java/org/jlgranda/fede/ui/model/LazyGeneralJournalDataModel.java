@@ -92,7 +92,6 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     }
     
     public List<GeneralJournal> getResultList() {
-        logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
@@ -133,8 +132,6 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
         this.filterValue = filterValue;
     }
       
-    
-    
     @Override
     public GeneralJournal getRowData(String rowKey) {
         return bussinesEntityService.find(Long.valueOf(rowKey));
@@ -147,7 +144,6 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     
     @Override
     public List<GeneralJournal> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
-
         int _end = first + pageSize;
         String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
@@ -170,7 +166,7 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
             }
         }
         if (!range.isEmpty()){
-            _filters.put(GeneralJournal_.createdOn.getName(), range); //Filtro de fecha inicial
+            _filters.put(GeneralJournal_.emissionDate.getName(), range); //Filtro de fecha inicial
         }
         
         if(getOwner()!=null){
@@ -188,11 +184,13 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
         if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
-
+        
+        _filters.put("deleted", false);
+        
         _filters.putAll(filters);
 
         if (sortField == null){
-            sortField = GeneralJournal_.createdOn.getName();
+            sortField = GeneralJournal_.emissionDate.getName();
         }
         QueryData<GeneralJournal> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
@@ -214,7 +212,6 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
     public void setEnd(Date end) {
         this.end = end;
     }
-
     
     public Subject getOwner() {
         return owner;
@@ -254,6 +251,38 @@ public class LazyGeneralJournalDataModel extends LazyDataModel<GeneralJournal> i
 
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
+    }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(GeneralJournal_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        if(getOwner()!=null){
+        _filters.put(GeneralJournal_.owner.getName(), getOwner());
+        }
+        if (getOrganization() != null) {
+            _filters.put(GeneralJournal_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        _filters.putAll(filters);
+        QueryData<GeneralJournal> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
     
 }

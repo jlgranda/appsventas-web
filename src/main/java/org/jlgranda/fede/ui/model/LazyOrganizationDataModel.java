@@ -190,6 +190,35 @@ public class LazyOrganizationDataModel extends LazyDataModel<Organization> imple
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
+    
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        
+        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+        _filters.put(Organization_.author.getName(), getAuthor()); //Filtro por defecto
+        
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null){
+            range.put("start", getStart());
+            range.put("end", getEnd() == null ? Dates.now() : getEnd());
+            _filters.put(Organization_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        
+        
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+        QueryData<Organization> qData = service.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 
     public BussinesEntityType getType() {
         return type;

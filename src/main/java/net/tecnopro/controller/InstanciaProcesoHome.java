@@ -49,6 +49,7 @@ import net.tecnopro.document.model.Tarea;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jlgranda.fede.ui.model.LazyInstanciaProcesoDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -260,7 +261,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
      */
     public void save() {
         if (getDestinatario() == null || getSolicitante() == null){
-            addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("error.task.persons"));
+            addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("error.task.persons"));
             return;
         }
         try {
@@ -278,7 +279,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
                 getTarea().setName(this.instanciaProceso.getName());
                 getTarea().setDescription(this.instanciaProceso.getDescription());
                 
-                Tarea next = buildTarea( this.tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.getInstanciaProceso());
+                Tarea next = buildTarea( this.tarea, this.organizationData.getOrganization(), subject, getDestinatario(), this.instanciaProceso);
                 
                 getTarea().getDocumentos().stream().forEach((doc) -> {
                     next.addDocumento(doc);
@@ -351,18 +352,6 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
         }
     }
 
-    private Tarea prepareTarea(Tarea _tarea, String description, EstadoTipo estado, Organization organization, Subject owner) {
-        
-        //2. Siguiente tarea
-        _tarea.setDescription(description);
-        //Es temporral hasta que se pueda seleccionar una organización
-        _tarea.setDepartamento("temporal"); //TODO asignar el departamente si es el caso
-        _tarea.setEstadoTipo(estado);//La tarea se completa al iniciar el proceso
-        _tarea.setOwner(owner); //Quien la recibe
-        _tarea.setOrganization(organization); //La organización
-        return _tarea;
-    }
-
     private Tarea buildTarea(Tarea tarea, Organization organization, Subject author, Subject owner, InstanciaProceso instanciaProceso) {
         //2. Siguiente tarea
         Tarea _tarea = tareaService.createInstance();
@@ -384,12 +373,12 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
 
     public void procesarUploadFile(UploadedFile file) {
         if (file == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return;
         }
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return;
         }
         try {
@@ -452,7 +441,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             }
 
         } catch (IOException ex) {
-            addErrorMessage(ex, I18nUtil.getMessages("common.error.uploadfail"));
+            addErrorMessage(ex, I18nUtil.getMessages("common.error.upload"));
         }
     }
 
@@ -496,7 +485,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             doc.setName(Strings.isNullOrEmpty(getDocumento().getName()) ? file.getFileName() : getDocumento().getName());
             doc.setDocumentType(getDocumento().getDocumentType() == null ? DocumentType.UNDEFINED : getDocumento().getDocumentType());
         } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return null;
         }
         doc.setFileName(file.getFileName());
@@ -670,5 +659,10 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
             default:
                 break;
         }
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

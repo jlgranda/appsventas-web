@@ -110,7 +110,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <span class="Fs20 DispBlock">
                                                     #{entity.summary}<i class="icon-shopping_cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
                                                 </span>
-                                                <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.infoFactura.Total']} - <h:outputText value="#{entity.total}">
+                                                <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['app.fede.payment.amount.total']} - <h:outputText value="#{entity.total}">
                                                         <f:convertNumber type="currency"/>
                                                     </h:outputText>
                                                 </span>
@@ -137,7 +137,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <div class="Separator"></div>
                                         </ui:repeat>
                                         <div class="Container100 Fs20 BoldGray FontRobotoRegular TexAlRight hide">
-                                            #{i18n['ride.infoFactura.Total']}:
+                                            #{i18n['app.fede.payment.amount.total']}:
                                             <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastPreInvoices)}">
                                                 <f:convertNumber type="currency"/>
                                             </h:outputText>
@@ -146,7 +146,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="Separator"></div>
                                         <div class="EmptyBox10"></div>-->
                                         <div class="TexAlCenter DispBlock hide">
-                                            <p:button value="#{i18n['ShowAll']}" 
+                                            <p:button value="#{i18n['common.show.all']}" 
                                                       styleClass="OrangeButton White Fs14" icon="fa fa-table"
                                                       outcome="/pages/fede/sales/invoices.jsf"/>
                                         </div>
@@ -155,7 +155,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             </p:tab>
                             <p:tab title="#{i18n['Invoices']}">
                                 <f:facet name="title">
-                                <h:outputText value="#{i18n['app.fede.allmyinvoices']} #{ui.calculeEmoticon(invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices), 100)}" escape="false" rendered="false"/> 
+                                <h:outputText value="#{i18n['app.fede.allmyinvoices']} #{ui.calculeEmoticon(invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices), 100)}" escape="false" rendered="#{false}"/> 
                                     <h:outputText value="#{i18n['app.fede.allmyinvoices']}" escape="false" rendered="true"/> 
                                 </f:facet>
                                 <div class="Container100">
@@ -166,11 +166,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Fs20 DispBlock">
                                                         #{entity.summary}<i class="icon-shopping_cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
                                                     </span>
-<!--                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
+<!--                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['common.subtotal']}: <h:outputText value="#{entity.total}">
                                                             <f:convertNumber type="currency"/>
-                                                        </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
+                                                        </h:outputText> #{i18n['app.fede.payment.discount']}: <h:outputText value="#{entity.paymentsDiscount}">
                                                             <f:convertNumber type="currency"/>
-                                                        </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                                        </h:outputText> #{i18n['app.fede.payment.amount.total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </span>-->
@@ -203,11 +203,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     <span class="Fs20 DispBlock">
                                                         #{entity.summary}<i class="icon-shopping_cart Fs14"><span class="CartText White"> #{entity.boardNumber}</span></i>
                                                     </span>
-                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['ride.subTotal']}: <h:outputText value="#{entity.total}">
+                                                    <span class="Gray Fs16 FontRobotoLight DispBlock">#{i18n['common.subtotal']}: <h:outputText value="#{entity.total}">
                                                             <f:convertNumber type="currency"/>
-                                                        </h:outputText> #{i18n['ride.Factura.Detalles.descuento']}: <h:outputText value="#{entity.paymentsDiscount}">
+                                                        </h:outputText> #{i18n['app.fede.payment.discount']}: <h:outputText value="#{entity.paymentsDiscount}">
                                                             <f:convertNumber type="currency"/>
-                                                        </h:outputText> #{i18n['ride.infoFactura.Total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
+                                                        </h:outputText> #{i18n['app.fede.payment.amount.total']}: <h:outputText value="#{entity.paymentsAmount - entity.paymentsDiscount}">
                                                             <f:convertNumber type="currency"/>
                                                         </h:outputText>
                                                     </span>
@@ -224,7 +224,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="Separator"></div>
                                             </ui:repeat>
                                             <div class="Container100 Fs20 BoldGray FontRobotoRegular TexAlRight hide">
-                                                #{i18n['ride.infoFactura.Total']}:
+                                                #{i18n['app.fede.payment.amount.total']}:
                                                 <h:outputText value="#{invoiceHome.calculeTotal(invoiceHome.myLastlastInvoices)}">
                                                     <f:convertNumber type="currency"/>
                                                 </h:outputText>
@@ -233,7 +233,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                             <div class="Separator"></div>
                                             <div class="EmptyBox10"></div>-->
                                             <div class="TexAlCenter DispBlock hide">
-                                                <p:button value="#{i18n['ShowAll']}" 
+                                                <p:button value="#{i18n['common.show.all']}" 
                                                           styleClass="OrangeButton White Fs14" icon="fa fa-table"
                                                           outcome="/pages/fede/sales/invoices.jsf"/>
                                             </div>

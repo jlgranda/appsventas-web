@@ -252,5 +252,39 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
     }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(Account_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        if (getOwner() != null){
+            _filters.put(Account_.owner.getName(), getOwner()); //Filtro por owner
+        }
+        if (getOrganization() != null) {
+            _filters.put(Account_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+        QueryData<Account> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
     
 }

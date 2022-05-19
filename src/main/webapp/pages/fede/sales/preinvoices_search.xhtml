@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 xmlns:o="http://omnifaces.org/ui"
                 xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales.my.orders']}</ui:define>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales']}</ui:define>
     <ui:define name="head"></ui:define>
     <ui:define name="params">
         <f:metadata>
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </f:metadata>
     </ui:define>
     <ui:define name="viewname">
-        <li>#{i18n['app.fede.sales.my.orders']}</li>
+        <li>#{i18n['app.fede.sales']}</li>
         <li>/</li>
         <li><p:link outcome="/pages/fede/sales/preinvoices_search.jsf">#{i18n['common.historic']}</p:link></li>
     </ui:define>
@@ -65,7 +65,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:selectBooleanCheckbox value="#{invoiceHome.busquedaAvanzada}">
                         <p:ajax event="change" update="controles-busqueda-avanzada" />
                     </p:selectBooleanCheckbox>
-                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="false" immediate="true">
+                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{invoiceHome.clear()}" ajax="#{false}" immediate="true">
                     </p:commandButton>
                     <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=preinvoices_search"/>
                 </div>
@@ -88,7 +88,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                              icon="fa fa-undo"
                                                              styleClass="GrayButton Fright"
                                                              action="#{invoiceHome.reopen(entity.id)}"
-                                                             ajax="false"
+                                                             ajax="#{false}"
                                                              immediate="true">
                                             </p:commandButton>
                                         </div>

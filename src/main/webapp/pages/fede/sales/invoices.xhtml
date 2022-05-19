@@ -36,11 +36,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                           buttonStyleClass="ToolbarButton Fs18" 
                           iconStyleClass="Gray"
                           menuStyleClass="Gray">
-                <p:menuitem value="#{i18n['common.purchases']}" icon="fa fa-apple" 
+                <p:menuitem value="#{i18n['app.fede.inventory.purchases']}" icon="fa fa-apple" 
                             url="/pages/fede/inbox.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
-                <p:menuitem value="#{i18n['Dashboard']}" icon="fa fa-dashboard" 
+                <p:menuitem value="#{i18n['app.fede.smart.dashboard']}" icon="fa fa-dashboard" 
                             url="/pages/fede/dashboard.jsf?faces-redirect=true"
                             disabled="#{false}">
                 </p:menuitem>
@@ -74,20 +74,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 </span>
                                 <p:menuButton value="#{i18n['More']}" iconPos="right"
                                               styleClass="MarRight10"
-                                              buttonStyleClass="ToolbarButton Fs14" 
-                                              iconStyleClass="Gray"
                                               menuStyleClass="Gray">
                                 </p:menuButton>
                                 <p:menuButton id="labelsMenuButton" value="#{i18n['Labels']}" iconPos="right"
                                               styleClass="MarRight10"
-                                              buttonStyleClass="ToolbarButton Fs14" 
-                                              iconStyleClass="Gray"
                                               menuStyleClass="Gray">
                                 </p:menuButton>
                             </f:facet>
                             <f:facet name="right">
                                 <label class="Gray">#{i18n['common.type']}&nbsp;</label>
-                                <p:selectOneMenu value="#{invoiceHome.documentType}" effect="fade"
+                                <p:selectOneMenu value="#{invoiceHome.documentType}"
                                                  required="#{false}" immediate="true"> 
                                     <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                                     <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
@@ -140,7 +136,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         </ui:define>
         <ui:define name="sidebar">
             <div class="Container100 Responsive100 TexAlCenter">
-                <p:button value="#{i18n['New']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
+                <p:button value="#{i18n['common.newa']}" styleClass="RedButton" outcome="/pages/fede/sales/invoice.jsf"/>
             </div>
             <div class="EmptyBox10"></div>
             <div class="Container100 Responsive100">
@@ -168,34 +164,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Card ShadowEffect HeiAutoOnMobile" style="min-height:275px;">
                             <p:dataTable var="entity" 
                                          value="#{invoiceHome.lazyDataModel}" 
-                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
-                                         sortOrder="#{settingHome.getValue('fede.inbox.dataTable.sortOrder', 'DESCENDING')}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
                                          reflow="true" selection="#{invoiceHome.selectedBussinesEntities}" 
                                          rowKey="#{invoice.id}" 
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                         id="dataTable" widgetVar="dataTable_wv" lazy="true">
-
+                                         id="dataTable" widgetVar="dataTable" lazy="true">
                                 <!--                            <p:ajax event="rowSelectCheckbox" update=":form:button-ride :form:toolbar-panel"/>
                                                             <p:ajax event="rowUnselectCheckbox" update=":form:button-ride :form:toolbar-panel"/>-->
                                 <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
-                                <p:column selectionMode="multiple" style="width:32px;text-align:center"/>
+                                <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                                 <p:column headerText="#{i18n['app.fede.sales.invoice.boardNumber']}" sortBy="#{entity.code}">
                                     <h:outputText value="#{entity.boardNumber}" />
                                 </p:column>
-                                <p:column headerText="#{i18n['ride.no']}" sortBy="#{entity.code}">
+                                <p:column headerText="#{i18n['common.nr']}" sortBy="#{entity.code}">
                                     <h:outputText value="#{entity.summary}" />
                                 </p:column>
                                 <p:column headerText="#{i18n['common.type']}" sortBy="#{entity.documentType}">
                                     <h:outputText value="#{entity.documentType}" />
                                 </p:column>
-                                <p:column headerText="#{i18n['ride.infoFactura.importeTotal']}" sortBy="#{entity.total}"
-                                          styleClass="text-right">
-                                    <h:outputText value="#{entity.total}">
-                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                                <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{entity.total}">
+                                    <h:outputText value="#{entity.total}" class="Fright">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                     </h:outputText>
                                 </p:column>
-                                <p:column  id="createdOn"  headerText="#{i18n['ride.infoFactura.fechaEmision']}" sortBy="#{entity.createdOn}"
-                                           styleClass="text-right">
+                                <p:column  id="createdOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{entity.createdOn}" class="Wid10">
                                     <h:outputText value="#{entity.createdOn}">
                                         <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>

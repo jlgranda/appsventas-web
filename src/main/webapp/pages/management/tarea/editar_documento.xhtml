@@ -31,8 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                   value="/fedeServlet?entity=documento&amp;id={tareaHome.documento.id}"
                                   player="pdf" width="100%" height="250"/>-->
                         <jlgranda:input id="documentNam" name="documentNam" type="text" 
-                                        label="#{i18n['common.firstname']}" 
-                                        value="#{tareaHome.documentoAceptar.name}" required="false" 
+                                        label="#{i18n['common.name']}" 
+                                        value="#{tareaHome.documentoAceptar.name}" required="#{false}" 
                                         execute="@this save" render="documentNam"
                                         />
                         <h:panelGrid columns="2" cellpadding="10">
@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                           mode="advanced" dragDropSupport="true" auto="true" 
                                           process="@form" update=" fileName documentNam" 
                                           immediate="true" multiple="true"
-                                          label="#{i18n['Choose']}" uploadLabel="#{i18n['Upload']}" 
+                                          label="#{i18n['common.choose']}" uploadLabel="#{i18n['common.upload']}" 
                                           cancelLabel="#{i18n['Cancel']}"
                                           sizeLimit="#{settingHome.getValue('app.management.tarea.documentos.sizeLimit', '1048576')}" 
                                           fileLimit="#{settingHome.getValue('app.management.tarea.documentos.fileLimit', '34')}" 
@@ -53,12 +53,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         converter="omnifaces.SelectItemsConverter"
                                         execute="@this save" render="@this"
                                         container="default"/>
-                        <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.documents.document.numeroRegistro']}" 
+                        <jlgranda:input id="numReg" name="numReg" type="text" label="#{i18n['app.document.number']}" 
                                         value="#{tareaHome.documentoAceptar.numeroRegistro}" render="numReg" 
-                                        execute="@this save" required="false"  />
+                                        execute="@this save" required="#{false}"  />
 
                         <div class="Wid33 Fleft Responsive">
-                            <p:commandButton value="#{i18n['Aceptar']}"
+                            <p:commandButton value="#{i18n['common.accept']}"
                                              icon="fa  fa-check Fs16 White"
                                              styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"
                                              actionListener="#{tareaHome.aceptarDocumento()}"
@@ -66,13 +66,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                              oncomplete="PF('dlgDocumento').hide()"/>   
                         </div>
                         <div class="Wid33 Fleft Responsive">
-                            <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['Download']}" ajax="false" 
+                            <p:commandButton rendered="#{tareaHome.documentoAceptar.persistent}" value="#{i18n['common.download']}" ajax="#{false}" 
                                              icon="#{settingHome.getValue(tareaHome.documento.mimeType, 'icon-file')} Fs16 White" styleClass="Fs12 CyanButton Fright FloatNoneOnMobile"> 
                                 <p:fileDownload value="#{tareaHome.downloadDocument(tareaHome.documento)}" />
                             </p:commandButton>
                         </div>
                         <div class="Wid33 Fleft Responsive">
-                            <p:commandButton value="#{i18n['Close']}"
+                            <p:commandButton value="#{i18n['common.close']}"
                                              icon="fa fa-close Fs16 White"
                                              styleClass="Fs12 RedButton Fright FloatNoneOnMobile"
                                              onclick="PF('dlgDocumento').hide()" disabled="false" />

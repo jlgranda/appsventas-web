@@ -150,7 +150,6 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
 
     @Override
     public List<Tarea> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filters) {
-
         
         int _end = first + pageSize;
         String sortField = null;
@@ -295,6 +294,50 @@ public class LazyTareaDataModel extends LazyDataModel<Tarea> implements Serializ
 
     public void setState(EstadoTipo state) {
         this.state = state;
+    }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()) {
+            _filters.put(Tarea_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        
+        if (getOrganization() != null) {
+            _filters.put(Tarea_.organization.getName(), getOrganization()); //Filtro de organizacion
+        }
+        
+        if (getOwner() != null){
+            //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+            _filters.put(Tarea_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
+        if (getState() != null) {
+            _filters.put("estadoTipo", getState()); //Filtro de etiquetas
+        }
+
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+        QueryData<Tarea> qData = tareaService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
 
 

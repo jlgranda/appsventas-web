@@ -74,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="EmptyBox10"></div>
                     <p:toolbar rendered="#{true}">
                         <f:facet name="left">
-                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}" 
                                              actionListener="#{inventoryHome.save()}" action="#{inventoryHome.redirect()}" 
                                              disabled="#{false}" 
                                              style="width: auto !important;"
@@ -86,13 +86,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         <f:facet name="right">
 
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                            <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                              action="home"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                             <!--p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                             immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                             </p:menuButton-->

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2021 kellypaulinc
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.overdue']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="documentType" value="#{invoiceHome.documentType}" />
+                <f:viewParam name="interval" value="#{invoiceHome.interval}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.sales']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/fede/sales/invoices_finder.jsf?interval=7&amp;overcome=overdues&amp;documentType=#{invoiceHome.documentType}">#{i18n[invoiceHome.documentType]}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <jlgranda:input id="keyword" name="keyword" render="keyword" container="none"
+                                                type="text" 
+                                                value="#{invoiceHome.keyword}" label="#{i18n['common.keyword']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}">
+                                </jlgranda:input>
+                                <p:commandButton icon="pi pi-search" styleClass="primary-btn"
+                                                 actionListener="#{invoiceHome.clear()}"
+                                                 ajax="#{false}" immediate="#{false}">
+                                </p:commandButton>
+                                <jlgranda:input id="date-start" name="date-start" render="date-start" container="none"
+                                                type="calendar" showOn="button"
+                                                value="#{invoiceHome.start}" label="#{i18n['common.from']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}"
+                                                update="@form">
+                                </jlgranda:input>
+                                <jlgranda:input id="date-end" name="date-end" render="date-end" container="none"
+                                                type="calendar" showOn="button"
+                                                value="#{invoiceHome.end}" label="#{i18n['common.to']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}" 
+                                                update="@form">
+                                </jlgranda:input>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="rigth">
+                                <jlgranda:input id="date-filter" name="date-filter" render="date-filter" container="none"
+                                                type="calendar" showOn="button"
+                                                value="#{invoiceHome.daySelected}" label="Filtrar por #{i18n['common.day.min']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}"
+                                                maxdate="#{invoiceHome.end}" mindate="#{invoiceHome.start}"
+                                                disabled="#{empty invoiceHome.start and empty invoiceHome.end}"
+                                                listener="#{invoiceHome.onDateSelect()}" update="@form">
+                                </jlgranda:input>
+                                <p:button value="#{i18n['common.newa']}"
+                                          icon="pi pi-plus-circle" styleClass="danger-btn rounded-btn"
+                                          outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=invoices_finder"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{true}"
+                                     value="#{invoiceHome.lazyDataModel}" var="invoice" 
+                                     selection="#{invoiceHome.selectedInvoices}"
+                                     rowKey="#{invoice.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{false}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single" sortBy="#{invoice.emissionOn}">
+                            <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
+                            <p:ajax event="toggleSelect" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowSelectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowUnselectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar"/>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid10">
+                                <h:outputText value="#{invoice.code}"/>
+                            </p:column>
+                            <p:column  headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{invoice.boardNumber}" class="Wid5">
+                                <h:outputText value="#{invoice.boardNumber}">
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}">
+                                <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains" class="Wid20">
+                                <h:outputText value="#{invoice.summary}" />
+                            </p:column>
+                            <p:column headerText="#{i18n['common.subtotal']}" class="Wid10">
+                                <h:outputText value="#{invoice.total}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['app.fede.payment.discount']}" class="Wid10">
+                                <h:outputText value="#{invoice.paymentsDiscount}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.total']}" class="Wid10">
+                                <h:outputText value="#{invoice.total - invoice.paymentsDiscount}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" class="Wid10">
+                                <h:outputText value="#{invoice.emissionOn}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                        <!--Herramientas con seleccionados -->
+                        <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:panel rendered="#{not empty invoiceHome.selectedInvoices}"
+                                     class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BackgroundWarning Padding10 TexAlRight FontBold">
+                                <!--<p:toolbarGroup class="Container100 FlexNowRap AlignItemsFlEnd">-->
+                                <h:outputText value="#{i18n['common.total.collect']}:&nbsp;" />
+                                <h:outputText value="#{invoiceHome.selectedInvoicesByCollect}" class="MarRightPerc10">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText>
+                                <!--</p:toolbarGroup>-->
+                            </p:panel>
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty invoiceHome.selectedInvoices}">
+                                <p:toolbarGroup class="FlexNowRap AlignItemsFlEnd">
+                                    <div class="DispInlGrid">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                        <p:selectOneMenu value="#{invoiceHome.selectedAction}">
+                                            <f:selectItems value="#{invoiceHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                            <f:ajax render="selectedToolBar"></f:ajax>
+                                        </p:selectOneMenu>
+                                    </div>&nbsp;
+
+                                    <p:panel id="panelMoverTo" rendered="#{proveedorHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
+                                        <p:selectOneMenu value="#{proveedorHome.selectedReport}">
+                                            <f:converter converterId="org.jlgranda.fede.ui.converter.ReporteConverter"  />
+                                            <f:selectItems value="#{proveedorHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
+                                            <f:ajax render="selectedToolBar"></f:ajax>
+                                        </p:selectOneMenu>
+                                    </p:panel>
+                                    <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop15">
+                                        <p:commandButton id="go-button"
+                                                         value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
+                                                         actionListener="#{invoiceHome.execute()}" action="#{invoiceHome.getOutcome()}"
+                                                         oncomplete="PF('dataTable').unselectAllRows()"
+                                                         disabled="#{not invoiceHome.actionExecutable}"
+                                                         ajax="#{true}"
+                                                         update="@form">
+                                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                        </p:commandButton>
+                                    </div>
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                        </p:panel>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

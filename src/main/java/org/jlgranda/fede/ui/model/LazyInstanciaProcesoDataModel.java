@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 import net.tecnopro.document.ejb.InstanciaProcesoService;
 import net.tecnopro.document.model.InstanciaProceso;
 import net.tecnopro.document.model.InstanciaProceso_;
-import org.bouncycastle.util.Strings;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.BussinesEntityType;
 import org.jpapi.model.Organization;
@@ -35,6 +34,7 @@ import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
+import org.jpapi.util.Strings;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
@@ -282,6 +282,49 @@ public class LazyInstanciaProcesoDataModel extends LazyDataModel<InstanciaProces
 
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
+    }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(InstanciaProceso_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        
+        if (getOrganization() != null) {
+            _filters.put(InstanciaProceso_.organization.getName(), getOrganization()); //Filtro de organizacion
+        }
+        
+        if (getOwner() != null){
+            //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+            _filters.put(InstanciaProceso_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        if (getStatusType() != null){
+            _filters.put(InstanciaProceso_.status.getName(), Strings.toLowerCase(getStatusType().toString())); //Filtro de etiquetas
+        }
+        
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+
+        _filters.putAll(filters);
+
+        QueryData<InstanciaProceso> qData = bussinesEntityService.find( _filters);
+        return qData.getTotalResultCount().intValue();
     }
 
 }

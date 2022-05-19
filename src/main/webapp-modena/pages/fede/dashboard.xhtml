@@ -96,7 +96,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="EmptyBox5"></div>
                                         <span class="FontRobotoLight Fs18">#{i18n['Invoices']}</span>
                                         <div class="EmptyBox10"></div>
-<!--                                        <p:commandButton value="#{i18n['common.create']}" actionListener="#{invoiceHome.showInvoiceForm()}" ajax="true"
+<!--                                        <p:commandButton value="#{i18n['common.create']}" actionListener="#{invoiceHome.showInvoiceForm()}" ajax="#{true}"
                                                          styleClass="RedButton Fright" style="width:75%">
                                             <p:ajax event="dialogReturn" update="@form"
                                                     listener="#{invoiceHome.handleReturn}">
@@ -114,9 +114,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <div class="Card SoftGrayBack TexAlCenter">
                                         <i class="fa fa-apple Fs50 BoldGray DispBlock"></i>
                                         <div class="EmptyBox5"></div>
-                                        <span class="FontRobotoLight Fs18">#{i18n['common.purchases']}</span>
+                                        <span class="FontRobotoLight Fs18">#{i18n['app.fede.inventory.purchases']}</span>
                                         <div class="EmptyBox10"></div>
-                                        <p:button icon="fa fa-edit" styleClass="RedButton" outcome="/pages/fede/factura.jsf"/>
+                                        <p:button icon="fa fa-edit" styleClass="RedButton" outcome="compra"/>
                                         <p:button styleClass="OrangeButton White Fs14" icon="fa fa-table"
                                                               outcome="/pages/fede/inbox.jsf"/>
                                     </div>
@@ -130,7 +130,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <div class="EmptyBox5"></div>
                                         <span class="FontRobotoLight Fs18">#{i18n['app.fede.inventory']}</span>
                                         <div class="EmptyBox10"></div>
-                                        <p:button value="#{i18n['common.admin']}" styleClass="RedButton" outcome="/pages/fede/inventory/dashboard.jsf"/>
+                                        <p:button value="#{i18n['common.admin']}" styleClass="RedButton" outcome="/pages/inventory/dashboard.jsf"/>
                                     </div>
                                 </div> 
                             </div>
@@ -152,9 +152,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="Card SoftGrayBack TexAlCenter">
                                                     <i class="fa fa-upload Fs50 BoldGray DispBlock"></i>
                                                     <div class="EmptyBox5"></div>
-                                                    <span class="FontRobotoLight Fs18">#{i18n['FromFile']}</span>
+                                                    <span class="FontRobotoLight Fs18">#{i18n['common.file.from']}</span>
                                                     <div class="EmptyBox10"></div>
-                                                    <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
+                                                    <p:button value="#{i18n['common.import']}" styleClass="GreenButton"/>
                                                 </div>
                                             </div> 
                                         </div>
@@ -164,9 +164,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="Card SoftGrayBack TexAlCenter">
                                                     <i class="fa fa-link Fs50 BoldGray DispBlock"></i>
                                                     <div class="EmptyBox5"></div>
-                                                    <span class="FontRobotoLight Fs18">#{i18n['FromURL']}</span>
+                                                    <span class="FontRobotoLight Fs18">#{i18n['common.URL.from']}</span>
                                                     <div class="EmptyBox10"></div>
-                                                    <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
+                                                    <p:button value="#{i18n['common.import']}" styleClass="GreenButton"/>
                                                 </div>
                                             </div> 
                                         </div>
@@ -176,9 +176,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 <div class="Card SoftGrayBack TexAlCenter">
                                                     <i class="fa fa-inbox Fs50 BoldGray DispBlock"></i>
                                                     <div class="EmptyBox5"></div>
-                                                    <span class="FontRobotoLight Fs18">#{i18n['FromEmail']}</span>
+                                                    <span class="FontRobotoLight Fs18">#{i18n['app.email.from']}</span>
                                                     <div class="EmptyBox10"></div>
-                                                    <p:button value="#{i18n['Import']}" styleClass="GreenButton"/>
+                                                    <p:button value="#{i18n['common.import']}" styleClass="GreenButton"/>
                                                 </div>
                                             </div> 
                                         </div>

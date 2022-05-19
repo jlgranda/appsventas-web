@@ -128,7 +128,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 required="true" container="none"/>
                                 <jlgranda:input id="descrpn" name="descrpn" type="richtext" label="#{i18n['app.document.task.description']}" 
                                                 value="#{settingHome.setting.description}" execute="@this save" render="descrpn" 
-                                                inlinehelp="#{messages['app.fede.tarea.description.inlinehelp']}"
+                                                inlinehelp="#{messages['app.document.task.description.inlinehelp']}"
                                                 container="none"/>
                             </p:panel>
 
@@ -137,7 +137,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:toolbar rendered="#{settingHome.setting != null}">
                                 <f:facet name="left">
 
-                                    <p:commandButton value="#{i18n['common.save']}" ajax="true" 
+                                    <p:commandButton value="#{i18n['common.save']}" ajax="#{true}" 
                                                      actionListener="#{settingHome.save()}" disabled="false" 
                                                      style="width: auto !important;"
                                                      action="#{settingHome.getOutcome()}" type="submit"/>
@@ -149,7 +149,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
                                 <f:facet name="right">
 
-                                    <p:commandButton ajax="true" disabled="false" immediate="true"
+                                    <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                                      actionListener="#{settingHome.cancelar()}" 
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                                      update="@form:pnlEditar"/>
@@ -159,7 +159,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                      icon="fa fa-undo Fs14 Black"/>
                                      <!--<p:menuButton value="{i18n['common.options']}">
                                          <p:menuitem value="{i18n['common.restore']}" action="{settingHome.restaurar()}"
-                                                     ajax="true"  update="@form:pnlEditar" rendered="{settingHome.setting.persistent}"
+                                                     ajax="#{true}"  update="@form:pnlEditar" rendered="{settingHome.setting.persistent}"
                                                      icon="fa fa-undo" />
                                      </p:menuButton>-->
                                 </f:facet>

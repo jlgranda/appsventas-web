@@ -8,11 +8,14 @@ package org.jlgranda.fede.ui.model;
 import com.jlgranda.fede.ejb.sales.InvoiceService;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import org.jlgranda.fede.model.document.DocumentType;
 import org.jpapi.model.Organization;
 import org.jlgranda.fede.model.sales.Invoice;
@@ -27,6 +30,8 @@ import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
+import org.primefaces.model.filter.FilterConstraint;
+import org.primefaces.util.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,9 +190,6 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
     }
 
     public BussinesEntityType getType() {
-        //if (type == null){
-        //   setType(bussinesEntityService.findBussinesEntityTypeByName(getTypeName()));
-        //}
         return type;
     }
 
@@ -245,33 +247,50 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         _filters.putAll(filters);
         
         if (sortField == null){
-            sortField = Invoice_.lastUpdate.getName();
+            sortField = Invoice_.emissionOn.getName();
         }
 
         QueryData<Invoice> qData = bussinesEntityService.find(first, _end, sortField, order, _filters);
         this.setRowCount(qData.getTotalResultCount().intValue());
-        return qData.getResult();
-    }
-    
-    public List<Invoice> load(String sortField, SortOrder sortOrder, boolean loadByAuthor) {
-
-        int end = 0 + MAX_RESULTS;
-
-        QuerySortOrder order = QuerySortOrder.DESC;
-        if (sortOrder == SortOrder.ASCENDING) {
-            order = QuerySortOrder.ASC;
-        }
-        Map<String, Object> _filters = buildFilters(loadByAuthor); //Filtros desde atributos de clase
         
-        if (sortField == null){
-            sortField = Invoice_.lastUpdate.getName();
-        }
+        //Aplicar filtros a resultados
+        if (!filters.isEmpty()){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>< aplicar filtros de UX " + filters);
+            List<Invoice> invoices = qData.getResult().stream()
+                    .skip(first)
+                    .filter(o -> filter(FacesContext.getCurrentInstance(), filters.values(), o))
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
 
-        QueryData<Invoice> qData = bussinesEntityService.find(0, end, sortField, order, _filters);
-        this.setRowCount(qData.getTotalResultCount().intValue());
+            this.setRowCount(invoices.size());
+            return invoices;
+        }
+        
         return qData.getResult();
     }
     
+    private boolean filter(FacesContext context, Collection<FilterMeta> filterBy, Object o) {
+        boolean matching = true;
+
+        for (FilterMeta filter : filterBy) {
+            FilterConstraint constraint = filter.getConstraint();
+            Object filterValue = filter.getFilterValue();
+//            try {
+//                Object columnValue = String.valueOf(o.getClass().getField(filter.getField()).get(o));
+                Invoice invoice = (Invoice) o;
+                Object columnValue = invoice.getSummary();
+                matching = constraint.isMatching(context, columnValue, filterValue, LocaleUtils.getCurrentLocale());
+//            } catch (ReflectiveOperationException e) {
+//                matching = false;
+//            }
+
+            if (!matching) {
+                break;
+            }
+        }
+
+        return matching;
+    }
     
     public BussinesEntity[] getSelectedBussinesEntities() {
         return selectedBussinesEntities;
@@ -324,5 +343,15 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         }
         
         return _filters;
+    }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = buildFilters(true); //Filtros desde atributos de clase
+        
+        _filters.putAll(filters);
+
+        QueryData<Invoice> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
 }

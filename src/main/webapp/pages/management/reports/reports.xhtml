@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <!--<f:viewParam name="" value="" />-->
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="reports">#{i18n['common.reports']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div  class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <div class="card">
+                        <p:inputText value="#{reporteHome.keyword}" class="input-sm"></p:inputText>
+                        <p:commandButton value="#{i18n['common.find']}" 
+                                         actionListener="#{reporteHome.clear()}"
+                                         styleClass="raised-btn">
+                        </p:commandButton>
+                    </div>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:dataTable id="reportsTable" draggableColumns="true" lazy="true" liveResize="true"
+                                 paginator="true" paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{report.id}"
+                                 rows="25" scrollRows="25"
+                                 value="#{reporteHome.lazyDataModel}" var="report"
+                                 selection="#{reporteHome.selectedBussinesEntities}">
+                        <p:ajax event="rowSelect" listener="#{reporteHome.onRowSelect}"/>
+                        <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                        <f:facet name="header">
+                            <p:button value="#{i18n['common.new']} #{i18n['common.report']}"
+                                      styleClass="danger-btn" style="display: block;"
+                                      outcome="report"/>
+                        </f:facet>
+                        <p:column headerText="#{i18n['common.name']}" sortBy="#{report.name}">
+                            <h:outputText value="#{report.name}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.description']}" sortBy="#{report.description}">
+                            <h:outputText value="#{report.description}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.type']}" sortBy="#{report.tipo}">
+                            <h:outputText value="#{report.tipo}"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

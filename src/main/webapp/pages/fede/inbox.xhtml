@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.purchases']}</ui:define>
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.purchases']}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -32,20 +32,67 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['common.purchases']}</p:link></li>
+            <li><p:link outcome="/pages/fede/inbox.jsf">#{i18n['app.fede.inventory.purchases']}</p:link></li>
+        </ui:define>
+        <ui:define name="style">
+            <style type="text/css">
+                .ui-dataTable * {
+                    /*border : 0px !important;*/
+                }
+                .container-center{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                }
+                .bold-capital{
+                    font-weight: bolder;
+                    text-transform: uppercase;
+                }
+                .capital{
+                    text-transform: uppercase;
+                }
+                .container-right{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+                .container-lefth{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+                .line-separator{
+                    color: #FBFCFC !important;
+                    border-width: 0.5px;
+                }
+            </style>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
                 <div class="ui-g-12">
                     <div class="card">
-                        <label class="Gray">#{i18n['common.from']}&nbsp;</label>
-                        <p:calendar value="#{facturaElectronicaHome.start}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
-                        </p:calendar>
-                        <label class="Gray">#{i18n['common.to']}&nbsp;</label>
-                        <p:calendar value="#{facturaElectronicaHome.end}" class="input-sm">
-                            <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" oncomplete="form.submit();"/>
-                        </p:calendar>
+                        <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                        <p:inputText value="#{facturaElectronicaHome.keyword}" class="input-sm">
+                            <p:ajax listener="#{facturaElectronicaHome.clear()}" />
+                        </p:inputText>  
+                        <h:panelGroup id="controles-busqueda-avanzada" >
+                            <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                <label class="Gray">#{i18n['common.from']}&nbsp;</label>
+                                <p:calendar value="#{facturaElectronicaHome.start}" class="input-sm">
+                                    <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
+                                </p:calendar>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                                <label class="Gray">#{i18n['common.to']}&nbsp;</label>
+                                <p:calendar value="#{facturaElectronicaHome.end}" class="input-sm">
+                                    <p:ajax event="dateSelect" listener="#{facturaElectronicaHome.clear()}" /> 
+                                </p:calendar>                        
+                            </h:panelGroup>
+                        </h:panelGroup>
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
+                                         actionListener="#{facturaElectronicaHome.clear()}" ajax="#{false}" immediate="true">
+                        </p:commandButton>
                         <p:button value="#{i18n['common.newa']}" styleClass="danger-btn" outcome="/pages/fede/factura.jsf"/>
                         <p:commandButton id="commandAddFromFile" value="#{i18n['common.upload']} #{i18n['common.from.min']} #{i18n['common.file']}"
                                          styleClass="secondary-button" style="margin-bottom:10px;"
@@ -63,7 +110,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </p:commandButton>
                     </div>
                     <div class="card">
-                        <p:dataTable id="dataTable-purchases" draggableColumns="true" lazy="true" liveResize="true"
+                        <p:dataTable id="dataTable-purchases" widgetVar="dataTableFacturas" draggableColumns="true" lazy="true" liveResize="true"
                                      paginator="true" paginatorAlwaysVisible="false"
                                      paginatorPosition="bottom" resizableColumns="true" rowKey="#{facturaElectronica.id}"
                                      rows="25" scrollRows="25"
@@ -71,28 +118,41 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                      selection="#{facturaElectronicaHome.selectedBussinesEntities}"
                                      sortBy="#{facturaElectronica.fechaEmision}" sortMode="single">
                             <p:ajax event="rowSelect" listener="#{facturaElectronicaHome.onRowSelect}"/>
-                            <p:column selectionMode="multiple" style="width:64px;text-align:center"/>
-                            <p:column headerText="#{i18n['common.code']}">
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column id="code" headerText="#{i18n['common.code']}"
+                                      style="width:96px;text-align:left">
                                 <h:outputText value="#{facturaElectronica.code}" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.comany.name']}" sortBy="#{facturaElectronica.author}">
+                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{facturaElectronica.author}">
                                 <h:outputText value="#{empty facturaElectronica.author.initials ? facturaElectronica.author.fullName  : facturaElectronica.author.initials }" />
                             </p:column>
-                            <p:column headerText="#{i18n['common.description']}">
-                                <h:outputText value="#{fedeAPI.summary(facturaElectronica)}" />
+                            <p:column id="summary" headerText="#{i18n['common.description']}">
+                                <h:outputText value="#{facturaElectronica.summary}" />
                             </p:column>
-                            <p:column headerText="#{i18n['ride.infoFactura.total']}" sortBy="#{facturaElectronica.importeTotal}" styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.importeTotal}">
-                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                            <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{facturaElectronica.importeTotal}">
+                                <h:outputText class="container-right" value="#{facturaElectronica.importeTotal}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="#{i18n['common.type.emission']}" sortBy="#{facturaElectronica.emissionType}"
-                                      styleClass="text-right">
-                                <h:outputText value="#{facturaElectronica.emissionType}">
+                            <p:column headerText="#{i18n['app.fede.payment.cash']} #{i18n['common.pay.by']}">
+                                <h:outputText class="container-right" value="#{facturaElectronicaHome.montoPorPagar(facturaElectronica)}" 
+                                              title="#{facturaElectronicaHome.messageDatePaymentExpired(facturaElectronica.fechaVencimiento)}" 
+                                              style="#{facturaElectronicaHome.calculateDayOfExpiration(facturaElectronica)==true ? 'color: #F94C00' : ''}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc">
+                            <p:column headerText="#{i18n['ride.emission.type']}" sortBy="#{facturaElectronica.emissionType}">
+                                <h:outputText class="capital" value="#{facturaElectronica.emissionType == 'PURCHASE_CREDIT' ? i18n['OVERDUE']: facturaElectronica.emissionType == 'PURCHASE_CASH' ? i18n['PURCHASE_CASH_LIT']:
+                                                                       facturaElectronica.emissionType == 'PURCHASE' ? i18n['PURCHASE']:'Otro tipo'}">
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="fechaEmision"  headerText="#{i18n['common.date.emission']}" sortBy="#{facturaElectronica.fechaEmision}" sortOrder="desc" class="Wid10">
                                 <h:outputText value="#{facturaElectronica.fechaEmision}">
+                                    <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column  id="fechaUltimoPago"  headerText="Último Pago">
+                                <h:outputText value="#{facturaElectronica.ultimaFechaPago}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>

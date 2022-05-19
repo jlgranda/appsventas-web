@@ -34,7 +34,88 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.smart']}</li>
         <li>/</li>
-        <li><p:link outcome="purchases">#{i18n['common.purchases']}</p:link></li>
+        <li><p:link outcome="purchases">#{i18n['app.fede.inventory.purchases']}</p:link></li>
+    </ui:define>
+    <ui:define name="content" rendered="#{true}">
+        <div class="layout-dashboard">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar>
+                        <p:toolbarGroup>
+                            <p:outputLabel class="Gray MarRight10" value="#{i18n['common.from']}:" for="@next"/>
+                            <p:calendar value="#{summaryHome.start}" class="input-sm MarRight10">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" 
+                                        update="barModelPurchases"/> <!-- oncomplete="form.submit();" --> 
+                            </p:calendar>
+                            <p:outputLabel class="Gray MarRight10" value="#{i18n['common.to']}:" for="@next"/>
+                            <p:calendar value="#{summaryHome.end}" class="input-sm MarRight10">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}"
+                                        update="barModelPurchases"/> 
+                            </p:calendar>      
+                        </p:toolbarGroup>
+                        <p:toolbarGroup>
+
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <!--Listado de Proveedores: Compras-->
+                    <p:panel id="control-bar2"
+                             header="#{i18n['app.fede.smart.purchases.top.supplier']}" 
+                             styleClass="statistics ui-g">                        
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
+                            <p:chart id="barModelPurchases" 
+                                     type="bar"
+                                     model="#{summaryHome.horizontalPurchasesBarModel}" 
+                                     rendered="#{not empty summaryHome.horizontalPurchasesBarModel}"
+                                     responsive="true"/>
+                        </div>
+                        <div class="ui-fluid">
+                            <p:commandButton id="button-detail" 
+                                             value="#{i18n['common.detail']} #{i18n['common.current']}" icon="pi pi-list" styleClass="warning-btn"
+                                             disabled="#{summaryHome.modelEmpty}"
+                                             update=":form:panel-dataTable" 
+                                             oncomplete="PF('dlgTblPurchases').show()">
+                            </p:commandButton>
+                        </div>
+                    </p:panel>
+                </div>
+            </div>
+        </div>
+        <p:dialog widgetVar="dlgTblPurchases" class="Container100 Responsive50 Fright" closeOnEscape="true"
+                  fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
+                 height="500" width="800">
+            <p:outputPanel id="panel-dataTable"> 
+                <p:dataTable id="dataTable-purchases" lazy="false" liveResize="true"
+                             liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
+                             paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
+                             rows="10" scrollable="true" scrollHeight="100%" scrollRows="10"
+                             scrollWidth="100%" tableStyle="table-layout: auto"
+                             value="#{summaryHome.listPurchases}" var="purchases">
+                    <f:facet name="header">
+                        <h:outputText value="#{i18n['app.fede.smart.purchases.summary']}"></h:outputText>
+                    </f:facet>
+                    <p:column id="nme" headerText="#{i18n['common.supplier']}" sortBy="#{purchases[0]}" class="Wid60">
+                        <h:outputText value="#{purchases[0]}"/>
+                    </p:column>
+                    <p:column id="amount" headerText="#{i18n['common.value']} #{i18n['common.money.letter']}" sortBy="#{purchases[1]}">
+                        <h:outputText value="#{purchases[1]}">
+                            <f:convertNumber type="currency" currencySymbol="$"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:columnGroup type="footer" >
+                        <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
+                            <span class="ui-g-10 Fright" style=" font-weight: bolder;">#{i18n['app.fede.inventory.purchases.totals']}: </span>
+                            <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
+                                <h:outputText value="#{summaryHome.getListPurchasesTotal()}" class="Fright">
+                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                </h:outputText>
+                            </span>
+                        </span>
+                    </p:columnGroup>
+                </p:dataTable>
+            </p:outputPanel>
+        </p:dialog>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -53,83 +134,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 border-color: #d8dae2;
             }
         </style>
-    </ui:define>
-    <ui:define name="content" rendered="#{true}">
-        <div class="layout-dashboard">
-            <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <div class="card">
-                        <h:panelGroup>
-                            <h:panelGroup>
-                                <label class="Gray">#{i18n['common.from']}</label>
-                                <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> <!-- oncomplete="form.submit();" --> 
-                                </p:calendar>
-                            </h:panelGroup>
-                            <h:panelGroup>
-                                <label class="Gray">#{i18n['common.to']}</label>
-                                <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" update="  barModelPurchases"/> 
-                                </p:calendar>                            
-                            </h:panelGroup>
-                        </h:panelGroup>
-                    </div>  
-                </div><!-- comment -->
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel id="control-bar2" class="card"
-                             header="#{i18n['app.fede.smart.purchases.top']}" 
-                             styleClass="statistics ui-g">                        
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                            <div align="right">
-                                <p:commandButton id="button-detail" value="#{i18n['common.detail']} #{i18n['common.current']}" style="margin-bottom:10px;"
-                                                 styleClass="raised-btn" update=":form:panel-dataTable" 
-                                                 oncomplete="PF('dlgTblPurchases').show()">
-                                </p:commandButton>
-                            </div>
-                            <!--Listado de Proveedores: Compras-->
-                            <p:chart id="barModelPurchases" type="bar"
-                                     model="#{summaryHome.horizontalPurchasesBarModel}" 
-                                     rendered="#{not empty summaryHome.horizontalPurchasesBarModel}"
-                                     responsive="true"/>
-                        </div>                      
-                    </p:panel>
-                </div>
-                <p:dialog widgetVar="dlgTblPurchases" class="Container100 Responsive50" closeOnEscape="true"
-                          fitViewport="true" hideEffect="blind" showEffect="clip" modal="true" resizable="false"
-                          style="text-align: right" height="500" width="800">
-                        <p:outputPanel id="panel-dataTable"> 
-                            <p:dataTable id="dataTable-purchases" lazy="false" liveResize="true"
-                                         liveScroll="true" paginator="true" paginatorAlwaysVisible="false"
-                                         paginatorPosition="bottom" resizableColumns="true" rowKey="#{recordDetail.id}"
-                                         rows="10" scrollable="true" scrollHeight="100%" scrollRows="10"
-                                         scrollWidth="100%" tableStyle="table-layout: auto"
-                                         value="#{summaryHome.listPurchases}" var="purchases">
-                                <f:facet name="header">
-                                    <h:outputText value="#{i18n['app.fede.smart.purchases.summary']}"></h:outputText>
-                                </f:facet>
-                                <p:column id="nme" headerText="#{i18n['common.supplier']}" sortBy="#{purchases[0]}" style="width:60%; text-align: left">
-                                    <h:outputText value="#{purchases[0]}"/>
-                                </p:column>
-                                <p:column id="amount" headerText="#{i18n['common.value']} #{i18n['common.money.letter']}" sortBy="#{purchases[1]}"  style="width: auto">
-                                    <h:outputText value="#{purchases[1]}">
-                                        <f:convertNumber type="currency" currencySymbol="$"/>
-                                    </h:outputText>
-                                </p:column>
-                                <p:columnGroup type="footer" >
-                                    <span class="ui-g-12" style="border: 1px solid #E9E9E9;">
-                                        <span class="ui-g-10" style=" font-weight: bolder; text-align: right">#{i18n['common.purchases']} #{i18n['common.totals']}: </span>
-                                        <span class="ui-g-2" style="font-weight: bold; color: #005b9f;">
-                                            <h:outputText value="#{summaryHome.getListPurchasesTotal()}" style="text-align: right">
-                                                <f:convertNumber type="currency" currencySymbol="$"/>
-                                            </h:outputText>
-                                        </span>
-                                    </span>
-                            </p:columnGroup>
-                            </p:dataTable>
-                        </p:outputPanel>
-                </p:dialog>
-            </div>
-        </div>
     </ui:define>
     <ui:define name="script">
         <script type="text/javascript">

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2021 author
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty off
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory.kardex']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="kardexId" value="#{kardexInventoryHome.kardexId}" />
+            <f:viewAction action="#{kardexInventoryHome.messagesValidation()}" />
+            <!--<f:viewAction action="#{kardexInventoryHome.calculateTotalKardex()}" />-->
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.inventory']}</li>
+        <li>/</li>
+        <li><p:link outcome="inventory-kardexs">#{i18n['common.tarjets']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
+        <li>/</li>
+        <li><p:link outcome="kardex">#{kardexInventoryHome.kardexId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.kardex']}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.sales.Kardex"/>
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <h:outputText class="BigTopic" value="#{kardexInventoryHome.kardex.id} #{kardexInventoryHome.kardex.code} | #{kardexInventoryHome.kardex.product.name}"></h:outputText>
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:commandButton id="btn-kardex-edit"
+                                         value="#{i18n['common.edit']}" icon="fa fa-edit" styleClass="help-btn" style="width: auto !important;"
+                                         actionListener="#{kardexInventoryHome.activePanelKardex()}"
+                                         update="editarKardexDialog"
+                                         oncomplete="PF('editarKardexDialog').show()"
+                                         immediate="#{false}">
+                        </p:commandButton>
+                        <i class="fa fa-bars p-px-2"/>
+                    </f:facet>
+                    <f:facet name="right">    
+                        <p:commandButton id="btn-kardexDetail-input" 
+                                         value="#{i18n['common.entry']}" icon="fa fa-plus" styleClass="primary-button" style="width: auto !important;"
+                                         actionListener="#{kardexInventoryHome.asignarPropiedadesKardexDetail('input')}"
+                                         update="entradaDialog"
+                                         oncomplete="PF('entradaDialog').show()"
+                                         disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
+                                         immediate="#{false}">
+                        </p:commandButton>
+                        <p:commandButton id="btn-kardexDetail-output"
+                                         value="#{i18n['common.exitd']}" icon="fa fa-minus" styleClass="warning-btn" style="width: auto !important;"
+                                         actionListener="#{kardexInventoryHome.asignarPropiedadesKardexDetail('output')}"
+                                         update="entradaDialog"
+                                         oncomplete="PF('entradaDialog').show()"
+                                         disabled="#{empty kardexInventoryHome.kardex.id or empty kardexInventoryHome.kardex.product}"
+                                         immediate="#{false}">
+                        </p:commandButton>
+                        <p:button value="#{i18n['common.newa']}" icon="fa fa-cart-plus" styleClass="danger-btn" style="width: auto !important;" 
+                                  outcome="compra"/>
+                    </f:facet>
+                </p:toolbar>
+            </div>
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <div class="card">
+                    <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{false}"
+                                 value="#{kardexInventoryHome.kardex.kardexDetails}" var="kardexDetail"
+                                 selection="#{kardexInventoryHome.selectedBussinesEntities}"
+                                 rowKey="#{kardexDetail.id}" 
+                                 rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                 paginator="#{true}" paginatorPosition="bottom" 
+                                 draggableColumns="#{true}" reflow="#{true}" 
+                                 resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                 sortMode="single">
+                        <f:facet name="header">
+                            <h:outputText value="MOVIMIENTOS DEL PRODUCTO SEGÚN KARDEX"/>
+                        </f:facet>
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column colspan="3" headerText="#{i18n['common.description']}"/>
+                                <p:column colspan="2" headerText="#{i18n['common.entries']}"/>
+                                <p:column colspan="2" headerText="#{i18n['common.exitds']}"/>
+                                <p:column colspan="2" headerText="#{i18n['common.fund']}"/>
+                            </p:row>
+                            <p:row>
+                                <p:column headerText="#{i18n['common.date.emission']}" class="Wid10"/>
+                                <p:column headerText="#{i18n['app.fede.inventory.kardex.operation.type']}"/>
+                                <p:column headerText="#{i18n['common.price.unit']}"/>
+                                <p:column headerText="#{i18n['common.quantity']}"/>
+                                <p:column headerText="#{i18n['common.value']}"/>
+                                <p:column headerText="#{i18n['common.quantity']}"/>
+                                <p:column headerText="#{i18n['common.value']}"/>
+                                <p:column headerText="#{i18n['common.quantity']}"/>
+                                <p:column headerText="#{i18n['common.value']}"/>
+                            </p:row>
+                        </p:columnGroup>
+                        <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{kardexDetail.entryOn}" sortOrder="ASC" class="Wid10">
+                            <h:outputText value="#{kardexDetail.entryOn}">
+                                <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="dd/MM/yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['app.fede.inventory.kardex.operation.type']}" >
+                            <h:outputText value="#{kardexDetail.operationType}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.price.unit']}">
+                            <h:outputText value="#{kardexDetail.unitValue}">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="en_US"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.quantity']}" style="background: #D8ECE1 !important;">
+                            <!--<label> #{kardexDetail.operationType=='DEVOLUCION_COMPRA' ? '-' : ''} </label>-->
+                            <h:outputText value="#{kardexDetail.quantity}" 
+                                          rendered="#{kardexDetail.operationType=='EXISTENCIA_INICIAL' or kardexDetail.operationType=='PRODUCCION' 
+                                                      or  kardexDetail.operationType=='COMPRA' or kardexDetail.operationType=='DEVOLUCION_COMPRA'}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.value']}" style="background: #D8ECE1 !important;">
+                             <!--<label> #{kardexDetail.operationType=='DEVOLUCION_COMPRA' ? '-' : ''} </label>-->
+                            <h:outputText value="#{kardexDetail.totalValue}"
+                                          rendered="#{kardexDetail.operationType=='EXISTENCIA_INICIAL' or kardexDetail.operationType=='PRODUCCION' 
+                                                      or kardexDetail.operationType=='COMPRA' or kardexDetail.operationType=='DEVOLUCION_COMPRA'}">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.quantity']}" style="background: #FCF3CF !important;">
+                            <label> #{kardexDetail.operationType=='DEVOLUCION_VENTA' ? '-' : ''} </label>
+                            <h:outputText value="#{kardexDetail.quantity}" 
+                                          rendered="#{kardexDetail.operationType=='SALIDA_INVENTARIO' or  kardexDetail.operationType=='VENTA' 
+                                                      or kardexDetail.operationType=='DEVOLUCION_VENTA'}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.value']}"  style="background: #FCF3CF !important;">
+                            <!--<label> #{kardexDetail.operationType=='DEVOLUCION_VENTA' ? '-' : ''} </label>-->
+                            <h:outputText value="#{kardexDetail.totalValue}"
+                                          rendered="#{kardexDetail.operationType=='SALIDA_INVENTARIO' or kardexDetail.operationType=='VENTA' 
+                                                      or kardexDetail.operationType=='DEVOLUCION_VENTA'}">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.quantity.min']}">
+                            <h:outputText value="#{kardexDetail.cummulativeQuantity}" style="#{kardexDetail.cummulativeQuantity lt 0 ? 'color: #e53935;': ''}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n['common.value']}">
+                            <h:outputText value="#{kardexDetail.cummulativeTotalValue}" style="#{kardexDetail.cummulativeTotalValue lt 0 ? 'color: #e53935;': ''}">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="popups">
+        <!-- Ventanas de dialogo de edición -->
+        <p:dialog id="entradaDialog" header="Nuevo registro" widgetVar="entradaDialog" minHeight="40" width="350" showEffect="fade" modal="true">
+            <h:form id="registerKardexDetailForm">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:outputLabel for="operationtype-input" value="#{i18n['app.fede.inventory.kardex.operation.type']}" />   
+                        <p:selectOneMenu id="operationtype-input" value="#{kardexInventoryHome.kardexDetail.operationType}" style="width: 100%;"
+                                         required="#{true}">
+                            <f:selectItems value="#{ui.getOperationTypesAsSelectItem(kardexInventoryHome.operationTypeFlow)}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                            <p:ajax update="btn-agregar" partialSubmit="#{true}"></p:ajax>
+                        </p:selectOneMenu>
+                        <jlgranda:input id="quantity" name="quantity" type="decimal" label="#{i18n['common.quantity']}" 
+                                        render="quantity" value="#{kardexInventoryHome.kardexDetail.quantity}" 
+                                        required="true" requiredMessage="#{i18n['common.quantity']}"
+                                        placeholder="#{false}" minValue="0"
+                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                        container="none" rendered="#{true}"
+                                        update="btn-agregar"/>
+                        <jlgranda:input id="unit_value" name="unit_value" type="decimal" label="#{i18n['common.price.unit']}" 
+                                        render="unit_value" value="#{kardexInventoryHome.kardexDetail.unitValue}" 
+                                        required="true" requiredMessage="#{i18n['common.price.unit']}"
+                                        placeholder="#{false}" minValue="0"
+                                        decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                        thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                        decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                        container="none" rendered="#{true}"
+                                        update="btn-agregar"/>
+                        <jlgranda:input id="entryon" name="entryon" type="calendar-time" label="#{i18n['common.date.register']}" 
+                                        render="entryon" value="#{kardexInventoryHome.kardexDetail.entryOn}" 
+                                        required="#{false}" requiredMessage="#{i18n['common.date.register']}"
+                                        container="none"/>
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.vaucher']} #{i18n['common.nr']}" 
+                                        render="code" value="#{kardexInventoryHome.kardexDetail.code}" 
+                                        required="#{false}" requiredMessage="#{i18n['common.vaucher']} #{i18n['common.nr']}"
+                                        container="none" 
+                                        listener="#{kardexInventoryHome.validatedKardexDetail()}" update="btn-agregar"/>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="btn-agregar"
+                                                 value="#{i18n['common.add']}" icon="pi pi-check" styleClass="danger-btn" style="width: auto !important;"
+                                                 actionListener="#{kardexInventoryHome.addKardexDetail()}"
+                                                 disabled="#{not kardexInventoryHome.validKardexDetail()}"
+                                                 update="@form"
+                                                 ajax="#{false}" type="submit"><!--update="registerKardexDetailForm form:dataTable"-->
+                                </p:commandButton>
+                                <i class="fa fa-bars p-px-2"/>
+                            </f:facet>
+                            <f:facet name="right">
+
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+
+            </h:form>
+        </p:dialog>
+        <p:dialog id="editarKardexDialog" header="Editar Kardex #{kardexInventoryHome.kardex.product.name}" widgetVar="editarKardexDialog" minHeight="40" width="800" showEffect="fade" modal="true">
+            <h:form id="registerKardexForm">
+                <div class="ui-g">
+                    <!--                    <div class="ui-g-12 ui-md-12 ui-lg-6">
+                                            <div class="ui-inputgroup" style="width: 100%">
+                                                <span class="ui-inputgroup-addon capital" style="text-transform: uppercase; width: 50%">#{i18n['app.fede.inventory.product']}</span>
+                                                <p:autoComplete value="#{kardexInventoryHome.kardex.product}" var="entidad"
+                                                    itemLabel="#{entidad.name}" multiple="false" itemValue="#{entidad}" 
+                                                    completeMethod="#{kardexInventoryHome.completeProductKardex()}"
+                                                    converter="org.jlgranda.fede.ui.converter.ProductConverter"
+                                                    disabled="#{kardexInventoryHome.kardexId != null}"
+                                                    placeholder="#{i18n['app.fede.inventory.product.find']}"
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{false}">
+                                                    <p:column>
+                                                        <h:outputText value="#{entidad.name} [$ #{entidad.price}]"/>
+                                                    </p:column>
+                                                    <p:ajax event="itemSelect" update="entradaDialog, kardex-code" partialSubmit="#{true}" listener="#{kardexInventoryHome.generateCode()}"></p:ajax>
+                                                </p:autoComplete>
+                                            </div>
+                                            <div class="ui-inputgroup" style="width: 100%">
+                                                <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 50%">#{i18n['app.fede.inventory.kardex.sku']}</span>
+                                                <p:inputText id="kardex-code" value="#{kardexInventoryHome.kardex.code}" required="#{true}" disabled="#{true}"/>
+                                            </div>
+                                        </div>-->
+                    <div class="ui-g-12 ui-md-12 ui-lg-12">
+                        <h:panelGroup id="panel-kardex-properties">
+                            <div class="ui-inputgroup">
+                                <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.unit']} #{i18n['common.of']} #{i18n['common.measure']}</span>
+                                <p:selectOneMenu id="unidad-medida" value="#{kardexInventoryHome.kardex.unitMeasure}" style="width: 100%;"
+                                                 required="#{true}" immediate="true" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"> 
+                                    <f:selectItem itemLabel="#{i18n['common.choice']}" itemValue="#{kardexInventoryHome.kardex.unitMeasure}" rendered="#{kardexInventoryHome.kardex.unitMeasure!=null}"/> 
+                                    <f:selectItems value="#{ui.getMeasuresTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                    <p:ajax update="@this"></p:ajax>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-inputgroup">
+                                <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.minimun']}</span>
+                                <p:spinner value="#{kardexInventoryHome.kardex.unitMinimum}" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"
+                                           min="1" immediate="#{false}" styleClass="" required="#{true}">
+                                    <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@form:unit_maximun"></p:ajax>
+                                </p:spinner>
+                                <span class="ui-inputgroup-addon" style="text-transform: uppercase; width: 100%">#{i18n['common.maximum']}</span>
+                                <p:spinner id="unit_maximun" value="#{kardexInventoryHome.kardex.unitMaximum}" disabled="#{kardexInventoryHome.editarKardex and kardexInventoryHome.kardexId!=null}"
+                                           min="#{kardexInventoryHome.kardex.unitMinimum==null? '1':kardexInventoryHome.kardex.unitMinimum}" immediate="true" 
+                                           styleClass="" required="#{true}">
+                                    <p:ajax listener="#{kardexInventoryHome.asignedMaximum()}" update="@this"></p:ajax>
+                                </p:spinner>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <p:commandButton id="btn-save-kardex-properties"
+                                 icon="pi pi-save"  styleClass="danger-btn p-mr-2"
+                                 value="#{i18n['common.save']}"
+                                 actionListener="#{kardexInventoryHome.editKardex()}"
+                                 type="submit" ajax="#{false}" 
+                                 update="@form"
+                                 disabled="#{kardexInventoryHome.editarKardex}"
+                                 style="width: -webkit-fill-available;">
+                </p:commandButton>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+    <ui:define name="style">
+        <!--                        rowStyleClass="#{kardexDetail.operationType=='COMPRA' ? 'rowPurchases' : 'rowDefault' 
+                                                     or kardexDetail.operationType=='VENTA' ? 'rowSales' : 'rowDefault'
+                                                     or kardexDetail.operationType=='PRODUCCION' ? 'rowPurchasesDev' : 'rowDefault'
+                                                     or kardexDetail.operationType=='SALIDA_INVENTARIO' ? 'rowSalesDev' : 'rowDefault  '}"-->
+        <style type="text/css">
+            .rowPurchases {
+                background-color: #FCF3CF !important;
+            }
+            .rowPurchasesDev {
+                background-color: #FEF9E7 !important;
+            }
+            .rowSales {
+                background-color: #D8ECE1 !important;
+            }
+            .rowSalesDev {
+                background-color: #EAFAF1 !important;
+            }
+            .rowDefault {
+                background-color: #EFEFEF !important;
+            }
+            .container-center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .bold-capital{
+                font-weight: bolder;
+                text-transform: uppercase;
+            }
+            .capital{
+                text-transform: uppercase;
+            }
+            .container-right{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .container-lefth{
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            .line-separator{
+                color: #FBFCFC !important;
+                border-width: 0.5px;
+            }
+        </style>
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

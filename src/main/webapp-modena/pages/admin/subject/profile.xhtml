@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="subheader">
-            #{subjectAdminHome.subjectId == null ? i18n['New_a'].concat(' ').concat(i18n['Profile']).concat(': ') : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}
+            #{subjectAdminHome.subjectId == null ? i18n['New_a'].concat(' ').concat(i18n['module.profile']).concat(': ') : i18n['common.edit'].concat(': ')} #{subjectAdminHome.subjectEdit.fullName}
         </ui:define>
         <ui:define name="content">
             <h:form id="form" enctype="multipart/form-data">
@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                 value="#{subjectAdminHome.subjectEdit.description}" required="false" 
                                                 inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
 
-                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
+                                <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
                                                 value="#{subjectAdminHome.subjectEdit.email}" validator="emailValidator"
                                                 required="#{!subjectAdminHome.subjectEdit.persistent}" placeholder="true" 
                                                 execute="@this save" render="email"/>
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                                     execute="@this save" render="clave">
                                     </jlgranda:input>
                                     <jlgranda:input id="confirmar-clave" name="confirmar-clave" type="password" label="#{i18n['app.signin.password.confirm']}" 
-                                                    value="#{subjectAdminHome.confirmarClave}" rendered="false" placeholder="true"
+                                                    value="#{subjectAdminHome.confirmarClave}" rendered="#{false}" placeholder="true"
                                                     execute="@this save" render="confirmar-clave"/>
                                 </p:panel>
                             </div>
@@ -96,7 +96,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:toolbar>
                                 <f:facet name="left">
                                     <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                                     ajax="true" 
+                                                     ajax="#{true}" 
                                                      actionListener="#{subjectAdminHome.save()}" 
                                                      action="#{subjectAdminHome.getOutcome()}"
                                                      style="width: auto !important;"

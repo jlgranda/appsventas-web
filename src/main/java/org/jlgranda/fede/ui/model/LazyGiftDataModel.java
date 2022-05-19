@@ -240,6 +240,38 @@ public class LazyGiftDataModel extends LazyDataModel<GiftEntity> implements Seri
         this.setRowCount(qData.getTotalResultCount().intValue());
         return qData.getResult();
     }
+    
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(GiftEntity_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        
+        _filters.put(GiftEntity_.owner.getName(), getOwner()); //Filtro por defecto
+        
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
+        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        
+        _filters.putAll(filters);
+        
+        QueryData<GiftEntity> qData = giftEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 
     public GiftEntity[] getSelectedGiftEntities() {
         return selectedGiftEntities;
@@ -256,4 +288,5 @@ public class LazyGiftDataModel extends LazyDataModel<GiftEntity> implements Seri
     public void setSelectedGiftEntity(GiftEntity selectedGiftEntity) {
         this.selectedGiftEntity = selectedGiftEntity;
     }
+
 }

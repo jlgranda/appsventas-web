@@ -44,42 +44,42 @@ import org.slf4j.LoggerFactory;
  *
  * @author jlgranda
  */
-public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Serializable {
-    
+public class LazyJobRoleDataModel extends LazyDataModel<JobRole> implements Serializable {
+
     private static final int MAX_RESULTS = 5;
     private static final long serialVersionUID = 8328933833912504890L;
-    
-    Logger  logger = LoggerFactory.getLogger(LazyJobRoleDataModel.class);
 
-    private JobRoleService bussinesEntityService; 
-    
+    Logger logger = LoggerFactory.getLogger(LazyJobRoleDataModel.class);
+
+    private JobRoleService bussinesEntityService;
+
     private List<JobRole> resultList;
     private int firstResult = 0;
-    
+
     private BussinesEntityType type;
-    
+
     private Subject owner;
-    
+
     private Organization organization;
     /**
      * Lista de etiquetas para filtrar facturas
      */
     private String tags;
-    
+
     /**
      * Inicio del rango de fecha
      */
     private Date start;
-    
+
     /**
      * Fin del rango de fecha
      */
     private Date end;
-    
+
     private String typeName;
     private BussinesEntity[] selectedBussinesEntities;
     private BussinesEntity selectedBussinesEntity; //Filtro de cuenta schema
-    
+
     private String filterValue;
 
     public LazyJobRoleDataModel(JobRoleService bussinesEntityService) {
@@ -127,7 +127,7 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
     public void setOrganization(Organization organization) {
         this.organization = organization;
     }
-    
+
     public String getTags() {
         return tags;
     }
@@ -209,9 +209,9 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
         int _end = first + pageSize;
         String sortField = null;
         QuerySortOrder order = QuerySortOrder.DESC;
-        if (!sortBy.isEmpty()){
-            for (SortMeta sm : sortBy.values()){
-                if ( sm.getOrder() == SortOrder.ASCENDING) {
+        if (!sortBy.isEmpty()) {
+            for (SortMeta sm : sortBy.values()) {
+                if (sm.getOrder() == SortOrder.ASCENDING) {
                     order = QuerySortOrder.ASC;
                 }
                 sortField = sm.getField(); //TODO ver mejor manera de aprovechar el mapa de orden
@@ -219,32 +219,32 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
         }
         Map<String, Object> _filters = new HashMap<>();
         Map<String, Date> range = new HashMap<>();
-        if (getStart() != null){
+        if (getStart() != null) {
             range.put("start", getStart());
-            if (getEnd() != null){
+            if (getEnd() != null) {
                 range.put("end", getEnd());
             } else {
                 range.put("end", Dates.now());
             }
         }
-        if (!range.isEmpty()){
+        if (!range.isEmpty()) {
             _filters.put(JobRole_.createdOn.getName(), range); //Filtro de fecha inicial
         }
-        if(getOwner()!=null){
-        _filters.put(JobRole_.owner.getName(), getOwner()); //Filtro por defecto
+        if (getOwner() != null) {
+            _filters.put(JobRole_.owner.getName(), getOwner()); //Filtro por defecto
         }
         if (getOrganization() != null) {
             _filters.put(JobRole_.organization.getName(), getOrganization()); //Filtro por  defecto organization
         }
-        if (getTags() != null && !getTags().isEmpty()){
+        if (getTags() != null && !getTags().isEmpty()) {
             _filters.put("tag", getTags()); //Filtro de etiquetas
         }
-        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
         _filters.putAll(filters);
-        
-        if (sortField == null){
+
+        if (sortField == null) {
             sortField = JobRole_.createdOn.getName();
         }
 
@@ -267,5 +267,38 @@ public class LazyJobRoleDataModel  extends LazyDataModel<JobRole> implements Ser
 
     public void setSelectedBussinesEntity(BussinesEntity selectedBussinesEntity) {
         this.selectedBussinesEntity = selectedBussinesEntity;
+    }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null) {
+            range.put("start", getStart());
+            if (getEnd() != null) {
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()) {
+            _filters.put(JobRole_.createdOn.getName(), range); //Filtro de fecha inicial
+        }
+        if (getOwner() != null) {
+            _filters.put(JobRole_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getOrganization() != null) {
+            _filters.put(JobRole_.organization.getName(), getOrganization()); //Filtro por  defecto organization
+        }
+        if (getTags() != null && !getTags().isEmpty()) {
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        if (getFilterValue() != null && !getFilterValue().isEmpty()) {
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        _filters.putAll(filters);
+
+        QueryData<JobRole> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
     }
 }

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2022 usuario
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.record']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="generalJournalId" value="#{recordHome.generalJournalId}"/>
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting']}</li>
+            <li>/</li>
+            <li><p:link outcome="record-register">#{i18n['common.register']} #{i18n['app.fede.accounting.record']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
+                        <h1 class="TexUppercase">
+                            #{i18n['app.fede.accounting.record']}
+                        </h1>
+                    </div>
+                    <p:panel id="panel-msg"
+                             class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
+                        <p:staticMessage rendered="#{empty recordHome.emissionDate}"
+                                         severity="warn" summary="#{i18n['action.warning']}" detail="Por favor seleccione la fecha de registro del asiento." style="width: 100%"/>
+                    </p:panel>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
+                        <jlgranda:input id="emissionDate" name="emissionDate" render="emissionDate" container="none"
+                                        type="calendar" showOn="button"
+                                        value="#{recordHome.emissionDate}" label="#{i18n['common.to']}:&nbsp;" 
+                                        required="#{true}" 
+                                        placeholder="#{false}" 
+                                        update="@form">
+                        </jlgranda:input>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 Padding5 ui-fluid">
+                        <p:linkButton outcome="journal"
+                                      value="#{i18n['common.view']} #{i18n['app.fede.accounting.journal']}"
+                                      disabled="#{empty recordHome.emissionDate}"
+                                      icon="pi pi-book" iconPos="left" styleClass="help-btn rounded-btn TexUppercase">
+                            <f:param name="journalId" value="#{recordHome.generalJournalIdByEmisionDate}"/>
+                        </p:linkButton>
+                    </div>
+                    <p:panel id="panel-record" rendered="#{not empty recordHome.emissionDate}"
+                             class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 ui-fluid NoPadding">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd">
+                            <h3>Agregar/Editar cuenta al asiento contable</h3>
+                            <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
+                                <p:outputLabel value="#{i18n['app.fede.accounting.account']}" for="@next"/>
+                                <p:autoComplete id="account" 
+                                                value="#{recordHome.recordDetail.account}" var="account"
+                                                itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                                completeMethod="#{accountHome.filterAccounts}"
+                                                converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                                placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                                emptyMessage="#{i18n['app.setting.list.empty']}"
+                                                converterMessage="#{i18n['property.converter.fail']}"
+                                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                                forceSelection="#{true}" dropdown="#{false}"
+                                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                                required="#{true}">
+                                    <p:column>
+                                        <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                                    </p:column>
+                                    <p:ajax process="@this"/>
+                                    <p:ajax event="itemSelect" listener="#{recordHome.onItemAccountSelect}" update="@form"/>
+                                </p:autoComplete>
+                            </div>
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12 DispInlGrid">
+                                <p:outputLabel value="Seleccione el tipo:" for="@next"/>
+                                <p:selectOneRadio id="recordDetailType" 
+                                                  value="#{recordHome.recordDetail.recordDetailType}" 
+                                                  layout="responsive" columns="3"
+                                                  required="#{true}">
+                                    <f:selectItems value="#{ui.getAccountTypesAsSelectItem()}" var="recordDetailType"
+                                                   itemLabel="#{recordDetailType.label}" itemValue="#{recordDetailType}"/>
+                                    <p:ajax process="@this"/>
+                                    <f:ajax execute="@this" render="@form"></f:ajax>
+                                </p:selectOneRadio>
+                            </div>
+                            <div class="ui-g-3 ui-md-3 ui-lg-3 ui-sm-12 DispInlGrid">
+                                <jlgranda:input id="amount" name="amount" render="amount" container="none"
+                                                type="decimal" 
+                                                decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                                thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                                decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}" 
+                                                value="#{recordHome.recordDetail.amount}" label="#{i18n['common.money.letter']}"
+                                                required="#{true}" requiredMessage="#{i18n['common.money.letter']}"
+                                                placeholder="#{false}"
+                                                rendered="#{true}"
+                                                update="@form"/>
+                            </div>
+                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPaddingTop">
+                                <p:commandButton id="btn-detail-add"
+                                                 icon="pi pi-check-square" styleClass="warning-btn rounded-btn TexUppercase"
+                                                 value="#{i18n['common.add']}"
+                                                 actionListener="#{recordHome.recordDetailAdd}" 
+                                                 ajax="#{true}" immediate="#{true}"
+                                                 disabled="#{empty recordHome.emissionDate or empty recordHome.recordDetail.account or empty recordHome.recordDetail.recordDetailType or recordHome.recordDetail.amount le 0}"
+                                                 update="@form"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd DispInlGrid">
+                            <h3>Configuración del asiento contable</h3>
+                            <p:dataTable id="recordDetails" widgetVar="recordDetails" lazy="#{false}"
+                                         value="#{recordHome.record.recordDetails}" var="recordDetail" 
+                                         selection="#{recordHome.recordDetailSelected}" 
+                                         rowKey="#{recordDetail.account}"
+                                         rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                         paginator="#{true}" paginatorPosition="bottom" 
+                                         draggableColumns="#{true}" reflow="#{true}" 
+                                         resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                         sortMode="single">
+                                <p:column headerText="#{i18n['app.fede.accounting.account']}" class="Wid40">
+                                    <h:outputText value="#{recordDetail.account.name.toUpperCase()}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.debe']}">
+                                    <h:outputText value="#{recordDetail.amount}"
+                                                  rendered="#{recordDetail.recordDetailType=='DEBE'}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n['common.haber']}">
+                                    <h:outputText value="#{recordDetail.amount}"
+                                                  rendered="#{recordDetail.recordDetailType=='HABER'}">
+                                        <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                            <p:outputLabel value="#{i18n['common.concept']}" for="@next"/>
+                            <p:inputTextarea  class="BigTopic" 
+                                              value="#{recordHome.record.description}" 
+                                              rows="3" cols="30" autoResize="false"
+                                              required="#{false}">
+                                <p:ajax process="@this"/>
+                                <p:ajax event="keyup" update="btn-record-save" />
+                            </p:inputTextarea>
+                        </div>
+                        <p:toolbar class="NoBorder">
+                            <p:toolbarGroup class="DispInlFlex">
+                                <p:commandButton id="btn-record-save"
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn TexUppercase"
+                                                 actionListener="#{recordHome.save()}"
+                                                 disabled="#{empty recordHome.record.recordDetails or empty recordHome.record.description}"
+                                                 ajax="#{false}" immediate="#{false}" 
+                                                 update="@form"/>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="right" class="DispInlFlexRight">
+                                <p:commandButton title="#{i18n['common.home']}" icon="pi pi-home" styleClass="secondary-button rounded-btn"
+                                                 actionListener="#{recordHome.closeDialog(null)}" action="#{recordHome.getOutcome()}" 
+                                                 ajax="#{true}" immediate="#{true}"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:panel>
+                </div>
+            </div>
+        </ui:define> 
+        <ui:define name="style">
+        </ui:define>
+    </ui:composition>
+</html>

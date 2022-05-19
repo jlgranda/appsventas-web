@@ -58,7 +58,7 @@ and open the template in the editor.
     </ui:define>
 
     <ui:define name="subheader">
-        #{i18n['app.documents.task.documents']}
+        #{i18n['app.documents.procedures']}
     </ui:define>
 
     <ui:define name="content">
@@ -75,25 +75,23 @@ and open the template in the editor.
                                      reflow="true" 
                                      rowKey="#{tarea.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     id="dataTable" widgetVar="dataTable_wv" lazy="true">
+                                     id="dataTable" widgetVar="dataTable" lazy="true">
                            
                             <!--<p:ajax event="rowSelect"  listener="{tareaHome.onRowSelect}"/>-->
-                           <!-- <p:column selectionMode="single" style="width:16px;text-align:center"/>-->
-                            <!--<p:column headerText="#{i18n['ride.no']}" sortBy="#{entity.code}">
+                           <!-- <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>-->
+                            <!--<p:column headerText="#{i18n['common.nr']}" sortBy="#{entity.code}">
                                 <h:outputText value="#{entity.code}" />
                             </p:column>-->
-                            <p:column headerText="#{i18n['app.fede.tarea.titulo']}" sortBy="#{entity.name}"
-                                      styleClass="text-right">
+                            <p:column headerText="#{i18n['app.document.task.tittle']}" sortBy="#{entity.name}">
                                 <h:outputText value="#{entity.name}"/>
                             </p:column>
-                            <p:column headerText="#{i18n['app.fede.tarea.departamento']}" sortBy="#{entity.departamento}">
+                            <p:column headerText="#{i18n['app.fede.task.departamento']}" sortBy="#{entity.departamento}">
                                 <h:outputText value="#{entity.departamento}" />
                             </p:column>
-                            <p:column headerText="#{i18n['app.documents.task.recipient.data']}" sortBy="#{entity.owner}">
+                            <p:column headerText="#{i18n['app.document.task.consignee.data']}" sortBy="#{entity.owner}">
                                 <h:outputText value="#{entity.owner.fullName}" />
                             </p:column>
-                            <p:column  id="createdOn"  headerText="#{i18n['app.documents.task.fechaCreacion']}" sortBy="#{entity.createdOn}"
-                                       styleClass="text-right">
+                            <p:column  id="createdOn"  headerText="#{i18n['common.created.in']}" sortBy="#{entity.createdOn}">
                                 <h:outputText value="#{entity.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>

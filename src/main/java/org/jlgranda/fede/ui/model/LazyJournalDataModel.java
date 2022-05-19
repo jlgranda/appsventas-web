@@ -17,13 +17,17 @@
 package org.jlgranda.fede.ui.model;
 
 import com.jlgranda.fede.ejb.talentohumano.JournalService;
+import java.beans.IntrospectionException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
+import org.jlgranda.fede.ui.util.UI;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.Journal;
 import org.jlgranda.fede.model.talentohumano.Journal_;
@@ -37,6 +41,8 @@ import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
+import org.primefaces.model.filter.FilterConstraint;
+import org.primefaces.util.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -270,6 +276,46 @@ public class LazyJournalDataModel  extends LazyDataModel<Journal> implements Ser
         return qData.getResult();
     }
 
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+       
+        Map<String, Object> _filters = new HashMap<>();
+        Map<String, Date> range = new HashMap<>();
+        if (getStart() != null){
+            range.put("start", getStart());
+            if (getEnd() != null){
+                range.put("end", getEnd());
+            } else {
+                range.put("end", Dates.now());
+            }
+        }
+        if (!range.isEmpty()){
+            _filters.put(Journal_.beginTime.getName(), range); //Filtro de fecha registro
+        }
+        if (getOwner() != null){
+            _filters.put(Journal_.owner.getName(), getOwner()); //Filtro por defecto
+        }
+        if (getAuthor()!= null){
+            _filters.put(Journal_.author.getName(), getAuthor()); //Filtro por defecto
+        }
+        
+        if (getTags() != null && !getTags().isEmpty()){
+            _filters.put("tag", getTags()); //Filtro de etiquetas
+        }
+        
+        if (getFilterValue() != null && !getFilterValue().isEmpty()){
+            _filters.put("keyword", getFilterValue()); //Filtro general
+        }
+        
+        if (filters != null)
+            _filters.putAll(filters);
+        
+        
+        QueryData<Journal> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
+    
     public BussinesEntity[] getSelectedBussinesEntities() {
         return selectedBussinesEntities;
     }

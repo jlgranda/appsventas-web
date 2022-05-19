@@ -24,13 +24,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jpapi.model.Organization;
 import org.jlgranda.fede.ui.model.LazyOrganizationDataModel;
 import org.jpapi.model.BussinesEntity;
@@ -49,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author jlgranda
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class OrganizationHome extends FedeController implements Serializable {
 
     private static final long serialVersionUID = -7712000810185595430L;
@@ -125,8 +128,16 @@ public class OrganizationHome extends FedeController implements Serializable {
     }
     
     public void save(){
-        getOrganization().setAuthor(subject);
-        getOrganization().setOwner(subject);
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println("id: " + getOrganization().getId());
+        System.out.println("name: " + getOrganization().getName());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        
+        if (!getOrganization().isPersistent()){
+            getOrganization().setAuthor(subject);
+            getOrganization().setOwner(subject);
+        }
         organizationService.save(getOrganization().getId(), getOrganization());
         addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("action.sucessfully.detail"));
     }
@@ -281,6 +292,23 @@ public class OrganizationHome extends FedeController implements Serializable {
     
     public List<Organization> findOrganizations(Subject subject) {
         return organizationService.findByNamedQuery("Organization.findByEmployee", subject);
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    /**
+     * Ir al inicio
+     */
+    public void irAInicio(){
+        setOutcome("");
+        try {
+            this.redirectTo(getOutcome());
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(OrganizationHome.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

@@ -35,6 +35,7 @@ import javax.inject.Named;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.TemplateHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.gifts.GiftEntity;
 import org.jlgranda.fede.ui.model.LazyGiftDataModel;
 import org.jpapi.model.Group;
@@ -212,5 +213,10 @@ public class GiftHome extends FedeController implements Serializable {
     
     public List<GiftEntity> getLastGiftsFromOwner(Subject _subject, Date _start, Date _end) {
         return giftService.findByNamedQuery("gift.giftsFromOwner", _subject, _start, _end, StatusType.ACTIVE.toString());
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

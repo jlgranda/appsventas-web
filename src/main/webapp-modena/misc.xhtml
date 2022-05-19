@@ -62,7 +62,7 @@
                                             PF('startButton2').disable();" widgetVar="startButton2" />
                                     <p:commandButton value="Cancel" actionListener="#{progressBarView.cancel}" oncomplete="PF('pbAjax').cancel();PF('startButton2').enable();" />
                                     <br /><br />
-                                    <p:progressBar widgetVar="pbAjax" ajax="true" value="#{progressBarView.progress}" labelTemplate="{value}%" styleClass="animated" global="false">
+                                    <p:progressBar widgetVar="pbAjax" ajax="#{true}" value="#{progressBarView.progress}" labelTemplate="{value}%" styleClass="animated" global="false">
                                         <p:ajax event="complete" listener="#{progressBarView.onComplete}" update="progressGrowl" oncomplete="PF('startButton2').enable()"/>
                                     </p:progressBar>
                                 </h:form>

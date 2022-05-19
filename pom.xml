@@ -2,24 +2,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.tecnopro</groupId>
+    <groupId>org.jlgranda</groupId>
     <artifactId>appsventas-web</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>appsventas-web</name>
 
-    <description>Aplicaciones y Sistemas de Ventas</description>
+    <description>Plataforma para negocios exitosos</description>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <primefaces.version>10.0.0</primefaces.version>
+        <primefaces.version>11.0.0</primefaces.version>
         <primefaces.extension.version>6.0.0</primefaces.extension.version>
         <primefaces.theme.version>1.0.10</primefaces.theme.version>
         <hibernate.version>5.4.24.Final</hibernate.version>
-
-        <shiro.version>1.8.0</shiro.version>
+        <shiro.version>[1.8.0,)</shiro.version>
         <deltaspike.version>1.8.2</deltaspike.version>
         <slf4j.version>1.6.4</slf4j.version>
         <!-- WildFly dependency versions -->
@@ -223,7 +222,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate.version}</version>
+            <version>5.4.3.Final</version>
             <scope>runtime</scope>
             <exclusions>
                 <exclusion>
@@ -250,7 +249,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <version>${hibernate.version}</version>
+            <version>7.0.2.Final</version>
             <scope>runtime</scope>
         </dependency>
          
@@ -279,7 +278,7 @@
         <dependency>    
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>2.11.0</version>
             <scope>compile</scope>
         </dependency>
         
@@ -318,6 +317,11 @@
             <version>${primefaces.version}</version>
         </dependency> 
 <!--        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>primeflex</artifactId>
+            <version>2.0.0</version>
+        </dependency>-->
+<!--        <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
             <version>${primefaces.extension.version}</version>
@@ -349,7 +353,7 @@
         
         <!--       jlgranda.com dependencies-->
         <dependency>
-            <groupId>net.tecnopro</groupId>
+            <groupId>org.jlgranda</groupId>
             <artifactId>appsventas-ejb</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
@@ -384,20 +388,43 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>[24.1.1,)</version>
-        </dependency> 
-
+        </dependency> -->
+<!--    https://mvnrepository.com/artifact/com.lowagie/itext -->
+        <dependency>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+        
+        <!-- Jasper reports -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.16.0</version>
-            <scope>compile</scope>
+            <version>6.18.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.lowagie</groupId>
+                    <artifactId>itext</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency> 
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-fonts</artifactId>
+            <version>6.18.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-functions</artifactId>
+            <version>6.18.0</version>
+        </dependency>
+        <!-- //Jasper reports -->
         
-        <!-- https://mvnrepository.com/artifact/net.sourceforge.dynamicreports/dynamicreports-core -->
+<!--         https://mvnrepository.com/artifact/net.sourceforge.dynamicreports/dynamicreports-core -->
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
             <artifactId>dynamicreports-core</artifactId>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2015 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <o:importConstants type="org.jlgranda.fede.model.document.DocumentType"/>
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.sales']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="documentType" value="#{invoiceHome.documentType}" />
+            <f:viewParam name="interval" value="#{invoiceHome.interval}" />
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.sales']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/sales/proformas.jsf?interval=7&amp;overcome=overdues&amp;documentType=#{invoiceHome.documentType}">#{i18n[invoiceHome.documentType]}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jpapi.model.StatusType" />
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <div class="card">
+                    <label class="Gray">#{i18n['common.find']}&nbsp;</label>
+                    <p:inputText value="#{invoiceHome.keyword}" class="input-sm">
+                        <p:ajax listener="#{invoiceHome.clear()}" />
+                    </p:inputText>  
+                    <h:panelGroup id="controles-busqueda-avanzada" >
+                        <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                            <label class="Gray">#{i18n['common.from']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.start}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> <!-- oncomplete="form.submit();" --> 
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{invoiceHome.busquedaAvanzada}">
+                            <label class="Gray">#{i18n['common.to']}&nbsp;</label>
+                            <p:calendar value="#{invoiceHome.end}" class="input-sm">
+                                <p:ajax event="dateSelect" listener="#{invoiceHome.clear()}" /> 
+                            </p:calendar>                            
+                        </h:panelGroup>
+                    </h:panelGroup>
+<!--                    <p:selectBooleanCheckbox value="#{invoiceHome.busquedaAvanzada}">
+                        <p:ajax event="change" update="controles-busqueda-avanzada" />
+                    </p:selectBooleanCheckbox>-->
+                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" 
+                                     actionListener="#{invoiceHome.clear()}" ajax="#{false}" immediate="true">
+                    </p:commandButton>
+                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="#{organizationData.organization.vistaVenta}"/>
+                </div>
+                <div class="card">
+                    <!-- Resultados de busqueda -->
+                    <p:dataTable id="dataTableInvoices"  widgetVar="dataTableInvoices" draggableColumns="true" lazy="true" liveResize="true"
+                                 paginator="true" paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom" resizableColumns="true" rowKey="#{invoice.id}"
+                                 rows="25" scrollRows="25"
+                                 value="#{invoiceHome.lazyDataModel}" var="invoice"
+                                 selection="#{invoiceHome.selectedInvoices}"
+                                 sortBy="#{invoice.emissionOn}" sortMode="single">
+                        <p:ajax event="rowSelect" listener="#{invoiceHome.onRowSelect}"/>
+                        <p:ajax event="toggleSelect" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities" />
+                        <p:ajax event="rowSelectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities" />
+                        <p:ajax event="rowUnselectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar :form:total-selectedBussinesEntities"/>
+                        <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                        <p:column headerText="#{i18n['app.fede.sales.invoice.proforma.number']}" class="Wid30">
+                            <h:outputText value="#{invoice.code}" />
+                        </p:column>
+                        <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}"
+                                  style="width:20%;text-align:left">
+                            <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
+                        </p:column>
+                        <p:column id="summary" headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains">
+                            <h:outputText value="#{invoice.summary}" />
+                        </p:column>
+                        <p:column headerText="#{i18n['app.fede.payment.amount.total']}" sortBy="#{invoice.total}"  class="Wid30">
+                            <h:outputText value="#{invoice.total}" class="Fright">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n['app.fede.payment.discount']}" sortBy="#{invoice.paymentsDiscount}"  class="Wid30">
+                            <h:outputText value="#{invoice.paymentsDiscount}" class="Fright">
+                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column  id="emissionOn"  headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" sortOrder="desc" class="Wid10">
+                            <h:outputText value="#{invoice.emissionOn}">
+                                <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="total-selectedBussinesEntities">
+                        <p:panel rendered="#{not empty invoiceHome.selectedInvoices}" class="Fs15">
+                            <span class="ui-g-8 ui-lg-8 ui-md-8" style="text-align:right;">#{i18n['common.total.collect']}:</span>
+                            <span class="ui-g-2 ui-lg-2 ui-md-2" style="text-align:right; font-weight: bold;">
+                                <h:outputText value="#{invoiceHome.totalOverdues}">
+                                    <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                </h:outputText></span>
+                            <span class="ui-g-2 ui-lg-2 ui-md-2"></span>
+                        </p:panel>
+                    </p:panel>
+                    <div class="EmptyBox10"/>
+                    <!-- //Resultados de busqueda-->
+                </div>
+                <div class="EmptyBox10"></div>
+                <!--Herramientas con seleccionados -->
+                <p:panel id="panelSelectedToolBar">
+                    <p:toolbar id="selectedToolBar" rendered="#{not empty invoiceHome.selectedInvoices}">
+                        <f:facet name="left">
+                            <p:outputLabel>#{i18n['common.withselected']}&nbsp;</p:outputLabel>
+                            <p:selectOneMenu value="#{invoiceHome.selectedAction}">
+                                <f:selectItems value="#{invoiceHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                <f:ajax render="selectedToolBar"></f:ajax>
+                            </p:selectOneMenu>
+<!--                            <p:panel id="panelCollect" rendered="#{invoiceHome.selectedAction eq 'collect'}">
+                            </p:panel>-->
+<!--                            <p:panel id="panelChangeTo" rendered="#{invoiceHome.selectedAction eq 'changeto'}">
+                            </p:panel>-->
+                            <p:commandButton id="go-button" value="#{i18n['common.done']}" ajax="#{false}"
+                                             actionListener="#{invoiceHome.execute()}" 
+                                             action="#{invoiceHome.getOutcome()}"
+                                             oncomplete="PF('dataTableInvoices').unselectAllRows()"
+                                             disabled="#{not invoiceHome.actionExecutable}"
+                                             style="width: auto !important;"
+                                             type="submit">
+                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                        </f:facet>
+                    </p:toolbar>
+                </p:panel>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

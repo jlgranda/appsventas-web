@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2021 kellypaulinc
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting.journals']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <!--<f:viewParam name="" value="" />-->
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting']}</li>
+            <li>/</li>
+            <li><p:link outcome="journals">#{i18n['app.fede.accounting.journals']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <jlgranda:input id="keyword" name="keyword" render="keyword" container="none"
+                                                type="text" 
+                                                value="#{generalJournalHome.keyword}" label="#{i18n['common.keyword']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}">
+                                </jlgranda:input>
+                                <p:commandButton icon="pi pi-search" styleClass="primary-btn"
+                                                 actionListener="#{generalJournalHome.clear()}"
+                                                 ajax="#{false}" immediate="#{false}">
+                                </p:commandButton>
+                                <jlgranda:input id="date-start" name="date-start" render="date-start" container="none"
+                                                type="calendar" showOn="button"
+                                                value="#{generalJournalHome.start}" label="#{i18n['common.from']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}"
+                                                update="@form">
+                                </jlgranda:input>
+                                <jlgranda:input id="date-end" name="date-end" render="date-end" container="none"
+                                                type="calendar" showOn="button"
+                                                value="#{generalJournalHome.end}" label="#{i18n['common.to']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}" 
+                                                update="@form">
+                                </jlgranda:input>
+                                <jlgranda:input id="date-filter" name="date-filter" render="date-filter" container="none"
+                                                type="calendar" showOn="button"
+                                                value="#{generalJournalHome.daySelected}" label="Filtrar por #{i18n['common.day.min']}:&nbsp;" 
+                                                required="#{false}" 
+                                                placeholder="#{false}"
+                                                maxdate="#{generalJournalHome.end}" mindate="#{generalJournalHome.start}"
+                                                disabled="#{empty generalJournalHome.start and empty generalJournalHome.end}"
+                                                listener="#{generalJournalHome.onDateSelect()}" update="@form">
+                                </jlgranda:input>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="rigth">
+                                <p:commandButton value="#{i18n['common.new']}" 
+                                                 icon="pi pi-plus-circle" styleClass="danger-btn rounded-btn"
+                                                 actionListener="#{generalJournalHome.validateNewJournal()}" 
+                                                 ajax="#{true}" immediate="#{true}">
+                                </p:commandButton>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                        <p:dataTable id="dataTable" widgetVar="dataTable" lazy="#{true}"
+                                     value="#{generalJournalHome.lazyDataModel}" var="journal" 
+                                     selection="#{generalJournalHome.journalsSelected}"
+                                     rowKey="#{journal.id}"
+                                     rows="#{settingHome.getValue('fede.inbox.list.length', '50')}"
+                                     paginator="#{true}" paginatorPosition="bottom" 
+                                     draggableColumns="#{true}" reflow="#{true}" 
+                                     resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
+                                     sortMode="single">
+                            <p:ajax event="rowSelect" listener="#{generalJournalHome.onRowSelect}"/>
+                            <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                            <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
+                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{journal.emissionDate}" class="Wid10">
+                                <h:outputText value="#{journal.emissionDate}">
+                                    <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['common.label']}/#{i18n['common.name']}">
+                                <h:outputText value="#{journal.name}" />
+                            </p:column>
+                        </p:dataTable>
+                        <!--Herramientas con seleccionados -->
+                        <p:panel id="panelSelectedToolBar">
+                            <p:toolbar id="selectedToolBar" rendered="#{not empty generalJournalHome.journalsSelected}">
+                                <p:toolbarGroup class="FlexNowRap AlignItemsFlEnd">
+                                    <div class="DispInlGrid">
+                                        <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                        <p:selectOneMenu value="#{generalJournalHome.selectedAction}">
+                                            <f:selectItems value="#{generalJournalHome.generalJournalActions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                            <f:ajax render="selectedToolBar"></f:ajax>
+                                        </p:selectOneMenu>
+                                    </div>&nbsp;
+                                    <p:commandButton id="go-button"
+                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
+                                                     actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"
+                                                     oncomplete="PF('dataTable').unselectAllRows()"
+                                                     disabled="#{not generalJournalHome.actionExecutable}"
+                                                     ajax="#{true}"
+                                                     update="@form">
+                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                        </p:panel>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -40,24 +40,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <h:body>
         <div id="form_container">
             <h:form>
-                <p:growl id="messages" showDetail="true" />
+                <p:growl id="messages" showDetail="#{true}" />
 
                 <div class="ui-g ui-fluid">
                     <div class="ui-g ui-g-12">
                         <jlgranda:input id="url" name="url" type="text" label="#{i18n['common.URL']} al ZIP o XML de la factura electrónica" 
-                                        value="#{facturaElectronicaHome.url}" required="false" inlinehelp="#{messages['url.inlinehelp']}" execute="@this save" render="url"/>
+                                        value="#{facturaElectronicaHome.url}" required="#{false}" inlinehelp="#{messages['url.inlinehelp']}" execute="@this save" render="url"/>
 
-                        <p:commandButton rendered="true" value="#{i18n['common.add']}" ajax="true" update="@parent" 
+                        <p:commandButton rendered="#{true}" value="#{i18n['common.add']}" ajax="#{true}" update="@parent" 
                                          actionListener="#{facturaElectronicaHome.addURL()}" disabled="false" />
-                        <p:commandButton rendered="true" value="#{i18n['common.add.download']}" ajax="true" update="@parent" 
+                        <p:commandButton rendered="#{true}" value="#{i18n['common.add.download']}" ajax="#{true}" update="@parent" 
                                          styleClass="secondary-button" style="margin-bottom:10px;" 
                                          actionListener="#{facturaElectronicaHome.addURLAndProcesarURLs()}" 
                                          action="#{facturaElectronicaHome.getOutcome()}" disabled="false" />
                     </div>
                     <div class="ui-g ui-g-12">
-                        <p:dataTable rendered="true" id="urls" 
+                        <p:dataTable rendered="#{true}" id="urls" 
                                      var="url" value="#{facturaElectronicaHome.urls}"
-                                     emptyMessage="#{i18n['url.add.help']}">
+                                     emptyMessage="#{i18n['common.url.add.help']}">
                             <f:facet name="header">
                                 #{i18n['common.URLs']}
                             </f:facet>
@@ -65,16 +65,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <h:outputText value="#{url}" />
                             </p:column>
                             <p:column headerText="#{i18n['common.actions']}">
-                                <p:commandButton rendered="true" value="#{i18n['common.remove']}" ajax="true" update="urls" 
+                                <p:commandButton rendered="#{true}" value="#{i18n['common.remove']}" ajax="#{true}" update="urls" 
                                                  actionListener="#{facturaElectronicaHome.removeURL(url)}" disabled="false" />
                             </p:column>
                         </p:dataTable>
                     </div>
                     <div class="ui-g ui-g-12">
-                        <p:commandButton rendered="true" value="#{i18n['common.download']}" ajax="false" update="@parent" 
+                        <p:commandButton rendered="#{true}" value="#{i18n['common.download']}" ajax="#{false}" update="@parent" 
                                          actionListener="#{facturaElectronicaHome.procesarURLs()}" 
                                          action="#{facturaElectronicaHome.getOutcome()}" disabled="false" />
-                        <p:commandButton value="#{i18n['common.close']}" ajax="true" 
+                        <p:commandButton value="#{i18n['common.close']}" ajax="#{true}" 
                                          styleClass="secondary-button" style="margin-bottom:10px;" 
                                          update="@parent" actionListener="#{facturaElectronicaHome.closeDialog(null)}" disabled="false" />
                     </div>

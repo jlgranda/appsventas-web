@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
         <ui:param name="sitename" value="#{i18n['Sitename']}"/>
-        <ui:define name="title">#{i18n['common.profile']} - #{subject.fullName}</ui:define>
+        <ui:define name="title">#{i18n['module.profile'].toUpperCase()} - #{subject.fullName}</ui:define>
         <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
@@ -34,7 +34,137 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </f:metadata>
         </ui:define>
         <ui:define name="viewname">
-            <li><p:link outcome="home">#{i18n['common.profile']} - #{subject.fullName}</p:link></li>
+            <li><p:link outcome="home">#{i18n['module.profile']} - #{subject.fullName}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="layout-dashboard">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-9 ui-lg-9 ui-md-9 ui-sm-12">
+                        <!-- Left Side -->
+                        <h1>#{subjectHome.signup.fullName}</h1>
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
+                                        value="#{subjectHome.signup.code}" validator="ciValidator"
+                                        required="#{!subjectHome.signup.persistent}" render="code"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstnames']}" 
+                                        value="#{subjectHome.signup.firstname}" required="#{!subjectHome.signup.persistent}" 
+                                        inlinehelp="#{messages['common.firstnames.inlinehelp']}" render="fstn"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastnames']}" 
+                                        value="#{subjectHome.signup.surname}" required="#{!subjectHome.signup.persistent}"
+                                        inlinehelp="#{messages['common.lastnames.inlinehelp']}" render="lstn"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
+                                        value="#{subjectHome.signup.description}" required="#{false}" 
+                                        inlinehelp="#{messages['address.inlinehelp']}" render="addrs"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
+                                        value="#{subjectHome.signup.email}" validator="emailValidator"
+                                        required="#{!subjectHome.signup.persistent}" placeholder="#{false}" 
+                                        execute="@this save" render="email"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
+                                        value="#{subjectHome.signup.mobileNumber}"
+                                        required="#{!subjectHome.signup.persistent}" placeholder="#{false}" 
+                                        execute="@this save" render="mobileNumber"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
+                                        value="#{subjectHome.signup.bio}" required="#{false}" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
+                                        render="bio"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+
+                    </div>
+                    <div class="ui-g-3 ui-lg-3 ui-md-3 ui-sm-12" style="align-self: center">
+                        <p:panel id="photo" styleClass="profile">
+                            <div class="bg-image">
+                            </div>
+                            <div class="profile-info" style="height: 14rem">
+                                <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
+                                                class="profile-image"
+                                                rendered="#{subjectHome.handledPhotoUpload == false}"/>
+                                <p:graphicImage value="/FedeServlet?entity=subject" class="profile-image"
+                                                rendered="#{subjectHome.handledPhotoUpload == true}"/>
+                                <span class="name">#{subjectHome.signup.fullName}</span>
+                                <!-- <div>
+                                    <i class="fa fa-briefcase"></i>
+                                    <span class="job">Human Resource Manager</span>
+                                </div>
+                                <div>
+                                    <i class="fa fa-location-arrow"></i>
+                                    <span class="location">Seattle</span>
+                                </div>-->
+                                <div>
+                                    <p:fileUpload listener="#{subjectHome.handlePhotoUpload}" mode="advanced" dragDropSupport="true" auto="true"
+                                                  update="photo"
+                                                  sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
+                                                  fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
+                                                  allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/>
+                                </div>
+                            </div>
+                        </p:panel>
+                    </div>
+                    <div class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <p:commandButton id="save" 
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
+                                                 actionListener="#{subjectHome.save()}" action="#{subjectHome.getOutcome()}"
+                                                 ajax="#{true}" type="submit"/>
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:menuButton value="#{i18n['common.options']}">
+                                <p:menuitem value="#{i18n['app.signin.password.change']}" icon="fa fa-key"
+                                            onclick="PF('dlgCambiarClave').show()"
+                                            rendered="#{subjectHome.signup.persistent}"
+                                            immediate="true"/>
+                            </p:menuButton>
+                            </f:facet>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </div>
+            <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
+                      header="#{i18n['app.signin.password.change']}" 
+                      modal="true" draggable="true" position="center" closable="false" >
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-lg-9">
+                        <p:messages id="messagesDlg" showDetail="true" closable="true" >
+                            <p:autoUpdate></p:autoUpdate>
+                        </p:messages>
+                        <div class="ContainerIndent">
+                            <div class="Card ShadowEffect ui-fluid">
+                                <jlgranda:input id="password" name="password" type="password" label="#{i18n['common.password']}" 
+                                                value="#{subjectHome.clave}"  placeholder="true"
+                                                execute="@this save" render="password">
+                                </jlgranda:input>
+                                <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['common.password']}" 
+                                                value="#{subjectHome.confirmarClave}"  placeholder="true"
+                                                execute="@this save" render="confirmar-password"/>
+                                <div class="EmptyBox10"></div>
+                                <div class="Wid50 Fleft Responsive">
+                                    <p:commandButton value="#{i18n['common.save']}"  icon="fa fa-save Fs14"
+                                                     update="@form"
+                                                     action="#{subjectHome.changePassword()}"
+                                                     onsuccess="PF('dlgCambiarClave').hide()"
+                                                     style="width: auto !important;" >
+                                    </p:commandButton>
+                                </div>
+                                <div class="Wid50 Fleft Responsive">
+                                    <p:commandButton icon="fa fa-close Fs14"
+                                                     onclick="PF('dlgCambiarClave').hide()" value="#{i18n['common.back']}"/>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </p:dialog>
         </ui:define>
         <ui:define name="style" rendered="#{!request.isUserInRole('USER')}">
             <style type="text/css">
@@ -52,145 +182,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     font-weight: 700;
                 }
             </style>
-        </ui:define>
-        <ui:define name="content">
-            <div class="layout-dashboard">
-                <div class="ui-g ui-fluid">
-                    <div class="ui-g-12 ui-lg-9">
-                        <!-- Left Side -->
-                        <h1>#{subjectHome.signup.fullName}</h1>
-                        <div class="EmptyBox10"></div>
-                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" 
-                                        value="#{subjectHome.signup.code}" validator="ciValidator"
-                                        required="#{!subjectHome.signup.persistent}" render="code"
-                                        class="ui-panelgrid-blank form-group"
-                                        container="none"/>
-                        <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstnames']}" 
-                                        value="#{subjectHome.signup.firstname}" required="#{!subjectHome.signup.persistent}" 
-                                        inlinehelp="#{messages['common.firstnames.inlinehelp']}" render="fstn"
-                                        class="ui-panelgrid-blank form-group"
-                                        container="none"/>
-                        <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastnames']}" 
-                                        value="#{subjectHome.signup.surname}" required="#{!subjectHome.signup.persistent}"
-                                        inlinehelp="#{messages['common.lastnames.inlinehelp']}" render="lstn"
-                                        class="ui-panelgrid-blank form-group"
-                                        container="none"/>
-
-                        <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
-                                        value="#{subjectHome.signup.description}" required="false" 
-                                        inlinehelp="#{messages['address.inlinehelp']}" render="addrs"
-                                        class="ui-panelgrid-blank form-group"
-                                        container="none"/>
-
-                        <jlgranda:input id="email" name="email" type="text" label="#{i18n['common.email']}" 
-                                        value="#{subjectHome.signup.email}" validator="emailValidator"
-                                        required="#{!subjectHome.signup.persistent}" placeholder="false" 
-                                        execute="@this save" render="email"
-                                        class="ui-panelgrid-blank form-group"
-                                        container="none"/>
-
-                        <jlgranda:input id="mobileNumber" name="mobileNumber" type="text" label="#{i18n['common.phone']}" 
-                                        value="#{subjectHome.signup.mobileNumber}"
-                                        required="#{!subjectHome.signup.persistent}" placeholder="false" 
-                                        execute="@this save" render="mobileNumber"
-                                        class="ui-panelgrid-blank form-group"
-                                        container="none"/>
-
-                        <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio.ob']}" 
-                                        value="#{subjectHome.signup.bio}" required="false" inlinehelp="#{messages['common.bio.ob.inlinehelp']}" 
-                                        render="bio"
-                                        class="ui-panelgrid-blank form-group"
-                                        container="none"/>
-
-                    </div>
-                    <div class="ui-g-12 ui-md-12 ui-lg-3">
-                        <p:panel id="photo" styleClass="profile">
-                            <div class="bg-image">
-                            </div>
-                            <div class="profile-info">
-                                <o:graphicImage value="#{images.getContent(subjectHome.signup.id)}" 
-                                                class="profile-image"
-                                                rendered="#{subjectHome.handledPhotoUpload == false}"/>
-                                <p:graphicImage value="/FedeServlet?entity=subject" class="profile-image"
-                                                rendered="#{subjectHome.handledPhotoUpload == true}"/>
-                                <span class="name">#{subjectHome.signup.fullName}</span>
-                                <!-- <div>
-                                    <i class="fa fa-briefcase"></i>
-                                    <span class="job">Human Resource Manager</span>
-                                </div>
-                                <div>
-                                    <i class="fa fa-location-arrow"></i>
-                                    <span class="location">Seattle</span>
-                                </div>-->
-                                <div class="">
-                                    <p:fileUpload listener="#{subjectHome.handlePhotoUpload}" mode="advanced" dragDropSupport="true" auto="true"
-                                                  update="photo"
-                                                  sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '1048576')}" 
-                                                  fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
-                                                  allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(gif|jpe?g|png)$/')}"/>
-                                </div>
-                            </div>
-                        </p:panel>
-                    </div>
-
-
-                    <div class="EmptyBox10"></div>
-
-                    <p:toolbar>
-                        <f:facet name="left">
-                            <p:commandButton id="save" value="#{i18n['common.save']}" 
-                                             ajax="true" 
-                                             actionListener="#{subjectHome.save()}" 
-                                             action="#{subjectHome.getOutcome()}"
-                                             style="width: auto !important;"
-                                             type="submit"/>
-                        </f:facet>
-
-                        <f:facet name="right">
-                            <p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem rendered="#{subjectHome.signup.persistent}" value="#{i18n['app.signin.password.change']}" icon="fa fa-key" onclick="PF('dlgCambiarClave').show()" immediate="true"/>
-                            </p:menuButton>
-                        </f:facet>
-
-                    </p:toolbar>
-                </div>
-                <p:dialog id="dlgCambiarClave"  widgetVar="dlgCambiarClave" 
-                          header="#{i18n['app.signin.password.change']}" 
-                          modal="true" draggable="true" position="center" closable="false" >
-                    <div class="ui-g ui-fluid">
-                        <div class="ui-g-12 ui-lg-9">
-                            <p:messages id="messagesDlg" showDetail="true" closable="true" >
-                                <p:autoUpdate></p:autoUpdate>
-                            </p:messages>
-                            <div class="ContainerIndent">
-                                <div class="Card ShadowEffect ui-fluid">
-                                    <jlgranda:input id="password" name="password" type="password" label="#{i18n['common.password']}" 
-                                                    value="#{subjectHome.clave}"  placeholder="true"
-                                                    execute="@this save" render="password">
-                                    </jlgranda:input>
-                                    <jlgranda:input id="confirmar-password" name="confirmar-password" type="password" label="#{i18n['common.password']}" 
-                                                    value="#{subjectHome.confirmarClave}"  placeholder="true"
-                                                    execute="@this save" render="confirmar-password"/>
-                                    <div class="EmptyBox10"></div>
-                                    <div class="Wid50 Fleft Responsive">
-                                        <p:commandButton value="#{i18n['common.save']}"  icon="fa fa-save Fs14"
-                                                         update="@form"
-                                                         action="#{subjectHome.changePassword()}"
-                                                         onsuccess="PF('dlgCambiarClave').hide()"
-                                                         style="width: auto !important;" >
-                                        </p:commandButton>
-                                    </div>
-                                    <div class="Wid50 Fleft Responsive">
-                                        <p:commandButton icon="fa fa-close Fs14"
-                                                         onclick="PF('dlgCambiarClave').hide()" value="#{i18n['common.back']}"/>
-                                    </div>
-                                </div> 
-                            </div>
-                        </div>
-                    </div>
-                </p:dialog>
-                <!--/.panel-body -->
-            </div>
         </ui:define>
         <ui:define name="script">
 

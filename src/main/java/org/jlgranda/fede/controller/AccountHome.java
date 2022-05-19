@@ -22,10 +22,11 @@ import com.jlgranda.fede.ejb.GeneralJournalService;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
-import com.jlgranda.fede.ejb.sales.InvoiceService;
+import com.jlgranda.fede.ejb.accounting.AccountCache;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,13 +43,10 @@ import org.jlgranda.fede.model.accounting.Account;
 import org.jlgranda.fede.model.accounting.GeneralJournal;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.accounting.RecordDetail;
-import org.jlgranda.fede.model.document.DocumentType;
-import org.jlgranda.fede.model.document.EmissionType;
 import org.jlgranda.fede.ui.model.LazyAccountDataModel;
 import org.jpapi.util.I18nUtil;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
-import org.jpapi.model.StatusType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.primefaces.event.NodeSelectEvent;
@@ -69,6 +68,9 @@ public class AccountHome extends FedeController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(AccountHome.class);
 
+    @EJB
+    AccountCache accountCache;
+
     @Inject
     private Subject subject;
 
@@ -80,9 +82,6 @@ public class AccountHome extends FedeController implements Serializable {
 
     @EJB
     private GroupService groupService;
-
-    @EJB
-    private InvoiceService invoiceService;
 
     @EJB
     private AccountService accountService;
@@ -102,13 +101,17 @@ public class AccountHome extends FedeController implements Serializable {
     //Modelo de árbol de datos
     private TreeNode treeDataModel;
     private TreeNode singleSelectedNode;
+    private TreeNode<Account>[] selectedNodes;
 
     //Objetos Account para edición
     private Long accountId;
+    private String accountName;
+    private Long parentAccountId;
     private Account account;
     private Account accountSelected;
     private Account parentAccount;
     private Account depositAccount;
+    private Account parentAccountMoveTo;
 
     //Calcular el GeneralLedger: Montos (recordDetails) de Accounts 
     private BigDecimal amountDebeRdOld;
@@ -118,28 +121,72 @@ public class AccountHome extends FedeController implements Serializable {
     private List<Object[]> objectsRecordDetail;
     private BigDecimal amountAccount;
 
+    //Reporte de accounts con recordDetails
+    private List<RecordDetail> recordDetailsAccount;
+    /**
+     * El objeto Record para edición
+     */
+    private Record record;
+
+    /**
+     * RecordDetail para edición
+     */
+    private RecordDetail recordDetail;
+
+    private Long recordId;
+
+    /**
+     * Valor de la cuenta principal
+     */
+    private BigDecimal fundAccountMain;
+    /**
+     * Valor de la cuenta principal en rango de fecha
+     */
+    private BigDecimal fundAccountMainRange;
+    /**
+     * Valor acumulado anterior de la cuenta seleccionada
+     */
+    private BigDecimal fundOldAccountSelected;
+
+    /*  
+     * Lista con los recordsDetails true
+     */
+    private List<RecordDetail> recordDetailsUpdate;
+
+    private int rangeReport;
+    private boolean validateAccount;
+
+    protected List<SelectItem> actions = new ArrayList<>();
+
     @PostConstruct
     private void init() {
-        int range = 0;
-        try {
-            range = Integer.valueOf(settingHome.getValue(SettingNames.ACCOUNT_TOP_RANGE, "7"));
-        } catch (java.lang.NumberFormatException nfe) {
-            nfe.printStackTrace();
-            range = 7;
-        }
+
+        setAccount(accountService.createInstance());
+        setParentAccount(accountService.createInstance());
+
         //Inicialización de variables, objetos, métodos.
         setEnd(Dates.maximumDate(Dates.now()));
-        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
+        setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (Dates.getDayOfMonth(getEnd()) - 1))));
         setAccount(accountService.createInstance());//Instancia de Cuenta
         setOutcome("accounts");
         filter();
 
         setTreeDataModel(createTreeAccounts());
+
+        setRecord(recordService.createInstance());
+        setRecordDetail(recordDetailService.createInstance());
+
+        setRangeReport(-1);
+        setFundAccountMain(BigDecimal.ZERO);
+        setFundAccountMainRange(BigDecimal.ZERO);
+        setFundOldAccountSelected(BigDecimal.ZERO);
+
+        initializeActions();
     }
 
     @Override
     public void handleReturn(SelectEvent event) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        chargeListDetailsforAccount();
     }
 
     @Override
@@ -183,6 +230,14 @@ public class AccountHome extends FedeController implements Serializable {
         this.singleSelectedNode = singleSelectedNode;
     }
 
+    public TreeNode<Account>[] getSelectedNodes() {
+        return selectedNodes;
+    }
+
+    public void setSelectedNodes(TreeNode<Account>[] selectedNodes) {
+        this.selectedNodes = selectedNodes;
+    }
+
     public Long getAccountId() {
         return accountId;
     }
@@ -191,10 +246,30 @@ public class AccountHome extends FedeController implements Serializable {
         this.accountId = accountId;
     }
 
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public Long getParentAccountId() {
+        return parentAccountId;
+    }
+
+    public void setParentAccountId(Long parentAccountId) {
+        this.parentAccountId = parentAccountId;
+        if (this.parentAccountId != null && !this.parentAccount.isPersistent()) {
+            this.parentAccount = accountService.find(parentAccountId);
+        }
+    }
+
     public Account getAccount() {
         if (this.accountId != null && !this.account.isPersistent()) {
-            this.account = accountService.find(accountId);
-            this.parentAccount = accountService.findUniqueByNamedQuery("Account.findByIdAndOrg", this.account.getParentAccountId(), this.organizationData.getOrganization());
+            this.account = this.accountCache.lookup(this.accountId);
+            this.parentAccount = this.accountCache.lookup(this.account.getParentAccountId());
+            setAccountName(this.account.getName());
         }
         return account;
     }
@@ -212,11 +287,22 @@ public class AccountHome extends FedeController implements Serializable {
     }
 
     public Account getParentAccount() {
+        if (this.accountId != null && !this.account.isPersistent()) {
+            this.parentAccount = accountCache.lookup(this.parentAccountId);
+        }
         return this.parentAccount;
     }
 
     public void setParentAccount(Account parentAccount) {
         this.parentAccount = parentAccount;
+    }
+
+    public Account getParentAccountMoveTo() {
+        return parentAccountMoveTo;
+    }
+
+    public void setParentAccountMoveTo(Account parentAccountMoveTo) {
+        this.parentAccountMoveTo = parentAccountMoveTo;
     }
 
     public Account getDepositAccount() {
@@ -259,19 +345,172 @@ public class AccountHome extends FedeController implements Serializable {
         this.amountAccount = amountAccount;
     }
 
+    public List<RecordDetail> getRecordDetailsAccount() {
+        return recordDetailsAccount;
+    }
+
+    public void setRecordDetailsAccount(List<RecordDetail> recordDetailsAccount) {
+        this.recordDetailsAccount = recordDetailsAccount;
+    }
+
+    public Record getRecord() {
+        if (this.recordId != null && !this.record.isPersistent()) {
+            this.record = recordService.find(recordId);
+        }
+        return record;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
+
+    public RecordDetail getRecordDetail() {
+        return recordDetail;
+    }
+
+    public void setRecordDetail(RecordDetail recordDetail) {
+        this.recordDetail = recordDetail;
+    }
+
+    public Long getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(Long recordId) {
+        this.recordId = recordId;
+    }
+
+    public BigDecimal getFundAccountMain() {
+        if (this.accountSelected != null) {
+            this.fundAccountMain = accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(Dates.now()));
+        }
+        return fundAccountMain;
+    }
+
+    public void setFundAccountMain(BigDecimal fundAccountMain) {
+        this.fundAccountMain = fundAccountMain;
+    }
+
+    public BigDecimal getFundAccountMainRange() {
+        if (this.accountSelected != null) {
+            this.fundAccountMainRange = accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(getEnd()));
+        }
+        return fundAccountMainRange;
+    }
+
+    public void setFundAccountMainRange(BigDecimal fundAccountMainRange) {
+        this.fundAccountMainRange = fundAccountMainRange;
+    }
+
+    public BigDecimal getFundOldAccountSelected() {
+        return fundOldAccountSelected;
+    }
+
+    public void setFundOldAccountSelected(BigDecimal fundOldAccountSelected) {
+        this.fundOldAccountSelected = fundOldAccountSelected;
+    }
+
+    public List<RecordDetail> getRecordDetailsUpdate() {
+        return recordDetailsUpdate;
+    }
+
+    public void setRecordDetailsUpdate(List<RecordDetail> recordDetailsUpdate) {
+        this.recordDetailsUpdate = recordDetailsUpdate;
+    }
+
+    public int getRangeReport() {
+        return rangeReport;
+    }
+
+    public void setRangeReport(int rangeReport) {
+        this.rangeReport = rangeReport;
+    }
+
+    public boolean isValidateAccount() {
+        return validateAccount;
+    }
+
+    public void setValidateAccount(boolean validateAccount) {
+        this.validateAccount = validateAccount;
+    }
+
+    public List<SelectItem> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<SelectItem> actions) {
+        this.actions = actions;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // MÉTODOS/FUNCIONES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //OBJETO: ACCOUNT.GETACCOUNTS
+    /**
+     * Busca objetos <tt>Account</tt> de una organización
+     *
+     * @return list
+     */
     public List<Account> getAccounts() {
-        return accountService.findByOrganization(this.organizationData.getOrganization());
+        //return accountService.findByOrganization(this.organizationData.getOrganization());
+        return accountCache.filterByOrganization(this.organizationData.getOrganization());
     }
 
-    public void findParentAccount() {
-
+    public void validateAccountNew(String keyword) {
+        if (!keyword.isEmpty()) {
+            if (!findStart(keyword).isEmpty()) {
+                addWarningMessage(I18nUtil.getMessages("action.warning"), "Ya existe la cuenta " + keyword.toUpperCase() + ".");
+                setValidateAccount(Boolean.TRUE);
+            } else {
+                setValidateAccount(Boolean.FALSE);
+            }
+        }
     }
 
-    //MODELO: LAZY DE DATOS
+    /**
+     * Busca objetos <tt>Account</tt> para la clave de búsqueda en las columnas
+     * name y code
+     *
+     * @param keyword
+     * @return una lista de objetos <tt>Product</tt> que coinciden con la
+     * palabra clave dada.
+     */
+    public List<Account> find(String keyword) {
+        return accountCache.filterByNameOrCode(keyword, this.organizationData.getOrganization()); //sólo cuentas de la organización
+    }
+
+    public List<Account> findStart(String keyword) {
+        return accountCache.filterByNameOrCodeStart(keyword, this.organizationData.getOrganization()); //sólo cuentas de la organización
+    }
+
+    public Account findParentAccount(Account x) {
+        return accountCache.lookup(x.getParentAccountId());
+    }
+
+    //LOS IMPORTAMOS DE RECORD HOME
+    public List<Account> filterAccounts(String query) {
+        return accountCache.filterByNameOrCode(query, this.organizationData.getOrganization());
+    }
+
+    public List<Account> filterAccountsChildrens(String query) {
+        return accountCache.filterByNameOrCodeChildrens(query, this.organizationData.getOrganization());
+    }
+
+    /**
+     * Generar el código de un objeto <tt>Account</tt> según su objeto padre
+     *
+     */
+    public void generateNextCode() {
+        if (!this.account.isPersistent() && this.parentAccountId != null) {
+            //Establecer el padre y el codigo
+            this.account.setCode(this.accountCache.genereNextCode(parentAccountId));
+            this.account.setParentAccountId(this.parentAccountId);
+        }
+    }
+
+    /**
+     * Manipulación (Busca y filtra) del lazyData de tipo <tt>Account</tt>
+     *
+     */
     public void clear() {
         filter();
     }
@@ -280,7 +519,7 @@ public class AccountHome extends FedeController implements Serializable {
         if (lazyDataModel == null) {
             lazyDataModel = new LazyAccountDataModel(accountService);
         }
-//        lazyDataModel.setOwner(this.subject);
+        // lazyDataModel.setOwner(this.subject);
         lazyDataModel.setOrganization(this.organizationData.getOrganization());
         lazyDataModel.setStart(getStart());
         lazyDataModel.setEnd(getEnd());
@@ -296,40 +535,89 @@ public class AccountHome extends FedeController implements Serializable {
         }
     }
 
-    //MODELO: ÁRBOL DE DATOS
+    /**
+     * Crea el aŕbol de tipo <tt>Account</tt> para visualización del plan de
+     * cuentas de la organización
+     *
+     * @return treeNode de tipo <tt>Account</tt>
+     */
     public TreeNode createTreeAccounts() {
         List<Account> accountsOrder = getAccounts();
-        // Ordenar la lista por el atributo getCode(), para crear el árbol de cuentas correcto
-        Collections.sort(accountsOrder, (Account account1, Account other) -> account1.getCode().compareToIgnoreCase(other.getCode()));
-        TreeNode generalTree = new DefaultTreeNode(new Account("Código", "Cuenta"), null); //Árbol general
+        Collections.sort(accountsOrder, (Account account1, Account other) -> account1.getCode().compareToIgnoreCase(other.getCode()));// Ordenar la lista por el atributo getCode()
+        TreeNode generalTree = new DefaultTreeNode(new Account(I18nUtil.getMessages("common.code"), I18nUtil.getMessages("app.fede.accounting.account")), null); //Árbol general
         TreeNode parent = null;
-        TreeNode child = null;
-        for (Account iterator : accountsOrder) {
-            if (iterator.getParentAccountId() == null) {
-                parent = new DefaultTreeNode(iterator, generalTree);
-                for (Account i : accountsOrder) {
-                    if (i.getParentAccountId() != null && i.getParentAccountId().equals(iterator.getId())) {
-                        child = new DefaultTreeNode(i, parent);
-                    }
-                }
+        for (Account x : accountsOrder) {
+            if (x.getParentAccountId() == null) {
+                parent = new DefaultTreeNode(x, generalTree);
+                addChild(parent, x);
             }
+
         }
         return generalTree;
     }
 
+    public TreeNode addChild(TreeNode parent, Account accountChild) {
+        TreeNode child = null;
+        List<Account> childs = accountService.findByNamedQuery("Account.findByParentId", accountChild.getId(), this.organizationData.getOrganization());
+        if (childs.isEmpty()) {
+            parent.setType("account");
+        } else {
+            for (Account x : childs) {
+                child = new DefaultTreeNode(x, parent);
+                addChild(child, x);
+            }
+        }
+        return parent;
+    }
+
+    /**
+     * Selección de un objeto específico de tipo <tt>Account</tt> para ingresar
+     * a su vista
+     *
+     * @param event
+     */
     public void onNodeSelect(NodeSelectEvent event) {
         try {
             if (event != null && event.getTreeNode().getData() != null) {
                 Account p = (Account) event.getTreeNode().getData();
-                redirectTo("/pages/fede/accounting/account.jsf?accountId=" + p.getId());
+                redirectTo("/pages/accounting/account.jsf?accountId=" + p.getId());
             }
         } catch (IOException ex) {
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
         }
     }
 
-    //ACCIÓN PRINCIPAL: GUARDAR CUENTA
+    /**
+     * Selección de un objeto específico de tipo <tt>Account</tt> para ingresar
+     * a su vista y detalles
+     *
+     * @param event
+     */
+    public void onNodeSelectTree(NodeSelectEvent event) {
+        try {
+            if (event != null && event.getTreeNode().getData() != null) {
+                Account p = (Account) event.getTreeNode().getData();
+                if (p.getParentAccountId() != null) {
+                    redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getParentAccountId());
+                } else {
+                    redirectTo("/pages/accounting/general_ledger.jsf?accountId=" + p.getId());
+                }
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getTreeNode()).getName());
+        }
+    }
+
+    public void messageTreeNode() {
+        this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ledger.report"));
+    }
+
+    /**
+     * Guardar un nuevo/cambio en el objeto de edición<tt>Account</tt>
+     *
+     */
     public void save() {
+        this.account.setName(this.getAccountName());
         if (this.parentAccount != null) {
             account.setParentAccountId(this.parentAccount.getId());
         }
@@ -341,7 +629,320 @@ public class AccountHome extends FedeController implements Serializable {
             account.setOrganization(this.organizationData.getOrganization());
         }
         accountService.save(account.getId(), account);
+        this.accountCache.load(); //recargar todas las cuentas
+
         setTreeDataModel(createTreeAccounts());//Refrescar el árbol de cuentas
+    }
+
+    /**
+     * Selección de un objeto específico de tipo <tt>Account</tt> para generar
+     * su resumen
+     *
+     * @param event
+     */
+    public void onAccountSelect(NodeSelectEvent event) {
+//        if (event != null && event.getTreeNode().getData() != null && event.getTreeNode().isLeaf()) {
+        this.accountSelected = (Account) event.getTreeNode().getData();
+        if (this.accountSelected != null) {
+//            if (accountService.findByNamedQuery("Account.findByParentId", this.accountSelected.getId(), this.organizationData.getOrganization()).isEmpty()) {
+            chargeListDetailsforAccount();
+//            }
+        } else {
+            this.recordDetailsAccount = new ArrayList<>();
+//            addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accounting.ledger.noleaf"));
+        }
+    }
+
+    /**
+     * Calcular el saldo que existe en el detalle de las transacciones
+     * realizadas
+     *
+     */
+    private void calculateBalance() {
+        BigDecimal accumulativeBalance = new BigDecimal(0);
+        accumulativeBalance = accumulativeBalance.add(this.fundOldAccountSelected);
+        for (RecordDetail rd : this.recordDetailsAccount) {
+            if (RecordDetail.RecordTDetailType.DEBE.equals(rd.getRecordDetailType())) {
+                accumulativeBalance = accumulativeBalance.add(rd.getAmount());
+            } else if (RecordDetail.RecordTDetailType.HABER.equals(rd.getRecordDetailType())) {
+                accumulativeBalance = accumulativeBalance.subtract(rd.getAmount());
+            }
+            rd.setAccumulatedBalance(accumulativeBalance);
+        }
+    }
+
+    /**
+     * Calcula el saldo de la cuenta desde la fecha inicial de su creación hasta
+     * antes de la fecha getStart() del reporte
+     */
+    private void calculateCumulativeOld() {
+        this.fundOldAccountSelected = BigDecimal.ZERO;
+        Date _end = Dates.maximumDate(Dates.addDays(getStart(), -1));
+        //Obtener los recordDetails desde el mes anterior hasta el inicial
+        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end, this.organizationData.getOrganization());
+        recordDetailsOld.forEach(rd -> {
+            if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
+                this.fundOldAccountSelected = this.fundOldAccountSelected.add(rd.getAmount());
+            } else if (rd.getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
+                this.fundOldAccountSelected = this.fundOldAccountSelected.subtract(rd.getAmount());
+            }
+        });
+    }
+
+    /**
+     * Buscar los hijos de un objeto<tt>Account</tt>
+     *
+     * @return treeNode con hijos de un objeto <tt>Account</tt>
+     */
+    public TreeNode accountChilds() {
+        TreeNode parent = new DefaultTreeNode(this.account, null);
+        addChild(parent, this.account);
+        return parent;
+    }
+
+    /**
+     * Encontrar los detalles de un objeto <tt>Account</tt> según la
+     * modificación de fecha
+     *
+     */
+    public void chargeListDetailsforAccount() {
+        setRangeReport(-1);
+        setFundAccountMainRange(accountService.mayorizarTo(this.accountSelected, this.organizationData.getOrganization(), Dates.maximumDate(getEnd())));
+        calculateCumulativeOld();
+        setRecordDetailsAccount(this.recordDetailService.findByNamedQuery("RecordDetail.findByAccountAndEmissionOnAndOrganization", this.accountSelected, Dates.minimumDate(getStart()), Dates.maximumDate(getEnd()), this.organizationData.getOrganization()));
+        calculateBalance();
+    }
+
+    public void calculeRangeReport() {
+        Calendar dayDate = Calendar.getInstance();
+        setEnd(Dates.maximumDate(Dates.now()));
+        switch (this.rangeReport) {
+            case 0://Rango del reporte de la última semana
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * 7)));
+                break;
+            case 1://Rango del reporte del último mes
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1))));
+                break;
+            case 2://Rango del reporte del último año
+                setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_YEAR) - 1))));
+                break;
+        }
+        chargeListDetailsforAccount();
+    }
+
+    /**
+     * Mostrar el formulario para edición del objeto <tt>Record</tt>
+     * seleccionado
+     *
+     * @param recordId
+     * @return
+     */
+    public boolean editarFormularioRecord(Long recordId) {
+        if (recordId != null) {
+            super.setSessionParameter("recordId", recordId);
+        }
+        return mostrarFormularioRecord(null);
+    }
+
+    public boolean mostrarFormularioRecord(Map<String, List<String>> params) {
+        String width = settingHome.getValue(SettingNames.POPUP_WIDTH, "800");
+        String height = settingHome.getValue(SettingNames.POPUP_HEIGHT, "400");
+        String left = settingHome.getValue(SettingNames.POPUP_LEFT, "0");
+        String top = settingHome.getValue(SettingNames.POPUP_TOP, "0");
+        super.openDialog(SettingNames.POPUP_FORMULARIO_GENERALLEDGER_RECORD, width, height, left, top, true, params);
+        return true;
+    }
+
+    public void loadSessionParametersRecord() {
+        if (existsSessionParameter("recordId")) {
+            this.setRecordId((Long) getSessionParameter("recordId"));
+        }
+        this.getRecord(); //Carga el objeto persistente
+        updateBackUpRecord(); //Respaldar el record original
+    }
+
+    public void closeFormularioRecord(Object data) {
+        removeSessionParameter("recordId");
+        super.closeDialog(data);
+    }
+
+    private void updateBackUpRecord() {
+        recordDetailsUpdate = new ArrayList<>();
+        RecordDetail recordDetailUpdate = recordDetailService.createInstance();
+        for (RecordDetail rd : this.record.getRecordDetails()) {
+            recordDetailUpdate.setOwner(rd.getOwner());
+            recordDetailUpdate.setAccountCode(rd.getAccountCode());
+            recordDetailUpdate.setAccountName(rd.getAccountName());
+            recordDetailUpdate.setAccountId(rd.getAccountId());
+            recordDetailUpdate.setAccount(rd.getAccount());
+            recordDetailUpdate.setAmount(rd.getAmount());
+            recordDetailUpdate.setRecordDetailType(rd.getRecordDetailType());
+            recordDetailsUpdate.add(recordDetailUpdate);
+            recordDetailUpdate = recordDetailService.createInstance();
+        }
+        Collections.sort(recordDetailsUpdate, (RecordDetail recordDetail1, RecordDetail other) -> recordDetail1.getRecordDetailType().compareTo(other.getRecordDetailType()));//Ordenar por tipo de entrada/salida de transacción
+    }
+
+    /**
+     * El registro actual no esta referenciado a una entidad
+     *
+     * @return
+     */
+    public boolean isRecordOfReferen() {
+        return this.record.getBussinesEntityId() == null;
+    }
+
+    /**
+     * Agrega un detalle al Record
+     */
+    public void addRecordDetail() {
+        if (this.recordDetail.getAccount() != null && (BigDecimal.ZERO.compareTo(this.recordDetail.getAmount()) == -1) && this.recordDetail.getRecordDetailType() != null) {
+            this.recordDetail.setOwner(subject);
+            this.recordDetailsUpdate.add(this.recordDetail);
+            //Preparar para una nueva entrada
+            this.recordDetail = recordDetailService.createInstance();
+        } else {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
+        }
+    }
+
+    /**
+     * Agrega un record al Journal
+     */
+    public void saveRecord() {
+        BigDecimal sumDebe = new BigDecimal(0);
+        BigDecimal sumHaber = new BigDecimal(0);
+        for (RecordDetail rd : this.recordDetailsUpdate) {
+            if (RecordDetail.RecordTDetailType.DEBE.equals(rd.getRecordDetailType())) {
+                sumDebe = sumDebe.add(rd.getAmount());
+            } else if (RecordDetail.RecordTDetailType.HABER.equals(rd.getRecordDetailType())) {
+                sumHaber = sumHaber.add(rd.getAmount());
+            }
+        }
+        if (sumDebe.compareTo(sumHaber) == 0) {
+            for (RecordDetail rd : this.record.getRecordDetails()) {
+                rd.setDeleted(true);
+            }
+            for (RecordDetail rd : this.recordDetailsUpdate) {
+                this.record.addRecordDetail(rd);
+            }
+            recordService.save(this.record.getId(), this.record);
+            closeFormularioRecord(record.getId());
+        } else {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.balance.required"));
+        }
+    }
+
+    @Override
+    protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Realizar un <tt>Record</tt> para registrar un asiento contable para
+     * transferir el dinero de una <tt>Account</tt> a otra
+     */
+    public void validateDeposit() {
+        if (this.depositAccount != null) {
+            if (this.amountAccount != null) {
+                if (this.amountAccount.compareTo(BigDecimal.ZERO) == 0) {
+                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.account.amount"));
+                } else {
+                    if (this.accountSelected.getId().compareTo(this.depositAccount.getId()) == 0) {
+                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.accounts.not"));
+                    } else {
+                        registerRecordInJournal();
+                        findRecordDetailAccountTop();
+                    }
+                }
+            }
+        } else {
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.deposit.account.none"));
+        }
+    }
+
+    public void registerRecordInJournal() {
+        GeneralJournal journal = buildFindJournal();//Crear o encontrar el journal y el record, para insertar los recordDetails
+        Record record = buildRecord();
+        record.addRecordDetail(updateRecordDetail(this.accountSelected.getName()));//Crear/Modificar y anadir un recordDetail al record
+        record.addRecordDetail(updateRecordDetail(this.depositAccount.getName()));
+        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from.to", "" + this.accountSelected.getName(), this.depositAccount.getName()).toUpperCase()));
+        journal.addRecord(record); //Agregar el record al journal
+
+        journalService.save(journal.getId(), journal); //Guardar el journal
+
+    }
+
+    private GeneralJournal buildFindJournal() {
+        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        if (generalJournal == null) {
+            generalJournal = journalService.createInstance();
+            generalJournal.setOrganization(this.organizationData.getOrganization());
+            generalJournal.setOwner(subject);
+            generalJournal.setCode(UUID.randomUUID().toString());
+            generalJournal.setName(I18nUtil.getMessages("app.fede.accounting.journal.properties", "" + this.organizationData.getOrganization().getInitials(), Dates.toDateString(Dates.now())));
+            journalService.save(generalJournal); //Guardar el journal creado
+            generalJournal = journalService.findUniqueByNamedQuery("GeneralJournal.findByCreatedOnAndOrganization", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
+        }
+        return generalJournal;
+    }
+
+    private Record buildRecord() {
+        Record recordGeneral = recordService.createInstance();
+        recordGeneral.setOwner(subject);
+        return recordGeneral;
+    }
+
+    private RecordDetail updateRecordDetail(String NameAccount) {
+        RecordDetail recordDetailGeneral = recordDetailService.createInstance();
+        if (this.amountAccount.compareTo(BigDecimal.ZERO) == 1) {
+            recordDetailGeneral.setOwner(subject);
+            recordDetailGeneral.setAmount(this.amountAccount.abs());
+            if (NameAccount.equals(this.accountSelected.getName())) {
+                recordDetailGeneral.setAccount(this.accountSelected);
+                recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
+            } else if (NameAccount.equals(this.depositAccount.getName())) {
+                recordDetailGeneral.setAccount(this.depositAccount);
+                recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
+            }
+        }
+        return recordDetailGeneral;
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void findRecordDetailAccountTop() {
+        this.amountDebeRdOld = BigDecimal.ZERO;
+        this.amountHaberRdOld = BigDecimal.ZERO;
+        Calendar dayDate = Calendar.getInstance();
+        Date _end = Dates.maximumDate(Dates.now());
+        Date _start = Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1)));
+        Date _end1 = Dates.maximumDate(Dates.addDays(_start, -1));
+        //Obtener los recordDetails desde el mes anterior hasta el inicial
+        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end1, this.organizationData.getOrganization());
+        for (int i = 0; i < recordDetailsOld.size(); i++) {
+            if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
+                this.amountDebeRdOld = this.amountDebeRdOld.add(recordDetailsOld.get(i).getAmount());
+            } else if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
+                this.amountHaberRdOld = this.amountHaberRdOld.add(recordDetailsOld.get(i).getAmount());
+            }
+        }
+        //Obtener los recordsDetails del mes actual
+        this.objectsRecordDetail = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccAndOrg", this.accountSelected, _start, _end, this.organizationData.getOrganization());
+        this.amountAccount = BigDecimal.ZERO;
+        this.amountDebeRd = BigDecimal.ZERO;
+        this.amountHaberRd = BigDecimal.ZERO;
+        this.objectsRecordDetail.stream().forEach((Object[] object) -> {
+            if (object[3] == RecordDetail.RecordTDetailType.DEBE) {
+                this.amountDebeRd = this.amountDebeRd.add((BigDecimal) object[2]);
+            } else if (object[3] == RecordDetail.RecordTDetailType.HABER) {
+                this.amountHaberRd = this.amountHaberRd.add((BigDecimal) object[2]);
+            }
+        });
+        this.amountAccount = (this.amountDebeRdOld.add(this.amountDebeRd)).subtract(this.amountHaberRdOld.add(this.amountHaberRd));
     }
 
     //LIBRO MAYOR DE PLAN DE CUENTAS
@@ -377,112 +978,53 @@ public class AccountHome extends FedeController implements Serializable {
         }
     }
 
-    public void findRecordDetailAccountTop() {
-        this.amountDebeRdOld = BigDecimal.ZERO;
-        this.amountHaberRdOld = BigDecimal.ZERO;
-        Calendar dayDate = Calendar.getInstance();
-        Date _end = Dates.maximumDate(Dates.now());
-        Date _start = Dates.minimumDate(Dates.addDays(getEnd(), -1 * (dayDate.get(Calendar.DAY_OF_MONTH) - 1)));
-        Date _end1 = Dates.maximumDate(Dates.addDays(_start, -1));
-        //Obtener los recordDetails desde el mes anterior hasta el inicial
-        List<RecordDetail> recordDetailsOld = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccountAndOrg", this.accountSelected, _end1, this.organizationData.getOrganization());
-        for (int i = 0; i < recordDetailsOld.size(); i++) {
-            if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.DEBE) {
-                this.amountDebeRdOld = this.amountDebeRdOld.add(recordDetailsOld.get(i).getAmount());
-            } else if (recordDetailsOld.get(i).getRecordDetailType() == RecordDetail.RecordTDetailType.HABER) {
-                this.amountHaberRdOld = this.amountHaberRdOld.add(recordDetailsOld.get(i).getAmount());
-            }
-        }
-        //Obtener los recordsDetails del mes actual
-        this.objectsRecordDetail = recordDetailService.findByNamedQuery("RecordDetail.findByTopAccAndOrg", this.accountSelected, _start, _end, this.organizationData.getOrganization());
-        this.amountAccount = BigDecimal.ZERO;
-        this.amountDebeRd = BigDecimal.ZERO;
-        this.amountHaberRd = BigDecimal.ZERO;
-        this.objectsRecordDetail.stream().forEach((Object[] object) -> {
-            if (object[3] == RecordDetail.RecordTDetailType.DEBE) {
-                this.amountDebeRd = this.amountDebeRd.add((BigDecimal) object[2]);
-            } else if (object[3] == RecordDetail.RecordTDetailType.HABER) {
-                this.amountHaberRd = this.amountHaberRd.add((BigDecimal) object[2]);
-            }
-        });
-        this.amountAccount = (this.amountDebeRdOld.add(this.amountDebeRd)).subtract(this.amountHaberRdOld.add(this.amountHaberRd));
-    }
-
-    public void validateDeposit() {
-        if (this.depositAccount != null) {
-            if (this.amountAccount != null) {
-                if (this.amountAccount.compareTo(BigDecimal.ZERO) == 0) {
-                    this.addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.accouting.account.amount"));
-                } else {
-                    if (this.accountSelected.getId().compareTo(this.depositAccount.getId()) == 0) {
-                        this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account.equals"));
-                    } else {
-                        registerRecordInJournal();
-                        findRecordDetailAccountTop();
-                    }
+//Acciones sobre seleccionados
+    public void execute() {
+        if (this.isActionExecutable()) {
+            if ("moveto".equalsIgnoreCase(this.selectedAction)) {
+                for (TreeNode<Account> tree : this.getSelectedNodes()) {
+                    Account ac = tree.getData();
+                    ac.setParentAccountId(this.parentAccountMoveTo.getId());
+                    System.out.println("ac A::::" + ac.getName());
+                    accountService.save(ac.getId(), ac);
+//                    if (!tree.getChildren().isEmpty()) {
+//                        moveToAccount(tree.getChildren());
+//                    }
                 }
-            }
-        } else {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accouting.validate.deposit.account"));
-        }
-    }
-
-    public void saveLedger() {
-        closeFormularioLedger(this.accountSelected);
-    }
-
-    //REGISTRO DE ASIENTOS CONTABLES
-    public void registerRecordInJournal() {
-        GeneralJournal journal = buildFindJournal();//Crear o encontrar el journal y el record, para insertar los recordDetails
-        Record record = buildRecord();
-        record.addRecordDetail(updateRecordDetail(this.accountSelected.getName()));//Crear/Modificar y anadir un recordDetail al record
-        record.addRecordDetail(updateRecordDetail(this.depositAccount.getName()));
-        record.setDescription((I18nUtil.getMessages("app.fede.accounting.transfer.from") +" "+ this.accountSelected.getName() + " hacia " + this.depositAccount.getName()).toUpperCase());
-        journal.addRecord(record); //Agregar el record al journal
-
-        journalService.save(journal.getId(), journal); //Guardar el journal
-
-    }
-
-    private GeneralJournal buildFindJournal() {
-        GeneralJournal generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        if (generalJournal == null) {
-            generalJournal = journalService.createInstance();
-            generalJournal.setOrganization(this.organizationData.getOrganization());
-            generalJournal.setOwner(subject);
-            generalJournal.setCode(UUID.randomUUID().toString());
-            generalJournal.setName(I18nUtil.getMessages("app.fede.accouting.journal") + " " + this.organizationData.getOrganization().getInitials() + "/" + Dates.toDateString(Dates.now()));
-            journalService.save(generalJournal); //Guardar el journal creado
-            generalJournal = journalService.findUniqueByNamedQuery("Journal.findByCreatedOnAndOrg", Dates.minimumDate(Dates.now()), Dates.now(), this.organizationData.getOrganization());
-        }
-        return generalJournal;
-    }
-
-    private Record buildRecord() {
-        Record recordGeneral = recordService.createInstance();
-        recordGeneral.setOwner(subject);
-        return recordGeneral;
-    }
-
-    private RecordDetail updateRecordDetail(String NameAccount) {
-        RecordDetail recordDetailGeneral = recordDetailService.createInstance();
-        if (this.amountAccount.compareTo(BigDecimal.ZERO) == 1) {
-            recordDetailGeneral.setOwner(subject);
-            recordDetailGeneral.setAmount(this.amountAccount.abs());
-            if (NameAccount.equals(this.accountSelected.getName())) {
-                recordDetailGeneral.setAccount(this.accountSelected);
-                recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
-            } else if (NameAccount.equals(this.depositAccount.getName())) {
-                recordDetailGeneral.setAccount(this.depositAccount);
-                recordDetailGeneral.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
+                setTreeDataModel(createTreeAccounts());//Refrescar el árbol de cuentas
+                setOutcome("");
             }
         }
-        return recordDetailGeneral;
     }
 
-    @Override
-    protected void initializeDateInterval() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void moveToAccount(List<TreeNode<Account>> tree) {
+        for (TreeNode<Account> node : tree) {
+            Account ac = node.getData();
+            ac.setParentAccountId(this.parentAccountMoveTo.getId());
+            System.out.println("ac V::::" + ac.getName());
+//            accountService.save(ac.getId(), ac);
+            if (!node.getChildren().isEmpty()) {
+                moveToAccount(node.getChildren());
+            }
+        };
+    }
+
+    public boolean isActionExecutable() {
+        if ("moveto".equalsIgnoreCase(this.selectedAction) && this.selectedNodes.length > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+
+        item = new SelectItem("moveto", I18nUtil.getMessages("common.moveto"));
+        actions.add(item);
+
     }
 
 }

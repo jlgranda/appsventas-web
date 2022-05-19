@@ -17,11 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 -->
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
                 template="/WEB-INF/template.xhtml">
     <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.smart']}</ui:define>
     <ui:define name="head"></ui:define>
@@ -33,7 +34,81 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.smart']}</li>
         <li>/</li>
-        <li><p:link outcome="products">#{i18n['common.products']}</p:link></li>
+        <li><p:link outcome="products">#{i18n['app.fede.inventory.products']}</p:link></li>
+    </ui:define>
+    <ui:define name="content" rendered="#{true}">
+        <div class="layout-dashboard">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar>
+                        <p:toolbarGroup>
+                            <p:outputLabel class="Gray MarRight10" value="#{i18n['common.from']}:" for="@next"/>
+                            <p:calendar value="#{summaryHome.start}" class="input-sm MarRight10">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}"
+                                        update="h-bar-model-products bar-model-amount bar-model-sales bar-model-category"/>
+                            </p:calendar> 
+                            <p:outputLabel class="Gray MarRight10" value="#{i18n['common.to']}:" for="@next"/>
+                            <p:calendar value="#{summaryHome.end}" class="input-sm MarRight10">
+                                <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" 
+                                        update="h-bar-model-products bar-model-amount bar-model-sales bar-model-category"/> 
+                            </p:calendar>      
+                        </p:toolbarGroup>
+                        <p:toolbarGroup>
+
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <!--Listado de Productos más vendidos: Cantidad/Precio-->
+                    <p:panel id="h-bar-model-products" 
+                             header="#{i18n['app.fede.smart.products.top.quantityvsprice']}" 
+                             styleClass="statistics ui-g">                     
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
+                            <p:chart type="bar" 
+                                     model="#{summaryHome.horizontalProductsBarModel}"
+                                     rendered="#{not empty summaryHome.horizontalProductsBarModel}"
+                                     responsive="true"/>
+                        </div>                        
+                    </p:panel>
+                </div>
+                <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
+                    <!--Listado de Productos más vendidos: Cantidad-->
+                    <p:panel id="bar-model-amount" 
+                             header="#{i18n['app.fede.smart.products.top.quantity']}" 
+                             styleClass="statistics ui-g">                        
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
+                            <p:chart type="bar" model="#{summaryHome.barModelAmount}" 
+                                     rendered="#{not empty summaryHome.barModelAmount}"
+                                     responsive="true"/>
+                        </div>                        
+                    </p:panel>
+                </div>
+                <div class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-12">
+                    <!--Listado de Productos más vendidos: Precio-->
+                    <p:panel id="bar-model-sales" 
+                             header="#{i18n['app.fede.smart.products.top.price']}" 
+                             styleClass="statistics ui-g">                        
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
+                            <p:chart type="bar" model="#{summaryHome.barModelSales}" 
+                                     rendered="#{not empty summaryHome.barModelSales}"
+                                     responsive="true"/>
+                        </div>                        
+                    </p:panel>
+                </div>
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <!--Listado de Productos más vendidos: Categoría-->
+                    <p:panel id="bar-model-category"
+                             header="#{i18n['app.fede.smart.products.top.category']}" 
+                             styleClass="statistics ui-g">                        
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
+                            <p:chart type="bar" model="#{summaryHome.barModelCategory}" 
+                                     rendered="#{not empty summaryHome.barModelCategory}"
+                                     responsive="true"/>
+                        </div>                        
+                    </p:panel>
+                </div>
+            </div>                           
+        </div>
     </ui:define>
     <ui:define name="style">
         <style type="text/css">
@@ -53,82 +128,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             }
         </style>
     </ui:define>
-    <ui:define name="content" rendered="#{true}">
-        <div class="layout-dashboard">
-            <div class="ui-g">
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <div class="card">
-                        <h:panelGroup>
-                            <h:panelGroup>
-                                <label class="Gray">#{i18n['common.from']}</label>
-                                <p:calendar value="#{summaryHome.start}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}"
-                                            update="h-bar-model-products bar-model-amount bar-model-sales bar-model-category"/>
-                                </p:calendar>
-                            </h:panelGroup>
-                            <h:panelGroup>
-                                <label class="Gray">#{i18n['common.to']}</label>
-                                <p:calendar value="#{summaryHome.end}" class="input-sm">
-                                    <p:ajax event="dateSelect" listener="#{summaryHome.clearBarModel()}" 
-                                            update="h-bar-model-products bar-model-amount bar-model-sales bar-model-category"/> 
-                                </p:calendar>                            
-                            </h:panelGroup>
-                        </h:panelGroup>
-                    </div>  
-                </div><!-- comment -->
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <p:panel id="h-bar-model-products" class="card" header="#{i18n['app.fede.smart.products.top.quantityvsprice']}" 
-                             styleClass="statistics ui-g"><!-- -->                        
-                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 right-side">
-                            <!--Listado de Productos más vendidos: Cantidad/Precio-->
-                            <p:chart type="bar" 
-                                     model="#{summaryHome.horizontalProductsBarModel}"
-                                     rendered="#{not empty summaryHome.horizontalProductsBarModel}"
-                                     responsive="true"/>
-                        </div>                        
-                    </p:panel>
-                </div>
-                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                    <div class="ui-g-6 ui-md-12 ui-lg-6 ui-xl-6">
-                        <p:panel id="bar-model-amount" class="card" header="#{i18n['app.fede.smart.products.top.quantity']}" 
-                                 styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
-                                <!--Listado de Productos más vendidos: Cantidad-->
-                                <p:chart type="bar" model="#{summaryHome.barModelAmount}" 
-                                         rendered="#{not empty summaryHome.barModelAmount}"
-                                         responsive="true"/>
-                            </div>                        
-                        </p:panel>
-                    </div>
-                    <div class="ui-g-6 ui-md-12 ui-lg-6 ui-xl-6">
-                        <p:panel id="bar-model-sales" class="card" header="#{i18n['app.fede.smart.products.top.price']}" 
-                                 styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
-                                <!--Listado de Productos más vendidos: Precio-->
-                                <p:chart type="bar" model="#{summaryHome.barModelSales}" 
-                                         rendered="#{not empty summaryHome.barModelSales}"
-                                         responsive="true"/>
-                            </div>                        
-                        </p:panel>
-                    </div>
-                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12">
-                        <p:panel id="bar-model-category" class="card" header="#{i18n['app.fede.smart.products.top.category']}" 
-                                 styleClass="statistics ui-g">                        
-                            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-xl-12 left-side">
-                                <!--Listado de Productos más vendidos: Categoría-->
-                                <p:chart type="bar" model="#{summaryHome.barModelCategory}" 
-                                         rendered="#{not empty summaryHome.barModelCategory}"
-                                         responsive="true"/>
-                            </div>                        
-                        </p:panel>
-                    </div>
-                </div>
-            </div>                           
-        </div>
-    </ui:define>
     <ui:define name="script">
         <script type="text/javascript">
             //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+
             function refresh() {
                 location.reload(); // refresh page    
 
@@ -176,18 +188,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     rendererOptions: {
                         textColor: '#434560'
                     },
-                    tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-                    tickOptions:{
-                            angle: 30,
-                            fontSize: '9px',
-                            formatString: "%'.2f"
+                    tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                    tickOptions: {
+                        angle: 30,
+                        fontSize: '9px',
+                        formatString: "%'.2f"
                     }
                 };
                 this.cfg.seriesDefaults = {
                     shadow: false,
                     lineWidth: 1,
                     renderer: $.jqplot.BarRenderer,
-                    pointLabels: { show: true, formatString: '%.2f' },
+                    pointLabels: {show: true, formatString: '%.2f'},
                     markerOptions: {
                         shadow: false,
                         size: 5,
@@ -195,7 +207,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     }
                 }
             }
-            
+
             function skinBar2() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
@@ -213,18 +225,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     rendererOptions: {
                         textColor: '#434560'
                     },
-                    tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-                    tickOptions:{
-                            angle: 30,
-                            fontSize: '9px',
-                            formatString: "%'.2f"
+                    tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                    tickOptions: {
+                        angle: 30,
+                        fontSize: '9px',
+                        formatString: "%'.2f"
                     }
                 };
                 this.cfg.seriesDefaults = {
                     shadow: false,
                     lineWidth: 1,
                     renderer: $.jqplot.BarRenderer,
-                    pointLabels: { show: true, formatString: '$%.2f' },
+                    pointLabels: {show: true, formatString: '$%.2f'},
                     markerOptions: {
                         shadow: false,
                         size: 5,
@@ -254,7 +266,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     shadow: false,
                     lineWidth: 1,
                     renderer: $.jqplot.BarRenderer,
-                    pointLabels: { show: true, formatString: '%.2f' },
+                    pointLabels: {show: true, formatString: '%.2f'},
                     rendererOptions: {
                         barDirection: 'horizontal'
                     },
@@ -404,7 +416,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             function skinBarAndLine() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
-                this.cfg.seriesColors = ['#2D8EE3','#e02365' ];
+                this.cfg.seriesColors = ['#2D8EE3', '#e02365'];
                 this.cfg.grid = {
                     background: '#ffffff',
                     borderColor: '#ffffff',

@@ -77,10 +77,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <jlgranda:input id="femss" name="femss" type="calendar" label="#{i18n['ride.infoFactura.fechaEmision']}" 
                                                 execute="none" render="femss" value="#{facturaElectronicaHome.facturaElectronica.fechaEmision}" required="true"
                                                     container="none"/>
-                                <jlgranda:input id="impt" name="impt" type="number" label="#{i18n['ride.infoFactura.importeTotal']}" 
+                                <jlgranda:input id="impt" name="impt" type="number" label="#{i18n['app.fede.payment.amount.total']}" 
                                                 execute="none" render="impt" value="#{facturaElectronicaHome.facturaElectronica.importeTotal}" required="true"
                                                     container="none"/>
-                                <jlgranda:input id="descuento" name="descuento" type="number" label="#{i18n['ride.infoFactura.totalDescuento']}" 
+                                <jlgranda:input id="descuento" name="descuento" type="number" label="#{i18n['app.fede.payment.discount']}" 
                                                 execute="none" render="descuento" value="#{facturaElectronicaHome.facturaElectronica.totalDescuento}" required="true"
                                                     container="none"/>
                                 <jlgranda:input id="memo" name="memo" type="textarea" label="#{i18n['common.description']}" 
@@ -113,9 +113,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:panelGrid columns="5" layout="grid" style="border:0px !important; background:none;" styleClass="ui-panelgrid-blank">
                                         <p:inputText value="#{facturaElectronicaHome.payment.amount}" placeholder="#{i18n['app.fede.sales.payment.amount']}"></p:inputText>
                                         <p:inputText value="#{facturaElectronicaHome.payment.discount}" placeholder="#{i18n['app.fede.sales.payment.discount']}"></p:inputText>
-                                        <p:inputText value="#{facturaElectronicaHome.payment.cash}" placeholder="#{i18n['app.fede.sales.payment.cash']}"></p:inputText>
-                                        <p:inputText value="#{facturaElectronicaHome.payment.change}" placeholder="#{i18n['app.fede.sales.payment.change']}"></p:inputText>
-                                        <p:commandButton id="add-payment" value="#{i18n['Add']}" ajax="true" 
+                                        <p:inputText value="#{facturaElectronicaHome.payment.cash}" placeholder="#{i18n['app.fede.payment.cash.received']}"></p:inputText>
+                                        <p:inputText value="#{facturaElectronicaHome.payment.change}" placeholder="#{i18n['app.fede.payment.change']}"></p:inputText>
+                                        <p:commandButton id="add-payment" value="#{i18n['Add']}" ajax="#{true}" 
                                                          actionListener="#{facturaElectronicaHome.addPayment()}" immediate="true"
                                                          update="paymentsDataTable"
                                              disabled="#{false}" 
@@ -138,10 +138,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:column headerText="#{i18n['app.fede.sales.payment.discount']}">
                                             <h:outputText value="#{payment.discount}" />
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.cash']}">
+                                        <p:column headerText="#{i18n['app.fede.payment.cash.received']}">
                                             <h:outputText value="#{payment.cash}" />
                                         </p:column>
-                                        <p:column headerText="#{i18n['app.fede.sales.payment.change']}">
+                                        <p:column headerText="#{i18n['app.fede.payment.change']}">
                                             <h:outputText value="#{payment.change}" />
                                         </p:column>
                                     </p:dataTable>
@@ -154,7 +154,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="EmptyBox10"></div>
                     <p:toolbar rendered="#{true}">
                         <f:facet name="left">
-                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="true" 
+                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}" 
                                              actionListener="#{facturaElectronicaHome.save()}" action="#{facturaElectronicaHome.redirect()}" 
                                              disabled="#{false}" 
                                              style="width: auto !important;"
@@ -166,13 +166,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         <f:facet name="right">
 
-                            <p:commandButton ajax="true" disabled="false" immediate="true"
+                            <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                              actionListener="#{invoiceHome.closeDialog(null)}" 
                                              action="home"
                                              icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                              />
                             <!--p:menuButton value="#{i18n['common.options']}">
-                                <p:menuitem value="#{i18n['common.save']} #{i18n['common.and']} #{i18n['app.fede.collect']}" 
+                                <p:menuitem value="#{i18n['common.save.and.collect']}" 
                                             actionListener="#{invoiceHome.collect()}" action="#{invoiceHome.redirect}" icon="fa fa-check" 
                                             immediate="true" rendered="#{not invoiceHome.invoice.isPersistent()}"/>
                             </p:menuButton-->

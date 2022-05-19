@@ -200,4 +200,15 @@ public class LazyBussinesEntityDataModel extends LazyDataModel<BussinesEntity> i
         FacesContext.getCurrentInstance().addMessage(null, msg);
         this.setSelectedBussinesEntity(null);
     }
+
+    @Override
+    public int count(Map<String, FilterMeta> filters) {
+        Map<String, Object> _filters = new HashMap<>();
+        //_filters.put(BussinesEntity_.type.getName(), getType()); //Filtro por defecto
+        _filters.put(BussinesEntity_.owner.getName(), getOwner()); //Filtro por defecto
+        _filters.putAll(filters);
+
+        QueryData<BussinesEntity> qData = bussinesEntityService.find(_filters);
+        return qData.getTotalResultCount().intValue();
+    }
 }

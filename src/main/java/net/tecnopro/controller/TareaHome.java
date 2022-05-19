@@ -57,6 +57,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.admin.TemplateHome;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jpapi.util.Dates;
 import org.primefaces.PrimeFaces;
 import org.slf4j.Logger;
@@ -241,7 +242,7 @@ public class TareaHome extends FedeController implements Serializable {
      */
     public void save() {
         if (getDestinatario() == null || getSolicitante() == null){
-            addErrorMessage(I18nUtil.getMessages("common.error"), I18nUtil.getMessages("error.task.persons"));
+            addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("error.task.persons"));
             return;
         }
         try {
@@ -592,12 +593,12 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void procesarUploadFileSiguienteTarea(FileUploadEvent event) {
         if (event.getFile() == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return;
         }
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return;
         }
         try {
@@ -617,12 +618,12 @@ public class TareaHome extends FedeController implements Serializable {
 
     public void procesarUploadFile(UploadedFile file) {
         if (file == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.file.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.fedecard.file.null"));
             return;
         }
 
         if (subject == null) {
-            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("fede.subject.null"));
+            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.signin.login.user.null"));
             return;
         }
         try {
@@ -687,7 +688,7 @@ public class TareaHome extends FedeController implements Serializable {
             }
 
         } catch (IOException ex) {
-            addErrorMessage(ex, I18nUtil.getMessages("common.error.uploadfail"));
+            addErrorMessage(ex, I18nUtil.getMessages("common.error.upload"));
         }
     }
 
@@ -791,6 +792,11 @@ public class TareaHome extends FedeController implements Serializable {
 
     @Override
     protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

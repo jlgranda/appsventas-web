@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
       xmlns:o="http://omnifaces.org/ui">
     <o:importConstants type="org.jlgranda.fede.model.document.DocumentType" />
     <h:head>
-        <title>#{i18n['New']} #{invoiceHome.invoice.documentType ==  DocumentType.PRE_INVOICE ? i18n['app.fede.sales.preinvoice'] : i18n['app.fede.sales.invoice']}</title>
+        <title>#{i18n['common.newa']} #{invoiceHome.invoice.documentType ==  DocumentType.PRE_INVOICE ? i18n['app.fede.sales.preinvoice'] : i18n['app.fede.sales.invoice']}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <style type="text/css">
             .ui-widget {
@@ -42,14 +42,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <p:autoUpdate></p:autoUpdate>
                         </p:messages>
 
-                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.firstname']}" 
+                        <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}" 
                                         value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
                         
                         <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
-                                        value="#{inventoryHome.product.description}" required="false" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
+                                        value="#{inventoryHome.product.description}" required="#{false}" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
                         
                         <div class="Wid50 Fleft Responsive50">
-                            <p:commandButton value="#{i18n['common.save']}" ajax="true" 
+                            <p:commandButton value="#{i18n['common.save']}" ajax="#{true}" 
                                              actionListener="#{inventoryHome.save()}" disabled="false" 
                                              styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                         </div>
@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         <div class="Wid50 Fleft Responsive50">
                             <p:commandButton value="#{i18n['Cancel']}" 
                                              actionListener="#{inventoryHome.closeDialog(null)}"
-                                             ajax="true" immediate="true" action="home" disabled="false" 
+                                             ajax="#{true}" immediate="#{true}" action="home" disabled="false" 
                                              styleClass="Fs18 White RaisedButton Fright FloatNoneOnMobile"/>
                         </div>
                     </div>

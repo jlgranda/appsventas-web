@@ -29,6 +29,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.ui.model.LazyGroupDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
@@ -206,9 +207,9 @@ public class GroupHome extends FedeController implements Serializable {
         this.lazyDataModel = lazyDataModel;
     }
 
-    public List<Group> getGroupsTypeProduct() {
+    public List<Group> getGroupsTypeCategory() {
 //        return groupService.findByType(Group.Type.PRODUCT);
-        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.PRODUCT);
+        return groupService.findByOrganizationAndType(this.organizationData.getOrganization(), Group.Type.CATEGORY);
     }
 
     public void clear() {
@@ -250,7 +251,7 @@ public class GroupHome extends FedeController implements Serializable {
             //Redireccioar a RIDE de Objeto Seleccionado
             if(event != null && event.getObject() !=null){
                 Group g = (Group) event.getObject();
-                redirectTo("/pages/fede/inventory/group.jsf?groupId="+g.getId());
+                redirectTo("/pages/inventory/group.jsf?groupId="+g.getId());
             }
         }catch(IOException ex){
             logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
@@ -260,6 +261,11 @@ public class GroupHome extends FedeController implements Serializable {
     
     @Override
     protected void initializeDateInterval() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

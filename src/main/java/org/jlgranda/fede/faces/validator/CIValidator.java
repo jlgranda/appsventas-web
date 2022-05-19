@@ -37,11 +37,14 @@ import org.jpapi.util.Interpolator;
 @RequestScoped
 public class CIValidator implements Validator {
 
+    private String label;
     private String message;
 
 
     @Override
     public void validate(final FacesContext context, final UIComponent component, final Object value) throws ValidatorException {
+        
+        label = component.getAttributes().get("label").toString();
         if (value != null) {
             String nid = value.toString().trim();
             if (nid.length() <= 10) {
@@ -53,7 +56,7 @@ public class CIValidator implements Validator {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.requiredIdentificationNumber"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
 
     }
@@ -90,7 +93,7 @@ public class CIValidator implements Validator {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.invalidIdentificationNumber"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
     }
 
@@ -99,14 +102,14 @@ public class CIValidator implements Validator {
                 I18nUtil.getMessages("validation.lengthIdentificationNumber"),
                 new Object[0]);
         if (nid.length() < 10) {
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         String spatron = "[0-9]{10}";// \\d{10}
         if (!Pattern.matches(spatron, nid)) {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.wrongIdentificationNumber"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         this.verifyNationalIdentityDocument(nid);
     }
@@ -128,14 +131,14 @@ public class CIValidator implements Validator {
             message = Interpolator.interpolate(
                      I18nUtil.getMessages("validation.invalidIdentificationNumber"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         String _main = nid.substring(10, nid.length());
         if (!_main.matches("[0-9]{2}[0-9&&[^0]]")) {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.invalidIdentificationNumberFinished"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
 
     }
@@ -157,14 +160,14 @@ public class CIValidator implements Validator {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.invalidIdentificationNumber"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         String _main = nid.substring(9, nid.length());
         if (!_main.matches("[0-9]{3}[0-9&&[^0]]")) {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.invalidIdentificationNumberFinished"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
     }
 
@@ -173,14 +176,14 @@ public class CIValidator implements Validator {
                 I18nUtil.getMessages("validation.lengthIdentificationNumberLegalEntity"),
                 new Object[0]);
         if (nid.length() < 13) {
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         String spatron = "[0-9]{13}";// \\d{10}
         if (!Pattern.matches(spatron, nid)) {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.wrongIdentificationNumberLegalEntity"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         // TODO Chequeo de RUC
         /**
@@ -198,7 +201,7 @@ public class CIValidator implements Validator {
                 message = Interpolator.interpolate(
                         I18nUtil.getMessages("validation.invalidIdentificationNumberFinished"),
                         new Object[0]);
-                throw new ValidatorException(new FacesMessage(message));
+                throw new ValidatorException(this.buildMessage(message));
             }
         } else if (typeRuc == 6) {
             verifyTaxPayerPublic(nid);
@@ -208,16 +211,24 @@ public class CIValidator implements Validator {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.wrongTypeIdentificationNumberLegalEntity"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         String _main = nid.substring(9, nid.length());
         if (!_main.matches("[0-9]{3}[1-9]")) {
             message = Interpolator.interpolate(
                     I18nUtil.getMessages("validation.invalidIdentificationNumberFinished"),
                     new Object[0]);
-            throw new ValidatorException(new FacesMessage(message));
+            throw new ValidatorException(this.buildMessage(message));
         }
         
 
+    }
+    
+    private FacesMessage buildMessage(String summary, String message){
+        return new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, message);
+    }
+    
+    private FacesMessage buildMessage(String message){
+        return buildMessage(this.label, message);
     }
 }

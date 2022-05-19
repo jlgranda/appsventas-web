@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.inventory']}</ui:define>
+    <ui:define name="head"></ui:define>
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="productId" value="#{inventoryHome.productId}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['app.fede.inventory']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/inventory/items.jsf">#{i18n['app.fede.inventory.products']}</p:link></li>
+        <li>/</li>
+        <li><p:link outcome="/pages/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.product']}</p:link></li>
+    </ui:define>
+    <ui:define name="content">
+        <o:importConstants type="org.jlgranda.fede.model.sales.ProductType" />
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12 ui-md-12">
+                <h1 class="BigTopic">#{inventoryHome.product.name} | #{inventoryHome.product.category.name}</h1>
+                <div class="ui-g ui-lg-12">
+                    <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}" 
+                                    value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
+
+                    <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
+                                    value="#{inventoryHome.product.description}" required="#{false}" inlinehelp="#{messages['app.fede.inventory.product.description.inlinehelp']}" execute="@this save" render="descrpn"/>
+
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <label>#{i18n['common.price']} #{i18n['common.of']} #{i18n['common.cost']}:&nbsp;</label>
+                            <p:inputNumber id="priceCost" value="#{inventoryHome.product.priceCost}" required="true" 
+                                           inputStyle="text-align: right" symbol="$"
+                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                            </p:inputNumber>
+                        </div>
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <label>#{i18n['app.fede.inventory.product.price.a']}:&nbsp;</label>
+                            <p:inputNumber id="price" value="#{inventoryHome.product.price}" required="true" 
+                                           inputStyle="text-align: right" symbol="$"
+                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                            </p:inputNumber>
+                        </div>
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <label>#{i18n['app.fede.inventory.product.price.b']}:&nbsp;</label>
+                            <p:inputNumber id="priceB" value="#{inventoryHome.product.priceB}" required="#{false}" 
+                                           inputStyle="text-align: right" symbol="$"
+                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                            </p:inputNumber>
+                        </div>
+                        <div class="ui-g-3 ui-lg-3 ui-md-3">
+                            <label>#{i18n['app.fede.inventory.product.price.c']}:&nbsp;</label>
+                            <p:inputNumber id="priceC" value="#{inventoryHome.product.priceC}" required="#{false}" 
+                                           inputStyle="text-align: right" symbol="$"
+                                           decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
+                                           thousandSeparator="#{settingHome.getValue('app.fede.thousandSeparator', ',')}" 
+                                           decimalPlaces="#{settingHome.getValue('app.fede.decimalPlaces', '2')}">
+                            </p:inputNumber>
+                        </div>
+                    </div>
+
+                    <div class="Container100 Responsive50">
+                        <div class="ContainerIndent">
+                            <label>#{i18n['common.type']}&nbsp;</label>
+                            <p:selectOneMenu value="#{inventoryHome.product.productType}"
+                                             required="#{true}" immediate="true">
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@this" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                    
+                    <div class="Container100 Responsive50">
+                        <div class="ContainerIndent">
+                            <label>#{i18n['common.tax.type']}&nbsp;</label>
+                            <p:selectOneMenu value="#{inventoryHome.product.taxType}"
+                                             required="#{true}" immediate="true"> 
+                                <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>priceCost
+                                <p:ajax update="@this" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                    
+                    <div class="Container100 Responsive50">
+                        <div class="ContainerIndent">
+                            <label>#{i18n['app.fede.inventory.category']} (#{i18n['app.fede.inventory.category.nochange']})&nbsp;</label>
+                            <p:selectOneMenu id="grupo" value="#{inventoryHome.groupSelected}"
+                                             required="#{false}" immediate="true"
+                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
+                                <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                <p:ajax update="@this" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                    
+                    <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 
+                                    value="#{inventoryHome.product.icon}" required="true" inlinehelp="#{messages['common.icon.inlinehelp']}" execute="@this save" render="icon"/>
+
+                    
+                </div>
+                <div class="EmptyBox10"></div>
+                <p:toolbar rendered="#{true}">
+                    <f:facet name="left">
+                        <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}"
+                                         actionListener="#{inventoryHome.save()}" action="#{inventoryHome.getOutcome()}"
+                                         disabled="#{false}"
+                                         style="width: auto !important;"
+                                         type="submit"/>
+                        <span class="ui-separator">
+                            <span class="fa fa-ellipsis-v SoftGray" />
+                        </span>
+                    </f:facet>
+
+                    <f:facet name="right">
+
+                        <p:commandButton ajax="#{true}" disabled="false" immediate="true"
+                                         actionListener="#{inventoryHome.closeDialog(null)}" 
+                                         action="items"
+                                         icon="pi pi-undo" styleClass="GrayButton" type="submit"
+                                         />
+                    </f:facet>
+
+                </p:toolbar>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

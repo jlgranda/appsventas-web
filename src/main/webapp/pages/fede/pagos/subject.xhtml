@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+                template="/WEB-INF/template_popup.xhtml">
+
+    <ui:define name="params">
+        <f:metadata>
+            <f:viewParam name="subjectId" value="#{proveedorHome.subjectAdminHome.subjectId}" />  
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="title">#{i18n['app.fede.talentohumano.employee']}</ui:define>
+    <ui:define name="viewname">
+        <li>#{i18n['common.supplieries']}</li>
+        <li>/</li>
+        <li><p:link outcome="/pages/fede/pagos/proveedores.jsf">#{proveedorHome.subjectAdminHome.subjectId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['common.supplier']}</p:link></li>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12 ui-md-12">
+                <h1 class="BigTopic">#{i18n['app.fede.talentohumano.employee']} </h1>
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g ui-lg-12">
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.dni.ruc']}" rendered="#{true}"
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.code}" validator="ciValidator"
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" execute="@this save" render="code"/>
+                        <jlgranda:input id="fstn" name="firstname" type="text" label="#{i18n['common.firstname']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.firstname}" required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" inlinehelp="#{messages['firstname.inlinehelp']}" execute="@this save" render="fstn"/>
+                        <jlgranda:input id="lstn" name="lastname" type="text" label="#{i18n['common.lastname']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.surname}" required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}"
+                                        inlinehelp="#{messages['lastname.inlinehelp']}" execute="@this save" render="lstn"/>
+                        <jlgranda:input id="phone" name="phone" type="text" label="#{i18n['common.phone']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.mobileNumber}"
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
+                                        execute="@this save" render="phone"/>
+                        <jlgranda:input id="email" name="email" type="text" label="#{i18n['app.email']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.email}" validator="emailValidator"
+                                        required="#{!proveedorHome.subjectAdminHome.subjectEdit.persistent}" placeholder="#{false}" 
+                                        execute="@this save" render="email"/>
+                        <jlgranda:input id="addrs" name="addrs" type="textarea" label="#{i18n['common.address']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.description}" required="#{false}" 
+                                        inlinehelp="#{messages['address.inlinehelp']}" execute="@this save" render="addrs"/>
+                        <jlgranda:input id="bio" name="bio" type="textarea" label="#{i18n['common.bio']}" 
+                                        value="#{proveedorHome.subjectAdminHome.subjectEdit.bio}" required="#{false}" inlinehelp="#{messages['bio.inlinehelp']}" 
+                                        execute="@this save" render="bio"/>
+                        <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                            <p:outputLabel for="contactable" value="¿Quiere participar de mejores promociones y descuentos?:" />
+                            <p:selectBooleanCheckbox id="contactable" value="#{proveedorHome.subjectAdminHome.subjectEdit.contactable}" />
+                        </h:panelGrid>
+                    </div>
+                </div>
+                <div class="EmptyBox10"></div>
+                <p:toolbar rendered="#{true}">
+                    <f:facet name="left">
+                        <p:commandButton id="save" value="#{i18n['common.save']}" 
+                                         ajax="#{false}" 
+                                         actionListener="#{proveedorHome.saveProveedor()}" 
+                                         action="#{proveedorHome.getOutcome()}"
+                                         style="width: auto !important;"
+                                         type="submit"/>
+                    </f:facet>
+                    <f:facet name="right">
+
+                        <p:commandButton ajax="#{true}" disabled="false" immediate="true"
+                                         actionListener="#{proveedorHome.closeDialog(null)}" 
+                                         action="home"
+                                         icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
+                                         />
+                    </f:facet>
+
+                </p:toolbar>
+            </div>
+        </div>
+
+    </ui:define>
+    <ui:define name="script">
+        <script type="text/javascript">
+            //<![CDATA[
+
+            $(document).ready(function () {
+                $('input[id*="spinner"]').attr('type', 'number');
+                $(this).select();
+            });
+
+            $('input[id*="spinner"]').focus(function () {
+                $(this).select();
+            });
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>
