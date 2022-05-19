@@ -1625,6 +1625,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                 && !"consumidorfinal@fede.com".equalsIgnoreCase(this.invoice.getOwner().getEmail())
                 && !this.invoice.getOwner().getEmail().contains("@emporiolojano.com")
                 && !this.invoice.getOwner().getEmail().contains("@fede")
+                && !this.invoice.getOwner().getEmail().contains("@dummy.com")
                 && Boolean.valueOf(settingHome.getValue("app.mail.template.invoice.thanks.enabled", "false"))) {
             //Agradecimiento compra
             String url = this.organizationData.getOrganization().getUrl();
@@ -1641,12 +1642,12 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
     }
 
-    private static String corregirCorreoElectronico(String email) {
-        if (email.endsWith("@emporiolojano.com")) {
-            return "No registrado";
-        }
-        return email;
-    }
+//    private static String corregirCorreoElectronico(String email) {
+//        if (email.endsWith("@emporiolojano.com")) {
+//            return "No registrado";
+//        }
+//        return email;
+//    }
 
     //Acciones sobre seleccionados
     private void initializeActions() {
