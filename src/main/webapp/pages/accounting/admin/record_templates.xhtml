@@ -84,13 +84,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:ajax event="rowSelect" listener="#{recordTemplateHome.onRowSelect}"/>
                             <p:ajax event="toggleSelect"  listener="#{recordTemplateHome.onRowSelect}"/>
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
-<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
-                                <h:outputText value="#{recordTemplate.code}" />
-                            </p:column>-->
                             <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                 <h:outputText value="#{recordTemplate.name}" />
                             </p:column>
-                            <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" class="Wid10">
+                            <p:column headerText="#{i18n['common.date.created']}" class="Wid10">
                                 <h:outputText value="#{recordTemplate.createdOn}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
@@ -105,17 +102,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <p:dialog id="importarReglasDialog" header="Importa reglas desde" widgetVar="importarReglasDialog" minHeight="40" width="800" showEffect="fade" modal="#{true}">
                 <h:form id="importarReglasForm">
                     <div class="ui-g ui-fluid">
-                        <div class="ui-g-12 ui-lg-12 ui-md-12">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:outputLabel for="organization" value="Organización fuente:" />
-                            <p:selectOneMenu id="organization" value="#{recordTemplateHome.organizationFuenteReglas}"
-                                             required="#{true}" immediate="#{true}"> 
+                            <p:selectOneMenu value="#{recordTemplateHome.organizationFuenteReglas}"
+                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}"> 
                                 <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
-                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="#{true}" update="dataTableImport, btn-importar"/>
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="#{true}" itemValue="#{null}"/> 
                                 <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
+                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="#{true}" update="dataTable, btn-importar"/>
                             </p:selectOneMenu>
                         </div>
-                        <div class="ui-g-12 ui-lg-12 ui-md-12">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:dataTable id="dataTableImport" widgetVar="dataTableImport" lazy="#{true}" 
                                          value="#{recordTemplateHome.lazyDataModel}" var="recordTemplate" 
                                          selection="#{recordTemplateHome.selectedRecordTemplates}"
@@ -126,28 +125,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                          resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'false')}"
                                          sortMode="single">
                                 <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
-<!--                            <p:column headerText="#{i18n['common.code']} #{i18n['common.of']} #{i18n['bussines.entity.rule']}" sortBy="#{recordTemplate.code}">
-    <h:outputText value="#{recordTemplate.code}" />
-</p:column>-->
                                 <p:column headerText="#{i18n['common.name']}" sortBy="#{recordTemplate.name}">
                                     <h:outputText value="#{recordTemplate.name}" />
                                 </p:column>
-                                <p:column  id="fechaCreacion"  headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}" class="Wid10">
+                                <p:column headerText="#{i18n['common.date.created']}" sortBy="#{recordTemplate.createdOn}" class="Wid10">
                                     <h:outputText value="#{recordTemplate.createdOn}">
                                         <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                     </h:outputText>
                                 </p:column>
                             </p:dataTable>
                         </div>
-                        <p:commandButton id="btn-importar"
-                                         icon="pi pi-check"  styleClass="danger-btn p-mr-2"
-                                         value="#{i18n['common.import']}"
-                                         actionListener="#{recordTemplateHome.importarReglas()}"
-                                         type="submit" ajax="#{false}" 
-                                         update="@form"
-                                         disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
-                                         style="width: -webkit-fill-available;">
-                        </p:commandButton>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                            <p:commandButton id="btn-importar"
+                                             value="#{i18n['common.import']}" icon="pi pi-upload"  styleClass="success-btn rounded-btn"
+                                             actionListener="#{recordTemplateHome.importarReglas()}"
+                                             disabled="#{empty recordTemplateHome.organizationFuenteReglas}"
+                                             ajax="#{true}" immediate="#{true}" 
+                                             update="@form"
+                                             type="submit"/>
+                        </div>
                     </div>
                 </h:form>
             </p:dialog>

@@ -263,8 +263,8 @@ public class InventoryRawHome extends FedeController implements Serializable {
             this.kardex = kardexService.findByProductAndOrganization(product, subject, this.organizationData.getOrganization());
             if (this.kardex == null) {
                 this.kardex = kardexService.createInstance();
-                this.kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-") + (product.getId() != null ? product.getId() : ""));
-                this.kardex.setName(product.getName() != null ? product.getName() : "");
+                this.kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-").concat(this.organizationData.getOrganization().getId().toString()).concat(this.product.getId() != null ? this.product.getId().toString() : " "));
+                this.kardex.setName(this.product.getName() != null ? this.product.getName().toUpperCase() : "");
                 this.kardex.setUnitMinimum(BigDecimal.ZERO);
                 this.kardex.setUnitMaximum(BigDecimal.ZERO);
                 this.kardex.setQuantity(BigDecimal.ZERO);

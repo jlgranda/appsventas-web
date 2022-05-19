@@ -1158,6 +1158,9 @@ input[type="text"], input[type="password"], textarea{
 .Padding5{
     padding: 5px !important;
 }
+.Padding8{
+    padding: 8px !important;
+}
 .Padding10{
     padding: 10px !important;
 }
@@ -2640,6 +2643,14 @@ input[type="text"], input[type="password"], textarea{
     color: red;
     font-weight: 700;
 }
+.Danger {
+    color: #e91224;
+    font-weight: 700;
+}
+.Success {
+    color: #34a835;
+    font-weight: 700;
+}
 .Info {
     color: #007ad9;
     font-weight: 700;
@@ -2724,16 +2735,110 @@ body .ui-panel .ui-panel-content {
     display: grid;
 }
 
-.ui-button-none{
+.danger-text-btn{
     background: transparent !important;
-    color: #4788c7 !important;
+    color: #e91224 !important;
     border: none !important;
-    width: -webkit-fill-available;
 }
 
-.ui-button-none:hover{
-    background: #4788c7 !important;
+.danger-text-btn:hover{
+    background: #e91224 !important;
     color: #fff !important;
+    border-color: #e91224 !important;
+}
+
+.warning-text-btn{
+    background: transparent !important;
+    color: #ffba01 !important;
     border: none !important;
-    width: -webkit-fill-available;
+}
+
+.warning-text-btn:hover{
+    background: #ffba01 !important;
+    color: #000 !important;
+    border-color: #ffba01 !important;
+}
+
+.info-text-btn{
+    background: transparent !important;
+    color: #007ad9 !important;
+    border: none !important;
+}
+
+.info-text-btn:hover{
+    background: #007ad9 !important;
+    color: #fff !important;
+    border-color: #007ad9 !important;
+}
+
+.success-text-btn{
+    background: transparent !important;
+    color: #34A835 !important;
+    border: none !important;
+}
+
+.success-text-btn:hover{
+    background: #34A835 !important;
+    color: #fff !important;
+    border-color: #34A835 !important;
+}
+
+.danger-link-btn{
+    background: transparent !important;
+    color: #e91224 !important;
+    border: none !important;
+    border-radius: 0px !important;
+}
+
+.danger-link-btn:hover{
+    background: transparent !important;
+    color: #e91224 !important;
+    border: none !important;
+    border-radius: 0px !important;
+    font-weight: bolder;
+}
+.warning-link-btn{
+    background: transparent !important;
+    color: #ffba01 !important;
+    border: none !important;
+    border-radius: 0px !important;
+}
+
+.info-link-btn:hover{
+    background: transparent !important;
+    color: #ffba01 !important;
+    border: none !important;
+    border-radius: 0px !important;
+    font-weight: bolder;
+}
+
+.success-link-btn{
+    background: transparent !important;
+    color: #34A835 !important;
+    border: none !important;
+    border-radius: 0px !important;
+}
+
+.success-link-btn:hover{
+    background: transparent !important;
+    color: #34A835 !important;
+    border: none !important;
+    border-radius: 0px !important;
+    font-weight: bolder;
+}
+
+.rowPurchases {
+    background-color: #FCF3CF !important;
+}
+.rowPurchasesDev {
+    background-color: #FEF9E7 !important;
+}
+.rowSales {
+    background-color: #D8ECE1 !important;
+}
+.rowSalesDev {
+    background-color: #EAFAF1 !important;
+}
+.rowDefault {
+    background-color: #EFEFEF !important;
 }

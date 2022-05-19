@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <li><p:link outcome="journals">#{i18n['app.fede.accounting.journals']}</p:link></li>
             <li>/</li>
             <li><p:link outcome="journal">#{not empty generalJournalHome.journalId ? i18n['common.edit'] : i18n['common.new']} #{i18n['app.fede.accounting.journal']}
-                    <f:param name="journalId" rendered="#{not empty generalJournalHome.journalId}" value="#{generalJournalHome.journalId}"/>
+                    <f:param name="journalId" value="#{generalJournalHome.journalId}" rendered="#{not empty generalJournalHome.journalId}"/>
                 </p:link>
             </li>
         </ui:define>
@@ -49,10 +49,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
                         <h1 class="TexUppercase">
-                            #{i18n['app.fede.accounting.journal']}
+                            #{generalJournalHome.journal.name}
                         </h1>
                     </div>
-                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
                         <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code.UUID']}"
                                         value="#{generalJournalHome.journal.code}" required="#{true}"
                                         inlinehelp="#{messages['common.code.UUID.inlinehelp']}"
@@ -68,7 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:toolbar class="NoBorder">
                             <p:toolbarGroup class="DispInlFlex">
                                 <p:commandButton id="save-button" 
-                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn TexUppercase"
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn"
                                                  actionListener="#{generalJournalHome.save()}" action="#{generalJournalHome.getOutcome()}"
                                                  disabled="#{false}"
                                                  ajax="#{false}" immediate="#{false}"
@@ -82,7 +82,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:toolbar>
                     </div>
                     <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid"><p:separator style="color: #EFEFEF"/></div>
-                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid DispInlGrid">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
                         <p:dataTable id="dataTable-records" widgetVar="dataTable-records" lazy="#{true}"
                                      value="#{generalJournalHome.journal.records}" var="record"
                                      selection="#{generalJournalHome.recordsSelected}"
@@ -101,12 +101,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <p:linkButton outcome="record-register"
                                               value="#{i18n['common.new']}"
                                               disabled="#{empty generalJournalHome.journalId}"
-                                              icon="fa fa-plus-square" iconPos="left" styleClass="info-btn rounded-btn TexUppercase">
+                                              icon="fa fa-plus-square" iconPos="left" styleClass="info-btn rounded-btn">
                                     <f:param name="generalJournalId" value="#{generalJournalHome.journalId}"/>
                                 </p:linkButton>
                             </f:facet>
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter DispVerticalTop"/>
-                            <p:column  id="fechaEmision"  headerText="#{i18n['common.hour.emission']}" class="Wid10 DispVerticalTop">
+                            <p:column headerText="#{i18n['common.hour.emission']}" class="Wid10 DispVerticalTop">
                                 <h:outputText value="#{record.emissionDate}">
                                     <f:convertDateTime type = "time"  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm:ss')}"/>
                                 </h:outputText>
@@ -118,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="EmptyBox10"/>
                                 </ui:repeat>
                                 <div class="EmptyBox5"/>
-                                <h:outputText value="#{record.description}"/>
+                                <h:outputText value="#{record.description}" class="TexUppercase Fs10 FontBold"/>
                                 <div class="EmptyBox5"/>
                             </p:column>
                             <p:column headerText="#{i18n['common.debe']}" class="Wid20 DispVerticalTop">
@@ -139,15 +139,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <div class="EmptyBox10"/>
                                 </ui:repeat>
                             </p:column>
-                            <p:column id="report" class="Wid5">
-                                <p:commandButton id="button-detail" 
-                                                 title="#{i18n['common.detail']}" icon="fa fa-pencil" styleClass="secondary-button rounded-btn"
+                            <p:column class="Wid5 TexAlCenter">
+                                <p:commandButton title="#{i18n['common.detail']}"
+                                                 icon="fa fa-pencil" styleClass="info-text-btn rounded-btn"
                                                  actionListener="#{generalJournalHome.editarFormularioRecord(record.id)}" 
-                                                 ajax="#{true}" immediate="#{true}"
                                                  rendered="#{empty record.bussinesEntityId}">
-                                    <p:ajax event="dialogReturn" update="@form"
-                                            listener="#{generalJournalHome.handleReturn}">
-                                    </p:ajax>
+                                    <p:ajax event="dialogReturn" listener="#{generalJournalHome.handleReturn}" update="@form"/>
                                 </p:commandButton>
                             </p:column>
                             <p:columnGroup type="footer" rendered="#{not empty generalJournalHome.journal.records}">
@@ -181,14 +178,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <f:ajax render="selectedToolBar"></f:ajax>
                                         </p:selectOneMenu>
                                     </div>&nbsp;
-                                    <jlgranda:input id="general-journal-date" name="general-journal-date" render="general-journal-date" container="none"
-                                                    type="calendar" 
+                                    <jlgranda:input id="date-journal" name="date-journal" render="date-journal" container="none"
+                                                    type="calendar" showOn="button"
                                                     value="#{generalJournalHome.generalJournalDate}" label="#{i18n['app.fede.accounting.record.date']}:&nbsp;" 
-                                                    required="#{false}" requiredMessage="#{i18n['app.fede.accounting.record.date']}"
-                                                    placeholder="#{false}" 
+                                                    required="#{false}" 
+                                                    placeholder="#{false}"
                                                     rendered="#{generalJournalHome.selectedAction eq 'moveto'}"
                                                     update="selectedToolBar">
-                                    </jlgranda:input>&nbsp;
+                                    </jlgranda:input> &nbsp;
                                     <p:commandButton id="go-button"
                                                      value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
                                                      actionListener="#{generalJournalHome.execute()}" action="#{generalJournalHome.getOutcome()}"

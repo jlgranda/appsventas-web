@@ -92,8 +92,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:selectOneMenu id="emissionType"
                                              value="#{facturaElectronicaGastoHome.facturaElectronica.emissionType}"
                                              disabled="#{not empty facturaElectronicaGastoHome.facturaElectronica.id}"
-                                             immediate="#{true}"
-                                             required="#{true}"> 
+                                             required="#{true}"
+                                             immediate="#{true}">
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.emisionCompraTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this tittle days date-title" />
@@ -134,8 +134,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:outputLabel value="#{i18n['common.type']} #{i18n['common.of']} #{i18n['app.document']}" for="@next"/>
                             <p:selectOneMenu id="documentType"
                                              value="#{facturaElectronicaGastoHome.facturaElectronica.documentType}"
-                                             immediate="#{true}"
-                                             required="#{true}"> 
+                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}"> 
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.getDocumentFacturaTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this" />
@@ -229,13 +230,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         completeMethod="#{accountHome.find}"
                                         converter="org.jlgranda.fede.ui.converter.AccountConverter"
                                         placeholder="#{i18n['app.fede.accounting.account.find']}"
-                                            emptyMessage="#{i18n['app.setting.list.empty']}"
-                                            converterMessage="#{i18n['property.converter.fail']}"
-                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
-                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                            multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
-                                            cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                            required="#{false}">
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{false}">
                             <p:column>
                                 <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
                             </p:column>
@@ -288,8 +289,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <p:selectOneMenu id="pay-method"
                                                          value="#{facturaElectronicaGastoHome.payment.method}"
                                                          disabled="#{facturaElectronicaGastoHome.payableTotal}"
-                                                         immediate="#{true}"
-                                                         required="#{true}" style="width: 100%"> 
+                                                         required="#{true}"
+                                                         immediate="#{true}">
                                             <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                             <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                             <p:ajax update="@this pay-method-pnl"/>
@@ -301,8 +302,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <p:selectOneMenu id="accountPaymentSelected"
                                                              value="#{facturaElectronicaGastoHome.accountPaymentSelected}"
                                                              converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                             immediate="#{true}"
-                                                             required="#{true}" style="width: 100%"> 
+                                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}">
                                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                 <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <p:ajax update="@this"/>

@@ -98,14 +98,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 value="#{generalLedgerHome.start}" label="#{i18n['common.from']}:&nbsp;" 
                                                 required="#{false}" 
                                                 placeholder="#{false}"
-                                                update="@form">
+                                                disabled="#{empty generalLedgerHome.accountSelected}"
+                                                update="form:panel-summary">
                                 </jlgranda:input> 
                                 <jlgranda:input id="date-end" name="date-end" render="date-end" container="none"
                                                 type="calendar" showOn="button"
                                                 value="#{generalLedgerHome.end}" label="#{i18n['common.to']}:&nbsp;" 
                                                 required="#{false}" 
                                                 placeholder="#{false}"
-                                                update="@form">
+                                                disabled="#{empty generalLedgerHome.accountSelected}"
+                                                update="form:panel-summary">
                                 </jlgranda:input>
                             </p:toolbarGroup>
                             <p:toolbarGroup align="rigth">
@@ -115,8 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 required="#{false}" 
                                                 placeholder="#{false}"
                                                 maxdate="#{generalLedgerHome.end}" mindate="#{generalLedgerHome.start}"
-                                                rendered="#{not empty generalLedgerHome.accountSelectedRecordsDetails}"
-                                                disabled="#{empty generalJournalHome.start and empty generalJournalHome.end}"
+                                                disabled="#{empty generalLedgerHome.accountSelected or empty generalJournalHome.start or empty generalJournalHome.end}"
                                                 listener="#{generalLedgerHome.onDateSelect()}" update="form:panel-summary">
                                 </jlgranda:input>
                             </p:toolbarGroup>
@@ -158,10 +159,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>&nbsp;
                                         </f:facet>
                                     </p:column>
-                                    <p:column headerText="#{i18n['common.debe']}" class="BackgroundWarning NoBorder TexUppercase"/>
-                                    <p:column headerText="#{i18n['common.haber']}" class="BackgroundWarning NoBorder TexUppercase"/>
-                                    <p:column headerText="#{i18n['common.fund']}" class="BackgroundWarning NoBorder TexUppercase"/>
-                                    <p:column class="BackgroundWarning NoBorder TexUppercase"/>
+                                    <p:column headerText="#{i18n['common.debe']}" class="BackgroundWarning NoBorder"/>
+                                    <p:column headerText="#{i18n['common.haber']}" class="BackgroundWarning NoBorder"/>
+                                    <p:column headerText="#{i18n['common.fund']}" class="BackgroundWarning NoBorder"/>
+                                    <p:column headerText="#{i18n['common.fund']} actual" class="BackgroundWarning NoBorder TexUppercase"/>
                                 </p:row>
                                 <p:row>
                                     <p:column class="BackgroundWarning NoBorder">
@@ -186,7 +187,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             </h:outputText>
                                         </f:facet>
                                     </p:column>
-                                    <p:column class="BackgroundWarning NoBorder"/>
+                                    <p:column class="BackgroundWarning NoBorder">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{generalLedgerHome.accountSelectedFundPartial.add(generalLedgerHome.accountSelectedFundPrevious)}" class="Fright" 
+                                                          style="#{generalLedgerHome.accountSelectedFundPartial.add(generalLedgerHome.accountSelectedFundPrevious) lt 0 ? 'color: #e91224': ''}">
+                                                <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
                                 </p:row>
                                 <p:row>
                                     <p:column headerText="#{i18n['common.date.emission']}"/>

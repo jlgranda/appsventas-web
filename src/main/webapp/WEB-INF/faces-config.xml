@@ -50,6 +50,21 @@
             <redirect />
         </navigation-case>
         <navigation-case>
+            <from-outcome>gifts</from-outcome>
+            <to-view-id>/pages/fede/gifts/gifts.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>products-sales</from-outcome>
+            <to-view-id>/pages/fede/sales/products.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>summary-sales</from-outcome>
+            <to-view-id>/pages/fede/sales/summary.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
             <from-outcome>invoice</from-outcome>
             <to-view-id>/pages/fede/sales/invoice.jsf</to-view-id>
             <redirect />
@@ -180,13 +195,18 @@
             <redirect />
         </navigation-case>
         <navigation-case>
-            <from-outcome>inventory-production-kardexs</from-outcome>
-            <to-view-id>/pages/inventory/kardex_items.jsf</to-view-id>
-            <redirect />
-        </navigation-case>
-        <navigation-case>
             <from-outcome>kardex</from-outcome>
             <to-view-id>/pages/inventory/kardex.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+         <navigation-case>
+            <from-outcome>inventory-kardexs-production</from-outcome>
+            <to-view-id>/pages/production/kardex_items_produccion.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+         <navigation-case>
+            <from-outcome>kardex-production</from-outcome>
+            <to-view-id>/pages/production/kardex_produccion.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
@@ -274,7 +294,16 @@
             <to-view-id>/pages/fede/talentohumano/registrar_manual.jsf</to-view-id>
             <redirect />
         </navigation-case>
-        
+        <navigation-case>
+            <from-outcome>registros-detalle</from-outcome>
+            <to-view-id>/pages/fede/talentohumano/detalle_registros.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reporte-trabajo</from-outcome>
+            <to-view-id>/pages/fede/talentohumano/reporte_trabajo.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
         <navigation-case>
             <from-outcome>tareas</from-outcome>
             <to-view-id>/pages/management/tarea/dashboard.jsf</to-view-id>
@@ -313,6 +342,11 @@
         <navigation-case>
             <from-outcome>subjects</from-outcome>
             <to-view-id>/pages/admin/subject/inbox.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>setting</from-outcome>
+            <to-view-id>/pages/admin/setting.jsf</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>

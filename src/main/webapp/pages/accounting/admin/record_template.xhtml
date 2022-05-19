@@ -18,15 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
-      xmlns:o="http://omnifaces.org/ui">
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
     <ui:composition template="/WEB-INF/template.xhtml">
-        <ui:param name="sitename" value="#{i18n['Sitename']}" />
-        <ui:param name="title" value="#{i18n['app.document.task']}" />
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.recordtemplates']}</ui:define>
+        <ui:define name="head"></ui:define>
         <ui:define name="params">
             <f:metadata>
                 <f:viewParam name="recordTemplateId" value="#{recordTemplateHome.recordTemplateId}" />
@@ -37,59 +38,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <li>/</li>
             <li><p:link outcome="record-templates">#{i18n['common.recordtemplates']}</p:link></li>
             <li>/</li>
-            <li>#{recordTemplateHome.recordTemplateId == null ? i18n['common.newa'].concat(' ').concat(i18n['bussines.entity.rule']).concat(' ') : ''} #{recordTemplateHome.recordTemplate.name}</li>
+            <li><p:link outcome="record-template">#{not empty recordTemplateHome.recordTemplateId ? i18n['common.edit'] : i18n['common.newa']} #{i18n['bussines.entity.rule']}
+                    <f:param name="recordTemplateId" value="#{recordTemplateHome.recordTemplateId}" rendered="#{not empty recordTemplateHome.recordTemplateId}"/>
+                </p:link>
+            </li>
         </ui:define>
         <ui:define name="content">
-            <o:importConstants type="net.tecnopro.document.model.EstadoTipo" />
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
+                        <h1 class="TexUppercase">
+                            #{recordTemplateHome.recordTemplate.name}
+                        </h1>
+                    </div>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}" 
+                                        value="#{recordTemplateHome.recordTemplate.code}"
+                                        required="#{!recordTemplateHome.recordTemplate.persistent}" render="code"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="name" name="name" type="text" label="#{i18n['common.name']}" 
+                                        value="#{recordTemplateHome.recordTemplate.name}" required="#{!recordTemplateHome.recordTemplate.persistent}" 
+                                        inlinehelp="#{messages['common.firstnames.inlinehelp']}" render="name"
+                                        class="ui-panelgrid-blank form-group"
+                                        container="none"/>
+                        <jlgranda:input id="rule" name="rule" type="textarea" label="#{i18n['bussines.entity.rule']}" 
+                                        value="#{recordTemplateHome.recordTemplate.rule}" required="#{false}" 
+                                        inlinehelp="#{messages['bussines.entity.rule']}" render="rule"
+                                        class="ui-panelgrid-blank form-group"
+                                        rows="#{settingHome.getValue('app.ui.textarea.rows', '32')}" maxlength="#{settingHome.getValue('app.ui.textarea.maxlength', '10240')}"
+                                        container="none"/>
+                        <p:toolbar class="NoBorder">
+                            <p:toolbarGroup class="DispInlFlex">
+                                <p:commandButton id="save-button" 
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn"
+                                                 actionListener="#{recordTemplateHome.save()}" action="#{recordTemplateHome.getOutcome()}"
+                                                 disabled="#{false}"
+                                                 ajax="#{false}" immediate="#{false}"
+                                                 type="submit"/>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="right" class="DispInlFlexRight">
+                                <p:commandButton id="import-button" 
+                                                 value="#{i18n['common.import']}" icon="fas fa-file-import" styleClass="success-btn rounded-btn TextUppercase" style="width: auto !important"
+                                                 onclick="PF('importarReglasDialog').show()"
+                                                 disabled="#{false}"
+                                                 ajax="#{true}" immediate="#{true}" 
+                                                 update="importarReglasDialog"
+                                                 type="button"/>
+                                <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="secondary-button rounded-btn"
+                                                 actionListener="#{recordTemplateHome.closeDialog(null)}" action="#{recordTemplateHome.getOutcome()}"
+                                                 ajax="#{true}" immediate="#{true}"/>                          
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                </div>
+            </div>
             <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-lg-12 ui-md-12">
                     <!-- INTANCIA PROCESO -->
                     <h1 class="BigTopic">#{recordTemplateHome.recordTemplate.name}</h1>
-                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}" 
-                                    value="#{recordTemplateHome.recordTemplate.code}"
-                                    required="#{!recordTemplateHome.recordTemplate.persistent}" render="code"
-                                    class="ui-panelgrid-blank form-group"
-                                    container="none"/>
-                    <jlgranda:input id="name" name="name" type="text" label="#{i18n['common.name']}" 
-                                    value="#{recordTemplateHome.recordTemplate.name}" required="#{!recordTemplateHome.recordTemplate.persistent}" 
-                                    inlinehelp="#{messages['common.firstnames.inlinehelp']}" render="name"
-                                    class="ui-panelgrid-blank form-group"
-                                    container="none"/>
-                    <jlgranda:input id="rule" name="rule" type="textarea" label="#{i18n['bussines.entity.rule']}" 
-                                    value="#{recordTemplateHome.recordTemplate.rule}" required="#{false}" 
-                                    inlinehelp="#{messages['bussines.entity.rule']}" render="rule"
-                                    class="ui-panelgrid-blank form-group"
-                                    rows="#{settingHome.getValue('app.ui.textarea.rows', '32')}" maxlength="#{settingHome.getValue('app.ui.textarea.maxlength', '10240')}"
-                                    container="none"/>
+
                     <div class="EmptyBox10"></div>
-                    <p:toolbar rendered="#{true}">
-                        <f:facet name="left">
-                            <p:commandButton id="save-button" value="#{i18n['common.save']}" ajax="#{true}"
-                                             actionListener="#{recordTemplateHome.save()}" action="#{recordTemplateHome.getOutcome()}"
-                                             disabled="#{false}"
-                                             style="width: auto !important;"
-                                             type="submit"/>
-                            <span class="ui-separator">
-                                <span class="fa fa-ellipsis-v SoftGray" />
-                            </span>
-                        </f:facet>
 
-                        <f:facet name="right">
-                            <p:commandButton id="import-button" value="#{i18n['common.import']}" 
-                                             ajax="#{true}" immediate="#{true}" icon="fas fa-file-import"
-                                             update="importarReglasDialog"
-                                             onclick="PF('importarReglasDialog').show()"
-                                             disabled="#{false}"
-                                             style="width: auto !important;"
-                                             styleClass="btn raised-btn success-btn"
-                                             type="button"/>
-                            <p:commandButton ajax="#{true}" disabled="false" immediate="#{true}"
-                                             action="#{recordTemplateHome.redirect()}"
-                                             icon="fas fa-undo-alt" styleClass="GrayButton" type="submit"
-                                             />
-                        </f:facet>
-
-                    </p:toolbar>
                 </div>
             </div>
         </ui:define>
@@ -100,12 +110,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12 ui-lg-12 ui-md-12">
                             <p:outputLabel for="organization" value="Organización fuente:" />
-                            <p:selectOneMenu id="organization" value="#{recordTemplateHome.organizationFuenteReglas}"
-                                             required="#{true}" immediate="#{true}"> 
+                            <p:selectOneMenu value="#{recordTemplateHome.organizationFuenteReglas}"
+                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}"> 
                                 <f:converter converterId="org.jlgranda.fede.ui.converter.OrganizationConverter"  />
-                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="#{true}" update="dataTable, btn-importar"/>
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" noSelectionOption="#{true}" itemValue="#{null}"/> 
                                 <f:selectItems value="#{organizationHome.findOrganizations(subject)}" var="v" itemLabel="#{v.initials}" itemValue="#{v}"/>
+                                <p:ajax event="change" listener="#{recordTemplateHome.organizationValueChange}" partialSubmit="#{true}" update="dataTable, btn-importar"/>
                             </p:selectOneMenu>
                         </div>
                         <div class="ui-g-12 ui-lg-12 ui-md-12">
