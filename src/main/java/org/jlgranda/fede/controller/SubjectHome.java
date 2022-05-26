@@ -74,9 +74,6 @@ public class SubjectHome extends FedeController implements Serializable {
     @Inject
     Subject subject; //La instancia Subject de la sessión activa
 
-    @Inject
-    private OrganizationData organizationData;//se llama la organizacion activa
-
     Subject signup = null; //El objeto para edición
 
     @EJB

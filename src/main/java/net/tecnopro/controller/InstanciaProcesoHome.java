@@ -106,7 +106,7 @@ public class InstanciaProcesoHome extends FedeController implements Serializable
     private Tarea tarea; //La tarea en edición
     private Tarea tareaSeleccionada; //La tarea en edición
 
-    private List<Group> groups = new ArrayList<>();
+    //private List<Group> groups = new ArrayList<>();
     private Documento documento;
     private Subject solicitante;
 

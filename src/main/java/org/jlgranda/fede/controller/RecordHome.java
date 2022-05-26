@@ -151,6 +151,8 @@ public class RecordHome extends FedeController implements Serializable {
 
     /**
      * METHODS UTIL.
+     * @param journalId
+     * @param recordId
      */
     public void getGeneralJournalAndRecordEdit(Long journalId, Long recordId) {
         if (journalId != null && recordId != null) {

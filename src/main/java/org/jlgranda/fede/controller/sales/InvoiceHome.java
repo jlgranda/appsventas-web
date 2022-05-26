@@ -192,13 +192,13 @@ public class InvoiceHome extends FedeController implements Serializable {
      * UX.
      */
     //Resumenes rápidos
-    private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
-    private List<Invoice> myPendinglastPreInvoices = new ArrayList<>();
-    private List<Invoice> myOverduelastPreInvoices = new ArrayList<>();
-    private List<Invoice> myLastlastInvoices = new ArrayList<>();
-    private List<Invoice> myAllInvoices = new ArrayList<>(); // --
-    private List<Invoice> filteredInvoices = new ArrayList<>(); // --
-    private List<Invoice> myLastCourtesies = new ArrayList<>();
+//    private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
+//    private List<Invoice> myPendinglastPreInvoices = new ArrayList<>();
+//    private List<Invoice> myOverduelastPreInvoices = new ArrayList<>();
+//    private List<Invoice> myLastlastInvoices = new ArrayList<>();
+//    private List<Invoice> myAllInvoices = new ArrayList<>(); // --
+//    private List<Invoice> filteredInvoices = new ArrayList<>(); // --
+//    private List<Invoice> myLastCourtesies = new ArrayList<>();
     private Invoice lastPreInvoice;
     private Invoice lastInvoice;
     private Set<Product> recents = new HashSet<>();
@@ -492,10 +492,7 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return
      */
     public List<Invoice> getMyLastlastPreInvoices() {
-        if (myLastlastPreInvoices.isEmpty()) {
-            myLastlastPreInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndDocumentTypeAndEmission", this.organizationData.getOrganization(), getStart(), getEnd(), DocumentType.PRE_INVOICE);
-        }
-        return myLastlastPreInvoices;
+        return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndDocumentTypeAndEmission", this.organizationData.getOrganization(), getStart(), getEnd(), DocumentType.PRE_INVOICE);
     }
 
     public List<Invoice> getMyLastlastInvoices() {
@@ -525,69 +522,38 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     protected List<Invoice> getMyLastlastInvoices(boolean byAuthor) {
-        if (myLastlastInvoices != null && myLastlastInvoices.isEmpty()) {
-            if (byAuthor) {
-                myLastlastInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.INVOICE);
-            } else {
-                myLastlastInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndDocumentTypeAndEmission", this.organizationData.getOrganization(), getStart(), getEnd(), DocumentType.INVOICE);
-            }
+        if (byAuthor) {
+            return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.INVOICE);
+        } else {
+            return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndDocumentTypeAndEmission", this.organizationData.getOrganization(), getStart(), getEnd(), DocumentType.INVOICE);
         }
-        return myLastlastInvoices;
     }
 
     public List<Invoice> getMyPendingPreInvoices() {
         Date _end = Dates.addDays(getEnd(), -1); //Desde ayer
         Date _start = Dates.addDays(_end, -30); //Hasta 30 días atras
-        if (myPendinglastPreInvoices != null && myPendinglastPreInvoices.isEmpty()) {
-            myPendinglastPreInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, _start, _end, DocumentType.PRE_INVOICE);
-        }
-        return myPendinglastPreInvoices;
+        return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, _start, _end, DocumentType.PRE_INVOICE);
     }
 
     //Obtener todas mis facturas INVOICES 
     public List<Invoice> getMyAllInvoices() {
-        if (myAllInvoices.isEmpty()) {
-            myAllInvoices = myLastlastPreInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.INVOICE);
-        }
-        return myAllInvoices;
-    }
-
-    public void setMyLastlastPreInvoices(List<Invoice> myLastlastPreInvoices) {
-        this.myLastlastPreInvoices = myLastlastPreInvoices;
-    }
-
-    public void setMyLastlastInvoices(List<Invoice> myLastlastInvoices) {
-        this.myLastlastInvoices = myLastlastInvoices;
+        return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.INVOICE);
     }
 
     public List<Invoice> getMyOverduelastPreInvoices() {
-        if (myOverduelastPreInvoices.isEmpty()) {
-            myOverduelastPreInvoices = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.OVERDUE);
-        }
-        return myOverduelastPreInvoices;
-    }
-
-    public void setMyOverduelastPreInvoices(List<Invoice> myOverduelastPreInvoices) {
-        this.myOverduelastPreInvoices = myOverduelastPreInvoices;
+        return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.OVERDUE);
     }
 
     public List<Invoice> getMyLastCourtesies() {
         return getMyLastCourtesies(true);
     }
 
-    public void setMyLastCourtesies(List<Invoice> myLastCourtesies) {
-        this.myLastCourtesies = myLastCourtesies;
-    }
-
     protected List<Invoice> getMyLastCourtesies(boolean byAuthor) {
-        if (myLastCourtesies != null && myLastCourtesies.isEmpty()) {
-            if (byAuthor) {
-                myLastCourtesies = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.COURTESY);
-            } else {
-                myLastCourtesies = invoiceService.findByNamedQuery("Invoice.findByOrganizationAndDocumentTypeAndEmission", this.organizationData.getOrganization(), getStart(), getEnd(), DocumentType.COURTESY);
-            }
+        if (byAuthor) {
+            return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndAuthorAndDocumentTypeAndEmission", this.organizationData.getOrganization(), this.subject, getStart(), getEnd(), DocumentType.COURTESY);
+        } else {
+            return invoiceService.findByNamedQuery("Invoice.findByOrganizationAndDocumentTypeAndEmission", this.organizationData.getOrganization(), getStart(), getEnd(), DocumentType.COURTESY);
         }
-        return myLastCourtesies;
     }
 
     public List<Invoice> getSelectedInvoices() {
@@ -849,7 +815,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                     }
                     params.put("logo", new String(encodedLogo));
                     try {
-                      ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, this.selectedReport.getRutaArchivoXml(), params);
+                        ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, this.selectedReport.getRutaArchivoXml(), params);
                         //ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, "C:\\reportes\\jasper\\cliente_creditos.jasper", params);
                     } catch (JRException ex) {
                         java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
@@ -891,14 +857,14 @@ public class InvoiceHome extends FedeController implements Serializable {
 
             //Registrar asiento contable de la compra
             if (getInvoice().getId() != null) {
-                logger.info(I18nUtil.getMessages("InvoiceHome") + " registra contablemente" );
+                logger.info(I18nUtil.getMessages("InvoiceHome") + " registra contablemente");
                 registerRecordInJournal();
             } else {
                 addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.sales.invoice.accounting.fail"));
             }
 
             //Guardar movimientos en el Kardex
-            logger.info(I18nUtil.getMessages("InvoiceHome") + " registra en inventario" );
+            logger.info(I18nUtil.getMessages("InvoiceHome") + " registra en inventario");
             registerInvoiceDetailsInKardex(this.invoice.getDetails());
 
             //Enviar saludo a cliente
@@ -1027,11 +993,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     public void clear() {
         this.lastInvoice = null;
         this.lastPreInvoice = null;
-        this.myLastlastInvoices.clear();
-        this.myLastlastPreInvoices.clear();
-        this.myOverduelastPreInvoices.clear();
-        this.myAllInvoices.clear(); // --
-
         //Para realizar una nueva búsqueda
         this.lazyDataModel = null;
     }
@@ -1310,14 +1271,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         this.orderByCode = orderByCode;
     }
 
-    public List<Invoice> getFilteredInvoices() {
-        return filteredInvoices;
-    }
-
-    public void setFilteredInvoices(List<Invoice> filteredInvoices) {
-        this.filteredInvoices = filteredInvoices;
-    }
-
     public List<FilterMeta> getFilterBy() {
         return filterBy;
     }
@@ -1328,6 +1281,12 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     /**
      * CHART DATA MODEL.
+     * @param author
+     * @param documentType
+     * @param limit
+     * @param start
+     * @param end
+     * @return 
      */
     public List<Invoice> findInvoices(Subject author, DocumentType documentType, int limit, Date start, Date end) {
         if (author == null) { //retornar todas
@@ -1644,7 +1603,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 //        }
 //        return email;
 //    }
-
     //Acciones sobre seleccionados
     private void initializeActions() {
         this.actions = new ArrayList<>();

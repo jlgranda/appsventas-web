@@ -19,7 +19,6 @@ package org.jlgranda.fede.controller;
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.AccountService;
 import com.jlgranda.fede.ejb.GeneralJournalService;
-import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.RecordDetailService;
 import com.jlgranda.fede.ejb.RecordService;
 import com.jlgranda.fede.ejb.accounting.AccountCache;

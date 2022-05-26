@@ -36,8 +36,8 @@ import org.jpapi.model.profile.Subject;
 @Named
 public class MorrisChartHelper implements Serializable {
     
-    @EJB
-    private FacturaElectronicaService facturaElectronicaService;
+//    @EJB
+//    private FacturaElectronicaService facturaElectronicaService;
 
     public String printLine(String tag, Subject owner, Date start, Date end){
         List<FacturaElectronica> datas = new ArrayList<>();

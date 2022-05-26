@@ -16,7 +16,6 @@
  */
 package org.jlgranda.fede.controller.admin;
 
-import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.GroupService;
 import com.jlgranda.fede.ejb.mailing.MessageService;
 import com.jlgranda.fede.ejb.mailing.NotificationService;
@@ -36,7 +35,6 @@ import net.tecnopro.document.model.Template;
 import net.tecnopro.helper.mail.VelocityHelper;
 import net.tecnopro.mailing.Message;
 import net.tecnopro.mailing.Notification;
-import org.apache.commons.text.StringEscapeUtils;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Record;
@@ -45,7 +43,6 @@ import org.jlgranda.fede.ui.model.LazyTemplateDataModel;
 import org.jpapi.model.BussinesEntity;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
-import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;

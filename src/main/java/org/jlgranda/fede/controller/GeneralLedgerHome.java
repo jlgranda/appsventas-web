@@ -99,6 +99,7 @@ public class GeneralLedgerHome extends FedeController implements Serializable {
 
     /**
      * METHODS UTIL.
+     * @return 
      */
     public TreeNode getAccountsCatalogueTree() {
 
