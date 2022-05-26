@@ -488,7 +488,7 @@ public class SubjectHome extends FedeController implements Serializable {
         if (boolCorrecto) {
             this.sriDigitalCert.setDigitalCert(getFile());
             this.sriDigitalCert.setPassword(getClave());
-            this.sriDigitalCert.setOwner(this.subject);
+            this.sriDigitalCert.setOwner(this.subject.getRuc());
             this.sriDigitalCertService.save(this.sriDigitalCert);
             this.addSuccessMessage("La firma electrónica se guardo correctamente.", "");
         }
