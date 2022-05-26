@@ -262,7 +262,7 @@ public class InvoiceHome extends FedeController implements Serializable {
         //Establecer variable de sistema que habilita o no el registro contable
         setAccountingEnabled(this.organizationData.getOrganization() != null ? this.organizationData.getOrganization().isAccountingEnabled() : false);
 
-        setReports(reporteService.findByModuloAndOrganization(Constantes.MODULE_PROVIDERS, organizationData.getOrganization()));
+        setReports(reporteService.findByModuloAndOrganization(Constantes.MODULE_SALES, organizationData.getOrganization()));
 
         initializeActions();
 
@@ -833,8 +833,8 @@ public class InvoiceHome extends FedeController implements Serializable {
                 setSelectedInvoices(new ArrayList<>());
             }
 
-//            if ("imprimir".equalsIgnoreCase(this.selectedAction) && this.selectedReport != null) {
-            if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
+            if ("imprimir".equalsIgnoreCase(this.selectedAction) && this.selectedReport != null) {
+//            if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("documentType", 4);
                 params.put("organization_id", this.organizationData.getOrganization().getId());
@@ -850,8 +850,8 @@ public class InvoiceHome extends FedeController implements Serializable {
                     }
                     params.put("logo", new String(encodedLogo));
                     try {
-//                        ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, this.selectedReport.getRutaArchivoXml(), params);
-                        ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, "C:\\reportes\\jasper\\cliente_creditos.jasper", params);
+                      ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, this.selectedReport.getRutaArchivoXml(), params);
+                        //ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, "C:\\reportes\\jasper\\cliente_creditos.jasper", params);
                     } catch (JRException ex) {
                         java.util.logging.Logger.getLogger(InvoiceHome.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -892,13 +892,14 @@ public class InvoiceHome extends FedeController implements Serializable {
 
             //Registrar asiento contable de la compra
             if (getInvoice().getId() != null) {
-                System.out.println("\nListo para registrar asiento contable:: ");
+                logger.info(I18nUtil.getMessages("InvoiceHome") + " registra contablemente" );
                 registerRecordInJournal();
             } else {
                 addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.sales.invoice.accounting.fail"));
             }
 
             //Guardar movimientos en el Kardex
+            logger.info(I18nUtil.getMessages("InvoiceHome") + " registra en inventario" );
             registerInvoiceDetailsInKardex(this.invoice.getDetails());
 
             //Enviar saludo a cliente
@@ -1532,7 +1533,6 @@ public class InvoiceHome extends FedeController implements Serializable {
                     }
                 }
             }
-            System.out.println("\nrecords:: " + records);
             if (!records.isEmpty()) {
                 //La regla compiló bien
                 GeneralJournal generalJournal;
@@ -1589,9 +1589,7 @@ public class InvoiceHome extends FedeController implements Serializable {
 
                         //Persistencia
                         if (Objects.equal(Boolean.TRUE, this.recordCompleto)) {
-                            System.out.println("\nrecordCompleto::");
                             rcr = recordService.save(rcr);
-                            System.out.println("\nrcr:: " + rcr);
                             if (rcr.getId() != null) {
                                 //Anular registros anteriores
                                 //recordService.deleteLastRecords(generalJournal.getId(), getInvoice().getClass().getSimpleName(), getInvoice().getId(), getInvoice().hashCode());
@@ -1601,8 +1599,7 @@ public class InvoiceHome extends FedeController implements Serializable {
                                 }
                                 getPayment().setRecordId(rcr.getId());
                                 paymentService.save(getPayment().getId(), getPayment()); //Se guardan todos los cambios
-                                if (getPayment().getRecordId() != null) {
-                                } else {
+                                if (getPayment().getRecordId() == null) {
                                     addWarningMessage(I18nUtil.getMessages("action.warning"), "El registro contable, no se asoció a la Venta.");
                                 }
                             }

@@ -156,10 +156,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:selectOneMenu>
                                     </div>&nbsp;
 
-                                    <p:panel id="panelMoverTo" rendered="#{proveedorHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
-                                        <p:selectOneMenu value="#{proveedorHome.selectedReport}">
+                                    <p:panel id="panelMoverTo" rendered="#{invoiceHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
+                                        <p:selectOneMenu value="#{invoiceHome.selectedReport}">
                                             <f:converter converterId="org.jlgranda.fede.ui.converter.ReporteConverter"  />
-                                            <f:selectItems value="#{proveedorHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
+                                            <f:selectItems value="#{invoiceHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
                                             <f:ajax render="selectedToolBar"></f:ajax>
                                         </p:selectOneMenu>
                                     </p:panel>
