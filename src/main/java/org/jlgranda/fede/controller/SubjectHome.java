@@ -85,17 +85,17 @@ public class SubjectHome extends FedeController implements Serializable {
     @EJB
     SriDigitalCertService sriDigitalCertService; // se llama el servicio de certificacion
 
-    @EJB
-    private InvoiceService invoiceService;
+    //@EJB
+    //private InvoiceService invoiceService;
 
     @Inject
     private SettingHome settingHome;
 
-    @Inject
-    GroupHome groupHome;
+    //@Inject
+    //GroupHome groupHome;
 
-    @Resource
-    private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
+    //@Resource
+    //private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
 
     @Inject
     private TemplateHome templateHome;
