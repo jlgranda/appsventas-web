@@ -139,7 +139,7 @@ public class SummaryHome extends FedeController implements Serializable {
         setCostTotal(BigDecimal.ZERO);
         setProfilTotal(BigDecimal.ZERO);
         setPaxTotal(0L);
-        
+
         setModelEmpty(Boolean.FALSE);
 
         setOutcome("dashboard");
@@ -841,6 +841,16 @@ public class SummaryHome extends FedeController implements Serializable {
         }
 
         return paxDay;
+    }
+
+    public BigDecimal sumFactEmit() {
+        BigDecimal total = new BigDecimal(invoiceService.count("Invoice.findSumFactEmit", this.organizationData.getOrganization()));
+        return total;
+    }
+
+    public BigDecimal contFactEmit() {
+        BigDecimal total = new BigDecimal(invoiceService.count("Invoice.findContFactEmit", this.organizationData.getOrganization()));
+        return total;
     }
 
     @Override

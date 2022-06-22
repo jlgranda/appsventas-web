@@ -136,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </p:column>
                         </p:dataTable>
                         <!--Herramientas con seleccionados -->
-                        <p:panel id="panelSelectedToolBar">
+                        <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                             <p:panel rendered="#{not empty invoiceHome.selectedInvoices}"
                                      class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 BackgroundWarning Padding10 TexAlRight FontBold">
                                 <!--<p:toolbarGroup class="Container100 FlexNowRap AlignItemsFlEnd">-->
@@ -155,15 +155,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <f:ajax render="selectedToolBar"></f:ajax>
                                         </p:selectOneMenu>
                                     </div>&nbsp;
-                                    <p:commandButton id="go-button"
-                                                     value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
-                                                     actionListener="#{invoiceHome.execute()}" action="#{invoiceHome.getOutcome()}"
-                                                     oncomplete="PF('dataTable').unselectAllRows()"
-                                                     disabled="#{not invoiceHome.actionExecutable}"
-                                                     ajax="#{true}"
-                                                     update="@form">
-                                        <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
-                                    </p:commandButton>
+
+                                    <p:panel id="panelMoverTo" rendered="#{proveedorHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
+                                        <p:selectOneMenu value="#{proveedorHome.selectedReport}">
+                                            <f:converter converterId="org.jlgranda.fede.ui.converter.ReporteConverter"  />
+                                            <f:selectItems value="#{proveedorHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
+                                            <f:ajax render="selectedToolBar"></f:ajax>
+                                        </p:selectOneMenu>
+                                    </p:panel>
+                                    <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop15">
+                                        <p:commandButton id="go-button"
+                                                         value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button WidAuto Padding2" style="margin-top: 20px;"
+                                                         actionListener="#{invoiceHome.execute()}" action="#{invoiceHome.getOutcome()}"
+                                                         oncomplete="PF('dataTable').unselectAllRows()"
+                                                         disabled="#{not invoiceHome.actionExecutable}"
+                                                         ajax="#{true}"
+                                                         update="@form">
+                                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                        </p:commandButton>
+                                    </div>
                                 </p:toolbarGroup>
                             </p:toolbar>
                         </p:panel>
