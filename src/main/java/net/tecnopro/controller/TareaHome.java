@@ -79,9 +79,6 @@ public class TareaHome extends FedeController implements Serializable {
     Logger logger = LoggerFactory.getLogger(TareaHome.class);
 
     @Inject
-    private OrganizationData organizationData;
-
-    @Inject
     private Subject subject;
 
     private Subject solicitante;

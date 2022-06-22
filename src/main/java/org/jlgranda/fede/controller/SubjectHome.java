@@ -74,9 +74,6 @@ public class SubjectHome extends FedeController implements Serializable {
     @Inject
     Subject subject; //La instancia Subject de la sessión activa
 
-    @Inject
-    private OrganizationData organizationData;//se llama la organizacion activa
-
     Subject signup = null; //El objeto para edición
 
     @EJB
@@ -88,17 +85,17 @@ public class SubjectHome extends FedeController implements Serializable {
     @EJB
     SriDigitalCertService sriDigitalCertService; // se llama el servicio de certificacion
 
-    @EJB
-    private InvoiceService invoiceService;
+    //@EJB
+    //private InvoiceService invoiceService;
 
     @Inject
     private SettingHome settingHome;
 
-    @Inject
-    GroupHome groupHome;
+    //@Inject
+    //GroupHome groupHome;
 
-    @Resource
-    private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
+    //@Resource
+    //private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
 
     @Inject
     private TemplateHome templateHome;
@@ -488,7 +485,7 @@ public class SubjectHome extends FedeController implements Serializable {
         if (boolCorrecto) {
             this.sriDigitalCert.setDigitalCert(getFile());
             this.sriDigitalCert.setPassword(getClave());
-            this.sriDigitalCert.setOwner(this.subject);
+            this.sriDigitalCert.setOwner(this.subject.getRuc());
             this.sriDigitalCertService.save(this.sriDigitalCert);
             this.addSuccessMessage("La firma electrónica se guardo correctamente.", "");
         }

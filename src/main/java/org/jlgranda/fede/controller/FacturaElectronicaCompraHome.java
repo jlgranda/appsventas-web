@@ -449,7 +449,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
      */
     public List<FacturaElectronica> listarFacturasElectronicasPorIds() {
         if (getKeys() == null || getKeys().isEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         return facturaElectronicaService.findByNamedQuery("BussinesEntity.findByIds", buildListIds());

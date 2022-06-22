@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 public class IOUtils {
  
     public static boolean prepareDirectory(String qgzFilePath) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><< IOUtils::prepareDirectory");
         //Preparar el directorio del proyecto
         Path path = Paths.get(qgzFilePath);
         if (Files.notExists(path, LinkOption.NOFOLLOW_LINKS)) {
