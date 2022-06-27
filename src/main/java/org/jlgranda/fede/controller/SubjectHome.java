@@ -18,34 +18,28 @@
 package org.jlgranda.fede.controller;
 
 import com.jlgranda.fede.ejb.SubjectService;
-import com.jlgranda.fede.ejb.sales.InvoiceService;
-import com.jlgranda.fede.ejb.sri.SriDigitalCertService;
+import com.jlgranda.fede.ejb.sri.SRIDigitalCertService;
 import com.jlgranda.shiro.UsersRoles;
 import com.jlgranda.shiro.UsersRolesPK;
 import com.jlgranda.shiro.ejb.UsersRolesFacade;
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.transaction.UserTransaction;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.jlgranda.fede.controller.admin.TemplateHome;
 import org.jlgranda.fede.model.accounting.Record;
-import org.jlgranda.fede.model.sri.SriDigitalCert;
+import org.jlgranda.fede.model.sri.SRIDigitalCert;
 import org.jpapi.model.CodeType;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
@@ -83,7 +77,7 @@ public class SubjectHome extends FedeController implements Serializable {
     UsersRolesFacade usersRolesFacade;
 
     @EJB
-    SriDigitalCertService sriDigitalCertService; // se llama el servicio de certificacion
+    SRIDigitalCertService sriDigitalCertService; // se llama el servicio de certificacion
 
     //@EJB
     //private InvoiceService invoiceService;
@@ -111,7 +105,7 @@ public class SubjectHome extends FedeController implements Serializable {
 
     private String clave;
     private String confirmarClave;
-    private SriDigitalCert sriDigitalCert;
+    private SRIDigitalCert sriDigitalCert;
 
     /**
      * Bandera para indicar si encontró sugerencias en elementos autocomplete
@@ -136,11 +130,11 @@ public class SubjectHome extends FedeController implements Serializable {
         this.sugerenciasEncontradas = sugerenciasEncontradas;
     }
 
-    public SriDigitalCert getSriDigitalCert() {
+    public SRIDigitalCert getSriDigitalCert() {
         return sriDigitalCert;
     }
 
-    public void setSriDigitalCert(SriDigitalCert sriDigitalCert) {
+    public void setSriDigitalCert(SRIDigitalCert sriDigitalCert) {
         this.sriDigitalCert = sriDigitalCert;
     }
 

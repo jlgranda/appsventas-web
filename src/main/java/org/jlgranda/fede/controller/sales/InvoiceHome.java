@@ -188,17 +188,6 @@ public class InvoiceHome extends FedeController implements Serializable {
     private Subject customer;
     private Reporte selectedReport;
 
-    /**
-     * UX.
-     */
-    //Resumenes rápidos
-//    private List<Invoice> myLastlastPreInvoices = new ArrayList<>();
-//    private List<Invoice> myPendinglastPreInvoices = new ArrayList<>();
-//    private List<Invoice> myOverduelastPreInvoices = new ArrayList<>();
-//    private List<Invoice> myLastlastInvoices = new ArrayList<>();
-//    private List<Invoice> myAllInvoices = new ArrayList<>(); // --
-//    private List<Invoice> filteredInvoices = new ArrayList<>(); // --
-//    private List<Invoice> myLastCourtesies = new ArrayList<>();
     private Invoice lastPreInvoice;
     private Invoice lastInvoice;
     private Set<Product> recents = new HashSet<>();
@@ -231,17 +220,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         setBusquedaEjecutada(!Strings.isNullOrEmpty(getKeyword()));
         setOrderByCode(false);
         setBusquedaAvanzada(true);
-//        filterBy.add(FilterMeta.builder()
-//                .field("summary")
-//                .filterValue()
-//                .matchMode(MatchMode.CONTAINS)
-//                .build());
-//
-//        filterBy.add(FilterMeta.builder()
-//                .field("date")
-//                .filterValue(Arrays.asList(LocalDate.now().minusDays(28), LocalDate.now().plusDays(28)))
-//                .matchMode(MatchMode.RANGE)
-//                .build());
         setFilterBy(new ArrayList<>());
         setRecordCompleto(Boolean.TRUE);
     }
@@ -782,7 +760,6 @@ public class InvoiceHome extends FedeController implements Serializable {
                 for (Invoice instance : getSelectedInvoices()) {
                     this.invoice = instance;
                     List<Payment> payments = paymentService.findByNamedQuery("Payment.findByInvoice", this.invoice);
-                    System.out.println("\nPagos: " + instance.getId() + " - " + payments);
                     if (!payments.isEmpty()) {
                         setPayment(payments.get(0));
                     } else {
@@ -847,7 +824,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         if ((BigDecimal.ZERO.compareTo(getPayment().getCash()) == -1)
                 && (BigDecimal.ZERO.compareTo(getPayment().getDiscount()) == -1 || BigDecimal.ZERO.compareTo(getPayment().getDiscount()) == 0)
                 && (BigDecimal.ZERO.compareTo(getPayment().getChange()) == -1 || BigDecimal.ZERO.compareTo(getPayment().getChange()) == 0)) {
-            System.out.println("\nListo para cobrar:: ");
             //getInvoice().setSequencial(sequenceSRI);//Generar el secuencia legal de factura
             getInvoice().setDocumentType(documentType); //Se convierte en factura
             //Agregar el pago
@@ -1123,7 +1099,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public boolean touch(String command) {
         for (String id : command.split(",")) {
-//            touch(productService.find(Long.valueOf(id)));
             touch(productCache.lookup(Long.valueOf(id)));
         }
         return true;
@@ -1131,7 +1106,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
     public String macro(String command) {
         for (String id : command.split(",")) {
-//            touch(productService.find(Long.valueOf(id)));
             touch(productCache.lookup(Long.valueOf(id)));
         }
         return save(true);
@@ -1161,8 +1135,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public BigDecimal calculeIva(BigDecimal subTotal) {
-        BigDecimal iva = new BigDecimal(BigInteger.ZERO);
-        iva = subTotal.multiply(BigDecimal.valueOf(invoice.IVA));
+        BigDecimal iva = subTotal.multiply(BigDecimal.valueOf(invoice.IVA));
         return iva;
     }
 
@@ -1197,13 +1170,11 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public void calculateTotalOverdue() {
-        System.out.println("\n\n\ncalculeTotalOverdue");
         setSelectedInvoicesByCollect(BigDecimal.ZERO);
         for (Invoice p : this.getSelectedInvoices()) {
             BigDecimal total = p.getTotal().subtract(p.getPaymentsDiscount());
             setSelectedInvoicesByCollect(getSelectedInvoicesByCollect().add(total));
         }
-        System.out.println("getSelectedInvoicesByCollect():: " + getSelectedInvoicesByCollect());
     }
 
     /**
@@ -1324,12 +1295,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         LineChartModel areaModel = new LineChartModel();
 
         boolean fillSeries = true;
-//        
-//        LineChartSeries fixedCosts = new LineChartSeries();
-//        fixedCosts.setFill(!fillSeries);
-//        fixedCosts.setLabel(I18nUtil.getMessages("app.fede.costs.fixed"));
-//        fixedCosts.setShowMarker(false);
-//        fixedCosts.setSmoothLine(false);
 
         LineChartSeries sales = new LineChartSeries();
         sales.setFill(fillSeries);
@@ -1597,12 +1562,6 @@ public class InvoiceHome extends FedeController implements Serializable {
         }
     }
 
-//    private static String corregirCorreoElectronico(String email) {
-//        if (email.endsWith("@emporiolojano.com")) {
-//            return "No registrado";
-//        }
-//        return email;
-//    }
     //Acciones sobre seleccionados
     private void initializeActions() {
         this.actions = new ArrayList<>();

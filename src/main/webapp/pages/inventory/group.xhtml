@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g ui-fluid"> <!--Contenedor General-->
             <div class="ui-g-12 ui-lg-12 ui-md-12"><!--Contenedor General-->
                 <h1 class="BigTopic">#{i18n['app.fede.inventory.categories.'.concat(groupInventoryHome.groupType)]}</h1> <!--Sección 1: Título-->
-                <div class="ui-g ui-lg-12"><!--Sección 2: Formulario del grupo-->
+                <div class="ui-g-12" style="padding: 1rem"><!--Sección 2: Formulario del grupo-->
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}"
                                     value="#{groupInventoryHome.group.name}" required="true"
                                     inlinehelp="#{messages['app.fede.inventory.group.name.inlinehelp']}"

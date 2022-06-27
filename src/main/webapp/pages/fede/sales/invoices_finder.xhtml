@@ -101,14 +101,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:ajax event="rowSelectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowUnselectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar"/>
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
-                            <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid10">
-                                <h:outputText value="#{invoice.code}"/>
-                            </p:column>
-                            <p:column  headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{invoice.boardNumber}" class="Wid5">
-                                <h:outputText value="#{invoice.boardNumber}">
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}">
+                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.owner}">
                                 <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
                             </p:column>
                             <p:column headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains" class="Wid20">
@@ -132,6 +125,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:column headerText="#{i18n['common.date.emission']}" sortBy="#{invoice.emissionOn}" class="Wid10">
                                 <h:outputText value="#{invoice.emissionOn}">
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid10">
+                                <h:outputText value="#{invoice.code}"/>
+                            </p:column>
+                            <p:column  headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{invoice.boardNumber}" class="Wid5">
+                                <h:outputText value="#{invoice.boardNumber}">
                                 </h:outputText>
                             </p:column>
                         </p:dataTable>
