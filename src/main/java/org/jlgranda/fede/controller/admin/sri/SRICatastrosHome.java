@@ -129,6 +129,14 @@ public class SRICatastrosHome extends FedeController implements Serializable {
         tipoSRICatastro = "RUC";
     }
 
+    public String getTipoSRICatastro() {
+        return tipoSRICatastro;
+    }
+
+    public void setTipoSRICatastro(String tipoSRICatastro) {
+        this.tipoSRICatastro = tipoSRICatastro;
+    }
+    
     public boolean isSugerenciasEncontradas() {
         return sugerenciasEncontradas;
     }
@@ -200,7 +208,7 @@ public class SRICatastrosHome extends FedeController implements Serializable {
             while ((cadena = b.readLine()) != null) {
                 if (cont > 0 && cont < 1000) {
                     String[] parts = cadena.split("\t", -1);
-                    SRICatastrosRuc objCatastros = new SRICatastrosRuc();
+                    SRICatastrosRuc objCatastros = sriCatastrosRucService.createInstance();
                     objCatastros.setNumeroRuc(parts[0]);
                     objCatastros.setRazonSocial(parts[1]);
                     objCatastros.setNombreComercia(parts[2]);
