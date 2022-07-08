@@ -100,45 +100,45 @@ public class GroupHome extends FedeController implements Serializable {
      */
     public void createDefaultGroups(Subject subject) {
 
-        Map<String, String> props = new HashMap<>();
-
-        //email settings
-        props.put("salud", "Salud {1, panel-primary, fa fa-heartbeat fa-5x, fede}");
-        props.put("alimentos", "Alimentos {2, panel-sucess, fa fa-icon-shopping-cart fa-5x, fede}");
-        props.put("ropa", "Ropa {3, panel-green, fa fa-tag fa-5x, fede}");
-        props.put("educacion", "Educación {4, panel-yellow, fa fa-graduation-cap fa-5x, fede}");
-        props.put("vivienda", "Vivienda {5, panel-red, fa fa-home fa-5x, fede}");
-        props.put("favorito", "Favoritos {1, panel-red, fa fa-heart-o, " + SettingNames.GENERAL_MODULE + "}");
-
-        Group group = null;
-        String value = null;
-        Short orden = null;
-        String icon = null;
-        String module = null;
-        String color = null;
-        String attrs = null;
-        for (String key : props.keySet()) {
-            value = props.get(key);
-            attrs = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
-            orden = Short.valueOf(attrs.split(",")[0]);
-            color = attrs.split(",")[1];
-            icon = attrs.split(",")[2];
-            module = attrs.split(",")[3];
-            value = value.substring(0, (value.indexOf("{") - 1));
-            group = groupService.createInstance();
-            group.setCode(key.trim());
-            group.setName(value.trim());
-            group.setOwner(subject);
-            group.setColor(color.trim());
-            group.setIcon(icon.trim());
-            group.setModule(module.trim()); //Marcar con null para el caso de etiquetas generales
-            group.setOrden(orden);
-            group.setGroupType(Group.Type.LABEL);
-
-            groupService.save(group);
-
-            //logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
-        }
+//        Map<String, String> props = new HashMap<>();
+//
+//        //email settings
+//        props.put("salud", "Salud {1, panel-primary, fa fa-heartbeat fa-5x, fede}");
+//        props.put("alimentos", "Alimentos {2, panel-sucess, fa fa-icon-shopping-cart fa-5x, fede}");
+//        props.put("ropa", "Ropa {3, panel-green, fa fa-tag fa-5x, fede}");
+//        props.put("educacion", "Educación {4, panel-yellow, fa fa-graduation-cap fa-5x, fede}");
+//        props.put("vivienda", "Vivienda {5, panel-red, fa fa-home fa-5x, fede}");
+//        props.put("favorito", "Favoritos {1, panel-red, fa fa-heart-o, " + SettingNames.GENERAL_MODULE + "}");
+//
+//        Group group = null;
+//        String value = null;
+//        Short orden = null;
+//        String icon = null;
+//        String module = null;
+//        String color = null;
+//        String attrs = null;
+//        for (String key : props.keySet()) {
+//            value = props.get(key);
+//            attrs = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
+//            orden = Short.valueOf(attrs.split(",")[0]);
+//            color = attrs.split(",")[1];
+//            icon = attrs.split(",")[2];
+//            module = attrs.split(",")[3];
+//            value = value.substring(0, (value.indexOf("{") - 1));
+//            group = groupService.createInstance();
+//            group.setCode(key.trim());
+//            group.setName(value.trim());
+//            group.setOwner(subject);
+//            group.setColor(color.trim());
+//            group.setIcon(icon.trim());
+//            group.setModule(module.trim()); //Marcar con null para el caso de etiquetas generales
+//            group.setOrden(orden);
+//            group.setGroupType(Group.Type.LABEL);
+//
+//            groupService.save(group);
+//
+//            //logger.info("Added group id: {}, code: {}, name: [{}], props: name: [{}, {}]", group.getId(), group.getCode(), group.getName(), group.getColor(), group.getIcon());
+//        }
     }
 
     @Override

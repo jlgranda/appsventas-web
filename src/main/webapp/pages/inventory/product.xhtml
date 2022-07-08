@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ui:define name="viewname">
         <li>#{i18n['app.fede.inventory']}</li>
         <li>/</li>
-        <li><p:link outcome="/pages/inventory/items.jsf">#{i18n['app.fede.inventory.products']}</p:link></li>
+        <li><p:link outcome="inventory-inbox">#{i18n['app.fede.inventory.products']}</p:link></li>
         <li>/</li>
         <li><p:link outcome="/pages/inventory/product.jsf">#{inventoryHome.productId == null ? i18n['common.new'] : i18n['common.edit']} #{i18n['app.fede.inventory.product']}</p:link></li>
     </ui:define>
@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-lg-12 ui-md-12">
                 <h1 class="BigTopic">#{inventoryHome.product.name} | #{inventoryHome.product.category.name}</h1>
-                <div class="ui-g ui-lg-12">
+                <div class="ui-g-12" style="padding: 1rem">
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}" 
                                     value="#{inventoryHome.product.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
 
@@ -90,40 +90,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </div>
 
-                    <div class="Container100 Responsive50">
-                        <div class="ContainerIndent">
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
                             <label>#{i18n['common.type']}&nbsp;</label>
                             <p:selectOneMenu value="#{inventoryHome.product.productType}"
-                                             required="#{true}" immediate="true">
+                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}">
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this" />
                             </p:selectOneMenu>
-                        </div>
                     </div>
                     
-                    <div class="Container100 Responsive50">
-                        <div class="ContainerIndent">
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
                             <label>#{i18n['common.tax.type']}&nbsp;</label>
                             <p:selectOneMenu value="#{inventoryHome.product.taxType}"
-                                             required="#{true}" immediate="true"> 
+                                            disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}">
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>priceCost
                                 <p:ajax update="@this" />
                             </p:selectOneMenu>
-                        </div>
                     </div>
                     
-                    <div class="Container100 Responsive50">
-                        <div class="ContainerIndent">
+                    <div class="ui-g-12 ui-lg-12 ui-md-12">
                             <label>#{i18n['app.fede.inventory.category']} (#{i18n['app.fede.inventory.category.nochange']})&nbsp;</label>
                             <p:selectOneMenu id="grupo" value="#{inventoryHome.groupSelected}"
-                                             required="#{false}" immediate="true"
-                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"> 
+                                             converter="org.jlgranda.fede.ui.converter.GroupConverter"
+                                             disabled="#{false}"
+                                             required="#{false}"
+                                             immediate="#{true}"> 
                                 <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                 <p:ajax update="@this" />
                             </p:selectOneMenu>
-                        </div>
                     </div>
                     
                     <jlgranda:input id="icon" name="icon" type="text" label="#{i18n['common.icon']}" 

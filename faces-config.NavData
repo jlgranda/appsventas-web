@@ -9,8 +9,8 @@
         <Node id="pages/inventory/group_items.jsf?groupType=CATEGORY" x="4400" y="150" zoom="true"/>
         <Node id="pages/accounting/account.xhtml" x="400" y="2550" zoom="true"/>
         <Node id="pages/fede/talentohumano/registrar_rapido.xhtml" x="1650" y="150" zoom="true"/>
-        <Node id="pages/management/tarea/tarea.xhtml" x="2900" y="450" zoom="true"/>
         <Node id="pages/fede/sales/preinvoices_search.xhtml" x="900" y="1500" zoom="true"/>
+        <Node id="pages/management/tarea/tarea.xhtml" x="2900" y="450" zoom="true"/>
         <Node id="pages/fede/pagos/proveedor_factura_gasto.xhtml" x="1900" y="450" zoom="true"/>
         <Node id="pages/admin/security/group/inbox.xhtml" x="3650" y="300" zoom="true"/>
         <Node id="pages/inventory/kardex.xhtml" x="1150" y="1200" zoom="true"/>
@@ -22,13 +22,12 @@
         <Node id="pages/inventory/product.jsf" x="1400" y="300" zoom="true"/>
         <Node id="access.xhtml" x="2400" y="900" zoom="true"/>
         <Node id="pages/fede/sales/invoices_finder.xhtml" x="2150" y="900" zoom="true"/>
-        <Node id="pages/fede/talentohumano/roles.xhtml" x="2650" y="600" zoom="true"/>
         <Node id="pages/inventory/kardex_items.jsf" x="650" y="1950" zoom="true"/>
+        <Node id="pages/fede/talentohumano/roles.xhtml" x="2650" y="600" zoom="true"/>
         <Node id="pages/fede/talentohumano/detalle_registros.xhtml" x="2900" y="600" zoom="true"/>
         <Node id="pages/fede/pagos/proveedor.jsf" x="400" y="1950" zoom="true"/>
         <Node id="pages/fede/popup_profile.xhtml" x="900" y="1650" zoom="true"/>
         <Node id="pages/accounting/account_items.xhtml" x="900" y="600" zoom="true"/>
-
         <Node id="pages/fede/descargar_factura_electronica.xhtml" x="1150" y="1050" zoom="true"/>
         <Node id="pages/fede/ride.xhtml" x="3150" y="600" zoom="true"/>
         <Node id="pages/admin/template/inbox.xhtml" x="2650" y="1050" zoom="true"/>
@@ -43,8 +42,8 @@
         <Node id="pages/fede/talentohumano/role.xhtml" x="900" y="2250" zoom="true"/>
         <Node id="pages/management/proceso/inbox.jsf" x="1150" y="750" zoom="true"/>
         <Node id="pages/admin/subject/profile.xhtml" x="650" y="1350" zoom="true"/>
-        <Node id="pages/fede/smart/trends.jsf" x="150" y="2400" zoom="true"/>
         <Node id="pages/accounting/journal_items.jsf" x="150" y="1800" zoom="true"/>
+        <Node id="pages/fede/smart/trends.jsf" x="150" y="2400" zoom="true"/>
         <Node id="pages/fede/talentohumano/subject.xhtml" x="150" y="1050" zoom="true"/>
         <Node id="pages/fede/sales/products.xhtml" x="400" y="1350" zoom="true"/>
         <Node id="pages/accounting/journal_items.xhtml" x="1900" y="900" zoom="true"/>
@@ -67,18 +66,15 @@
         <Node id="pages/fede/compras/gasto.jsf" x="1650" y="450" zoom="true"/>
         <Node id="pages/admin/subject/popup_cambiar_clave.xhtml" x="1900" y="300" zoom="true"/>
         <Node id="pages/fede/sales/proforma.xhtml" x="2400" y="750" zoom="true"/>
-
-        <Node id="pages/accounting/popup_journal.xhtml" x="150" y="2700" zoom="true"/>
-
         <Node id="pages/fede/pagos/proveedor_factura_compra.xhtml" x="900" y="450" zoom="true"/>
         <Node id="pages/inventory/items.xhtml" x="400" y="1200" zoom="true"/>
         <Node id="pages/fede/sales/invoice_read.xhtml" x="3400" y="750" zoom="true"/>
-        <Node id="pages/fede/sales/preinvoices.jsf" x="3400" y="150" zoom="true"/>
         <Node id="pages/fede/pseudoride.xhtml" x="900" y="1200" zoom="true"/>
+        <Node id="pages/fede/sales/preinvoices.jsf" x="3400" y="150" zoom="true"/>
         <Node id="pages/inventory/group_items.xhtml" x="2650" y="150" zoom="true"/>
+        <Node id="pages/fede/smart/trends.xhtml" x="650" y="450" zoom="true"/>
         <Node id="pages/home.jsf" x="150" y="1500" zoom="true"/>
         <Node id="pages/management/balancedscorecard/dashboard.xhtml" x="650" y="300" zoom="true"/>
-        <Node id="pages/fede/smart/trends.xhtml" x="650" y="450" zoom="true"/>
         <Node id="pages/fede/sales/invoices.xhtml" x="3150" y="150" zoom="true"/>
         <Node id="pages/management/reports/reports.xhtml" x="650" y="150" zoom="true"/>
         <Node id="pages/fede/compras/gastos.xhtml" x="2150" y="450" zoom="true"/>
@@ -86,52 +82,48 @@
         <Node id="pages/accounting/journal.jsf" x="1150" y="1950" zoom="true"/>
         <Node id="pages/fede/sales/preinvoices.xhtml" x="2150" y="1200" zoom="true"/>
         <Node id="pages/fede/talentohumano/registrar.xhtml" x="400" y="1650" zoom="true"/>
-        <Node id="pages/fede/sales/delivery.xhtml" x="400" y="150" zoom="true"/>
         <Node id="pages/fede/pagos/proveedor_factura_compra.jsf" x="1150" y="300" zoom="true"/>
-        <Node id="pages/management/reports/reports.jsf" x="1650" y="300" zoom="true"/>
+        <Node id="pages/fede/sales/delivery.xhtml" x="400" y="150" zoom="true"/>
         <Node id="pages/admin/dashboard.jsf" x="900" y="1950" zoom="true"/>
+        <Node id="pages/management/reports/reports.jsf" x="1650" y="300" zoom="true"/>
         <Node id="pages/inventory/kardex.jsf" x="1400" y="1500" zoom="true"/>
         <Node id="pages/management/tarea/inbox.jsf" x="1900" y="1350" zoom="true"/>
         <Node id="pages/fede/smart/products.xhtml" x="2150" y="1050" zoom="true"/>
         <Node id="pages/fede/smart/purchases.xhtml" x="2400" y="300" zoom="true"/>
         <Node id="pages/management/organization/dashboard.xhtml" x="3150" y="750" zoom="true"/>
         <Node id="pages/fede/popup_etiqueta.xhtml" x="900" y="750" zoom="true"/>
-
-        <Node id="index.html" x="3150" y="900" zoom="true"/>
         <Node id="pages/fede/sales/invoices_finder.jsf" x="2650" y="300" zoom="true"/>
-        <Node id="pages/inventory/kardex_items.xhtml" x="1400" y="900" zoom="true"/>
+        <Node id="index.html" x="3150" y="900" zoom="true"/>
         <Node id="pages/fede/sales/invoice_diferido.xhtml" x="900" y="1050" zoom="true"/>
+        <Node id="pages/inventory/kardex_items.xhtml" x="1400" y="900" zoom="true"/>
         <Node id="pages/admin/security/authorization.xhtml" x="900" y="1350" zoom="true"/>
         <Node id="pages/management/reports/report.jsf" x="150" y="1200" zoom="true"/>
-        <Node id="pages/accounting/account.jsf" x="150" y="2250" zoom="true"/>
         <Node id="pages/fede/compras/descargar_factura_electronica.xhtml" x="900" y="2100" zoom="true"/>
+        <Node id="pages/accounting/account.jsf" x="150" y="2250" zoom="true"/>
         <Node id="pages/fede/compras/compra.xhtml" x="3650" y="600" zoom="true"/>
-        <Node id="pages/fede/compras/pseudoride.xhtml" x="400" y="2400" zoom="true"/>
         <Node id="pages/fede/pagos/proveedor_facturas.xhtml" x="400" y="600" zoom="true"/>
+        <Node id="pages/fede/compras/pseudoride.xhtml" x="400" y="2400" zoom="true"/>
         <Node id="pages/fede/sales/overdues.xhtml" x="2400" y="1050" zoom="true"/>
         <Node id="pages/accounting/popup_record_journal.xhtml" x="2150" y="150" zoom="true"/>
-        <Node id="pages/accounting/general_ledger.xhtml" x="1150" y="600" zoom="true"/>
         <Node id="pages/fede/sales/invoice.jsf" x="1150" y="900" zoom="true"/>
+        <Node id="pages/accounting/general_ledger.xhtml" x="1150" y="600" zoom="true"/>
         <Node id="pages/fede/pagos/proveedor.xhtml" x="1900" y="1050" zoom="true"/>
         <Node id="pages/management/tarea/dashboard.xhtml" x="900" y="900" zoom="true"/>
         <Node id="pages/management/tarea/popup_etiqueta.xhtml" x="3150" y="300" zoom="true"/>
         <Node id="pages/fede/pagos/proveedor_factura_gasto.jsf" x="3650" y="450" zoom="true"/>
         <Node id="pages/admin/template/template.xhtml" x="2150" y="1500" zoom="true"/>
         <Node id="pages/inventory/popup_producto.xhtml" x="900" y="150" zoom="true"/>
-
-        <Node id="pages/accounting/admin/record_templates.jsf" x="2650" y="1200" zoom="true"/>
         <Node id="pages/fede/talentohumano/registrar_manual.jsf" x="1400" y="1800" zoom="true"/>
-        <Node id="pages/admin/security/group/group.xhtml" x="1400" y="150" zoom="true"/>
-        <Node id="pages/production/aggregation_items.jsf" x="150" y="2100" zoom="true"/>
+        <Node id="pages/accounting/admin/record_templates.jsf" x="2650" y="1200" zoom="true"/>
         <Node id="pages/management/proceso/instancia_proceso.xhtml" x="150" y="2550" zoom="true"/>
-        <Node id="pages/production/aggregation_items.jsf" x="150" y="2100" zoom="true"/>
         <Node id="pages/admin/security/group/group.xhtml" x="1400" y="150" zoom="true"/>
+        <Node id="pages/production/aggregation_items.jsf" x="150" y="2100" zoom="true"/>
         <Node id="pages/accounting/popup_record_ledger.xhtml" x="150" y="1350" zoom="true"/>
         <Node id="pages/fede/smart/dashboard.jsf" x="650" y="2250" zoom="true"/>
         <Node id="pages/inventory/items.jsf" x="3900" y="150" zoom="true"/>
         <Node id="pages/accounting/admin/record_template.xhtml" x="1900" y="1500" zoom="true"/>
-        <Node id="pages/admin/template/inbox.jsf" x="4150" y="300" zoom="true"/>
         <Node id="pages/fede/compras/subir_factura_electronica.xhtml" x="650" y="1500" zoom="true"/>
+        <Node id="pages/admin/template/inbox.jsf" x="4150" y="300" zoom="true"/>
         <Node id="pages/fede/compras/compras.xhtml" x="3400" y="300" zoom="true"/>
         <Node id="pages/fede/sales/dashboard.xhtml" x="4400" y="300" zoom="true"/>
         <Node id="pages/fede/talentohumano/employees.jsf" x="650" y="1050" zoom="true"/>
@@ -140,17 +132,15 @@
         <Node id="pages/fede/gifts/gifts.xhtml" x="650" y="900" zoom="true"/>
         <Node id="pages/fede/compras/ingreso.xhtml" x="1150" y="2100" zoom="true"/>
         <Node id="pages/admin/subject/subjects_group.xhtml" x="650" y="2400" zoom="true"/>
-        <Node id="pages/fede/sales/summary.xhtml" x="1150" y="1500" zoom="true"/>
         <Node id="pages/fede/talentohumano/roles.jsf" x="1900" y="150" zoom="true"/>
+        <Node id="pages/fede/sales/summary.xhtml" x="1150" y="1500" zoom="true"/>
         <Node id="pages/fede/pagos/proveedores.jsf" x="2150" y="600" zoom="true"/>
         <Node id="pages/fede/compras/ride.xhtml" x="1150" y="150" zoom="true"/>
         <Node id="pages/fede/compras/ingresos.xhtml" x="3900" y="450" zoom="true"/>
         <Node id="pages/fede/compras/compras.jsf" x="1650" y="1200" zoom="true"/>
-
-        <Node id="pages/fede/talentohumano/registrar_manual.xhtml" x="650" y="1200" zoom="true"/>
         <Node id="pages/management/tarea/tareas.xhtml" x="400" y="2250" zoom="true"/>
-
         <Node id="pages/accounting/account_items.jsf" x="3650" y="150" zoom="true"/>
+        <Node id="pages/fede/talentohumano/registrar_manual.xhtml" x="650" y="1200" zoom="true"/>
         <Node id="pages/accounting/general_ledger.jsf" x="1650" y="600" zoom="true"/>
         <Node id="pages/management/proceso/inbox.xhtml" x="2900" y="900" zoom="true"/>
         <Node id="pages/fede/compras/ingreso.jsf" x="1150" y="450" zoom="true"/>
@@ -158,8 +148,8 @@
         <Node id="pages/fede/sales/popup_profile.xhtml" x="150" y="600" zoom="true"/>
         <Node id="pages/admin/subject/seleccionar_grupos_usuario.xhtml" x="2650" y="750" zoom="true"/>
         <Node id="pages/fede/compras/popup_proveedor_gasto.xhtml" x="650" y="1800" zoom="true"/>
-        <Node id="empty.xhtml" x="400" y="1050" zoom="true"/>
         <Node id="pages/inventory/dashboard.xhtml" x="1650" y="1050" zoom="true"/>
+        <Node id="empty.xhtml" x="400" y="1050" zoom="true"/>
         <Node id="pages/fede/subir_factura_electronica.xhtml" x="400" y="300" zoom="true"/>
         <Node id="pages/fede/compras/ingresos.jsf" x="400" y="450" zoom="true"/>
         <Node id="pages/fede/gifts/profile.jsf" x="3400" y="450" zoom="true"/>

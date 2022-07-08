@@ -275,7 +275,7 @@ public class AggregationHome extends FedeController implements Serializable {
     }
 
     public List<Product> filterProductsRawMaterial(String query) {
-        return productCache.lookup(query, ProductType.RAW_MATERIAL, this.organizationData.getOrganization()); //sólo servicios
+        return productCache.lookup(query, ProductType.RAW_MATERIAL, this.organizationData.getOrganization()); //sólo materia prima
     }
 
     private void aggregationDetailValid() {

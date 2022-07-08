@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -404,7 +403,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
             }
         }
     }
-    
+
     private void cargarCashFinally() {
         setCashToAccounting(this.index == 0 ? this.cashBoxPartial.getCashFinally() : (this.index == 1 ? this.cashBoxPartial.getExcessCash() : (this.index == 2 ? this.cashBoxPartial.getMissCash() : BigDecimal.ZERO)));
     }
@@ -484,12 +483,12 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
         recordSave();
     }
-    
+
     public void recordSaveExcess() {
         System.out.println("recordSaveExcess");
         recordSave();
     }
-    
+
     public void recordSaveMissing() {
         System.out.println("recordSaveMissing");
         recordSave();
@@ -543,7 +542,7 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
         });
     }
 
-    private void redirectToIndex() {
+    public void redirectToIndex() {
         if (this.index < 1 && this.cashBoxPartial.getExcessCash().compareTo(BigDecimal.ZERO) == 1) {
             setIndex(1);
             cargarCashFinally();
@@ -684,51 +683,3 @@ public class CashBoxGeneralHome extends FedeController implements Serializable {
     }
 
 }
-
-//public void recordSave() {
-//        if (!this.cashFinally.equals(this.cashBoxPartial.getCashFinally())) {//Actualizar el cashFinal del cashBoxPartial
-//            this.cashBoxPartial.setCashFinally(this.cashFinally);
-//            this.cashBoxPartial.setStatusComplete(Boolean.TRUE);
-//            this.cashBoxGeneral.addCashBoxPartial(this.cashBoxPartial);
-//            this.cashBoxGeneral.setCashFinally(this.cashFinally);
-//            cashBoxGeneralService.save(this.cashBoxGeneral.getId(), this.cashBoxGeneral);
-//        }
-//        //Construir los records de cada detail agregado
-//        boolean valido = true;
-//        if (this.record.getRecordDetails().isEmpty()) {
-//            valido = false;
-//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.record.detail.incomplete"));
-//        }
-//        if (getAccountMain() == null) {
-//            valido = false;
-//            this.addErrorMessage(I18nUtil.getMessages("action.fail"), I18nUtil.getMessages("app.fede.accounting.close.cash.account.main.incorrect"));
-//        }
-//        if (valido) {
-//            //Localizar o generar el generalJournal
-//            setGeneralJournal(this.buildJournal(Dates.now()));
-//
-//            this.record.getRecordDetails().forEach(rdd -> {
-//                Record newRecord = generateRecordInstance();
-//                RecordDetail newRecordDetail = recordDetailService.createInstance();
-//                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.HABER);
-//                newRecordDetail.setAccount(getAccountMain());
-//                newRecordDetail.setAmount(rdd.getAmount());
-//                newRecord.addRecordDetail(newRecordDetail);
-//                newRecordDetail = recordDetailService.createInstance();
-//                newRecordDetail.setRecordDetailType(RecordDetail.RecordTDetailType.DEBE);
-//                newRecordDetail.setAccount(rdd.getAccount());
-//                newRecordDetail.setAmount(rdd.getAmount());
-//                newRecord.addRecordDetail(newRecordDetail);
-//                newRecord.setBussinesEntityType(this.cashBoxPartial.getClass().getSimpleName());
-//                newRecord.setBussinesEntityId(this.cashBoxPartial.getId());
-//                newRecord.setBussinesEntityHashCode(this.cashBoxPartial.hashCode());
-//                newRecord.setName(String.format("%s: %s[id=%d]", "REGISTRO_CAJA_DIA_A_" + rdd.getAccount(), getClass().getSimpleName(), this.cashBoxPartial.getId()));
-//                newRecord.setDescription(String.format("%s \nEnvío de dinero desde: %s, a %s \nMonto: %s", this.subject.getFullName(), getAccountMain().getName(), rdd.getAccount().getName(), Strings.format(rdd.getAmount().doubleValue(), "$ #0.##")));
-//                recordService.save(newRecord.getId(), newRecord);
-//            });
-//            //Encerar objetos de pantalla
-//            this.recordDetail = recordDetailService.createInstance();
-//            this.record = recordService.createInstance();
-//            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), I18nUtil.getMessages("app.fede.accounting.record.correct.message"));
-//        }
-//    }

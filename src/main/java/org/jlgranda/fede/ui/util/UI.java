@@ -43,6 +43,7 @@ import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.model.sales.SRICatastrosType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
@@ -82,6 +83,11 @@ public class UI {
     public ProductType[] getProductTypes() {
         return ProductType.values();
     }
+    
+
+    public SRICatastrosType[] getSRICatastrosTypes() {
+        return SRICatastrosType.values();
+    }
 
     public Group.Type[] getGroupTypes() {
         return Group.Type.values();
@@ -113,6 +119,16 @@ public class UI {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         for (ProductType t : getProductTypes()) {
+            item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+            items.add(item);
+        }
+        return items;
+    }
+
+    public List<SelectItem> getCatastroTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (SRICatastrosType t : getSRICatastrosTypes()) {
             item = new SelectItem(t, I18nUtil.getMessages(t.name()));
             items.add(item);
         }
@@ -259,45 +275,40 @@ public class UI {
         return items;
     }
 
-    public List<SelectItem> getOperationTypesAsSelectItem(String type) {
+    public List<SelectItem> getOperationTypesAsSelectItem(List<KardexDetail.OperationType> types) {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
         item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
         items.add(item);
-        if ("input".equals(type)) {
-            item = new SelectItem(KardexDetail.OperationType.EXISTENCIA_INICIAL, "INVENTARIO INICIAL");
-            items.add(item);
-            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO, "PRODUCTO TERMINADO");
-            items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.COMPRA.toString(), KardexDetail.OperationType.COMPRA.toString());
-//        items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_VENTA.toString(), KardexDetail.OperationType.DEVOLUCION_VENTA.toString());
-//        items.add(item);
-        } else if ("output".equals(type)) {
-            item = new SelectItem(KardexDetail.OperationType.SALIDA_INVENTARIO, "SALIDA DE INVENTARIO");
-            items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.VENTA.toString(), KardexDetail.OperationType.VENTA.toString());
-//        items.add(item);
-//        item = new SelectItem(KardexDetail.OperationType.DEVOLUCION_COMPRA.toString(), KardexDetail.OperationType.DEVOLUCION_COMPRA.toString());
-//        items.add(item);
-        } else if ("input-raw".equals(type)) {
-            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_INGRESO_MATERIA_PRIMA, "INGRESO DE MATERIA PRIMA");
-            items.add(item);
-        } else if ("output-raw".equals(type)) {
-//            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO, "PRODUCTO TERMINADO");
-//            items.add(item);
-            item = new SelectItem(KardexDetail.OperationType.PRODUCCION_BAJA_MATERIA_PRIMA, "BAJA DE MATERIA PRIMA");
-            items.add(item);
+        if (!types.isEmpty()) {
+            for (KardexDetail.OperationType opT : types) {
+                item = new SelectItem(opT, opT.toString().replace("_", " "));
+                items.add(item);
+            }
         }
-
         return items;
+    }
+
+    public static List<KardexDetail.OperationType> getOperationTypeByType(String type) {
+        List<KardexDetail.OperationType> types = new ArrayList<>();
+        if ("input".equals(type)) {
+            types.add(KardexDetail.OperationType.EXISTENCIA_INICIAL);
+            types.add(KardexDetail.OperationType.PRODUCCION_PRODUCTO_TERMINADO);
+        } else if ("output".equals(type)) {
+            types.add(KardexDetail.OperationType.SALIDA_INVENTARIO);
+        } else if ("input-raw".equals(type)) {
+            types.add(KardexDetail.OperationType.PRODUCCION_INGRESO_MATERIA_PRIMA);
+        } else if ("output-raw".equals(type)) {
+            types.add(KardexDetail.OperationType.PRODUCCION_BAJA_MATERIA_PRIMA);
+        }
+        return types;
     }
 
     public List<SelectItem> getMeasuresTypesAsSelectItem() {
         List<SelectItem> items = new ArrayList<>();
         SelectItem item = null;
-//        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
-//        items.add(item);
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        items.add(item);
         item = new SelectItem("UNIDAD", "[Unit] Unidad");
         items.add(item);
         item = new SelectItem("KILOGRAMO", "[kg] Kilogramo");

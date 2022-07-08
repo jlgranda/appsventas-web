@@ -83,11 +83,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                           class="#{cashBoxGeneralHome.index eq 0 ? 'Info' : (cashBoxGeneralHome.index eq 1 ? 'Success' : (cashBoxGeneralHome.index eq 2 ? 'Red' : ''))}">
                                 <f:convertNumber type="currency" currencySymbol="#{settingHome.getValue('fede.currencySymbol', '$')}" locale="es_EC"/>
                             </h:outputText>
+                            <div class="EmptyBox5"/>
+                            <p:commandLink value="¿No deseas registrar el dinero?. ¡Haz click aquí para continuar!" 
+                                           styleClass="info-link-btn TexUppercase"
+                                           actionListener="#{cashBoxGeneralHome.redirectToIndex()}"
+                                           disabled="#{cashBoxGeneralHome.cashBoxPartial.statusComplete}"
+                                           rendered="#{cashBoxGeneralHome.index eq 0}"
+                                           ajax="#{true}" immediate="#{true}" 
+                                           update="@form">
+                            </p:commandLink>
                         </p:panel>
                         <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 AlignSelfEnd">
                             <h3>Agregar/Editar cuenta al asiento contable</h3>
                             <div class="ui-g-8 ui-md-8 ui-lg-8 ui-sm-12">
-                                <p:outputLabel value="¿A qué cuenta(s) enviará el dinero de CAJA DIA?" for="@next"/>
+                                <p:outputLabel value="¿A qué cuenta(s) enviará el dinero?" for="@next"/>
                                 <p:autoComplete id="account" 
                                                 value="#{cashBoxGeneralHome.recordDetail.account}" var="account"
                                                 itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
@@ -108,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <p:ajax event="itemSelect" listener="#{cashBoxGeneralHome.onItemAccountSelect}" update="@form"/>
                                 </p:autoComplete>
                             </div>
-                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12 NoPadding DispInlGrid">
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-12">
                                 <jlgranda:input id="amount" name="amount" render="amount" container="none"
                                                 type="decimal" 
                                                 decimalSeparator="#{settingHome.getValue('app.fede.decimalSeparator', '.')}" 
@@ -122,7 +131,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPaddingTop">
                                 <p:commandButton id="btn-detail-add"
-                                                 icon="pi pi-check-square" styleClass="warning-btn rounded-btn TexUppercase"
+                                                 icon="pi pi-check-square" styleClass="warning-btn rounded-btn"
                                                  value="#{i18n['common.add']}"
                                                  actionListener="#{cashBoxGeneralHome.recordDetailAdd}" 
                                                  ajax="#{true}" immediate="#{true}"
@@ -150,7 +159,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </h:outputText>
                                 </p:column>
                                 <p:column class="Wid10 TexAlCenter">
-                                    <p:commandButton icon="fa fa-remove" styleClass="danger-btn rounded-btn"
+                                    <p:commandButton icon="fa fa-remove" styleClass="danger-text-btn rounded-btn"
                                                      actionListener="#{cashBoxGeneralHome.recordDetailDelete(recordDetail)}"
                                                      update="form:panel-record">
                                         <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
@@ -179,14 +188,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:toolbarGroup class="DispInlFlex">
                                 <p:linkButton outcome="cash-breakdown"
                                               value="#{i18n['common.previous']}"
-                                              icon="pi pi-chevron-left" iconPos="left" styleClass="info-btn rounded-btn TexUppercase">
+                                              icon="pi pi-chevron-left" iconPos="left" styleClass="info-btn rounded-btn">
                                     <f:param name="cashBoxPartialId" value="#{cashBoxGeneralHome.cashBoxPartial.id}"/>
                                 </p:linkButton>
                             </p:toolbarGroup>
                             <p:toolbarGroup align="right" class="DispInlFlexRight" rendered="#{cashBoxGeneralHome.index eq 0}">
                                 <p:commandButton id="btn-record-save-cash"
                                                  value="#{i18n['common.register']}" 
-                                                 icon="pi pi-check" iconPos="right" styleClass="success-btn rounded-btn TexUppercase"
+                                                 icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn"
                                                  actionListener="#{cashBoxGeneralHome.recordSaveCash()}"
                                                  disabled="#{cashBoxGeneralHome.cashBoxPartial.statusComplete or empty cashBoxGeneralHome.record.recordDetails}"
                                                  ajax="#{true}" immediate="#{false}" 
@@ -197,7 +206,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:toolbarGroup align="right" class="DispInlFlexRight" rendered="#{cashBoxGeneralHome.index eq 1}">
                                 <p:commandButton id="btn-record-save-excess"
                                                  value="#{i18n['common.register']}" 
-                                                 icon="pi pi-check" iconPos="right" styleClass="success-btn rounded-btn TexUppercase"
+                                                 icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn"
                                                  actionListener="#{cashBoxGeneralHome.recordSaveExcess()}"
                                                  disabled="#{cashBoxGeneralHome.cashBoxPartial.statusComplete or empty cashBoxGeneralHome.record.recordDetails}"
                                                  ajax="#{true}" immediate="#{false}" 
@@ -208,7 +217,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:toolbarGroup align="right" class="DispInlFlexRight" rendered="#{cashBoxGeneralHome.index eq 2}">
                                 <p:commandButton id="btn-record-save-missing"
                                                  value="#{i18n['common.register']}" 
-                                                 icon="pi pi-check" iconPos="right" styleClass="success-btn rounded-btn TexUppercase"
+                                                 icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn"
                                                  actionListener="#{cashBoxGeneralHome.recordSaveMissing()}"
                                                  disabled="#{cashBoxGeneralHome.cashBoxPartial.statusComplete or empty cashBoxGeneralHome.record.recordDetails}"
                                                  ajax="#{true}" immediate="#{false}" 

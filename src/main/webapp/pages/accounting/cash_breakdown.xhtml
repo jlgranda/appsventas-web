@@ -175,13 +175,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <p:toolbarGroup class="DispInlFlex">
                             <p:linkButton outcome="cash-initial"
                                           value="#{i18n['common.previous']}"
-                                          icon="pi pi-chevron-left" iconPos="left" styleClass="info-btn rounded-btn TexUppercase">
+                                          icon="pi pi-chevron-left" iconPos="left" styleClass="info-btn rounded-btn">
                             </p:linkButton>
                         </p:toolbarGroup>
                         <p:toolbarGroup align="right" class="DispInlFlexRight">
                             <p:commandButton id="btn-close-partial"
                                              value="#{i18n['common.continue']}" 
-                                             icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn TexUppercase"
+                                             icon="pi pi-chevron-right" iconPos="right" styleClass="danger-btn rounded-btn"
                                              actionListener="#{cashBoxGeneralHome.closeCashBoxPartial}"
                                              disabled="#{cashBoxGeneralHome.cashBoxPartial.totalCashBreakdown eq 0}"
                                              ajax="#{true}" immediate="#{true}"

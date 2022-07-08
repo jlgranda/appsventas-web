@@ -127,7 +127,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-12">
                                     <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.documentType}"
-                                                     required="#{false}" immediate="true"> 
+                                                     disabled="#{false}"
+                                                     required="#{true}"
+                                                     immediate="#{true}">
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.getDocumentFacturaTypesAsSelectItem()}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@form" />
@@ -162,7 +164,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                                 <div class="ui-g ui-lg-8 ui-md-12">
                                     <p:selectOneMenu value="#{facturaElectronicaHome.facturaElectronica.emissionType}"
-                                                     required="#{false}" immediate="true" style="width: 100%"> 
+                                                     disabled="#{false}"
+                                                     required="#{true}"
+                                                     immediate="#{true}">
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.emisionTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@form" />
@@ -404,7 +408,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="ui-g-8">
                                     <h4 class="BigTopic">#{i18n['common.type']}&nbsp;</h4>
                                     <p:selectOneMenu value="#{facturaElectronicaHome.productNew.productType}"
-                                                     required="#{true}" immediate="true">
+                                                     disabled="#{false}"
+                                                     required="#{true}"
+                                                     immediate="#{true}">
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this" />
@@ -413,7 +419,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="ui-g-4">
                                     <h4 class="BigTopic">#{i18n['common.tax']}&nbsp;</h4>
                                     <p:selectOneMenu value="#{facturaElectronicaHome.productNew.taxType}"
-                                                     required="#{false}" immediate="#{false}"> 
+                                                     disabled="#{false}"
+                                                     required="#{true}"
+                                                     immediate="#{true}">
                                         <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                         <f:selectItems value="#{ui.taxTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this" />
@@ -527,7 +535,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="ui-g-6 ui-lg-6 ui-g-md-12">
                             <label>#{i18n['app.fede.payment.method']}</label>
                             <p:selectOneMenu value="#{facturaElectronicaHome.payment.method}" disabled="#{facturaElectronicaHome.payableTotal}" 
-                                             required="#{true}" immediate="true"> 
+                                             disabled="#{false}"
+                                             required="#{true}"
+                                             immediate="#{true}"> 
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                             </p:selectOneMenu>

@@ -69,8 +69,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 placeholder="#{false}" 
                                                 update="@form">
                                 </jlgranda:input>
-                            </p:toolbarGroup>
-                            <p:toolbarGroup align="rigth">
                                 <jlgranda:input id="date-filter" name="date-filter" render="date-filter" container="none"
                                                 type="calendar" showOn="button"
                                                 value="#{invoiceHome.daySelected}" label="Filtrar por #{i18n['common.day.min']}:&nbsp;" 
@@ -80,6 +78,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                 disabled="#{empty invoiceHome.start and empty invoiceHome.end}"
                                                 listener="#{invoiceHome.onDateSelect()}" update="@form">
                                 </jlgranda:input>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="rigth">
                                 <p:button value="#{i18n['common.newa']}"
                                           icon="pi pi-plus-circle" styleClass="danger-btn rounded-btn"
                                           outcome="/pages/fede/sales/invoice_diferido.jsf?outcome=invoices_finder"/>
@@ -101,14 +101,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <p:ajax event="rowSelectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar" />
                             <p:ajax event="rowUnselectCheckbox" listener="#{invoiceHome.calculateTotalOverdue()}" update=":form:panelSelectedToolBar"/>
                             <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
-                            <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid10">
-                                <h:outputText value="#{invoice.code}"/>
-                            </p:column>
-                            <p:column  headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{invoice.boardNumber}" class="Wid5">
-                                <h:outputText value="#{invoice.boardNumber}">
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.author}">
+                            <p:column headerText="#{i18n['common.company.name']}" sortBy="#{invoice.owner}">
                                 <h:outputText value="#{empty invoice.owner.initials ? invoice.owner.fullName  : invoice.owner.initials }" />
                             </p:column>
                             <p:column headerText="#{i18n['common.description']}" filterBy="#{invoice.summary}" filterMatchMode="contains" class="Wid20">
@@ -134,6 +127,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.date.pattern', 'dd/MM/yyyy')}" />
                                 </h:outputText>
                             </p:column>
+                            <p:column headerText="#{i18n['app.fede.sales.invoice.comanda.number']}" class="Wid10">
+                                <h:outputText value="#{invoice.code}"/>
+                            </p:column>
+                            <p:column  headerText="#{i18n['app.fede.sales.invoice.board.number']}" sortBy="#{invoice.boardNumber}" class="Wid5">
+                                <h:outputText value="#{invoice.boardNumber}">
+                                </h:outputText>
+                            </p:column>
                         </p:dataTable>
                         <!--Herramientas con seleccionados -->
                         <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
@@ -156,10 +156,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         </p:selectOneMenu>
                                     </div>&nbsp;
 
-                                    <p:panel id="panelMoverTo" rendered="#{proveedorHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
-                                        <p:selectOneMenu value="#{proveedorHome.selectedReport}">
+                                    <p:panel id="panelMoverTo" rendered="#{invoiceHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
+                                        <p:selectOneMenu value="#{invoiceHome.selectedReport}">
                                             <f:converter converterId="org.jlgranda.fede.ui.converter.ReporteConverter"  />
-                                            <f:selectItems value="#{proveedorHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
+                                            <f:selectItems value="#{invoiceHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
                                             <f:ajax render="selectedToolBar"></f:ajax>
                                         </p:selectOneMenu>
                                     </p:panel>

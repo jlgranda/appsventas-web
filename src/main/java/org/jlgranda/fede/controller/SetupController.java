@@ -49,12 +49,12 @@ public class SetupController implements Serializable {
     @EJB
     private SetupService service;
     
-    @EJB
-    private SubjectService subjectService;
+//    @EJB
+//    private SubjectService subjectService;
 
 
-    @Resource
-    private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
+//    @Resource
+//    private UserTransaction userTransaction; //https://issues.jboss.org/browse/PLINK-332
 
     public SetupController() {
     }
@@ -144,18 +144,18 @@ public class SetupController implements Serializable {
 //        }
     }
     
-    private Subject createAdministrator() {
-        Subject singleResult = new Subject();
-        singleResult.setEmail("admin@fede.com");
-        singleResult.setUsername("admin");
-        singleResult.setPassword((new org.apache.commons.codec.digest.Crypt().crypt("fede")));
-        singleResult.setUsernameConfirmed(true);
-        singleResult.setCreatedOn(Dates.now());
-        singleResult.setLastUpdate(Dates.now());
-        singleResult.setCodeType(CodeType.NONE);
-        singleResult.setSubjectType(Subject.Type.SYSTEM);
-
-        return singleResult;
-    }
+//    private Subject createAdministrator() {
+//        Subject singleResult = new Subject();
+//        singleResult.setEmail("admin@fede.com");
+//        singleResult.setUsername("admin");
+//        singleResult.setPassword((new org.apache.commons.codec.digest.Crypt().crypt("fede")));
+//        singleResult.setUsernameConfirmed(true);
+//        singleResult.setCreatedOn(Dates.now());
+//        singleResult.setLastUpdate(Dates.now());
+//        singleResult.setCodeType(CodeType.NONE);
+//        singleResult.setSubjectType(Subject.Type.SYSTEM);
+//
+//        return singleResult;
+//    }
 }
 
