@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2016 jlgranda
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['common.management']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="tags" value="#{subjectAdminHome.tags}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['common.management']}</li>
+            <li>/</li>
+            <li><p:link outcome="/pages/admin/catastros/catastros_ruc.jsf">#{i18n['catastro.ruc.name']}</p:link></li>
+        </ui:define>
+        <ui:define name="content">
+            <!-- /.row -->
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <div class="card">
+                            <p:panel id="photo" >
+                                <p:outputLabel class="Gray" value="#{i18n['common.type']}:&nbsp;" for="@next"/>
+                                <p:selectOneMenu value="#{inventoryHome.productType}"
+                                                 disabled="#{false}"
+                                                 required="#{false}"
+                                                 immediate="#{true}">
+                                    <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
+                                    <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
+                                </p:selectOneMenu>
+                                <p:fileUpload listener="#{catastrosRucHome.handleFileUpload}" mode="advanced" dragDropSupport="true" auto="true"
+                                              update="photo" 
+                                              label="#{i18n['catastro.file.ruc']}" 
+                                              sizeLimit="#{settingHome.getValue('app.admin.subject.sizeLimit', '100048576')}" 
+                                              fileLimit="#{settingHome.getValue('app.admin.subject.fileLimit', '1')}" 
+                                              allowTypes="#{settingHome.getValue('app.admin.subject.allowTypes', '/(\\.|\\/)(zip)$/')}"/>
+                                <span class="name">#{catastrosRucHome.getNomFile()}</span>
+
+                                <div class="with30"></div>
+                                <p:toolbar >
+                                    <f:facet name="right" >
+                                        <p:commandButton value="#{i18n['catastro.update']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;" actionListener="#{catastrosRucHome.guardarCatastro()}" action="#{subjectHome.getOutcome()}" ajax="#{true}" type="submit" update="@form">
+                                            <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                        </p:commandButton>
+                                    </f:facet>
+                                </p:toolbar>
+                            </p:panel>
+                    </div>
+                    <!--/.panel--> 
+                </div>
+            </div>
+            <!-- /.row -->
+        </ui:define>
+        <ui:define name="script">
+            <style></style>
+            <script>
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

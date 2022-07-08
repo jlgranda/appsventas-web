@@ -205,8 +205,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                 <p:selectOneMenu id="method"
                                                  value="#{invoiceHome.payment.method}"
                                                  disabled="#{not empty invoiceHome.payment.datePaymentCancel}"
-                                                 immediate="true"
-                                                 required="#{true}" style="width: 100%"> 
+                                                 required="#{true}"
+                                                 immediate="#{true}">
                                     <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                     <f:selectItems value="#{ui.paymentMethodsAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                     <p:ajax update="@this transferencia"/>
@@ -248,8 +248,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                     <p:selectOneMenu id="accountPaymentSelected"
                                                      value="#{invoiceHome.accountPaymentSelected}"
                                                      converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                                     immediate="true"
-                                                     required="true" style="width: 100%"> 
+                                                     disabled="#{false}"
+                                                     required="#{true}"
+                                                     immediate="#{true}">
                                         <f:selectItems value="#{ui.getAccountsAsSelectItem(accountHome.filterAccountsChildrens('Banco'))}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                         <p:ajax update="@this"/>
                                     </p:selectOneMenu>

@@ -449,7 +449,7 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
      */
     public List<FacturaElectronica> listarFacturasElectronicasPorIds() {
         if (getKeys() == null || getKeys().isEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         return facturaElectronicaService.findByNamedQuery("BussinesEntity.findByIds", buildListIds());
@@ -1920,70 +1920,4 @@ public class FacturaElectronicaCompraHome extends FedeController implements Seri
         //El registro casí listo para agregar al journal
         return record;
     }
-
-//    private void registerDetailInKardex() {
-//        Kardex kardex = null;
-//        KardexDetail kardexDetail = null;
-//        for (FacturaElectronicaDetail facturaElectronicaDetail1 : this.facturaElectronica.getFacturaElectronicaDetails()) {
-//            kardex = kardexService.findUniqueByNamedQuery("Kardex.findByProductAndOrg", facturaElectronicaDetail1.getProduct(), this.organizationData.getOrganization());
-//            if (kardex == null) {
-//                kardex = kardexService.createInstance();
-//                kardex.setOwner(this.subject);
-//                kardex.setAuthor(this.subject);
-//                kardex.setOrganization(this.organizationData.getOrganization());
-//                kardex.setProduct(facturaElectronicaDetail1.getProduct());
-//                kardex.setName(facturaElectronicaDetail1.getProduct().getName());
-//                kardex.setUnitMinimum(1L);
-//                kardex.setUnitMaximum(1L);
-//            } else {
-//                kardex.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardex.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
-//                kardexDetail = kardexDetailService.findUniqueByNamedQuery("KardexDetail.findByKardexAndFacturaAndOperation", kardex, facturaElectronicaDetail1.getFacturaElectronica(), KardexDetail.OperationType.COMPRA);
-//            }
-//            if (kardexDetail == null) {
-//                kardexDetail = kardexDetailService.createInstance();
-//                kardexDetail.setOwner(this.subject);
-//                kardexDetail.setAuthor(this.subject);
-//                kardexDetail.setFacturaElectronica(facturaElectronicaDetail1.getFacturaElectronica());
-//                if (facturaElectronicaDetail1.getFacturaElectronica().getDocumentType().equals(FacturaElectronica.DocumentType.PRODUCCION)) {
-//                    kardexDetail.setOperationType(KardexDetail.OperationType.PRODUCCION);
-//                } else {
-//                    kardexDetail.setOperationType(KardexDetail.OperationType.COMPRA);
-//                }
-//            } else {
-//                //Disminuir los valores acumulados de cantidad y total para al momento de modificar no se duplique el valor a aumentar por la venta
-//                if (kardexDetail.getQuantity() != null && kardexDetail.getTotalValue() != null) {
-//                    kardex.setQuantity(kardex.getQuantity() - kardexDetail.getQuantity());
-//                    kardex.setFund(kardex.getFund().subtract(kardexDetail.getTotalValue()));
-//                    kardexDetail.setCummulativeQuantity(kardex.getQuantity());
-//                    kardexDetail.setCummulativeTotalValue(kardex.getFund());
-//                }
-//                kardexDetail.setAuthor(this.subject); //Saber quien lo modificó por última vez
-//                kardexDetail.setLastUpdate(Dates.now()); //Saber la hora que modificó por última vez
-//            }
-//            kardexDetail.setCode(facturaElectronicaDetail1.getFacturaElectronica().getCode());
-//            kardexDetail.setUnitValue(facturaElectronicaDetail1.getUnitValue());
-//            kardexDetail.setQuantity(facturaElectronicaDetail1.getQuantity());
-//            kardexDetail.setTotalValue(kardexDetail.getUnitValue().multiply(BigDecimal.valueOf(kardexDetail.getQuantity())));
-//
-//            if (kardex.getId() == null) {
-//                kardexDetail.setCummulativeQuantity(kardexDetail.getQuantity());
-//                kardexDetail.setCummulativeTotalValue(kardexDetail.getTotalValue());
-//            } else {
-//                if (kardex.getQuantity() != null && kardex.getFund() != null) {
-//                    kardexDetail.setCummulativeQuantity(kardex.getQuantity() + kardexDetail.getQuantity());
-//                    kardexDetail.setCummulativeTotalValue(kardex.getFund().add(kardexDetail.getTotalValue()));
-//                }
-//            }
-//
-//            kardex.addKardexDetail(kardexDetail);
-//            kardex.addKardexDetail(kardexDetail);
-//            if (kardex.getCode() == null) {
-//                kardex.setCode(settingHome.getValue("app.inventory.kardex.code.prefix", "TK-P-") + facturaElectronicaDetail1.getProduct().getId());
-//            }
-//            kardex.setQuantity(kardexDetail.getCummulativeQuantity());
-//            kardex.setFund(kardexDetail.getCummulativeTotalValue());
-//            kardexService.save(kardex.getId(), kardex);
-//        }
-//    }
 }

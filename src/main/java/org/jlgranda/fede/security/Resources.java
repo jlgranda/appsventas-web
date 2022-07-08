@@ -20,7 +20,7 @@ import org.jpapi.model.profile.Subject;
 public class Resources {
     
     @Inject
-    LoginSubjectCacheProvider loginSubjectCacheProvider;
+    private LoginSubjectCacheProvider loginSubjectCacheProvider;
     
         
     @Produces

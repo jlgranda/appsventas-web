@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
         <ui:define name="viewname">
             <li>#{i18n['app.fede.inventory']}</li>
             <li>/</li>
-            <li><p:link outcome="/pages/inventory/items.jsf">#{i18n['app.fede.inventory.products']}</p:link></li>
+            <li><p:link outcome="inventory-inbox">#{i18n['app.fede.inventory.products']}</p:link></li>
         </ui:define>
         <ui:define name="content">
             <div class="ui-g">
@@ -42,17 +42,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     <p:toolbar id="topToolBar">
                         <f:facet name="left">
                             <p:outputLabel class="Gray" value="#{i18n['app.fede.inventory.category']}:&nbsp;" for="@next"/>
-                            <p:selectOneMenu class="MarRight10"
-                                             value="#{inventoryRawHome.groupSelected}"
+                            <p:selectOneMenu value="#{inventoryRawHome.groupSelected}"
                                              converter="org.jlgranda.fede.ui.converter.GroupConverter"
-                                             immediate="true"> 
+                                             disabled="#{false}"
+                                             required="#{false}"
+                                             immediate="#{true}">
                                 <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                             </p:selectOneMenu>
                             <p:outputLabel class="Gray" value="#{i18n['common.type']}:&nbsp;" for="@next"/>
-                            <p:selectOneMenu class="MarRight10"
-                                             value="#{inventoryRawHome.productType}"
-                                             immediate="true"
-                                             required="#{false}">
+                            <p:selectOneMenu value="#{inventoryRawHome.productType}"
+                                             disabled="#{false}"
+                                             required="#{false}"
+                                             immediate="#{true}">
                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                 <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                             </p:selectOneMenu>
@@ -140,15 +141,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                                         <p:panel id="panelMoverTo" rendered="#{inventoryRawHome.selectedAction eq 'moveto'}">
                                             <p:selectOneMenu value="#{inventoryRawHome.groupSelected}"
                                                              converter="org.jlgranda.fede.ui.converter.GroupConverter"
-                                                             immediate="true"> 
+                                                             disabled="#{false}"
+                                                             required="#{false}"
+                                                             immediate="#{true}"> 
                                                 <f:selectItems value="#{ui.getGroupTypesAsSelectItem(groupHome.getGroupsTypeCategory())}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <f:ajax render="selectedToolBar"></f:ajax>
                                             </p:selectOneMenu>
                                         </p:panel>
                                         <p:panel id="panelChangeTo" rendered="#{inventoryRawHome.selectedAction eq 'changeto'}">
                                             <p:selectOneMenu value="#{inventoryRawHome.productType}"
-                                                             immediate="true"
-                                                             required="#{true}">
+                                                             disabled="#{false}"
+                                                             required="#{true}"
+                                                             immediate="#{true}">
                                                 <f:selectItem itemLabel = "#{i18n['common.choice']}" itemValue = "" /> 
                                                 <f:selectItems value="#{ui.productTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/>
                                                 <p:ajax update="selectedToolBar"/>

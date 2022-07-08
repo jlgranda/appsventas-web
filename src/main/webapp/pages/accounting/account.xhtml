@@ -17,108 +17,101 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:o="http://omnifaces.org/ui"
-                xmlns:jlgranda="http://jlgranda.com/jsf/facelets"
-                template="/WEB-INF/template.xhtml">
-    <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
-    <ui:define name="head"></ui:define>
-    <ui:define name="params">
-        <f:metadata>
-            <f:viewParam name="accountId" value="#{accountHome.accountId}"/>
-            <f:viewParam name="parentAccountId" value="#{accountHome.parentAccountId}"/>
-            <f:viewAction action="#{accountHome.generateNextCode()}"></f:viewAction>
-        </f:metadata>
-    </ui:define>
-    <ui:define name="viewname">
-        <li>#{i18n['app.fede.accounting']}</li>
-        <li>/</li>
-        <li><p:link outcome="accounts">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
-        <li>/</li>
-        <li><p:link outcome="account">#{accountHome.accountId == null ? i18n['common.newa'].concat(' ').concat(i18n['app.fede.accounting.account']) : i18n['common.edit'].concat(': ')} #{accountHome.account.name}</p:link></li>
-    </ui:define>
-    <ui:define name="content">
-        <o:importConstants type="org.jlgranda.fede.model.accounting.Account"/>
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                <h1>#{i18n['app.fede.accounting.account'].toUpperCase()}</h1>
-                <div class="ui-fluid">
-                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                        <p:outputLabel value="#{i18n['app.fede.accounting.account.parent']}" for="@next"/>
-                        <p:autoComplete id="account" 
-                                        value="#{accountHome.parentAccount}" var="account"
-                                        itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
-                                        completeMethod="#{accountHome.find}"
-                                        converter="org.jlgranda.fede.ui.converter.AccountConverter"
-                                        placeholder="#{i18n['app.fede.accounting.account.find']}"
-                                        emptyMessage="#{i18n['app.setting.list.empty']}"
-                                        converterMessage="#{i18n['property.converter.fail']}"
-                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
-                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                        forceSelection="#{true}" dropdown="#{false}"
-                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                        required="#{true}">
-                            <p:column>
-                                <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
-                            </p:column>
-                            <p:ajax process="@this"/>
-                        </p:autoComplete>
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jlgranda="http://jlgranda.com/jsf/facelets">
+    <ui:composition template="/WEB-INF/template.xhtml">
+        <ui:define name="title">#{i18n['app.name']} - #{i18n['app.fede.accounting']}</ui:define>
+        <ui:define name="head"></ui:define>
+        <ui:define name="params">
+            <f:metadata>
+                <f:viewParam name="accountId" value="#{accountHome.accountId}"/>
+                <f:viewParam name="parentAccountId" value="#{accountHome.parentAccountId}"/>
+                <f:viewAction action="#{accountHome.generateNextCode()}"></f:viewAction>
+            </f:metadata>
+        </ui:define>
+        <ui:define name="viewname">
+            <li>#{i18n['app.fede.accounting']}</li>
+            <li>/</li>
+            <li><p:link outcome="accounts">#{i18n['app.fede.accounting.accounts.plan']}</p:link></li>
+            <li>/</li>
+            <li><p:link outcome="account">#{not empty accountHome.accountId ? i18n['common.edit'] : i18n['common.newa']} #{i18n['app.fede.accounting.account']}
+                    <f:param name="accountId" value="#{accountHome.accountId}" rendered="#{not empty accountHome.accountId}"/>
+                </p:link>
+            </li>
+        </ui:define>
+        <ui:define name="content">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12" rendered="#{request.isUserInRole('ACCOUNTING')}">
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
+                        <h1 class="TexUppercase">
+                            #{accountHome.account.name}
+                        </h1>
                     </div>
-                    <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
-                                    value="#{accountHome.account.code}" required="#{true}"
-                                    inlinehelp="#{messages['app.fede.accounting.account.code.inlinehelp']}"
-                                    execute="@this save" render="code"/>
-                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                        <p:outputLabel value="#{i18n['common.name']}" for="@next"/>
-                        <p:inputText id="nme" 
-                                     value="#{accountHome.accountName}" required="#{true}">
-                            <p:ajax event="keyup" listener="#{accountHome.validateAccountNew(accountHome.accountName)}" update="save-button" />
-                        </p:inputText>
+                    <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding ui-fluid">
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
+                            <p:outputLabel value="#{i18n['app.fede.accounting.account.parent']}" for="@next"/>
+                            <p:autoComplete id="account" 
+                                            value="#{accountHome.parentAccount}" var="account"
+                                            itemLabel="#{account.name.toUpperCase()}" itemValue="#{account}"
+                                            completeMethod="#{accountHome.find}"
+                                            converter="org.jlgranda.fede.ui.converter.AccountConverter"
+                                            placeholder="#{i18n['app.fede.accounting.account.find']}"
+                                            emptyMessage="#{i18n['app.setting.list.empty']}"
+                                            converterMessage="#{i18n['property.converter.fail']}"
+                                            minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                            maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                            forceSelection="#{true}" dropdown="#{false}"
+                                            cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                            required="#{false}">
+                                <p:column>
+                                    <span><strong> #{account.code} </strong> - #{account.name.toUpperCase()}</span>
+                                </p:column>
+                                <p:ajax process="@this"/>
+                            </p:autoComplete>
+                        </div>
+                        <jlgranda:input id="code" name="code" type="text" label="#{i18n['common.code']}"
+                                        value="#{accountHome.account.code}" required="#{true}"
+                                        inlinehelp="#{messages['app.fede.accounting.account.code.inlinehelp']}"
+                                        execute="@this save" render="code"/>
+                        <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12 NoPadding">
+                            <p:outputLabel value="#{i18n['common.name']}" for="@next"/>
+                            <p:inputText id="nme" 
+                                         value="#{accountHome.accountName}" required="#{true}">
+                                <p:ajax event="keyup" listener="#{accountHome.validateAccountNew(accountHome.accountName)}" update="save-button" />
+                            </p:inputText>
+                        </div>
+                        <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
+                                        value="#{accountHome.account.description}" required="#{false}"
+                                        inlinehelp="#{messages['app.fede.accounting.account.description.inlinehelp']}"
+                                        execute="@this save" render="dscrpn"/>
+                        <p:toolbar class="NoBorder"><!--Sección Envío de formulario-->
+                            <p:toolbarGroup class="DispInlFlex">
+                                <p:commandButton id="save-button" 
+                                                 value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn rounded-btn"
+                                                 actionListener="#{accountHome.save()}" action="#{accountHome.getOutcome()}"
+                                                 disabled="#{accountHome.validateAccount}"
+                                                 ajax="#{false}" immediate="#{false}"
+                                                 type="submit"/>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="right" class="DispInlFlexRight">
+                                <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="secondary-button rounded-btn"
+                                                 actionListener="#{generalJournalHome.closeDialog(null)}" action="#{accountHome.getOutcome()}"
+                                                 ajax="#{true}" immediate="#{true}"/>                          
+                            </p:toolbarGroup>
+                        </p:toolbar>
                     </div>
-                    <jlgranda:input id="dscrpn" name="dscrpn" type="textarea" label="#{i18n['common.description']}"
-                                    value="#{accountHome.account.description}" required="#{false}"
-                                    inlinehelp="#{messages['app.fede.accounting.account.description.inlinehelp']}"
-                                    execute="@this save" render="dscrpn"/>
                 </div>
             </div>
-            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
-                <p:toolbar rendered="#{true}"><!--Sección Envío de formulario-->
-                    <f:facet name="left">
-                        <p:commandButton id="save-button" 
-                                         value="#{i18n['common.save']}" icon="pi pi-save" styleClass="danger-btn" style="width: auto !important;"
-                                         actionListener="#{accountHome.save()}" action="#{accountHome.getOutcome()}"
-                                         disabled="#{accountHome.validateAccount}"
-                                         ajax="#{true}" type="submit"/>
-                        <i class="fa fa-bars p-px-2 MarRight10"/>
-                        <p:button value="#{i18n['app.fede.accounting.account.child']}" icon="fa fa-plus-square-o" styleClass="primary-button"  style="width: auto !important;"
-                                  outcome="/pages/accounting/account.jsf?parentAccountId=#{accountHome.account.id}"
-                                  disabled="#{empty accountHome.account.id}"/>
-                    </f:facet>
-                    <f:facet name="right">
-                        <p:commandButton title="#{i18n['common.back']}" icon="pi pi-undo" styleClass="primary-button"
-                                         actionListener="#{accountHome.closeDialog(null)}" action="#{accountHome.getOutcome()}"
-                                         disabled="#{false}" 
-                                         ajax="#{true}" immediate="#{true}"/>
-                    </f:facet>
-                </p:toolbar>
-            </div>
-        </div>
-    </ui:define>
-    <ui:define name="script">
-        <script type="text/javascript">
-            //<![CDATA[
-            $(document).ready(function () {
-                $('input[id*="spinner"]').attr('type', 'number');
-                $(this).select();
-            });
-            $('input[id*="spinner"]').focus(function () {
-                $(this).select();
-            });
-            //]]>
-        </script>
-    </ui:define>
-</ui:composition>
+        </ui:define>
+        <ui:define name="script">
+            <script type="text/javascript">
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

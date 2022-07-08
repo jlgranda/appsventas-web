@@ -36,43 +36,40 @@ and open the template in the editor.
             <h:form enctype="multipart/form-data" >
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-lg-12 ui-md-12">
-                        <div class="ui-g ui-fluid">
-                            <div class="ui-g ui-fluid">
-                                <div class="ui-g ui-lg-12">
-                                    <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['common.ruc']}" 
-                                                    value="#{organizationHome.organization.ruc}" 
-                                                    validator="#{'rucValidator'}" maxlength="13"
-                                                    required="true" 
-                                                    inlinehelp="#{messages['common.ruc.inlinehelp']}"
-                                                    container="none"/>
-                                    <jlgranda:input id="nm" name="name" type="text" label="#{i18n['common.names.full']}"
-                                                    value="#{organizationHome.organization.name}" 
-                                                    required="true" 
-                                                    inlinehelp="#{messages['app.management.organization.name.inlinehelp']}"
-                                                    container="none"/>
-                                    <jlgranda:input id="type" name="type" type="select" label="#{i18n['common.type']}" 
-                                                    value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
-                                                    converter="omnifaces.SelectItemsConverter"
-                                                    required="true" inlinehelp="#{messages['app.management.organization.type.inlinehelp']}" 
-                                                    onchange="return;"
-                                                    container="none"/>
-                                    <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['common.company.initials']}" 
-                                                    value="#{organizationHome.organization.initials}" required="true" 
-                                                    inlinehelp="#{messages['initials.inlinehelp']}"
-                                                    container="none"/>
-                                    <jlgranda:input id="accountingenable" name="accountingenable" type="checkbox" label="#{i18n['bussines.entity.accountingenable']}" 
-                                                    value="#{organizationHome.organization.accountingEnabled}" required="true" 
-                                                    inlinehelp="#{messages['bussines.entity.accountingenable.inlinehelp']}"
-                                                    container="none"/>
-                                    
-                                    <jlgranda:input id="dsc" name="description" type="textarea" label="#{i18n['common.description']}" 
-                                                    value="#{organizationHome.organization.description}" required="#{false}" 
-                                                    inlinehelp="#{messages['common.description.inlinehelp']}"
-                                                    container="none"/>
-                                </div>                           
-                            </div>
-                            <div class="EmptyBox10"></div>
+                        <div class="ui-g-12" style="padding: 1rem">
+                            <jlgranda:input id="ruc" name="ruc" type="text" label="#{i18n['common.ruc']}" 
+                                            value="#{organizationHome.organization.ruc}" 
+                                            validator="#{'rucValidator'}" maxlength="13"
+                                            required="true" 
+                                            inlinehelp="#{messages['common.ruc.inlinehelp']}"
+                                            container="none"/>
+                            <jlgranda:input id="nm" name="name" type="text" label="#{i18n['common.names.full']}"
+                                            value="#{organizationHome.organization.name}" 
+                                            required="true" 
+                                            inlinehelp="#{messages['app.management.organization.name.inlinehelp']}"
+                                            container="none"/>
+                            <jlgranda:input id="type" name="type" type="select" label="#{i18n['common.type']}" 
+                                            value="#{organizationHome.organization.organizationType}" values="#{ui.organizationTypesAsSelectItem}" 
+                                            converter="omnifaces.SelectItemsConverter"
+                                            required="true" inlinehelp="#{messages['app.management.organization.type.inlinehelp']}" 
+                                            onchange="return;"
+                                            container="none"/>
+                            <jlgranda:input id="intls" name="intls" type="text" label="#{i18n['common.company.initials']}" 
+                                            value="#{organizationHome.organization.initials}" required="true" 
+                                            inlinehelp="#{messages['initials.inlinehelp']}"
+                                            container="none"/>
 
+                            <jlgranda:input id="accountingenable" name="accountingenable" type="checkbox" label="#{i18n['bussines.entity.accountingenable']}" 
+                                            value="#{organizationHome.organization.accountingEnabled}" required="true" 
+                                            inlinehelp="#{messages['bussines.entity.accountingenable.inlinehelp']}"
+                                            container="none"/>
+
+                            <jlgranda:input id="dsc" name="description" type="textarea" label="#{i18n['common.description']}" 
+                                            value="#{organizationHome.organization.description}" required="#{false}" 
+                                            inlinehelp="#{messages['common.description.inlinehelp']}"
+                                            container="none"/>
+                        </div>
+                        <div class="ui-g-12 ui-lg-12 ui-md-12 ui-sm-12">
                             <p:toolbar>
                                 <f:facet name="left">
 
@@ -96,7 +93,7 @@ and open the template in the editor.
                                     <p:commandButton ajax="#{false}" action="#{organizationHome.getOutcome()}" disabled="false" immediate="true"
                                                      icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"/>
 
-<!--                                    <p:menuButton value="#{i18n['common.options']}">
+    <!--                                    <p:menuButton value="#{i18n['common.options']}">
                                         <p:menuitem value="Save" icon="fa fa-save" />
                                         <p:menuitem value="Update" icon="fa fa-upload" />
                                         <p:menuitem value="Delete" icon="fa fa-trash" />
@@ -110,7 +107,6 @@ and open the template in the editor.
                 </div>
             </h:form>
             <!--/.panel-body -->
-
         </ui:define>
         <ui:define name="script">
 

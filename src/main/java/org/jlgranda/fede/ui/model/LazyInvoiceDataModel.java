@@ -255,7 +255,6 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
         
         //Aplicar filtros a resultados
         if (!filters.isEmpty()){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>< aplicar filtros de UX " + filters);
             List<Invoice> invoices = qData.getResult().stream()
                     .skip(first)
                     .filter(o -> filter(FacesContext.getCurrentInstance(), filters.values(), o))
@@ -274,12 +273,12 @@ public class LazyInvoiceDataModel extends LazyDataModel<Invoice> implements Seri
 
         for (FilterMeta filter : filterBy) {
             FilterConstraint constraint = filter.getConstraint();
-            Object filterValue = filter.getFilterValue();
+            Object filterValueLocal = filter.getFilterValue();
 //            try {
 //                Object columnValue = String.valueOf(o.getClass().getField(filter.getField()).get(o));
                 Invoice invoice = (Invoice) o;
                 Object columnValue = invoice.getSummary();
-                matching = constraint.isMatching(context, columnValue, filterValue, LocaleUtils.getCurrentLocale());
+                matching = constraint.isMatching(context, columnValue, filterValueLocal, LocaleUtils.getCurrentLocale());
 //            } catch (ReflectiveOperationException e) {
 //                matching = false;
 //            }

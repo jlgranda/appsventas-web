@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -128,12 +127,6 @@ public class OrganizationHome extends FedeController implements Serializable {
     }
     
     public void save(){
-        
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println("id: " + getOrganization().getId());
-        System.out.println("name: " + getOrganization().getName());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        
         if (!getOrganization().isPersistent()){
             getOrganization().setAuthor(subject);
             getOrganization().setOwner(subject);

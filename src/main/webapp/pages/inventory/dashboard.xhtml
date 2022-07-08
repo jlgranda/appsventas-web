@@ -53,8 +53,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <div class="SeparatorFull"></div>
                             <div class="Card HeiAutoOnMobile">
                                 <label class="Gray">#{i18n['common.type']}&nbsp;</label>
-                                <p:selectOneMenu value="#{inventoryHome.mode}" effect="fade" class="input-sm"
-                                                 required="#{false}" immediate="true"> 
+                                <p:selectOneMenu value="#{inventoryHome.mode}"
+                                                 disabled="#{false}"
+                                                 required="#{false}"
+                                                 immediate="#{true}">
                                     <f:selectItems value="#{inventoryHome.modesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
                                 </p:selectOneMenu>
                                 <label class="Gray">#{i18n['common.from']}&nbsp;</label>
@@ -70,7 +72,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <h3 class="CardTopic">#{i18n['app.fede.smart.sales.products.history']}</h3>
                             <div class="Container100 Responsive100">
                                 <p:selectManyCheckbox id="grid2" value="#{inventoryHome.selectedBussinesEntities}" layout="responsive" columns="3"
-                                                       converter="org.jlgranda.fede.ui.converter.ProductConverter" >
+                                                      converter="org.jlgranda.fede.ui.converter.ProductConverter" >
                                     <f:selectItems value="#{inventoryHome.findTop()}" var="product" itemLabel="#{product.name}" itemValue="#{product}"/>
                                     <p:ajax oncomplete="form.submit()"></p:ajax>
                                 </p:selectManyCheckbox>
@@ -91,7 +93,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 location.reload(); // refresh page    
 
             }
-            
+
             function skinChart() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
@@ -116,7 +118,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                     }
                 }
             }
-            
+
             function skinBarChart() {
                 this.cfg.shadow = false;
                 this.cfg.title = '';
@@ -145,7 +147,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                 }
             }
             //]]>
-            
+
         </script>
     </ui:define>
 

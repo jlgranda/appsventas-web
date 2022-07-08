@@ -33,6 +33,7 @@ limitations under the License.
     <c:set var="mode" value="#{not empty mode ? mode : 'write'}" />   
     <c:set var="decimalSeparator" value="#{not empty decimalSeparator ? decimalSeparator : '.'}" />   
     <c:set var="decimalPlaces" value="#{not empty decimalPlaces ? decimalPlaces : '3'}" />   
+    <c:set var="minValue" value="#{not empty minValue ? minValue : '0.00'}" />   
     <c:set var="thousandSeparator" value="#{not empty thousandSeparator ? thousandSeparator : '3'}" />   
     <c:set var="requiredMessage" value="#{not empty requiredMessage ? requiredMessage : 'Ingrese un valor'}" />   
     <c:set var="listener" value="#{not empty listener ? listener : ''}" />   
@@ -52,7 +53,6 @@ limitations under the License.
 
         <c:if test="#{mode == 'read'}">
             <div class="form-group">
-                <!--<h:outputText value="#{label}" />-->
                 <p:outputLabel for="#{name}" value="Message:" />   
                 #{value}
             </div>
@@ -60,15 +60,10 @@ limitations under the License.
         <c:if test="#{mode == 'write'}">
             <c:if test="#{container != 'default'}">
 
-                <!--<h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field ui-g ui-g-12 ui-md-12 WidAuto AlignItemsCenter NoPadding">-->
-                <h:panelGroup id="panel-group-#{id}" rendered="#{rendered}"  styleClass="p-field ui-g ui-g-12 ui-md-12">
-                    <c:if test="#{placeholder == 'false' and rendered == 'true'}">
-                        <!--<h:panelGroup id="panel-group-label-#{id}" rendered="#{rendered}" styleClass="ui-g ui-g-12 ui-md-12">-->
+                <p:panelGrid id="panel-group-#{id}" rendered="#{rendered}" columns="1" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                    <c:if test="#{ placeholder == 'false' and rendered == 'true' and not (type == 'java.lang.Boolean' or type == 'checkbox') }">
                         <p:outputLabel for="#{name}" value="#{label}" />
-                        <!--</h:panelGroup>-->
-                        <!--<label>#{label}</label>-->
                     </c:if>
-                    <!--<h:panelGroup id="panel-group-#{id}" layout="block" class="form-group" rendered="#{rendered}">-->
                     <c:choose>
                         <c:when test="#{type == 'text' or type == 'number' }">
                             <p:inputText id="#{name}" value="#{value}" placeholder="#{placeholder == 'true' ? label :  ''}" 
@@ -90,7 +85,8 @@ limitations under the License.
                                            class="#{class}" title="#{cache}" style="#{style}"
                                            decimalSeparator="#{decimalSeparator}" 
                                            thousandSeparator="#{thousandSeparator}" 
-                                           decimalPlaces="#{decimalPlaces}">
+                                           decimalPlaces="#{decimalPlaces}"
+                                           minValue="#{minValue}">
                                 <c:if test="#{not empty validator}">
                                     <f:validator validatorId="#{validator}"/>
                                 </c:if>
@@ -157,7 +153,7 @@ limitations under the License.
                                         maxdate="#{maxdate}" mindate="#{mindate}"
                                         pattern="#{settingHome.getValue('fede.date.hour.pattern', 'dd-MM-yyyy HH:mm:ss')}"
                                         class="#{class}"
-                                        showOn="button">
+                                        showOn="#{showOn}">
                                 <!--<f:validator validatorId="#{validator}"/>-->        
                                 <c:if test="#{not empty update }">
                                     <p:ajax event="dateSelect" update="#{update}" partialSubmit="#{true}"/>
@@ -165,8 +161,7 @@ limitations under the License.
                             </p:calendar>  
                         </c:when>
                         <c:when test="#{type == 'java.lang.Boolean' or type == 'checkbox'}">
-                            <br />
-                            <p:selectBooleanCheckbox value="#{value}" id="#{name}" required="#{required}" label="#{label}">
+                            <p:selectBooleanCheckbox value="#{value}" id="#{name}" required="#{required}" itemLabel="#{label}">
                                 <c:if test="#{not empty listener and not empty update }">
                                     <p:ajax listener="#{listener}" update="#{update}" partialSubmit="#{true}" process="@this"/>
                                 </c:if>
@@ -256,8 +251,7 @@ limitations under the License.
                     <c:if test="#{type != 'select'}">
                         <p:tooltip  for="#{name}" showEvent="focus" hideEvent="blur" />
                     </c:if>
-                </h:panelGroup>
-                <!--</div>-->
+                </p:panelGrid>
             </c:if>
             <c:if test="#{type == 'calendar'}">
                 <script>

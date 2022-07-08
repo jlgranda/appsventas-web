@@ -84,7 +84,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                             <f:facet name="right">
                                 <label class="Gray">#{i18n['common.type']}&nbsp;</label>
                                 <p:selectOneMenu value="#{invoiceHome.documentType}"
-                                                 required="#{false}" immediate="true"> 
+                                                 disabled="#{false}"
+                                             required="#{false}"
+                                             immediate="#{true}"> 
                                     <f:selectItem itemLabel = "#{messages['common.choice']}" itemValue = "" /> 
                                     <f:selectItems value="#{ui.documentTypesAsSelectItem}" var="v" itemLabel="#{v.label}" itemValue="#{v}"/> 
                                     <p:ajax event="change" oncomplete="form.submit();"/>
