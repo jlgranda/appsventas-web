@@ -52,6 +52,7 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author jlgranda
@@ -59,8 +60,9 @@ import org.slf4j.LoggerFactory;
 @Named(value = "catastrosHome")
 @ViewScoped
 public class SRICatastrosHome extends FedeController implements Serializable {
+
     private static final long serialVersionUID = -1007161141552849702L;
-    
+
     private String directorioZip = "";
 
     private boolean handledFileUpload;
@@ -72,7 +74,7 @@ public class SRICatastrosHome extends FedeController implements Serializable {
 
     @EJB
     private SRICatastrosRucService sriCatastrosRucService; // se llama el servicio de certificacion
-    
+
     private String tipoSRICatastro;
 
     @Inject
@@ -125,7 +127,8 @@ public class SRICatastrosHome extends FedeController implements Serializable {
 
     @PostConstruct
     public void init() {
-        this.directorioZip = settingHome.getValue("app.sri.directorio.catastros", "/tmp/");
+//        this.directorioZip = settingHome.getValue("app.sri.directorio.catastros", "/tmp/");
+        this.directorioZip = settingHome.getValue("app.sri.directorio.catastros", "D:\\UNZIP\\");
         tipoSRICatastro = "RUC";
     }
 
@@ -136,7 +139,7 @@ public class SRICatastrosHome extends FedeController implements Serializable {
     public void setTipoSRICatastro(String tipoSRICatastro) {
         this.tipoSRICatastro = tipoSRICatastro;
     }
-    
+
     public boolean isSugerenciasEncontradas() {
         return sugerenciasEncontradas;
     }
@@ -145,11 +148,12 @@ public class SRICatastrosHome extends FedeController implements Serializable {
         this.sugerenciasEncontradas = sugerenciasEncontradas;
     }
 
-    public void guardarCatastro () throws IOException, ParseException {
-        if ("RUC".equalsIgnoreCase(tipoSRICatastro)){
+    public void guardarCatastro() throws IOException, ParseException {
+        if ("RUC".equalsIgnoreCase(tipoSRICatastro)) {
             guardarCatastroRUC();
         }
     }
+
     private void guardarCatastroRUC() throws IOException, ParseException {
         if (getNomFile() == null) {
             this.addWarningMessage("Ingrese archivo compromido de catastros", "");
@@ -179,18 +183,16 @@ public class SRICatastrosHome extends FedeController implements Serializable {
                                 }
                             }
                             zis.closeEntry();
-                            
+
                             catastros = obtenerListadoInstanciasSRICatastroRuc(directorioZip + salida.getName());
                         }
                     } catch (FileNotFoundException e) {
                     } catch (IOException e) {
                     }
                 }
-                
-                
+
                 //Guardar la lista de instancias
-                sriCatastrosRucService.bulkSave(catastros);
-                
+//                sriCatastrosRucService.bulkSave(catastros);
                 this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se importó el catastro de RUC. Cantidad de registros " + catastros.size());
             } else {
                 System.out.println("No se encontró el directorio..");
@@ -214,10 +216,10 @@ public class SRICatastrosHome extends FedeController implements Serializable {
                     objCatastros.setNombreComercia(parts[2]);
                     objCatastros.setEstadoContribuyente(parts[3]);
                     objCatastros.setClaseContribuyente(parts[4]);
-                    objCatastros.setFechaInicioActividades(Dates.toDate(parts[5], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
-                    objCatastros.setFechaActualizacion(Dates.toDate(parts[6], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
-                    objCatastros.setFechaSuspencionDefinitiva(Dates.toDate(parts[7], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
-                    objCatastros.setFecharReinicioActividades(Dates.toDate(parts[8], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
+                    objCatastros.setFechaInicioActividades(Dates.toDate(parts[5], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setFechaActualizacion(Dates.toDate(parts[6], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setFechaSuspencionDefinitiva(Dates.toDate(parts[7], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setFecharReinicioActividades(Dates.toDate(parts[8], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
                     objCatastros.setObligado(parts[9]);
                     objCatastros.setTipoContribuyente(parts[10]);
                     objCatastros.setNumeroEstablecimiento(parts[11]);
@@ -240,6 +242,19 @@ public class SRICatastrosHome extends FedeController implements Serializable {
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public static Date ParseFecha(String fecha) {
+        Date fechaDate = null;
+        if (!fecha.equals("")) {
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                fechaDate = formato.parse(fecha);
+            } catch (java.text.ParseException ex) {
+                java.util.logging.Logger.getLogger(SRICatastrosHome.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return fechaDate;
     }
 
     public void handleFileUpload(FileUploadEvent event) {

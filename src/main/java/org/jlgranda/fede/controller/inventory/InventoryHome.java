@@ -49,6 +49,7 @@ import org.jlgranda.fede.model.sales.Kardex;
 import org.jlgranda.fede.model.sales.KardexType;
 import org.jlgranda.fede.model.sales.Product;
 import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.model.sales.SRICatastrosType;
 import org.jlgranda.fede.ui.model.LazyProductDataModel;
 import org.jlgranda.fede.ui.util.UI;
 import org.jpapi.model.BussinesEntity;
@@ -99,6 +100,8 @@ public class InventoryHome extends FedeController implements Serializable {
 
     private ProductType productType;
 
+    private SRICatastrosType sriCatastrosType;
+
     private List<Product> lastProducts = new ArrayList<>();
 
     private List<Product> selectedProducts = new ArrayList<>();
@@ -143,6 +146,7 @@ public class InventoryHome extends FedeController implements Serializable {
         setProduct(productService.createInstance());
         getProduct().setProductType(ProductType.PRODUCT);
         setProductType(ProductType.PRODUCT);
+        setSriCatastrosType(SRICatastrosType.RUC);
         setMode("app.fede.chart.gap.total");
 
         setOutcome("inventory-inbox");
@@ -156,6 +160,15 @@ public class InventoryHome extends FedeController implements Serializable {
     public void setProductId(Long productId) {
         this.productId = productId;
     }
+
+    public SRICatastrosType getSriCatastrosType() {
+        return sriCatastrosType;
+    }
+
+    public void setSriCatastrosType(SRICatastrosType sriCatastrosType) {
+        this.sriCatastrosType = sriCatastrosType;
+    }   
+    
 
     public ProductType getProductType() {
         return productType;

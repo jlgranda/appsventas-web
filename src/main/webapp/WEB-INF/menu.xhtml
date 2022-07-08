@@ -45,6 +45,7 @@
                             <p:menuitem id="om_subjects" value="#{i18n['app.management.persons']}" icon="fa fa-fw fa-user" outcome="subjects" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')  or request.isUserInRole('ACCOUNTING')  or request.isUserInRole('CHECKER')}"/>
                             <p:menuitem id="om_reports" value="#{i18n['common.reports']}" icon="fa fa-fw fa-folder" outcome="reports" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
                             <p:menuitem id="om_settings" value="#{i18n['common.setting']}" icon="fa fa-fw fa-cog" outcome="setting" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
+                            <p:menuitem id="om_settings1" value="#{i18n['catastro.ruc.name']}" icon="fa fa-fw fa-usd" outcome="/pages/admin/sri_catastros/sri_catastros.jsf" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('MANAGER')}"/>
                         </p:submenu>
                         <p:submenu id="om_admin_inventory" label="#{i18n['app.fede.inventory']}" icon="fa fa-fw fa-pencil" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}">
                             <p:menuitem id="om_groups" value="#{i18n['app.fede.inventory.categories']}" icon="fa fa-fw fa-object-group" outcome="/pages/inventory/group_items.jsf?groupType=CATEGORY" rendered="#{request.isUserInRole('ADMIN') or request.isUserInRole('ACCOUNTING')}"/>
