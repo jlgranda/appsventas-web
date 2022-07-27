@@ -43,6 +43,7 @@ import org.jlgranda.fede.model.sales.KardexDetail;
 import org.jlgranda.fede.model.sales.Product;
 import org.jpapi.model.Organization;
 import org.jlgranda.fede.model.sales.ProductType;
+import org.jlgranda.fede.model.sales.SRICatastrosType;
 import org.jlgranda.fede.model.talentohumano.JobRole;
 import org.jpapi.model.Group;
 import org.jpapi.model.Setting;
@@ -608,4 +609,17 @@ public class UI {
         return Dates.now();
     }
 
+    public SRICatastrosType[] getSRICatastrosTypes() {
+        return SRICatastrosType.values();
+    }
+    
+    public List<SelectItem> getCatastroTypesAsSelectItem() {
+        List<SelectItem> items = new ArrayList<>();
+        SelectItem item = null;
+        for (SRICatastrosType t : getSRICatastrosTypes()) {
+            item = new SelectItem(t, I18nUtil.getMessages(t.name()));
+            items.add(item);
+        }
+        return items;
+    }
 }

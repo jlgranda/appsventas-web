@@ -379,6 +379,11 @@
             <to-view-id>/pages/production/aggregation_items.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>sricatastros</from-outcome>
+            <to-view-id>/pages/admin/sri_catastros/sri_catastros.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
     
 </faces-config>

@@ -16,22 +16,18 @@
  */
 package org.jlgranda.fede.controller.admin.sri;
 
+import com.jlgranda.fede.ejb.sri.SRICatastrosEmpresaFantasmaService;
+import com.jlgranda.fede.ejb.sri.SRICatastrosRimpeService;
 import com.jlgranda.fede.ejb.sri.SRICatastrosRucService;
 import org.jlgranda.fede.controller.FedeController;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -41,17 +37,32 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.model.accounting.Record;
 import org.jlgranda.fede.model.sri.SRICatastrosRuc;
+import org.jlgranda.fede.model.sri.SRICatastrosRimpe;
+import org.jlgranda.fede.model.sri.SRICatastrosEmpresaFantasma;
 import org.jpapi.model.Group;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import org.jpapi.util.Strings;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.poi.ss.usermodel.Row;
+import org.jlgranda.fede.model.sales.SRICatastrosType;
+import org.jpapi.util.Strings;
+
 /**
  *
  * @author jlgranda
@@ -59,47 +70,32 @@ import org.slf4j.LoggerFactory;
 @Named(value = "catastrosHome")
 @ViewScoped
 public class SRICatastrosHome extends FedeController implements Serializable {
+
     private static final long serialVersionUID = -1007161141552849702L;
-    
+
     private String directorioZip = "";
 
     private boolean handledFileUpload;
 
-    private byte[] fileByte;
-    private File file;
-    private String nomfile;
+    private String nombreDeArchivo;
     Logger logger = LoggerFactory.getLogger(SRICatastrosHome.class);
 
     @EJB
     private SRICatastrosRucService sriCatastrosRucService; // se llama el servicio de certificacion
-    
-    private String tipoSRICatastro;
+    private SRICatastrosRimpeService sriCatastrosRimpeService; // se llama el servicio de certificacion
+    private SRICatastrosEmpresaFantasmaService sriCatastrosEmpreFantasmaService; // se llama el servicio de certificacion
+
+    private SRICatastrosType tipoSRICatastro;
 
     @Inject
     private SettingHome settingHome;
 
-    public String getNomFile() {
-        return nomfile;
+    public String getNombreDeArchivo() {
+        return nombreDeArchivo;
     }
 
-    public void setNomFile(String file) {
-        this.nomfile = file;
-    }
-
-    public byte[] getFileByte() {
-        return fileByte;
-    }
-
-    public void setFileByte(byte[] file) {
-        this.fileByte = file;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
+    public void setNombreDeArchivo(String nombreDeArchivo) {
+        this.nombreDeArchivo = nombreDeArchivo;
     }
 
     public boolean isHandledFileUpload() {
@@ -126,17 +122,18 @@ public class SRICatastrosHome extends FedeController implements Serializable {
     @PostConstruct
     public void init() {
         this.directorioZip = settingHome.getValue("app.sri.directorio.catastros", "/tmp/");
-        tipoSRICatastro = "RUC";
+        tipoSRICatastro = SRICatastrosType.RUC;
+        setOutcome("sricatastros");
     }
 
-    public String getTipoSRICatastro() {
+    public SRICatastrosType getTipoSRICatastro() {
         return tipoSRICatastro;
     }
 
-    public void setTipoSRICatastro(String tipoSRICatastro) {
+    public void setTipoSRICatastro(SRICatastrosType tipoSRICatastro) {
         this.tipoSRICatastro = tipoSRICatastro;
     }
-    
+
     public boolean isSugerenciasEncontradas() {
         return sugerenciasEncontradas;
     }
@@ -145,14 +142,28 @@ public class SRICatastrosHome extends FedeController implements Serializable {
         this.sugerenciasEncontradas = sugerenciasEncontradas;
     }
 
-    public void guardarCatastro () throws IOException, ParseException {
-        if ("RUC".equalsIgnoreCase(tipoSRICatastro)){
-            guardarCatastroRUC();
+    public void guardarCatastro() throws IOException, ParseException {
+        if (null == tipoSRICatastro) {
+            this.addWarningMessage("Seleccione algun tipo de catastro", "");
+        } else switch (tipoSRICatastro) {
+            case RUC:
+                guardarCatastroRUC();
+                break;
+            case RIMPE:
+                guardarCatastroRIMPE();
+                break;        
+            case EMPRESA_FANTASMA:
+                guardarCatastroEmpreFantasma();
+                break;
+            default:
+                this.addWarningMessage("Seleccione algun tipo de catastro", "");
+                break;
         }
     }
+
     private void guardarCatastroRUC() throws IOException, ParseException {
-        if (getNomFile() == null) {
-            this.addWarningMessage("Ingrese archivo compromido de catastros", "");
+        if (Strings.isNullOrEmpty(getNombreDeArchivo())) {
+            this.addWarningMessage("Ingrese archivo compromido de CATASTROS RUC", "");
         } else {
 
             List<SRICatastrosRuc> catastros = new ArrayList<>();
@@ -179,21 +190,96 @@ public class SRICatastrosHome extends FedeController implements Serializable {
                                 }
                             }
                             zis.closeEntry();
-                            
+
                             catastros = obtenerListadoInstanciasSRICatastroRuc(directorioZip + salida.getName());
                         }
                     } catch (FileNotFoundException e) {
                     } catch (IOException e) {
                     }
                 }
-                
-                
+
                 //Guardar la lista de instancias
                 sriCatastrosRucService.bulkSave(catastros);
-                
                 this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se importó el catastro de RUC. Cantidad de registros " + catastros.size());
             } else {
                 System.out.println("No se encontró el directorio..");
+            }
+        }
+    }
+
+    private void guardarCatastroRIMPE() throws IOException {
+
+        if (Strings.isNullOrEmpty(getNombreDeArchivo())) {
+            this.addWarningMessage("Ingrese archivo excel de CATASTROS RIMPE", "");
+        } else {
+
+            List<SRICatastrosRimpe> catastros = new ArrayList<>();
+//        try {
+            FileInputStream file = new FileInputStream(new File(directorioZip + getNombreDeArchivo()));
+            XSSFWorkbook wb = new XSSFWorkbook(file);
+            XSSFSheet sheet = wb.getSheetAt(0);
+            int numFilas = sheet.getLastRowNum();
+            for (int i = 2; i <= numFilas; i++) {
+                Row fila = sheet.getRow(i);
+                SRICatastrosRimpe objCatastrosRimpe = sriCatastrosRimpeService.createInstance();
+                objCatastrosRimpe.setNumeroRuc(fila.getCell(0).getStringCellValue());
+                objCatastrosRimpe.setRazonSocial(fila.getCell(1).getStringCellValue());
+                objCatastrosRimpe.setZona(fila.getCell(2).getStringCellValue());
+                objCatastrosRimpe.setRegimen(fila.getCell(3).getStringCellValue());
+                objCatastrosRimpe.setNegocioPopular(fila.getCell(4).getStringCellValue());
+                catastros.add(objCatastrosRimpe);
+            }
+            file.close();
+            //Guardar la lista de instancias
+            sriCatastrosRimpeService.bulkSave(catastros);
+            this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se importó el catastro de RIMPE. Cantidad de registros " + catastros.size());
+//        } catch (Exception e) {
+//        }
+        }
+    }
+
+    private void guardarCatastroEmpreFantasma() throws IOException, ParseException {
+
+        if (Strings.isNullOrEmpty(getNombreDeArchivo())) {
+            this.addWarningMessage("Ingrese archivo excel de CATASTROS EMPRESAS FANTASMAS", "");
+        } else {
+            List<SRICatastrosEmpresaFantasma> catastros = new ArrayList<>();
+            try {
+                FileInputStream file = new FileInputStream(new File(directorioZip + getNombreDeArchivo()));
+                XSSFWorkbook wb = new XSSFWorkbook(file);
+                XSSFSheet sheet = wb.getSheetAt(0);
+                int numFilas = sheet.getLastRowNum();
+                for (int i = 4; i <= numFilas; i++) {
+                    Row fila = sheet.getRow(i);
+                    SRICatastrosEmpresaFantasma objCatastros = sriCatastrosEmpreFantasmaService.createInstance();
+                    objCatastros.setNumero(fila.getCell(0).getStringCellValue());
+                    objCatastros.setNumero(fila.getCell(1).getStringCellValue());
+                    objCatastros.setRazonSocial(fila.getCell(2).getStringCellValue());
+                    objCatastros.setTipoContribuyente(fila.getCell(3).getStringCellValue());
+                    objCatastros.setZona(fila.getCell(4).getStringCellValue());
+                    objCatastros.setProvincia(fila.getCell(5).getStringCellValue());
+                    objCatastros.setOficio(fila.getCell(6).getStringCellValue());
+                    objCatastros.setFechaNotificacion1(Dates.toDate(fila.getCell(7).getStringCellValue(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setNroResolucion(fila.getCell(8).getStringCellValue());
+                    objCatastros.setFechaNotificacion2(Dates.toDate(fila.getCell(9).getStringCellValue(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setEstadoRuc(fila.getCell(10).getStringCellValue());
+                    objCatastros.setFechaInicioCalificacion(Dates.toDate(fila.getCell(11).getStringCellValue(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setFechaFinCalificacion(Dates.toDate(fila.getCell(12).getStringCellValue(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setResolucion(fila.getCell(13).getStringCellValue());
+                    objCatastros.setFechaNotificacionResolucion(Dates.toDate(fila.getCell(14).getStringCellValue(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setNumOficioReactivacion(fila.getCell(15).getStringCellValue());
+                    objCatastros.setFechaNotificacion3(Dates.toDate(fila.getCell(16).getStringCellValue(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setEstado(fila.getCell(17).getStringCellValue());
+                    objCatastros.setFechaReactivacion(Dates.toDate(fila.getCell(18).getStringCellValue(), settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setInstanciaInpugna(fila.getCell(19).getStringCellValue());
+                    objCatastros.setEstadoInpugna(fila.getCell(20).getStringCellValue());
+                    catastros.add(objCatastros);
+                }
+                file.close();
+                //Guardar la lista de instancias
+                sriCatastrosEmpreFantasmaService.bulkSave(catastros);
+                this.addSuccessMessage(I18nUtil.getMessages("action.sucessfully"), "Se importó el catastro de EMPRESAS FANTASMAS. Cantidad de registros " + catastros.size());
+            } catch (Exception e) {
             }
         }
     }
@@ -206,7 +292,7 @@ public class SRICatastrosHome extends FedeController implements Serializable {
         try ( BufferedReader b = new BufferedReader(f)) {
             cont = 0;
             while ((cadena = b.readLine()) != null) {
-                if (cont > 0 && cont < 1000) {
+                if (cont > 0) {
                     String[] parts = cadena.split("\t", -1);
                     SRICatastrosRuc objCatastros = sriCatastrosRucService.createInstance();
                     objCatastros.setNumeroRuc(parts[0]);
@@ -214,10 +300,10 @@ public class SRICatastrosHome extends FedeController implements Serializable {
                     objCatastros.setNombreComercia(parts[2]);
                     objCatastros.setEstadoContribuyente(parts[3]);
                     objCatastros.setClaseContribuyente(parts[4]);
-                    objCatastros.setFechaInicioActividades(Dates.toDate(parts[5], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
-                    objCatastros.setFechaActualizacion(Dates.toDate(parts[6], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
-                    objCatastros.setFechaSuspencionDefinitiva(Dates.toDate(parts[7], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
-                    objCatastros.setFecharReinicioActividades(Dates.toDate(parts[8], settingHome.getValue("app.sri.directorio.catastros", "dd/MM/yyyy")));
+                    objCatastros.setFechaInicioActividades(Dates.toDate(parts[5], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setFechaActualizacion(Dates.toDate(parts[6], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setFechaSuspencionDefinitiva(Dates.toDate(parts[7], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
+                    objCatastros.setFecharReinicioActividades(Dates.toDate(parts[8], settingHome.getValue("fede.name.pattern", "dd/MM/yyyy")));
                     objCatastros.setObligado(parts[9]);
                     objCatastros.setTipoContribuyente(parts[10]);
                     objCatastros.setNumeroEstablecimiento(parts[11]);
@@ -242,8 +328,26 @@ public class SRICatastrosHome extends FedeController implements Serializable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public static Date ParseFecha(String fecha) {
+        Date fechaDate = null;
+        if (!fecha.equals("")) {
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                fechaDate = formato.parse(fecha);
+            } catch (java.text.ParseException ex) {
+                java.util.logging.Logger.getLogger(SRICatastrosHome.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return fechaDate;
+    }
+
     public void handleFileUpload(FileUploadEvent event) {
-        setNomFile(event.getFile().getFileName());
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println("handleFileUpload ");
+        System.out.println("event.getFile().getFileName(): " + event.getFile().getFileName());
+        
+        setNombreDeArchivo(event.getFile().getFileName());
         setHandledFileUpload(true);
         try {
             File carpetaRaiz = new File(directorioZip);
@@ -254,11 +358,13 @@ public class SRICatastrosHome extends FedeController implements Serializable {
                 archivoTemporal.deleteOnExit();
             }
 
-            setFileByte(IOUtils.toByteArray(event.getFile().getInputStream()));
+            byte[] fileByte = IOUtils.toByteArray(event.getFile().getInputStream());
 
-            try ( FileOutputStream fos = new FileOutputStream(directorioZip + getNomFile())) {
-                fos.write(getFileByte());
+            try ( FileOutputStream fos = new FileOutputStream(directorioZip + getNombreDeArchivo())) {
+                fos.write(fileByte);
             }
+            
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Cargado en: " + directorioZip + getNombreDeArchivo());
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(SRICatastrosHome.class.getName()).log(Level.SEVERE, null, ex);
         }
