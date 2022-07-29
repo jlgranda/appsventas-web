@@ -30,6 +30,7 @@ public class Constantes {
     public static String ESTADO_ELIMINADO = "ELIMINADO";
     public static String SEPARADOR = "_";
     public static String MODULE_PROVIDERS = "proveedores";
+    public static String MODULE_EMPLOYEES = "empleados";
     public static String MODULE_SALES = "ventas";
     public static String ACCOUNT_DAY = "caja dia";
 }

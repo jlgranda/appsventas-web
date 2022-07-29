@@ -18,30 +18,42 @@ package org.jlgranda.fede.controller.talentohumano;
 
 import com.jlgranda.fede.SettingNames;
 import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
+import com.jlgranda.fede.ejb.reportes.ReporteService;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import net.sf.jasperreports.engine.JRException;
+import org.jlgranda.fede.Constantes;
 import org.jlgranda.fede.controller.FedeController;
 import org.jlgranda.fede.controller.OrganizationData;
 import org.jlgranda.fede.controller.SettingHome;
 import org.jlgranda.fede.controller.admin.SubjectAdminHome;
-import org.jlgranda.fede.model.accounting.Record;
+import org.jlgranda.fede.controller.compras.ProveedorHome;
 import org.jlgranda.fede.model.talentohumano.Employee;
 import org.jlgranda.fede.ui.model.LazyEmployeeDataModel;
+import org.jlgranda.reportes.ReportUtil;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.I18nUtil;
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jlgranda.fede.model.reportes.Reporte;
+import org.jlgranda.fede.model.accounting.Record;
+import org.jpapi.model.BussinesEntity;
 
 /**
  *
@@ -77,6 +89,13 @@ public class EmployeeHome extends FedeController implements Serializable {
     
     @Inject
     private OrganizationData organizationData;
+    
+    private List<Reporte> reports;
+    private Reporte selectedReport;
+    
+    @EJB
+    private ReporteService reporteService;
+    
 
     @PostConstruct
     private void init() {
@@ -91,6 +110,8 @@ public class EmployeeHome extends FedeController implements Serializable {
         setStart(Dates.minimumDate(Dates.addDays(getEnd(), -1 * range)));
         
         setEmployee(employeeService.createInstance());
+        setReports(reporteService.findByModuloAndOrganization(Constantes.MODULE_PROVIDERS, organizationData.getOrganization()));
+        initializeActions();
         setOutcome("employees");
     }
 
@@ -150,7 +171,7 @@ public class EmployeeHome extends FedeController implements Serializable {
             lazyDataModel = new LazyEmployeeDataModel(employeeService);
         }
 //        lazyDataModel.setOwner(null); //listar todos
-        lazyDataModel.setOrganization(this.organizationData.getOrganization());
+        lazyDataModel.setOrganization(this.organizationData.getOrganization());;
         //lazyDataModel.setAuthor(subject);
 
         if (getKeyword() != null && getKeyword().startsWith("label:")) {
@@ -167,8 +188,6 @@ public class EmployeeHome extends FedeController implements Serializable {
     }
     
     public void save(){
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< save employee" + getEmployee());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< save employee" + employee.isPersistent());
         if (employee.isPersistent()){
             employee.setLastUpdate(Dates.now());
             employeeService.save(employee.getId(), employee);
@@ -236,9 +255,104 @@ public class EmployeeHome extends FedeController implements Serializable {
         QueryData<Employee> queryData = employeeService.find("Employee.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
+    
+    public List<Reporte> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Reporte> reports) {
+        this.reports = reports;
+    }
+
+    public Reporte getSelectedReport() {
+        return selectedReport;
+    }
+
+    public void setSelectedReport(Reporte selectedReport) {
+        this.selectedReport = selectedReport;
+    }
+    
+    //Acciones sobre seleccionados
+    
+    private void initializeActions() {
+        this.actions = new ArrayList<>();
+        SelectItem item = null;
+        item = new SelectItem(null, I18nUtil.getMessages("common.choice"));
+        actions.add(item);
+
+        item = new SelectItem("imprimir", I18nUtil.getMessages("common.print"));
+        actions.add(item);
+        
+        item = new SelectItem("unactivate", "Desactivar");
+        actions.add(item);
+//        
+//        item = new SelectItem("changeto", "Cambiar tipo a");
+//        actions.add(item);
+    }
+
+    
+    public boolean isActionExecutable() {
+        if ("imprimir".equalsIgnoreCase(this.selectedAction)) {
+            return true;
+        } else if ("unactivate".equalsIgnoreCase(this.selectedAction) && this.getSelectedEmployees() != null){
+            return true;
+        } /*else if ("changeto".equalsIgnoreCase(this.selectedAction) && this.getProductType()!= null){
+            return true;
+        }*/
+        return false;
+    }
+    
+    public void execute() throws IOException {
+        if (this.isActionExecutable() && !this.selectedEmployees.isEmpty()) {
+            if ("imprimir".equalsIgnoreCase(this.selectedAction) && this.selectedReport != null) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("organizationId", this.organizationData.getOrganization().getId());
+                this.selectedEmployees.forEach(prv -> {
+                    params.put("proveedorId", prv.getId());
+                    System.out.println("proveedorId: " + prv.getId());
+                    byte[] encodedLogo = null;
+                    try {
+                        encodedLogo = this.organizationData.generarLogo();
+                    } catch (IOException ex) {
+                        java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    params.put("logo", new String(encodedLogo));
+                    try {
+                        ReportUtil.getInstance().generarReporte(Constantes.DIRECTORIO_SALIDA_REPORTES, this.selectedReport.getRutaArchivoXml(), params);
+                    } catch (JRException ex) {
+                        java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                setOutcome("");
+            } else if ("unactivate".equalsIgnoreCase(this.selectedAction) && this.selectedEmployees != null && !this.selectedEmployees.isEmpty()) {
+                this.selectedEmployees.forEach(emp -> {
+                    emp.setActive(false);
+                    this.employeeService.save(emp.getId(), emp);
+                });
+                
+            }
+        }
+    }
 
     @Override
     public Record aplicarReglaNegocio(String nombreRegla, Object fuenteDatos) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+    /**
+     * Evento para redirigir en el caso de seleccionar un proveedor
+     *
+     * @param event
+     */
+    public void onRowSelect(SelectEvent event) {
+        try {
+            //Redireccionar a RIDE de objeto seleccionado
+            if (event != null && event.getObject() != null) {
+                Employee p = (Employee) event.getObject();
+                redirectTo("/pages/fede/pagos/employee.jsf?proveedorId=" + p.getId());
+            }
+        } catch (IOException ex) {
+            logger.error("No fue posible seleccionar las {} con nombre {}" + I18nUtil.getMessages("BussinesEntity"), ((BussinesEntity) event.getObject()).getName());
+        }
     }
 }

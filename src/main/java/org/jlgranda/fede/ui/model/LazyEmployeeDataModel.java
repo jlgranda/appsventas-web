@@ -269,6 +269,7 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
         if (getFilterValue() != null && !getFilterValue().isEmpty()){
             _filters.put("keyword", getFilterValue()); //Filtro general
         }
+        _filters.put("active", true);
         
         _filters.putAll(filters);
         

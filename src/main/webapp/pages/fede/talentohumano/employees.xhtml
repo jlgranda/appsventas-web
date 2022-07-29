@@ -41,31 +41,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <ui:define name="content">
         <div class="ui-g">
-            <div class="ui-g-12">
-                <div class="card">
+            <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
                     <p:toolbar rendered="#{true}">
-                    <f:facet name="left">
-                        <label class="Gray">#{i18n['common.find']}&nbsp;#{i18n['app.fede.talentohumano.employee']}:&nbsp;</label>
-                        <p:inputText value="#{employeeHome.keyword}" class="input-sm">
-                        </p:inputText>
-                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{employeeHome.clear()}" ajax="#{false}">
-                        </p:commandButton>
-                        <span class="ui-separator">
-                            <span class="fa fa-ellipsis-v SoftGray" />
-                        </span>
-                    </f:facet>
-
-                    <f:facet name="right">
-
-                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/talentohumano/employee.jsf"/>
-                    </f:facet>
-
-                </p:toolbar>
-                    
-
-                    
+                        <f:facet name="left">
+                            <label class="Gray">#{i18n['common.find']}&nbsp;y&nbsp;#{i18n['common.choose']}&nbsp;#{i18n['app.fede.talentohumano.employee']}:&nbsp;</label>
+                            <p:inputText value="#{employeeHome.keyword}" class="input-sm">
+                            </p:inputText>
+                            <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{employeeHome.clear()}" ajax="#{false}">
+                            </p:commandButton>
+                            <span class="ui-separator">
+                                <span class="fa fa-ellipsis-v SoftGray" />
+                            </span>
+                        </f:facet>
+                        <f:facet name="right">
+                            <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/talentohumano/employee.jsf"/>
+                        </f:facet>
+                    </p:toolbar>
                 </div>
-                <div class="card">
+                <div class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                <div class="ui-fluid">
                     <p:dataTable var="employee" 
                                  value="#{employeeHome.lazyDataModel}" 
                                  paginator="true" rows="#{settingHome.getValue('fede.inbox.list.length', '50')}" 
@@ -74,13 +68,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                  rowKey="#{employee.id}" 
                                  resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                  id="dataTable" widgetVar="dataTable" lazy="true">
-                        <p:ajax event="rowSelect" listener="#{employeeHome.onRowSelect}"/>
+                        <p:ajax event="rowSelect" listener="#{employeeHome.onRowSelect}" update=":form:panelSelectedToolBar"/>
+                        <p:ajax event="toggleSelect" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowSelectCheckbox" update=":form:panelSelectedToolBar" />
+                        <p:ajax event="rowUnselectCheckbox" update=":form:panelSelectedToolBar"/>
                         <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
                         <p:column headerText="#{i18n['common.names.full']}" sortBy="#{employee.owner.fullName}">
                             <h:outputText value="#{employee.owner.fullName}" />
                         </p:column>
                         <p:column headerText="#{i18n['app.fede.talentohumano.role']}" sortBy="#{employee.role.name}">
                             <h:outputText value="#{employee.role.name}" />
+                        </p:column>
+                        <p:column headerText="#{i18n['common.active.is']}" sortBy="#{employee.active}">
+                            <h:outputText value="#{employee.active ? 'Sí' : 'No'}" />
                         </p:column>
                         <p:column  id="fechaIngreso"  headerText="#{i18n['common.date.created']}" sortBy="#{employee.activationTime}" class="Wid10">
                             <h:outputText value="#{employee.activationTime}">
@@ -89,8 +89,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </p:column>
                     </p:dataTable>
                 </div>
+                <div class="ui-fluid">
+                <!--Herramientas con seleccionados -->
+                <p:panel id="panelSelectedToolBar" class="ui-g-12 ui-md-12 ui-lg-12 ui-sm-12">
+                    <p:toolbar id="selectedToolBar" rendered="#{not empty employeeHome.selectedEmployees}" class="NoPadding">
+                        <p:toolbarGroup class="DispInlFlex Container100">
+                            <div class="ui-g-4 ui-md-4 ui-lg-4 ui-sm-4"><!--Opciones-->
+                                <p:outputLabel class="Gray" value="#{i18n['common.withselected']}" for="@next"/>
+                                <p:selectOneMenu value="#{employeeHome.selectedAction}">
+                                    <f:selectItems value="#{employeeHome.actions}" var="action" itemLabel="#{action.label}" itemValue="#{action.value}"/>
+                                    <f:ajax render="selectedToolBar"></f:ajax>
+                                </p:selectOneMenu>
+                            </div>
+                            <p:panel id="panelMoverTo" rendered="#{employeeHome.selectedAction eq 'imprimir'}" class="ui-g-6 ui-md-6 ui-lg-6 ui-sm-6 MarTop15">
+                                <p:selectOneMenu value="#{employeeHome.selectedReport}">
+                                    <f:converter converterId="org.jlgranda.fede.ui.converter.ReporteConverter"  />
+                                    <f:selectItems value="#{employeeHome.reports}" var="report" itemLabel="#{report.name} - #{report.tipo}" itemValue="#{report}"/>
+                                    <f:ajax render="selectedToolBar"></f:ajax>
+                                </p:selectOneMenu>
+                            </p:panel>
+                            <div class="ui-g-2 ui-md-2 ui-lg-2 ui-sm-2 MarTop15">
+                                <p:commandButton id="go-button"
+                                                 value="#{i18n['common.done']}" icon="fa fa-eject" styleClass="primary-button"
+                                                 actionListener="#{employeeHome.execute()}" action="#{employeeHome.getOutcome()}"
+                                                 disabled="#{not employeeHome.actionExecutable}"
+                                                 ajax="#{true}"
+                                                 update="@form"><!--oncomplete="PF('dataTable-providers').unselectAllRows()"-->
+                                    <p:confirm header="#{i18n['common.confirmation']}" message="#{i18n['common.confirmation.message.disclaimer']}" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                            </div>
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                </p:panel>
             </div>
         </div>
+    </div>
 
     </ui:define>
     <ui:define name="script">

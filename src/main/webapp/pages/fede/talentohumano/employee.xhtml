@@ -43,33 +43,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12">
                 <h1 class="BigTopic">#{i18n['app.fede.talentohumano.employee']} </h1>
-                <p:autoComplete id="customer"
-                                value="#{employeeHome.employee.owner}" var="entidad"
-                                itemLabel="#{entidad.code} #{entidad.fullName}" itemValue="#{entidad}" 
-                                completeMethod="#{subjectHome.find}"
-                                converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
-                                placeholder="#{i18n['app.fede.sales.invoice.header']}"
-                                emptyMessage="#{i18n['app.setting.list.empty']}"
-                                converterMessage="#{i18n['property.converter.fail']}"
-                                minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
-                                maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
-                                multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
-                                cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
-                                required="#{true}" >
-                    <p:column>
-                        <h:outputText value="#{ui.renderer('', entidad)}"/>
-                    </p:column>
-                    <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}"></p:ajax>
-                </p:autoComplete>
-                <p:commandButton id="button-change-customer" 
-                                 icon="fa fa-user-plus"
-                                 actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="#{true}"
-                                 immediate="true"
-                                 styleClass="RedButton" style="width:30px">
-                    <p:ajax event="dialogReturn" update="@form"
-                            listener="#{employeeHome.handleReturn}">
-                    </p:ajax>
-                </p:commandButton>
+                <p:toolbar rendered="#{true}">
+                    <f:facet name="left">
+                        <label class="Gray">#{i18n['common.find']}&nbsp;#{i18n['app.fede.talentohumano.person']}:&nbsp;</label>
+                        <p:autoComplete id="customer"
+                                        value="#{employeeHome.employee.owner}" var="entidad"
+                                        itemLabel="#{entidad.code} #{entidad.fullName}" itemValue="#{entidad}" 
+                                        completeMethod="#{subjectHome.find}"
+                                        converter="org.jlgranda.fede.ui.converter.SubjectConverter" 
+                                        placeholder="#{i18n['app.fede.sales.invoice.header']}"
+                                        emptyMessage="#{i18n['app.setting.list.empty']}"
+                                        converterMessage="#{i18n['property.converter.fail']}"
+                                        minQueryLength="#{settingHome.getValue('app.search.minQueryLength', '3')}" 
+                                        maxResults="#{settingHome.getValue('app.search.maxResults', '10')}" 
+                                        multiple="#{false}" forceSelection="#{true}" dropdown="#{false}"
+                                        cache="#{true}" effect="fade" queryDelay="1000" scrollHeight="1000"
+                                        required="#{true}" >
+                            <p:column>
+                                <h:outputText value="#{ui.renderer('', entidad)}"/>
+                            </p:column>
+                            <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}"></p:ajax>
+                        </p:autoComplete>
+                    </f:facet>
+                    <f:facet name="right">
+                        <p:commandButton id="button-change-customer" 
+                                         icon="fa fa-user-plus"
+                                         actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="#{true}"
+                                         immediate="true"
+                                         styleClass="danger-btn" style="width:30px">
+                            <p:ajax event="dialogReturn" update="@form"
+                                    listener="#{employeeHome.handleReturn}">
+                            </p:ajax>
+                        </p:commandButton>
+                    </f:facet>
+                </p:toolbar>
             </div>
              <div class="ui-g-12">
                 <h1 class="BigTopic">#{i18n['app.fede.talentohumano.role']} </h1>

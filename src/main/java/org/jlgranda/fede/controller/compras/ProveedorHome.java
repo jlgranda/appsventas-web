@@ -57,7 +57,7 @@ import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
 import org.jpapi.util.I18nUtil;
-import static org.jpapi.util.ImageUtil.generarImagen;
+
 import org.jpapi.util.QueryData;
 import org.jpapi.util.QuerySortOrder;
 import org.jpapi.util.Strings;
@@ -522,7 +522,8 @@ public class ProveedorHome extends FedeController implements Serializable {
                     System.out.println("proveedorId: " + prv.getId());
                     byte[] encodedLogo = null;
                     try {
-                        encodedLogo = generarLogo(prv);
+                        Organization org = organizationService.findByOwner(proveedor.getOwner());
+                        encodedLogo = this.organizationData.generarLogo(org, prv.getOwner().getInitials(), prv.getOwner().getFullName());
                     } catch (IOException ex) {
                         java.util.logging.Logger.getLogger(ProveedorHome.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -538,22 +539,6 @@ public class ProveedorHome extends FedeController implements Serializable {
         }
     }
 
-    private byte[] generarLogo(Proveedor proveedor) throws IOException {
-        Organization organization = organizationService.findByOwner(proveedor.getOwner());
-        if (organization != null) {
-            if (organization.getPhoto() != null) {
-                return Base64.getEncoder().encode(organization.getPhoto());
-            } else {
-                return Base64.getEncoder().encode(generarImagen(organization.getInitials()));
-            }
-        } else {
-            if (!Strings.isNullOrEmpty(proveedor.getOwner().getInitials())) {
-                return Base64.getEncoder().encode(generarImagen(proveedor.getOwner().getInitials()));
-            } else {
-                return Base64.getEncoder().encode(generarImagen(proveedor.getOwner().getFullName()));
-            }
-        }
-    }
 
     public boolean isActionExecutable() {
         if ("imprimir".equalsIgnoreCase(this.selectedAction)) {

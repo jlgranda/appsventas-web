@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12">
                 <h1 class="BigTopic">#{i18n['app.fede.talentohumano.role']} </h1>
-                <div class="ui-g">
+                <div class="ui-g-12" style="padding: 1rem">
                     <jlgranda:input id="nme" name="name" type="text" label="#{i18n['common.name']}" 
                                     value="#{jobRoleHome.jobRole.name}" required="true" inlinehelp="#{messages['app.fede.inventory.product.name.inlinehelp']}" execute="@this save" render="nme"/>
                     <jlgranda:input id="descrpn" name="descrpn" type="textarea" label="#{i18n['common.description']}" 
@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         <p:commandButton ajax="#{true}" disabled="false" immediate="true"
                                          actionListener="#{jobRoleHome.closeDialog(null)}" 
-                                         action="home"
+                                         action="#{jobRoleHome.getOutcome()}"
                                          icon="fa fa-trash Fs14 Black" styleClass="GrayButton" type="submit"
                                          />
                     </f:facet>

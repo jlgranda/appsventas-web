@@ -18,6 +18,7 @@ package org.jlgranda.fede.controller;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -27,7 +28,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.jpapi.model.Organization;
 import org.jpapi.model.profile.Subject;
+import static org.jpapi.util.ImageUtil.generarImagen;
+import org.jpapi.util.Strings;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
+import static org.jpapi.util.ImageUtil.generarImagen;
 
 /**
  *
@@ -75,6 +79,30 @@ public class OrganizationData implements Serializable {
     private void redirectTo() throws IOException {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath());
+    }
+    
+    
+    public byte[] generarLogo() throws IOException {
+        return this.generarLogo(this.organization, "S/N", "S/N");
+    }
+
+    public byte[] generarLogo(String initials, String name) throws IOException {
+        return this.generarLogo(this.organization, initials, name);
+    }
+    public byte[] generarLogo(Organization org, String initials, String name) throws IOException {
+        if (org != null) {
+            if (org.getPhoto() != null) {
+                return Base64.getEncoder().encode(org.getPhoto());
+            } else {
+                return Base64.getEncoder().encode(generarImagen(org.getInitials()));
+            }
+        } else {
+            if (!Strings.isNullOrEmpty(initials)) {
+                return Base64.getEncoder().encode(generarImagen(initials));
+            } else {
+                return Base64.getEncoder().encode(generarImagen(name));
+            }
+        }
     }
     
 }
