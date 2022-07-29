@@ -839,12 +839,13 @@ public class InvoiceHome extends FedeController implements Serializable {
                 addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.sales.invoice.accounting.fail"));
             }
 
+            //TODO registrar en kardex 
             //Guardar movimientos en el Kardex
-            logger.info(I18nUtil.getMessages("InvoiceHome") + " registra en inventario");
-            registerInvoiceDetailsInKardex(this.invoice.getDetails());
+            //logger.info(I18nUtil.getMessages("InvoiceHome") + " registra en inventario");
+            //registerInvoiceDetailsInKardex(this.invoice.getDetails());
 
             //Enviar saludo a cliente
-            sendNotification();
+            //sendNotification();
 
 //            //Guardar cambios en la entidad invoice
 //            save(true);
