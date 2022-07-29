@@ -42,6 +42,7 @@ import org.jlgranda.fede.ui.model.LazyJournalDataModel;
 import org.jpapi.model.Group;
 import org.jpapi.model.profile.Subject;
 import org.jpapi.util.Dates;
+import org.jpapi.util.Strings;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
@@ -145,7 +146,7 @@ public class JournalHome extends FedeController implements Serializable {
                 && this.subject != null
                 && this.subject.isPersistent()
                 && !"admin".equalsIgnoreCase(this.subject.getUsername())) {//Sino el empleado logeado en la sessión y organización seleccionada
-            this.employee = employeeService.findUniqueByNamedQuery("Employee.findByOwnerAndOrganizacion", this.subject, this.organizationData.getOrganization());
+            this.employee = employeeService.findUniqueByNamedQuery("Employee.findByOwnerAndOrganization", this.subject, this.organizationData.getOrganization());
         }
         return employee;
     }
@@ -524,59 +525,59 @@ public class JournalHome extends FedeController implements Serializable {
     /**
      * Registrar registro de jornada.
      */
-//    private void register() {
-//        if (isCheckable()) {
-//            getJournal().setName(calculeEvent(getEmployee()));
-//            getJournal().setBeginTime(Dates.now());
-//            getJournal().setEndTime(Dates.now());
-//            getJournal().setEmployeeId(getEmployee().getId());
-//            save();
-//        } else {
-//            addErrorMessage("Acaba de registrarse!", "Vuelva a intentar más tarde.");
-//        }
-//    }
+    private void register() {
+        if (isCheckable()) {
+            getJournal().setName(calculeEvent(getEmployee()));
+            getJournal().setBeginTime(Dates.now());
+            getJournal().setEndTime(Dates.now());
+            getJournal().setEmployeeId(getEmployee().getId());
+            save();
+        } else {
+            addErrorMessage("Acaba de registrarse!", "Vuelva a intentar más tarde.");
+        }
+    }
 
-//    public void check() throws IOException {
-//        if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
-//            register();
-//        } else {
-//            addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
-//        }
-//        redirectTo("/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true");
-//    }
+    public void check() throws IOException {
+        if (!Strings.isNullOrEmpty(getPassword()) && passwordService.passwordsMatch(getPassword(), getEmployee().getOwner().getPassword())) {
+            register();
+        } else {
+            addWarningMessage("La contraseña no es válida!", "Vuelva a intentar.");
+        }
+        redirectTo("/pages/fede/talentohumano/registrar.jsf?showCurrentDay=true");
+    }
 
-//    public void quickCheck() throws IOException {
-//
-//        if (!Strings.isNullOrEmpty(getPassword())) {
-//            //Cargar Empleado dado el código rápido
-//            try {
-//                Employee _employee = employeeService.find(Long.valueOf(getPassword()));
-//                setEmployee(_employee);
-//                setEmployeeId(_employee.getId());
-//                register();
-//            } catch (NumberFormatException nfe) {
-//                addWarningMessage("El código es un número!", "Vuelva a intentar.");
-//            }
-//        } else {
-//            addWarningMessage("Indique un código válido!", "Vuelva a intentar.");
-//        }
-//
-//        redirectTo("/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true&employeeId=" + getEmployeeId()); //volver a carga la vista para el usuario en registro
-//    }
+    public void quickCheck() throws IOException {
 
-//    public boolean isCheckable() {
-//
-//        List<Journal> journals = journalService.findByNamedQueryWithLimit("Journal.findLastForOwner", 1, getEmployee().getOwner());
-//
-//        if (journals.isEmpty()) {
-//            return true;
-//        }
-//
-//        Journal lastJournal = journals.get(0);
-//        int limit = Integer.parseInt(settingHome.getValue("app.fede.talentohumano.check.gap", "10"));
-//        long diffTime = Dates.calculateNumberOfMinutesBetween(Dates.now(), lastJournal.getBeginTime());
-//        return !(diffTime >= 0 && diffTime < limit); //
-//    }
+        if (!Strings.isNullOrEmpty(getPassword())) {
+            //Cargar Empleado dado el código rápido
+            try {
+                Employee _employee = employeeService.find(Long.valueOf(getPassword()));
+                setEmployee(_employee);
+                setEmployeeId(_employee.getId());
+                register();
+            } catch (NumberFormatException nfe) {
+                addWarningMessage("El código es un número!", "Vuelva a intentar.");
+            }
+        } else {
+            addWarningMessage("Indique un código válido!", "Vuelva a intentar.");
+        }
+
+        redirectTo("/pages/fede/talentohumano/registrar_rapido.jsf?showCurrentDay=true&employeeId=" + getEmployeeId()); //volver a carga la vista para el usuario en registro
+    }
+
+    public boolean isCheckable() {
+
+        List<Journal> journals = journalService.findByNamedQueryWithLimit("Journal.findLastForOwner", 1, getEmployee().getOwner());
+
+        if (journals.isEmpty()) {
+            return true;
+        }
+
+        Journal lastJournal = journals.get(0);
+        int limit = Integer.parseInt(settingHome.getValue("app.fede.talentohumano.check.gap", "10"));
+        long diffTime = Dates.calculateNumberOfMinutesBetween(Dates.now(), lastJournal.getBeginTime());
+        return !(diffTime >= 0 && diffTime < limit); //
+    }
 
     public void checkRest() throws IOException {
         Journal salida13h = journalService.createInstance();
