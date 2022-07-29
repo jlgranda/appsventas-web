@@ -812,7 +812,6 @@ public class InvoiceHome extends FedeController implements Serializable {
      * @return outcome de exito o fracaso de la acción
      */
     public String collect(DocumentType documentType, String status) {
-        System.out.println("\n\n\ncollect:: ");
         if (DocumentType.PRE_INVOICE.equals(getInvoice().getDocumentTypeSource())) {
             getInvoice().setDocumentTypeSource(DocumentType.INVOICE);
         }
@@ -833,7 +832,6 @@ public class InvoiceHome extends FedeController implements Serializable {
 
             //Registrar asiento contable de la compra
             if (getInvoice().getId() != null) {
-                logger.info(I18nUtil.getMessages("InvoiceHome") + " registra contablemente");
                 registerRecordInJournal();
             } else {
                 addWarningMessage(I18nUtil.getMessages("action.warning"), I18nUtil.getMessages("app.fede.sales.invoice.accounting.fail"));
@@ -848,7 +846,7 @@ public class InvoiceHome extends FedeController implements Serializable {
             //sendNotification();
 
 //            //Guardar cambios en la entidad invoice
-//            save(true);
+            save(true);
             setOutcome("preinvoices");
         } else {
             addErrorMessage(I18nUtil.getMessages("app.fede.sales.payment.incomplete"), I18nUtil.getFormat("app.fede.sales.payment.detail.incomplete", "" + getInvoice().getTotal()));
@@ -1402,7 +1400,7 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public void registerRecordInJournal() {
-        System.out.println("isAccountingEnabled(): " + isAccountingEnabled());
+        logger.info(I18nUtil.getMessages("InvoiceHome") + " registra contablemente");
         if (isAccountingEnabled()) {
 
             //Ejecutar las reglas de negocio para el registro de ventas
