@@ -62,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <p:ajax event="itemSelect" update="@form" partialSubmit="#{true}"></p:ajax>
                 </p:autoComplete>
                 <p:commandButton id="button-change-customer" 
-                                 icon="fa fa-user-plus" styleClass="primary-button"
+                                 icon="fa fa-user-plus"
                                  actionListener="#{employeeHome.mostrarFormularioProfile()}" ajax="#{true}"
                                  immediate="true"
                                  styleClass="RedButton" style="width:30px">
@@ -70,6 +70,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             listener="#{employeeHome.handleReturn}">
                     </p:ajax>
                 </p:commandButton>
+            </div>
+             <div class="ui-g-12">
                 <h1 class="BigTopic">#{i18n['app.fede.talentohumano.role']} </h1>
                 <div class="ui-g">
                     <div class="ui-g-12">
@@ -81,7 +83,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      rowKey="#{role.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
                                      id="dataTable" widgetVar="dataTable" lazy="true">
-                            <p:column selectionMode="multiple" class="Wid5 TexAlCenter"/>
+                            <p:column selectionMode="single" class="Wid5 TexAlCenter"/>
                             <p:column headerText="#{i18n['common.firstname']}" sortBy="#{role.name}">
                                 <h:outputText value="#{role.name}" />
                             </p:column>

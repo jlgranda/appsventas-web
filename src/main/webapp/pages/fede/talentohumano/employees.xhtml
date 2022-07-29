@@ -43,13 +43,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="ui-g">
             <div class="ui-g-12">
                 <div class="card">
-                    <label class="Gray">#{i18n['common.find']}&nbsp;</label>
-                    <p:inputText value="#{employeeHome.keyword}" class="input-sm">
-                    </p:inputText>
-                    <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{employeeHome.clear()}" ajax="#{false}">
-                    </p:commandButton>
+                    <p:toolbar rendered="#{true}">
+                    <f:facet name="left">
+                        <label class="Gray">#{i18n['common.find']}&nbsp;#{i18n['app.fede.talentohumano.employee']}:&nbsp;</label>
+                        <p:inputText value="#{employeeHome.keyword}" class="input-sm">
+                        </p:inputText>
+                        <p:commandButton value="#{i18n['common.find']}" style="margin-bottom:10px;" styleClass="raised-btn" actionListener="#{employeeHome.clear()}" ajax="#{false}">
+                        </p:commandButton>
+                        <span class="ui-separator">
+                            <span class="fa fa-ellipsis-v SoftGray" />
+                        </span>
+                    </f:facet>
 
-                    <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/talentohumano/employee.jsf"/>
+                    <f:facet name="right">
+
+                        <p:button value="#{i18n['common.new']}" styleClass="danger-btn" outcome="/pages/fede/talentohumano/employee.jsf"/>
+                    </f:facet>
+
+                </p:toolbar>
+                    
+
+                    
                 </div>
                 <div class="card">
                     <p:dataTable var="employee" 

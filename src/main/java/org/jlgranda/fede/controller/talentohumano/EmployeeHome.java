@@ -167,12 +167,16 @@ public class EmployeeHome extends FedeController implements Serializable {
     }
     
     public void save(){
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< save employee" + getEmployee());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<< save employee" + employee.isPersistent());
         if (employee.isPersistent()){
             employee.setLastUpdate(Dates.now());
+            employeeService.save(employee.getId(), employee);
         } else {
             employee.setAuthor(this.subject);
+            employee.setOrganization(this.organizationData.getOrganization());
+            employeeService.save(employee);
         }
-        employeeService.save(employee.getId(), employee);
     }
     
     public void saveEmployee(){
