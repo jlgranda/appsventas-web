@@ -611,6 +611,11 @@ public class InvoiceHome extends FedeController implements Serializable {
     }
 
     public String save(boolean force) {
+        
+        if (getInvoice().isPersistent()){
+            setInvoice(invoiceService.createInstance());
+        }
+        
         List<Detail> details = new ArrayList<>();
         candidateDetails.forEach(d -> {//Quitar los detalles en amount 0
             if (BigDecimal.ZERO.compareTo(d.getAmount()) == -1) {
