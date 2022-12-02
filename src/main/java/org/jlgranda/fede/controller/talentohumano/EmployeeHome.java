@@ -249,10 +249,11 @@ public class EmployeeHome extends FedeController implements Serializable {
     public List<Employee> find(String keyword) {
         keyword = "%" + keyword.trim() + "%";
         Map<String, Object> filters = new HashMap<>();
+        filters.put("organization", organizationData.getOrganization());
         filters.put("code", keyword);
         filters.put("firstname", keyword);
         filters.put("surname", keyword);
-        QueryData<Employee> queryData = employeeService.find("Employee.findByOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
+        QueryData<Employee> queryData = employeeService.find("Employee.findByorganizationAndOwnerCodeAndName", -1, -1, "", QuerySortOrder.ASC, filters);
         return queryData.getResult();
     }
     

@@ -101,8 +101,6 @@ public class LazyProductDataModel extends LazyDataModel<Product> implements Seri
     }
 
     public List<Product> getResultList() {
-        logger.info("load BussinesEntitys");
-
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }

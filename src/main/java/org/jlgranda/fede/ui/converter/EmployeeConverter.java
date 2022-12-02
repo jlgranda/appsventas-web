@@ -19,6 +19,8 @@ package org.jlgranda.fede.ui.converter;
 
 import com.jlgranda.fede.ejb.talentohumano.EmployeeService;
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -69,7 +71,13 @@ public class EmployeeConverter implements Converter, Serializable {
     }
 
     private Long getKey(String value) {
-        return Long.valueOf(value.trim());
+        Pattern p = Pattern.compile("\\d+");
+        Matcher m = p.matcher(value);
+        String key = null;
+        while(m.find()) {
+            key = m.group();
+        }
+        return Long.valueOf(key);
     }
 
     @Override

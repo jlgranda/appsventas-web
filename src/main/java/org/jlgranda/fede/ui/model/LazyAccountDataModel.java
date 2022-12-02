@@ -93,7 +93,6 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
     }
     
     public List<Account> getResultList() {
-        logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
@@ -105,7 +104,6 @@ public class LazyAccountDataModel extends LazyDataModel<Account> implements Seri
     }
 
     public void setFirstResult(Integer firstResult) {
-        logger.info("set first result + firstResult");
         this.firstResult = firstResult;
         this.resultList = null;
     }

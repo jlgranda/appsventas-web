@@ -17,17 +17,13 @@
 package org.jlgranda.fede.ui.model;
 
 import com.jlgranda.fede.ejb.talentohumano.JournalService;
-import java.beans.IntrospectionException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
-import org.jlgranda.fede.ui.util.UI;
 import org.jlgranda.fede.model.sales.ProductType;
 import org.jlgranda.fede.model.talentohumano.Journal;
 import org.jlgranda.fede.model.talentohumano.Journal_;
@@ -41,8 +37,6 @@ import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
-import org.primefaces.model.filter.FilterConstraint;
-import org.primefaces.util.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

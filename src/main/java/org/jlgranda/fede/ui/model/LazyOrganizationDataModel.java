@@ -98,8 +98,6 @@ public class LazyOrganizationDataModel extends LazyDataModel<Organization> imple
     }
 
     public List<Organization> getResultList() {
-        logger.info("load BussinesEntitys");
-
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = service.find(this.getPageSize(), this.getFirstResult());
         }

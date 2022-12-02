@@ -97,8 +97,6 @@ public class LazyGroupDataModel extends LazyDataModel<Group> implements Serializ
     }
 
     public List<Group> getResultList() {
-        logger.info("load BussinesEntitys");
-
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }

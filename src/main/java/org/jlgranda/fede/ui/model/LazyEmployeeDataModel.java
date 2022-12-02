@@ -100,8 +100,6 @@ public class LazyEmployeeDataModel  extends LazyDataModel<Employee> implements S
     }
 
     public List<Employee> getResultList() {
-        logger.info("load BussinesEntitys");
-
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }

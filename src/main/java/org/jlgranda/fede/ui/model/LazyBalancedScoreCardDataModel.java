@@ -87,7 +87,6 @@ public class LazyBalancedScoreCardDataModel extends LazyDataModel<BalancedScoreC
     }
 
     public List<BalancedScoreCard> getResultList() {
-        logger.info("load BussinesEntitys");
 
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());

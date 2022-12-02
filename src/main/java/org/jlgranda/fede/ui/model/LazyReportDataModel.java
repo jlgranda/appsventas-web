@@ -88,7 +88,6 @@ public class LazyReportDataModel extends LazyDataModel<Reporte> implements Seria
     }
 
     public List<Reporte> getResultList() {
-        logger.info("load BussinesEntitys");
         if (resultList.isEmpty()) {
             resultList = reporteService.find(this.getPageSize(), this.getFirstResult());
         }

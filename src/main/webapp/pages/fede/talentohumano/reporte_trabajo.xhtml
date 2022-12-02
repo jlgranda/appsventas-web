@@ -115,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                      reflow="true" 
                                      rowKey="#{journal.id}" 
                                      resizableColumns="#{settingHome.getValue('fede.inbox.dataTable.resizableColumns', 'true')}" 
-                                     widgetVar="dataTable_j" lazy="true"
+                                     widgetVar="dataTable_j" lazy="false"
                                      editable="true" editMode="cell"
                                      rendered="#{not empty journalHome.employeeSelected.id}"
                                      rowStyleClass="#{journal.name eq 'REGISTRO' ? 'Red just' : ''}">
@@ -143,7 +143,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <f:convertDateTime  timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                 </h:outputText>
                             </p:column>                    
-                            <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm.reglamento']}" sortBy="#{journal.endTime}">
+                            <p:column  id="horaRegistroReglamento"  headerText="#{i18n['app.fede.talentohumano.record.time.hh.mm.regulation']}" sortBy="#{journal.endTime}">
                                 <h:outputText value="#{journal.endTime}">
                                     <f:convertDateTime timeZone="#{ui.timeZone}" pattern="#{settingHome.getValue('fede.time.pattern', 'HH:mm')}"/>
                                 </h:outputText>

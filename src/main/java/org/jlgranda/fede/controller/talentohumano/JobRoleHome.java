@@ -160,6 +160,7 @@ public class JobRoleHome extends FedeController implements Serializable {
         } else {
             jobRole.setAuthor(this.subject);
             jobRole.setOwner(this.subject);
+            jobRole.setOrganization(this.organizationData.getOrganization());
         }
         jobRoleService.save(jobRole.getId(), jobRole);
     }

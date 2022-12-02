@@ -76,8 +76,6 @@ public class LazyBussinesEntityDataModel extends LazyDataModel<BussinesEntity> i
     }
 
     public List<BussinesEntity> getResultList() {
-        logger.info("load BussinesEntitys");
-
         if (resultList.isEmpty()/* && getSelectedBussinesEntity() != null*/) {
             resultList = bussinesEntityService.find(this.getPageSize(), this.getFirstResult());
         }
